@@ -14,7 +14,7 @@ de la distribución de instrumental quirúrgico.
 
 ### M1 — SIVRI
 Sistema Inteligente de Visión y Retroalimentación para Instrumentación Quirúrgica.  
-Reconocimiento de instrumental quirúrgico en tiempo real mediante YOLOv8 
+Reconocimiento de instrumental quirúrgico en tiempo real mediante YOLO26 
 con retroalimentación inmediata al estudiante.  
 **Estado**: en desarrollo — 2026.
 
