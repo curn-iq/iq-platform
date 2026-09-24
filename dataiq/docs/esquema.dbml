@@ -1,0 +1,191 @@
+Enum rol_usuario {
+  usuario
+  colaborador
+  revisor
+  admin
+}
+
+Enum estado_version {
+  borrador
+  en_revision
+  publicada
+  reemplazada
+  archivada
+}
+
+Table Usuario {
+  id Int [pk, increment]
+  nombre Varchar [not null]
+  email Varchar [not null, unique]
+  password_hash Varchar [not null]
+  rol rol_usuario [not null, default: 'usuario']
+  fecha_creacion Timestamp [not null]
+}
+
+Table Especialidad {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+}
+
+Table Tecnica {
+  id Int [pk, increment]
+  nombre Varchar [not null]
+  especialidad_id Int [not null, ref: > Especialidad.id]
+  creado_por Int [not null, ref: > Usuario.id]
+  fecha_creacion Timestamp [not null]
+
+  indexes {
+    (nombre, especialidad_id) [unique]
+  }
+}
+
+Table TecnicaVersion {
+  id Int [pk, increment]
+  tecnica_id Int [not null, ref: > Tecnica.id]
+  numero Int [not null]
+  estado estado_version [not null, default: 'borrador']
+  codigo_cups Varchar
+  anestesia Varchar
+  posicion_paciente Varchar
+  ropa Varchar
+  descripcion Text
+  indicaciones Text
+  complicaciones Text
+  tecnica_quirurgica Text
+  creado_por Int [not null, ref: > Usuario.id]
+  revisado_por Int [ref: >? Usuario.id]
+  fecha_creacion Timestamp [not null]
+  fecha_actualizacion Timestamp [not null]
+  fecha_revision Timestamp
+
+  indexes {
+    (tecnica_id, numero) [unique]
+  }
+
+  checks {
+    `(estado IN ('borrador', 'en_revision')) = (revisado_por IS NULL AND fecha_revision IS NULL)` [name: 'revision_coherente']
+    `revisado_por <> creado_por` [name: 'sin_autoaprobacion']
+  }
+
+  Note: '''
+  Índices únicos parciales (DBML no los soporta, van en la migración):
+  CREATE UNIQUE INDEX una_publicada_por_tecnica ON "TecnicaVersion" (tecnica_id) WHERE estado = 'publicada';
+  CREATE UNIQUE INDEX un_borrador_por_tecnica ON "TecnicaVersion" (tecnica_id) WHERE estado IN ('borrador', 'en_revision');
+  '''
+}
+
+Table CategoriaInstrumental {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+}
+
+Table Instrumental {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+  categoria_id Int [not null, ref: > CategoriaInstrumental.id]
+  imagen_url Varchar
+}
+
+Table InstrumentalAlias {
+  id Int [pk, increment]
+  instrumental_id Int [not null, ref: > Instrumental.id]
+  alias Varchar [not null, unique]
+}
+
+Table ItemTecnica {
+  id Int [pk, increment]
+  version_id Int [not null, ref: > TecnicaVersion.id]
+  numero_leyenda Int
+  texto_fuente Varchar [not null]
+
+  indexes {
+    (version_id, numero_leyenda) [unique]
+    (id, version_id) [unique]
+  }
+}
+
+Table ItemTecnicaComponente {
+  id Int [pk, increment]
+  item_id Int [not null, ref: > ItemTecnica.id]
+  instrumental_id Int [ref: >? Instrumental.id]
+  sutura_id Int [ref: >? Sutura.id]
+
+  checks {
+    `num_nonnulls(instrumental_id, sutura_id) = 1` [name: 'componente_exactamente_uno']
+  }
+}
+
+Table Zona {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+}
+
+Table PosicionMesa {
+  id Int [pk, increment]
+  item_id Int [not null]
+  version_id Int [not null]
+  zona_id Int [not null, ref: > Zona.id]
+  fila Int [not null]
+  columna Int [not null]
+
+  indexes {
+    (version_id, zona_id, fila, columna) [unique]
+  }
+
+  checks {
+    `fila >= 1 AND columna >= 1` [name: 'celda_valida']
+  }
+}
+
+Ref: PosicionMesa.(item_id, version_id) > ItemTecnica.(id, version_id)
+
+Table Sutura {
+  id Int [pk, increment]
+  nombre Varchar [not null]
+  calibre Varchar
+  tipo_aguja Varchar
+
+  indexes {
+    (nombre, calibre, tipo_aguja) [unique]
+  }
+}
+
+Table TecnicaVersion_Sutura {
+  version_id Int [ref: > TecnicaVersion.id]
+  sutura_id Int [ref: > Sutura.id]
+  uso Text
+
+  indexes {
+    (version_id, sutura_id) [pk]
+  }
+}
+
+Table EquipoBiomedico {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+  descripcion Varchar
+}
+
+Table TecnicaVersion_EquipoBiomedico {
+  version_id Int [ref: > TecnicaVersion.id]
+  equipo_id Int [ref: > EquipoBiomedico.id]
+
+  indexes {
+    (version_id, equipo_id) [pk]
+  }
+}
+
+Table DispositivoMedico {
+  id Int [pk, increment]
+  nombre Varchar [not null, unique]
+  descripcion Varchar
+}
+
+Table TecnicaVersion_DispositivoMedico {
+  version_id Int [ref: > TecnicaVersion.id]
+  dispositivo_id Int [ref: > DispositivoMedico.id]
+
+  indexes {
+    (version_id, dispositivo_id) [pk]
+  }
+}
