@@ -131,9 +131,33 @@ navegación (ver más abajo) NO se considera un módulo.
   - `codigo_cups`: código CUPS (Clasificación Única de Procedimientos en
     Salud, Colombia) del procedimiento; opcional. CIE-10 no aplica porque
     clasifica diagnósticos, no procedimientos.
-  - Roles en el enum `rol_usuario` (`usuario`, `colaborador`, `revisor`,
-    `admin`) — propuesta, modelo de roles aún pendiente de cerrar. La lectura
-    de técnicas publicadas no requiere cuenta.
+  - Roles en el enum `rol_usuario`: ver "Modelo de roles" abajo
+    (**propuesta, no implementada ni cerrada**).
+
+- **Modelo de roles — PROPUESTA (aprobada como dirección, NO implementada
+  ni decidida como definitiva; no construir sobre ella sin confirmar con
+  Mauricio)**:
+  - Objetivo: el software debe servir a cualquier persona (estudiantes de
+    cualquier institución, o alguien sin institución, p. ej. un bachiller
+    curioso), no solo a la CURN. El riesgo a controlar no es la lectura sino
+    la **publicación** de técnicas incorrectas.
+  - Principio: separar lectura de escritura.
+
+    | Quién | Qué puede hacer | Cómo lo obtiene |
+    |---|---|---|
+    | Visitante (sin cuenta) | Leer técnicas **publicadas** | Nada |
+    | `usuario` | Lo mismo + funciones personales futuras (p. ej. progreso en SIVRI) | Autorregistro gratuito |
+    | `colaborador` | Crear/editar versiones en **borrador** | Lo asigna un admin |
+    | `revisor` | Aprobar y publicar (nunca lo propio) | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
+    | `admin` | Gestionar roles | Mauricio |
+
+  - Un contenido incorrecto nunca llega a estudiantes: queda en borrador
+    hasta que un revisor distinto al autor lo aprueba.
+  - Una institución que quiera control total puede desplegar su propia
+    instancia (open source, MIT), pero es opcional: nadie depende de que su
+    institución tenga instancia.
+  - El arreglo de mesa **no** varía por institución; se modela según los
+    documentos de IQ. Quien quiera otro arreglo tiene el código.
   - Todo el esquema vive en un solo archivo, incluidas las restricciones: los
     CHECK van en bloques `checks { }` (se exportan al SQL) y los dos índices
     únicos parciales de `TecnicaVersion` van en su `Note`, porque DBML no los
