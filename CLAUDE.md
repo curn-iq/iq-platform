@@ -35,9 +35,12 @@ navegación (ver más abajo) NO se considera un módulo.
 - **Qué es**: visión artificial (YOLO26) que reconoce instrumental quirúrgico en
   tiempo real vía cámara y valida si la disposición en mesa es correcta según la
   técnica quirúrgica evaluada, dando retroalimentación inmediata al estudiante.
+- **Valida por técnica**, no por tiempo quirúrgico (las fases del
+  procedimiento: diéresis, hemostasia, etc.). Validar por tiempo quirúrgico
+  queda como trabajo futuro, no para este semestre.
 - **Consume** técnicas/instrumental de DataIQ (nunca guarda su propia copia
   permanente — cachea por sesión, ver "Comunicación entre módulos").
-- **Estado**: en desarrollo.
+- **Estado**: por iniciar.
 - Núcleo del proyecto de grado (visión computacional), pero ya no es el único
   entregable — ver nota de arriba.
 
@@ -69,22 +72,37 @@ navegación (ver más abajo) NO se considera un módulo.
   - Arquitectura: **hexagonal** (dominio / puertos / adaptadores).
   - Migraciones: SQLAlchemy + Alembic.
 
+- **Avance del backend**: [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md).
+  Leerla al empezar a trabajar en el backend y marcar cada pieza al terminarla.
+
 - **Infraestructura de despliegue (decidida, capa gratuita, sin trampas de
   "trial" con vencimiento)**:
   - Backend → **Google Cloud Run** (Always Free: 2M requests/mes, 360K GB-seg,
-    180K vCPU-seg, 1GB egress/mes por servicio). Región `us-central1`. **Nunca
+    180K vCPU-seg, 1GB egress/mes desde Norteamérica). **El cupo gratuito es
+    por cuenta de facturación, no por servicio**: los backends de los tres
+    módulos lo comparten si usan la misma cuenta. Región `us-central1`. **Nunca
     usar `min-instances=1`** (rompe el free tier). Cold start es aceptable para
     este caso de uso.
   - Base de datos → **Neon Postgres** (Free tier: 0.5GB almacenamiento, 100
     CU-hora/mes, 5GB egress/mes por proyecto, scale-to-zero). **Un proyecto Neon
     por módulo** (DataIQ, SIVRI, SIMIQ3D cada uno con el suyo). Región
     `aws-us-east-2` (no hay región Sudamérica en Neon; es la más cercana a
-    `us-central1` de Cloud Run).
+    `us-central1` de Cloud Run). Al exceder el plan gratis no se cobra: el
+    cómputo se suspende hasta el siguiente ciclo, y por encima de 0.5GB fallan
+    las escrituras.
   - Frontend → **Vercel** (plan Hobby, 100GB bandwidth/mes). *Nota: Hobby es
     solo para uso no comercial — condición real de los términos de servicio, no
-    solo un límite técnico.*
+    solo un límite técnico.* **Ojo**: Hobby no permite conectar un proyecto a
+    un repo de una organización de GitHub (este repo es de `curn-iq`); hay que
+    desplegar de otra forma (p. ej. Vercel CLI desde GitHub Actions) — por
+    definir.
   - Registro de imágenes de contenedor → **GitHub Container Registry (ghcr.io)**,
-    NO Artifact Registry de GCP (su free tier es solo 0.5GB).
+    NO Artifact Registry de GCP (su free tier es solo 0.5GB). Cloud Run solo
+    despliega directo desde ghcr.io si la imagen es **pública** (una privada
+    exigiría un repositorio remoto de Artifact Registry), y cachea esas imágenes
+    hasta una hora: desplegar con un tag único por commit.
+  - Límites verificados en la documentación oficial de cada proveedor en
+    sep-2026.
   - CI/CD → **GitHub Actions** (build + push a ghcr.io + deploy a Cloud Run en
     cada push a `main`).
   - Se descartaron explícitamente: GCP con crédito gratis de $300/90 días (tiene
@@ -112,25 +130,32 @@ navegación (ver más abajo) NO se considera un módulo.
     `publicada → archivada`.
   - `ItemTecnica` = un objeto físico de la versión, con su `numero_leyenda`
     (trazabilidad al número del documento fuente de IQ; nulo si la técnica aún
-    no tiene diagrama de mesa) y `texto_fuente` literal. Único por
-    `(version_id, numero_leyenda)`: la BD rechaza el caso "dos objetos
-    reclaman el mismo número".
+    no tiene diagrama de mesa) y `texto_fuente` literal. **Cada mesa tiene su
+    propia numeración** en los documentos (Mayo 1..n, Reserva 1..m), por eso
+    el item lleva `zona_id` y es único por `(version_id, zona_id,
+    numero_leyenda)`: la BD rechaza "dos objetos reclaman el mismo número en
+    la misma mesa". Un número siempre tiene mesa (CHECK `numero_con_mesa`);
+    un objeto solo del listado no tiene ni mesa ni número.
   - Objetos compuestos "X con Y" = **un** `ItemTecnica` con varios
     `ItemTecnicaComponente` (cada uno apunta a un `Instrumental` o a una
     `Sutura`, nunca a ambos ni a ninguno).
   - `PosicionMesa` = celda `(zona, fila, columna)` en grilla discreta — **no**
     coordenadas continuas x/y (los arreglos de IQ son diagramas a mano, no
     medidos). Un item puede ocupar varias celdas; una celda tiene un solo
-    objeto por versión. `PosicionMesa.version_id` es redundante **a
-    propósito**: sin él no se puede garantizar la unicidad de celda, y la FK
-    compuesta `(item_id, version_id)` impide que quede inconsistente (por eso
-    `ItemTecnica` necesita el `UNIQUE (id, version_id)`: PostgreSQL lo exige
-    para esa FK). No "simplificar" quitándolos.
+    objeto por versión. `PosicionMesa.version_id` y `PosicionMesa.zona_id`
+    son redundantes **a propósito**: sin ellos no se puede garantizar la
+    unicidad de celda, y la FK compuesta `(item_id, version_id, zona_id)`
+    impide que la celda quede en otra versión u otra mesa que su objeto (por
+    eso `ItemTecnica` necesita el `UNIQUE (id, version_id, zona_id)`:
+    PostgreSQL lo exige para esa FK). No "simplificar" quitándolos.
   - `InstrumentalAlias` guarda las variantes crudas del catálogo apuntando a
     su instrumento canónico (trazabilidad de la normalización 148 → 94).
   - `codigo_cups`: código CUPS (Clasificación Única de Procedimientos en
     Salud, Colombia) del procedimiento; opcional. CIE-10 no aplica porque
     clasifica diagnósticos, no procedimientos.
+  - `Usuario.fecha_aceptacion_politica` y `Usuario.version_politica` son la
+    prueba de la autorización de tratamiento de datos personales que exige el
+    Decreto 1377 de 2013 (art. 8).
   - Roles en el enum `rol_usuario`: ver "Modelo de roles" abajo
     (**propuesta, no implementada ni cerrada**).
 
@@ -159,15 +184,22 @@ navegación (ver más abajo) NO se considera un módulo.
   - El arreglo de mesa **no** varía por institución; se modela según los
     documentos de IQ. Quien quiera otro arreglo tiene el código.
   - Todo el esquema vive en un solo archivo, incluidas las restricciones: los
-    CHECK van en bloques `checks { }` (se exportan al SQL) y los dos índices
-    únicos parciales de `TecnicaVersion` van en su `Note`, porque DBML no los
-    soporta. Verificado en PostgreSQL 17. Al pasarlo a SQLAlchemy, **declarar
-    todo en los modelos** (`CheckConstraint`, `Index(..., unique=True,
-    postgresql_where=...)`); si no, `alembic --autogenerate` no los incluye.
-    La BD se crea con las migraciones de Alembic, nunca con el "Export" de
-    dbdiagram (no trae los índices parciales).
+    CHECK van en bloques `checks { }` (se exportan al SQL); los dos índices
+    únicos parciales de `TecnicaVersion` y el `NULLS NOT DISTINCT` del UNIQUE
+    de `Sutura` van en la `Note` de su tabla, porque DBML no los soporta.
+    Verificado en PostgreSQL 17. Al pasarlo a SQLAlchemy, **declarar todo en
+    los modelos** (`CheckConstraint`, `Index(..., unique=True,
+    postgresql_where=...)`, `UniqueConstraint(...,
+    postgresql_nulls_not_distinct=True)`); si no, `alembic --autogenerate` no
+    los incluye. La BD se crea con las migraciones de Alembic, nunca con el
+    "Export" de dbdiagram (no trae esas restricciones).
   - El mapeo de clases de YOLO26 → `Instrumental.id` no está modelado todavía
     (depende de la definición de SIVRI).
+  - DataIQ **no guarda imágenes del instrumental** (fuera de alcance). Los
+    modelos 3D son de SIMIQ3D: el mapeo modelo 3D → `Instrumental.id` vive en
+    su propia BD, igual que las clases de YOLO en SIVRI. `Instrumental.descripcion`
+    es la descripción breve que SIMIQ3D muestra al hacer clic; se llena con
+    fuentes citables.
 
 - **Catálogo de instrumental (normalización)**:
   - Catálogo crudo: **148 variantes** (una fila por par técnica-instrumento,
@@ -274,15 +306,25 @@ iq-platform/
 
 Este archivo es un resumen denso para desarrollo. Para más detalle o para ver
 las decisiones originales con su razonamiento completo, están en Drive, carpeta
-raíz **"Tesis IQ - CURN"**:
+raíz **"Tesis ING-IQ - CURN"**:
 - `Estructura del Proyecto` — overview general, roles, roadmap.
-- `Planificación Módulo 2 — DataIQ` — planificación detallada de DataIQ.
-- `Stack Tecnológico — DataIQ` — stack con alternativas descartadas y por qué.
-- `Stack Infraestructura - Costos y Límites` — tabla completa de
-  proveedores/planes/límites/qué pasa al exceder cada límite gratuito.
-- `Diseño/Catálogo Instrumental` — catálogo crudo y normalizado del
-  instrumental quirúrgico (.xlsx).
-- Carpeta `Tareas` — checklists por persona (Guebriel, Juan Caraballo).
+- `ENTREGABLES/` — entregas del proyecto de grado por corte.
+- `Modulo 2 - DataIQ/Planificación Módulo 2 — DataIQ` — alcance y entregables
+  por corte.
+- `Modulo 2 - DataIQ/Diseño/Stack Tecnológico — DataIQ` — stack con
+  alternativas descartadas y por qué.
+- `Modulo 2 - DataIQ/Diseño/Infraestructura de Despliegue` (.xlsx) —
+  proveedores, planes, límites y qué pasa al exceder cada límite gratuito.
+- `Modulo 2 - DataIQ/Diseño/Diagrama Entidad-Relacion DataIQ` — imagen del ER.
+- `Modulo 2 - DataIQ/Recursos/Catalogo Instrumental/` — catálogo crudo y
+  normalizado del instrumental quirúrgico (.xlsx).
+- `Modulo 2 - DataIQ/Documentos IQ/` — documentos fuente de las técnicas.
+- `Modulo 2 - DataIQ/Tareas/` — checklists por persona (Guebriel, Juan
+  Caraballo, Mauricio).
+
+Si existe la carpeta `tesis-ing-iq-curn/` en la raíz del repo, es una copia
+local del Drive: está en el `.gitignore` (no se publica) y se lee de ahí.
+Editarla no actualiza el Drive.
 
 **Importante**: los checklists y otros documentos del Drive solo se modifican
 cuando Mauricio lo pide explícitamente. No editar el Drive por iniciativa
