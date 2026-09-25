@@ -20,6 +20,13 @@ Table Usuario {
   password_hash Varchar [not null]
   rol rol_usuario [not null, default: 'usuario']
   fecha_creacion Timestamp [not null]
+  fecha_aceptacion_politica Timestamp [not null]
+  version_politica Varchar [not null]
+
+  Note: '''
+  fecha_aceptacion_politica y version_politica son la prueba de la autorización
+  de tratamiento de datos personales (Decreto 1377 de 2013, art. 8).
+  '''
 }
 
 Table Especialidad {
@@ -83,7 +90,7 @@ Table Instrumental {
   id Int [pk, increment]
   nombre Varchar [not null, unique]
   categoria_id Int [not null, ref: > CategoriaInstrumental.id]
-  imagen_url Varchar
+  descripcion Varchar
 }
 
 Table InstrumentalAlias {
@@ -95,13 +102,24 @@ Table InstrumentalAlias {
 Table ItemTecnica {
   id Int [pk, increment]
   version_id Int [not null, ref: > TecnicaVersion.id]
+  zona_id Int [ref: >? Zona.id]
   numero_leyenda Int
   texto_fuente Varchar [not null]
 
   indexes {
-    (version_id, numero_leyenda) [unique]
-    (id, version_id) [unique]
+    (version_id, zona_id, numero_leyenda) [unique]
+    (id, version_id, zona_id) [unique]
   }
+
+  checks {
+    `numero_leyenda IS NULL OR zona_id IS NOT NULL` [name: 'numero_con_mesa']
+  }
+
+  Note: '''
+  Cada mesa tiene su propia numeración (Mayo 1..n, Reserva 1..m): zona_id dice
+  a qué mesa pertenece el número. Un objeto solo del listado no tiene ni mesa
+  ni número.
+  '''
 }
 
 Table ItemTecnicaComponente {
@@ -137,7 +155,7 @@ Table PosicionMesa {
   }
 }
 
-Ref: PosicionMesa.(item_id, version_id) > ItemTecnica.(id, version_id)
+Ref: PosicionMesa.(item_id, version_id, zona_id) > ItemTecnica.(id, version_id, zona_id)
 
 Table Sutura {
   id Int [pk, increment]
@@ -148,6 +166,12 @@ Table Sutura {
   indexes {
     (nombre, calibre, tipo_aguja) [unique]
   }
+
+  Note: '''
+  El UNIQUE (nombre, calibre, tipo_aguja) va con NULLS NOT DISTINCT
+  (PostgreSQL 15+; DBML no lo soporta, se declara en el modelo): dos suturas
+  con los mismos datos y los mismos campos vacíos cuentan como repetidas.
+  '''
 }
 
 Table TecnicaVersion_Sutura {
