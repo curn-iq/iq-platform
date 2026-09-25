@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Variables de entorno (credenciales)
+.env
+.env.*
+!.env.example
+
+# Editores / sistema
+.vscode/
+.idea/
+.DS_Store
