@@ -23,7 +23,7 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] Tablas simples: `Especialidad`, `Zona`, `CategoriaInstrumental`, `EquipoBiomedico`, `DispositivoMedico`
 - [x] `Sutura` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
 - [x] `Usuario` (enum `rol_usuario`, campos de consentimiento)
-- [ ] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
+- [x] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
 - [ ] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
 - [ ] `ItemTecnica` (`zona_id`, CHECK `numero_con_mesa`), `ItemTecnicaComponente` (CHECK `num_nonnulls`)
 - [ ] `PosicionMesa` (FK compuesta de 3 columnas)
