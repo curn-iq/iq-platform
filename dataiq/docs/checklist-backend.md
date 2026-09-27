@@ -24,7 +24,7 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] `Sutura` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
 - [x] `Usuario` (enum `rol_usuario`, campos de consentimiento)
 - [x] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
-- [ ] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
+- [x] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
 - [ ] `ItemTecnica` (`zona_id`, CHECK `numero_con_mesa`), `ItemTecnicaComponente` (CHECK `num_nonnulls`)
 - [ ] `PosicionMesa` (FK compuesta de 3 columnas)
 - [ ] Tablas intermedias de `TecnicaVersion` (PK compuesta)
