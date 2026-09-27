@@ -12,14 +12,16 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] `.gitignore` en la raíz
 - [x] Estructura hexagonal (`dominio/`, `puertos/`, `adaptadores/entrada|salida`)
 - [x] Configuración con `pydantic-settings` + `.env.example`
-- [x] PostgreSQL 17 local en contenedor (Podman)
+- [x] PostgreSQL local en contenedor (Podman)
 - [x] Conexión async (`base_datos.py`) con `naming_convention`
 - [x] Ruff (formato + lint)
+- [x] Pasar el contenedor local a PostgreSQL 18 (lo exige `uuidv7()`)
+- [x] Ids UUIDv7 en los modelos ya escritos
 
 ## Modelos SQLAlchemy (según `esquema.dbml`)
 
 - [x] Tablas simples: `Especialidad`, `Zona`, `CategoriaInstrumental`, `EquipoBiomedico`, `DispositivoMedico`
-- [ ] `Sutura` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
+- [x] `Sutura` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
 - [ ] `Usuario` (enum `rol_usuario`, campos de consentimiento)
 - [ ] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
 - [ ] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
