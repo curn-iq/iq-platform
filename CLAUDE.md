@@ -114,6 +114,12 @@ navegación (ver más abajo) NO se considera un módulo.
   tocar modelos o migraciones; no duplicar el esquema en otro lado.
 
   Notas de diseño clave:
+  - **Ids: UUIDv7** en todas las tablas, generados por la BD con `uuidv7()`
+    (requiere **PostgreSQL 18**, también en Neon). Motivo: DataIQ es open
+    source y cada institución puede tener su instancia; con UUID el catálogo
+    base tiene la misma identidad en todas, y los mapeos que guardan SIVRI
+    (clases YOLO) y SIMIQ3D (modelos 3D) contra `Instrumental.id` sirven en
+    cualquier instancia. Costo aceptado: un UUIDv7 revela su fecha de creación.
   - **Solo importa la posición, no la cantidad** (definido por IQ). No existe
     campo `cantidad`.
   - **Versionado**: `Tecnica` es solo la identidad (nombre + especialidad).
