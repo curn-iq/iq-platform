@@ -120,6 +120,9 @@ navegación (ver más abajo) NO se considera un módulo.
     base tiene la misma identidad en todas, y los mapeos que guardan SIVRI
     (clases YOLO) y SIMIQ3D (modelos 3D) contra `Instrumental.id` sirven en
     cualquier instancia. Costo aceptado: un UUIDv7 revela su fecha de creación.
+  - **Fechas: `timestamptz`** (instante exacto, se guarda en UTC). El
+    servidor, la BD y los usuarios están en zonas horarias distintas.
+    `fecha_creacion` y `fecha_actualizacion` tienen `now()` por defecto.
   - **Solo importa la posición, no la cantidad** (definido por IQ). No existe
     campo `cantidad`.
   - **Versionado**: `Tecnica` es solo la identidad (nombre + especialidad).

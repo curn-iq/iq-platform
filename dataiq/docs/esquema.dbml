@@ -22,8 +22,8 @@ Table Usuario {
   email Varchar [not null, unique]
   password_hash Varchar [not null]
   rol rol_usuario [not null, default: 'usuario']
-  fecha_creacion Timestamp [not null]
-  fecha_aceptacion_politica Timestamp [not null]
+  fecha_creacion timestamptz [not null, default: `now()`]
+  fecha_aceptacion_politica timestamptz [not null]
   version_politica Varchar [not null]
 
   Note: '''
@@ -42,7 +42,7 @@ Table Tecnica {
   nombre Varchar [not null]
   especialidad_id uuid [not null, ref: > Especialidad.id]
   creado_por uuid [not null, ref: > Usuario.id]
-  fecha_creacion Timestamp [not null]
+  fecha_creacion timestamptz [not null, default: `now()`]
 
   indexes {
     (nombre, especialidad_id) [unique]
@@ -64,9 +64,9 @@ Table TecnicaVersion {
   tecnica_quirurgica Text
   creado_por uuid [not null, ref: > Usuario.id]
   revisado_por uuid [ref: >? Usuario.id]
-  fecha_creacion Timestamp [not null]
-  fecha_actualizacion Timestamp [not null]
-  fecha_revision Timestamp
+  fecha_creacion timestamptz [not null, default: `now()`]
+  fecha_actualizacion timestamptz [not null, default: `now()`]
+  fecha_revision timestamptz
 
   indexes {
     (tecnica_id, numero) [unique]
