@@ -34,17 +34,21 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] Configurar Alembic en modo async
 - [x] Primera migración y comparación contra `esquema.dbml`
 
-## Pendiente (orden por definir)
+## Siguientes piezas (en este orden)
 
-- [ ] Dominio: entidades y reglas (transiciones de estado de versión)
-- [ ] Puertos y repositorios
-- [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
-- [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id
-- [ ] Completar el catálogo con los objetos de los arreglos de mesa (antes del seed)
-- [ ] Script de carga inicial (seed): catálogo normalizado + técnicas
-- [ ] Documentación Swagger de la API
-- [ ] Tests
-- [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon
+Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
+
+1. [x] Dominio: reglas del versionado (transiciones de estado, sin autoaprobación)
+2. [ ] Puertos y repositorios
+3. [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
+4. [ ] Endpoints de escritura: crear borrador, enviar a revisión, aprobar
+5. [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id
+6. [ ] Datos: completar el catálogo con los objetos de los arreglos de mesa y
+   transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
+   por la mesa de Mayo de Tiroidectomía)
+7. [ ] Script de carga inicial (seed): catálogo normalizado + técnicas
+8. [ ] Revisar y completar la documentación Swagger
+9. [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon (Corte 3)
 
 ## Datos de la fuente que no se cargan por ahora
 
