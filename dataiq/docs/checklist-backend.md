@@ -31,8 +31,8 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 
 ## Migraciones
 
-- [ ] Configurar Alembic en modo async
-- [ ] Primera migración y comparación contra `esquema.dbml`
+- [x] Configurar Alembic en modo async
+- [x] Primera migración y comparación contra `esquema.dbml`
 
 ## Pendiente (orden por definir)
 
