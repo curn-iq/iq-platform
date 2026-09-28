@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from uuid import UUID
 
@@ -35,3 +36,11 @@ def validar_transicion(actual: EstadoVersion, nuevo: EstadoVersion) -> None:
 def validar_aprobacion(creado_por: UUID, revisor: UUID) -> None:
     if creado_por == revisor:
         raise AutoAprobacionNoPermitida("Quien creó la versión no puede aprobarla")
+
+
+@dataclass(frozen=True)
+class TecnicaResumen:
+    id: UUID
+    nombre: str
+    especialidad: str
+    numero_version: int
