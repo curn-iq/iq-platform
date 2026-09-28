@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
     String,
     Text,
@@ -100,4 +101,96 @@ class TecnicaVersion(Base):
             unique=True,
             postgresql_where=text("estado IN ('borrador', 'en_revision')"),
         ),
+    )
+
+
+class ItemTecnica(Base):
+    __tablename__ = "ItemTecnica"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=text("uuidv7()")
+    )
+    version_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("TecnicaVersion.id"))
+    zona_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("Zona.id"))
+    numero_leyenda: Mapped[int | None] = mapped_column()
+    texto_fuente: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        UniqueConstraint("version_id", "zona_id", "numero_leyenda"),
+        UniqueConstraint("id", "version_id", "zona_id"),
+        CheckConstraint(
+            "numero_leyenda IS NULL OR zona_id IS NOT NULL", name="numero_con_mesa"
+        ),
+    )
+
+
+class ItemTecnicaComponente(Base):
+    __tablename__ = "ItemTecnicaComponente"
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=text("uuidv7()")
+    )
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("ItemTecnica.id"))
+    instrumental_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("Instrumental.id")
+    )
+    sutura_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("Sutura.id"))
+
+    __table_args__ = (
+        CheckConstraint(
+            "num_nonnulls(instrumental_id, sutura_id) = 1",
+            name="componente_exactamente_uno",
+        ),
+    )
+
+
+class PosicionMesa(Base):
+    __tablename__ = "PosicionMesa"
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=text("uuidv7()")
+    )
+    item_id: Mapped[uuid.UUID] = mapped_column()
+    version_id: Mapped[uuid.UUID] = mapped_column()
+    zona_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("Zona.id"))
+    fila: Mapped[int] = mapped_column()
+    columna: Mapped[int] = mapped_column()
+
+    __table_args__ = (
+        UniqueConstraint("version_id", "zona_id", "fila", "columna"),
+        CheckConstraint("fila >= 1 AND columna >= 1", name="celda_valida"),
+        ForeignKeyConstraint(
+            ["item_id", "version_id", "zona_id"],
+            ["ItemTecnica.id", "ItemTecnica.version_id", "ItemTecnica.zona_id"],
+        ),
+    )
+
+
+class TecnicaVersionSutura(Base):
+    __tablename__ = "TecnicaVersion_Sutura"
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("TecnicaVersion.id"), primary_key=True
+    )
+    sutura_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("Sutura.id"), primary_key=True
+    )
+    uso: Mapped[str | None] = mapped_column(Text)
+
+
+class TecnicaVersionEquipoBiomedico(Base):
+    __tablename__ = "TecnicaVersion_EquipoBiomedico"
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("TecnicaVersion.id"), primary_key=True
+    )
+    equipo_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("EquipoBiomedico.id"), primary_key=True
+    )
+
+
+class TecnicaVersionDispositivoMedico(Base):
+    __tablename__ = "TecnicaVersion_DispositivoMedico"
+
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("TecnicaVersion.id"), primary_key=True
+    )
+    dispositivo_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("DispositivoMedico.id"), primary_key=True
     )
