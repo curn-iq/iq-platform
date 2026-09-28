@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Variables de entorno (credenciales)
+.env
+.env.*
+!.env.example
+
+# Documentos del Drive (copia local, no se publican)
+tesis-ing-iq-curn/
+
+# Editores / sistema
+.vscode/
+.idea/
+.DS_Store
