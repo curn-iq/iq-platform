@@ -25,9 +25,9 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] `Usuario` (enum `rol_usuario`, campos de consentimiento)
 - [x] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
 - [x] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
-- [ ] `ItemTecnica` (`zona_id`, CHECK `numero_con_mesa`), `ItemTecnicaComponente` (CHECK `num_nonnulls`)
-- [ ] `PosicionMesa` (FK compuesta de 3 columnas)
-- [ ] Tablas intermedias de `TecnicaVersion` (PK compuesta)
+- [x] `ItemTecnica` (`zona_id`, CHECK `numero_con_mesa`), `ItemTecnicaComponente` (CHECK `num_nonnulls`)
+- [x] `PosicionMesa` (FK compuesta de 3 columnas)
+- [x] Tablas intermedias de `TecnicaVersion` (PK compuesta)
 
 ## Migraciones
 
