@@ -22,3 +22,7 @@ line-length = 88
 select = ["E", "F", "I", "UP", "B"]
 # Avisa de los imports sin usar (F401), pero no los borra al guardar.
 unfixable = ["F401"]
+
+[tool.ruff.lint.per-file-ignores]
+# Migraciones generadas por Alembic: llevan SQL largo que no se puede partir.
+"migraciones/versions/*" = ["E501"]
