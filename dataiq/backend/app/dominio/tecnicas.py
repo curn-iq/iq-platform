@@ -44,3 +44,19 @@ class TecnicaResumen:
     nombre: str
     especialidad: str
     numero_version: int
+
+
+@dataclass(frozen=True)
+class TecnicaDetalle:
+    id: UUID
+    nombre: str
+    especialidad: str
+    numero_version: int
+    codigo_cups: str | None
+    anestesia: str | None
+    posicion_paciente: str | None
+    ropa: str | None
+    descripcion: str | None
+    indicaciones: str | None
+    complicaciones: str | None
+    tecnica_quirurgica: str | None
