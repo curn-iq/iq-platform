@@ -331,10 +331,6 @@ raíz **"Tesis ING-IQ - CURN"**:
 - `Modulo 2 - DataIQ/Tareas/` — checklists por persona (Guebriel, Juan
   Caraballo, Mauricio).
 
-Si existe la carpeta `tesis-ing-iq-curn/` en la raíz del repo, es una copia
-local del Drive: está en el `.gitignore` (no se publica) y se lee de ahí.
-Editarla no actualiza el Drive.
-
 **Importante**: los checklists y otros documentos del Drive solo se modifican
 cuando Mauricio lo pide explícitamente. No editar el Drive por iniciativa
 propia.

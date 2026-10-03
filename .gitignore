@@ -11,9 +11,6 @@ __pycache__/
 .env.*
 !.env.example
 
-# Documentos del Drive (copia local, no se publican)
-tesis-ing-iq-curn/
-
 # Editores / sistema
 .vscode/
 .idea/
