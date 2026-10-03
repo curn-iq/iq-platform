@@ -40,7 +40,6 @@ navegación (ver más abajo) NO se considera un módulo.
   queda como trabajo futuro, no para este semestre.
 - **Consume** técnicas/instrumental de DataIQ (nunca guarda su propia copia
   permanente — cachea por sesión, ver "Comunicación entre módulos").
-- **Estado**: por iniciar.
 - Núcleo del proyecto de grado (visión computacional), pero ya no es el único
   entregable — ver nota de arriba.
 
@@ -258,9 +257,9 @@ navegación (ver más abajo) NO se considera un módulo.
   evaluación.
 - **Consume** DataIQ como base de conocimiento (igual que SIVRI: vía HTTPS al
   backend de DataIQ, nunca acceso directo a su base de datos).
-- **Estado**: por iniciar desarrollo (antes se planeaba para 2027, ahora en
-  paralelo con los otros dos módulos este semestre).
-- **Bloqueadores pendientes, no resueltos todavía**:
+- **Calendario**: se desarrolla en paralelo con los otros dos módulos este
+  semestre (antes se planeaba para 2027).
+- **Decisiones abiertas** (bloquean el desarrollo):
   - Origen de la biblioteca de modelos 3D del instrumental (¿modelado propio?
     ¿assets comprados? ¿otra vía?) — flaggeado como bloqueador real.
   - Stack de renderizado 3D: Unity/C# vs. Three.js/Babylon.js (web) — no
