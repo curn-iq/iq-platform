@@ -41,7 +41,11 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 1. [x] Dominio: reglas del versionado (transiciones de estado, sin autoaprobación)
 2. [ ] Puertos y repositorios
 3. [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
-4. [ ] Endpoints de escritura: crear borrador, enviar a revisión, aprobar
+4. [ ] Endpoints de escritura:
+   - Técnicas: crear borrador, editar el borrador, enviar a revisión, aprobar
+     y rechazar
+   - Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
+     cambia las técnicas publicadas que lo usan sin pasar por revisión)
 5. [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id
 6. [ ] Datos: completar el catálogo con los objetos de los arreglos de mesa y
    transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
