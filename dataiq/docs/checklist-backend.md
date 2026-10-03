@@ -58,8 +58,19 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
 Criterio: se carga lo que está completo en los documentos fuente. Lo que no se
 puede cargar sin suponer datos queda fuera de la carga inicial y anotado aquí.
-Un arreglo sin nombre, en una técnica que no tiene mesa de reserva, se toma
-como mesa de Mayo.
+Criterios para los arreglos sin nombre:
+
+- Un arreglo sin nombre, en una técnica que no tiene mesa de reserva, se toma
+  como mesa de Mayo.
+- Si el dibujo trae un recuadro chico dentro de uno grande (Histerectomía
+  vaginal, Colporrafia, Reemplazo total de cadera y de rodilla), el chico es
+  la mesa de Mayo y el resto la de reserva. Así lo indica el contenido: el
+  recuadro chico tiene el instrumental de las mesas de Mayo que IQ sí nombra
+  (por ejemplo, la de Cesárea y la de Ooforectomía), y el resto tiene lo de sus
+  mesas de reserva (compresa con sutura y portaagujas, pinza Foerster,
+  riñonera, instrumental sobrante).
+- Si la técnica ya tiene una mesa de Mayo con nombre, el otro arreglo sin
+  nombre es la de reserva (Histerectomía laparoscópica).
 
 | Técnica | Qué no cuadra en la fuente | Qué no se carga |
 |---|---|---|
@@ -68,7 +79,6 @@ como mesa de Mayo.
 | Hemicolectomía (las dos) | Mesa de Mayo: el número 4 lo reclaman dos objetos y el 9 no aparece en la grilla. La de Cirugía General tiene además una segunda mesa sin identificar, a la que le falta el 7 | Arreglos |
 | Colecistectomía | Mesa de reserva: 12 números en la grilla y 11 objetos en la leyenda | Mesa de reserva |
 | Prostatectomía laparoscópica | Mesa de reserva: la leyenda tiene 13 objetos; la grilla llega hasta el 14 y le falta el 8 | Mesa de reserva |
-| Histerectomía vaginal, Colporrafia anterior y posterior, Reemplazo total de cadera, Reemplazo total de rodilla | Dos dibujos con una sola leyenda, sin decir cuál es Mayo y cuál reserva | Arreglos |
-| Histerectomía laparoscópica | Un arreglo sin mesa identificada y otro "Mayo tiempo abdominal" con 10 números en la grilla y 9 objetos en la leyenda | Arreglos |
+| Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | Mesa de Mayo |
 | Nefrectomía laparoscópica | No tiene arreglo de mesa | Posiciones (se carga el listado) |
 | Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Esos dos objetos |
