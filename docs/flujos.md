@@ -8,6 +8,11 @@ archivo.
 El detalle de cada rol está en el "Modelo de roles" de
 [`CLAUDE.md`](../CLAUDE.md).
 
+Hay una versión visual de estos diagramas, para presentar:
+<https://claude.ai/artifact/779R1z8d3pd6srkbtiohpk> (privada; se comparte desde
+su menú). Este archivo es la fuente: si cambia una decisión, se cambia primero
+aquí y después la versión visual.
+
 ## 1. Roles
 
 Los roles son acumulativos: cada uno puede todo lo del anterior. Cada cuenta
@@ -42,24 +47,32 @@ sesión o registrarse (gratis). Después del ingreso, la persona vuelve a donde
 iba. La gestión aparece según el rol.
 
 ```mermaid
-flowchart TD
-    Inicio["Inicio (shell)"]
-    Inicio --> Catalogo["DataIQ: catálogo de técnicas<br/>(nombre y especialidad)"]
-    Catalogo -->|abre una técnica| P1{"¿Inició sesión?"}
-    Inicio -->|entra a SIMIQ3D o SIVRI| P2{"¿Inició sesión?"}
+flowchart LR
+    subgraph Publico["Sin cuenta"]
+        direction TB
+        Inicio["Inicio (shell)"] --> Catalogo["Catálogo de técnicas<br/>nombre y especialidad"]
+    end
 
-    P1 -->|sí| Detalle["DataIQ: detalle de técnica<br/>(datos clínicos y mesa)"]
-    P2 -->|sí| Modulos["SIMIQ3D: chat y escena 3D<br/>SIVRI: validar la mesa con cámara"]
-    P1 -->|no| Ingreso["Ingresar o registrarse"]
-    P2 -->|no| Ingreso
-    Inicio --> Ingreso
-    Ingreso -->|vuelve a donde iba| Rol{"Rol de la cuenta"}
+    Puerta{{"Ingresar o<br/>registrarse"}}
 
-    Rol -->|usuario| Personal["Funciones personales"]
-    Rol -->|"colaborador o más"| Borradores["DataIQ: mis borradores"]
-    Rol -->|"revisor o más"| Revision["DataIQ: versiones por revisar"]
-    Rol -->|"revisor o más"| Instrumental["DataIQ: catálogo de instrumental"]
-    Rol -->|admin| Usuarios["DataIQ: usuarios y roles"]
+    subgraph Cuenta["Con cuenta"]
+        direction TB
+        Detalle["Detalle de técnica<br/>datos clínicos y mesa"]
+        SIMIQ3D["SIMIQ3D<br/>chat y escena 3D"]
+        SIVRI["SIVRI<br/>validar la mesa con cámara"]
+    end
+
+    subgraph Gestion["Gestión según el rol"]
+        direction TB
+        Borradores["Mis borradores<br/>colaborador o más"]
+        Revision["Versiones por revisar<br/>revisor o más"]
+        Instrumental["Catálogo de instrumental<br/>revisor o más"]
+        Usuarios["Usuarios y roles<br/>admin"]
+    end
+
+    Publico -->|abrir una técnica<br/>o un módulo| Puerta
+    Puerta -->|vuelve a donde iba| Cuenta
+    Puerta -->|según el rol| Gestion
 ```
 
 ## 3. Ciclo de vida de una versión
