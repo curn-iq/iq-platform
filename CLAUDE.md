@@ -165,24 +165,29 @@ navegación (ver más abajo) NO se considera un módulo.
   - `Usuario.fecha_aceptacion_politica` y `Usuario.version_politica` son la
     prueba de la autorización de tratamiento de datos personales que exige el
     Decreto 1377 de 2013 (art. 8).
-  - Roles en el enum `rol_usuario`: ver "Modelo de roles" abajo
-    (**propuesta, no implementada ni cerrada**).
+  - Roles en el enum `rol_usuario`: ver "Modelo de roles" abajo.
 
-- **Modelo de roles — PROPUESTA (aprobada como dirección, NO implementada
-  ni decidida como definitiva; no construir sobre ella sin confirmar con
-  Mauricio)**:
+- **Modelo de roles** (decidido por Mauricio el 2026-10-04; diagramas en
+  [`docs/flujos.md`](docs/flujos.md)):
   - Objetivo: el software debe servir a cualquier persona (estudiantes de
     cualquier institución, o alguien sin institución, p. ej. un bachiller
     curioso), no solo a la CURN. El riesgo a controlar no es la lectura sino
     la **publicación** de técnicas incorrectas.
-  - Principio: separar lectura de escritura.
+  - Principio: **ver el catálogo es libre; usar los módulos requiere cuenta**
+    (gratis, por autorregistro). Como un catálogo de cursos: sin cuenta se
+    entra al shell y se ve qué técnicas hay (nombre y especialidad); para ver
+    una técnica por dentro (datos clínicos y mesa) o usar SIVRI y SIMIQ3D hay
+    que registrarse. Escribir y publicar depende del rol.
+  - Los roles son **acumulativos**: cada uno puede todo lo del anterior
+    (`usuario` < `colaborador` < `revisor` < `admin`). Cada cuenta tiene un
+    solo rol.
 
     | Quién | Qué puede hacer | Cómo lo obtiene |
     |---|---|---|
-    | Visitante (sin cuenta) | Leer técnicas **publicadas** | Nada |
-    | `usuario` | Lo mismo + funciones personales futuras (p. ej. progreso en SIVRI) | Autorregistro gratuito |
-    | `colaborador` | Crear/editar versiones en **borrador** | Lo asigna un admin |
-    | `revisor` | Aprobar y publicar (nunca lo propio) | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
+    | Visitante (sin cuenta) | Entrar al shell y ver el catálogo de técnicas publicadas (nombre y especialidad) | Nada |
+    | `usuario` | Ver el detalle de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
+    | `colaborador` | Crear técnicas y editar versiones en **borrador**; enviarlas a revisión | Lo asigna un admin |
+    | `revisor` | Aprobar o rechazar versiones (nunca las propias); archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
     | `admin` | Gestionar roles | Mauricio |
 
   - Un contenido incorrecto nunca llega a estudiantes: queda en borrador
