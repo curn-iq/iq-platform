@@ -83,6 +83,24 @@
         ],
         "createdAt": "2026-10-05T14:15:01.381Z",
         "reason": "Claude: verificado en capturas; html solo recorta en horizontal (overflow-x: clip) y las tarjetas flotantes de la barra se ven completas"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/catalogo.html"
+        ],
+        "createdAt": "2026-10-05T15:50:44.280Z",
+        "reason": "Claude: mismo falso positivo verificado en inicio.html; el panel del menú (panel-lista) es el componente compartido de la barra y sus filas llevan el relleno en el enlace interior"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/tecnica.html"
+        ],
+        "createdAt": "2026-10-05T19:33:06.416Z",
+        "reason": "Claude: mismo falso positivo verificado en inicio.html y catalogo.html; el panel del menú (panel-lista) es el componente compartido de la barra"
       }
     ]
   }
