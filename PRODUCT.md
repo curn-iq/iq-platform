@@ -28,10 +28,9 @@ web
   versiones de las técnicas y mantienen el catálogo de instrumental.
 - **Colaboradores**: crean técnicas y editan versiones en borrador.
 - **Administración** (equipo de Ingeniería): asigna los roles.
-- **Instituciones interesadas** (programas de IQ, docentes, directivas) que
-  evalúan adoptar la plataforma: quieren saber qué productos hay, qué
-  problema resuelve cada uno y quién está detrás. No son de ingeniería y
-  juzgan por lo que ven en pantalla.
+- **Quienes evalúan el proyecto** (docentes y directivas del programa de IQ):
+  quieren saber qué productos hay y qué problema resuelve cada uno. No son de
+  ingeniería y juzgan por lo que ven en pantalla.
 
 ## Product Purpose
 
@@ -95,7 +94,9 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 - Los datos nunca se inventan. Lo que la fuente no trae completo queda fuera y
   se dice.
 - Interfaz en español.
-- Código abierto (MIT): otras instituciones pueden montar su propia instancia.
+- Código abierto (MIT). En el MVP hay una sola plataforma, la de la CURN,
+  abierta a estudiantes de cualquier institución; que otras instituciones
+  monten la suya queda para después (`docs/despues-del-mvp.md`).
 - Alcance de los mockups actuales: el shell y DataIQ. SIVRI y SIMIQ3D aparecen
   solo como módulos del ecosistema, sin pantallas propias.
 - Decisiones abiertas: el nombre del ecosistema (los mockups usan un nombre de
@@ -110,12 +111,12 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 - Abstracción para quien usa, no para quien desarrolla: la web habla de los
   productos y de lo que resuelve cada uno. No explica el funcionamiento
   interno (versiones, revisión, roles, licencia, base de datos).
-- Nada depende de una instancia: cada institución que adopte el software
-  tiene sus propias técnicas y puede nombrarlas distinto. La web pública no
-  muestra cifras del catálogo ni datos que cambien entre instancias.
-- Navegación abstracta: la barra superior muestra categorías (Productos,
-  Para instituciones, Quiénes somos), y los módulos aparecen dentro del
-  desplegable de Productos (referencia: la barra de Riot Games).
+- La web pública no muestra cifras del catálogo y no promete capacidades
+  para otras instituciones: la prioridad es la CURN.
+- Navegación abstracta: la barra superior muestra categorías (Herramientas,
+  Especialidades, ¿Por qué IQ Platform?, Ayuda). Cada botón solo abre su
+  desplegable, y los módulos aparecen dentro del de Herramientas
+  (referencias: las barras de Labster y Riot Games).
 - Pantalla completa: el diseño ocupa todo el ancho de la ventana, sin una
   columna centrada con espacios vacíos a los lados.
 - Registro visual: profesional, moderno, tecnológico y clínico. Limpio y
@@ -151,6 +152,7 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
    qué es.
 3. **Leer es fácil, publicar es cuidadoso.** El catálogo está a un clic; la
    publicación siempre pasa por un revisor.
-4. **Para cualquier estudiante e institución.** No depende de pertenecer a
-   la CURN; cada institución puede tener su propia instancia.
+4. **Primero la CURN, abierta a cualquier estudiante.** Se construye para el
+   programa de IQ de la CURN; cualquier estudiante puede crear su cuenta y
+   usarla.
 5. **Liviano.** Funciona bien en celular y en equipos modestos.
