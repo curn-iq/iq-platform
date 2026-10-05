@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista previa: Estándar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap">
+<style>
+:root {
+  --noche: #0d0f14;
+  --noche-2: #151922;
+  --panel: #12161d;
+  --linea: #262c38;
+  --blanco: #f5f6f8;
+  --gris: #a9b1bf;
+  --azul: #2860ec;
+  --azul-oscuro: #1f4fcf;
+  --dataiq: #4d82ff;
+  --simiq: #f0a63a;
+  --sivri: #33c483;
+  --lado: clamp(16px, 4vw, 64px);
+  --letra: "Instrument Sans", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--noche); color: var(--blanco); font-family: var(--letra); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+/* Barra */
+.barra { position: relative; z-index: 5; height: 64px; display: flex; align-items: center; gap: 40px; padding-inline: var(--lado); background: var(--noche); border-bottom: 1px solid var(--linea); }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+.nav { display: flex; gap: 8px; }
+.nav a, .nav button { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 0; border-radius: 8px; background: transparent; color: var(--gris); font-weight: 550; cursor: pointer; }
+.nav a:hover, .nav button:hover, .menu-abierto .nav button { color: var(--blanco); background: var(--noche-2); }
+.nav svg { transition: transform .2s; }
+.menu-abierto .nav svg { transform: rotate(180deg); }
+.derecha { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+.derecha a:first-child { color: var(--gris); font-weight: 550; }
+.boton { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: 8px; background: var(--azul); color: #fff; font-weight: 600; }
+.boton:hover { background: var(--azul-oscuro); }
+.boton.grande { height: 52px; padding: 0 24px; font-size: 17px; }
+.boton.claro { background: transparent; border: 1px solid #3a4252; color: var(--blanco); }
+.boton.claro:hover { background: var(--noche-2); }
+
+/* Desplegable de productos */
+.desplegable { display: none; position: absolute; top: 64px; left: 0; right: 0; z-index: 4; padding: 32px var(--lado) 40px; background: var(--noche-2); border-bottom: 1px solid var(--linea); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .7); }
+.menu-abierto .desplegable { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, .8fr); gap: 24px; }
+.producto-menu { display: grid; gap: 14px; padding: 16px; border-radius: 12px; }
+.producto-menu:hover { background: #1c212c; }
+.producto-menu .arte { height: 132px; border-radius: 8px; overflow: hidden; }
+.producto-menu strong { font-size: 18px; }
+.producto-menu span { color: var(--gris); font-size: 14px; }
+.pronto { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 99px; background: #262c38; color: var(--gris); font-size: 12px; font-weight: 600; vertical-align: 2px; }
+.lateral-menu { padding: 16px 0 16px 24px; border-left: 1px solid var(--linea); display: grid; align-content: start; gap: 12px; }
+.lateral-menu p { margin: 0; color: var(--gris); font-size: 14px; }
+.lateral-menu a { font-weight: 600; color: var(--dataiq); }
+
+/* Portada */
+.portada { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; padding: 88px var(--lado) 104px; background: linear-gradient(180deg, var(--noche) 0%, #10131a 100%); }
+h1 { margin: 0; font-size: clamp(44px, 5.2vw, 76px); line-height: 1.02; font-weight: 700; font-variation-settings: "wdth" 80; letter-spacing: -0.03em; text-wrap: balance; }
+.sub { margin: 24px 0 0; max-width: 46ch; color: var(--gris); font-size: 19px; line-height: 1.55; }
+.acciones { display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap; }
+
+/* Imagen de producto: DataIQ */
+.ventana { border: 1px solid var(--linea); border-radius: 14px; background: var(--panel); box-shadow: 0 50px 90px -30px rgba(0, 0, 0, .8), 0 2px 6px rgba(0, 0, 0, .4); overflow: hidden; }
+.ventana-barra { display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 18px; border-bottom: 1px solid var(--linea); font-size: 14px; }
+.ventana-barra b { color: var(--dataiq); }
+.campo-busca { flex: 1; max-width: 300px; height: 30px; display: flex; align-items: center; padding: 0 12px; border-radius: 6px; background: #1b2029; color: #8e97a7; font-size: 13px; }
+.ventana-cuerpo { display: grid; grid-template-columns: 180px minmax(0, 1fr); min-height: 420px; }
+.lista { padding: 18px 14px; border-right: 1px solid var(--linea); font-size: 13px; color: var(--gris); }
+.lista h4 { margin: 14px 0 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #8e97a7; }
+.lista h4:first-child { margin-top: 0; }
+.lista div { padding: 5px 8px; border-radius: 6px; }
+.lista .activa { background: rgba(77, 130, 255, .16); color: var(--blanco); font-weight: 600; }
+.detalle { padding: 22px 26px; }
+.detalle h3 { margin: 0; font-size: 22px; }
+.detalle .esp { color: var(--gris); font-size: 13px; }
+.pestanas { display: flex; gap: 20px; margin: 16px 0 20px; border-bottom: 1px solid var(--linea); font-size: 13px; color: var(--gris); }
+.pestanas span { padding-bottom: 10px; }
+.pestanas .activa { color: var(--blanco); box-shadow: inset 0 -2px var(--dataiq); }
+.mesa { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; }
+.bandeja { display: grid; grid-template-columns: repeat(7, 38px); grid-template-rows: repeat(7, 38px); border: 1px solid #3a4252; border-radius: 8px; background-image: linear-gradient(#232936 1px, transparent 1px), linear-gradient(90deg, #232936 1px, transparent 1px); background-size: 38px 38px; }
+.bandeja i { margin: 5px; display: grid; place-items: center; border-radius: 50%; background: var(--azul); color: #fff; font-style: normal; font-size: 12px; font-weight: 700; }
+.bandeja i.sel { box-shadow: 0 0 0 3px rgba(77, 130, 255, .35); background: #fff; color: var(--azul); }
+.leyenda { display: grid; gap: 7px; align-content: start; font-size: 13px; color: var(--gris); }
+.leyenda div { display: grid; grid-template-columns: 22px 1fr; }
+.leyenda b { color: var(--dataiq); }
+.leyenda .sel { color: var(--blanco); }
+
+/* Productos (inicio de la sección siguiente) */
+.productos { padding: 96px var(--lado) 40px; background: #10131a; border-top: 1px solid var(--linea); }
+.productos h2 { margin: 0; font-size: 44px; line-height: 1.1; font-variation-settings: "wdth" 85; letter-spacing: -0.02em; }
+.productos > p { margin: 14px 0 40px; color: var(--gris); font-size: 18px; max-width: 56ch; }
+.fila-productos { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.tarjeta { display: grid; grid-template-rows: 220px auto; border-radius: 14px; overflow: hidden; background: var(--noche-2); border: 1px solid var(--linea); }
+.arte-tarjeta svg { display: block; width: 100%; height: 100%; }
+.tarjeta .texto { padding: 22px 24px 26px; }
+.tarjeta strong { font-size: 22px; }
+.tarjeta p { margin: 6px 0 0; color: var(--gris); }
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="marca" href="#">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="6" fill="#2f6bff"/><path d="M8 7v12M13 7v12M18 7v12" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+    IQ Platform
+  </a>
+  <nav class="nav" aria-label="Principal">
+    <button type="button" aria-expanded="false" id="productos">Productos
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <a href="#">Para instituciones</a>
+    <a href="#">Quiénes somos</a>
+  </nav>
+  <div class="derecha">
+    <a href="#">Ingresar</a>
+    <a class="boton" href="#">Crear cuenta</a>
+  </div>
+</header>
+
+<div class="desplegable" role="region" aria-label="Productos">
+  <a class="producto-menu" href="#">
+    <div class="arte"><svg viewBox="0 0 300 132" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="132" fill="#1d3a8a"/><g fill="#4d82ff"><circle cx="70" cy="40" r="9"/><circle cx="130" cy="40" r="9"/><circle cx="190" cy="66" r="9"/><circle cx="100" cy="92" r="9"/><circle cx="220" cy="92" r="9"/></g><path d="M40 20h220M40 112h220" stroke="#4d82ff" stroke-opacity=".35"/></svg></div>
+    <div><strong>DataIQ</strong><br><span>Cada técnica, con su instrumental y su mesa.</span></div>
+  </a>
+  <a class="producto-menu" href="#">
+    <div class="arte"><svg viewBox="0 0 300 132" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="132" fill="#5a3a0c"/><path d="M150 22l90 44-90 44-90-44z" fill="none" stroke="#f0a63a" stroke-width="2.5"/><path d="M130 56l20-10 20 10-20 10z M175 72l20-10 20 10-20 10z" fill="#f0a63a"/></svg></div>
+    <div><strong>SIMIQ3D</strong><span class="pronto">Próximamente</span><br><span>La mesa de cada técnica, en 3D.</span></div>
+  </a>
+  <a class="producto-menu" href="#">
+    <div class="arte"><svg viewBox="0 0 300 132" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="132" fill="#0f4a33"/><rect x="70" y="26" width="160" height="80" rx="6" fill="none" stroke="#33c483" stroke-width="2.5"/><circle cx="110" cy="56" r="10" fill="none" stroke="#33c483" stroke-width="2.5"/><path d="M105 56l4 4 7-8" fill="none" stroke="#33c483" stroke-width="2.5"/><circle cx="180" cy="78" r="10" fill="none" stroke="#ff5a4a" stroke-width="2.5"/></svg></div>
+    <div><strong>SIVRI</strong><span class="pronto">Próximamente</span><br><span>La cámara revisa la mesa armada.</span></div>
+  </a>
+  <div class="lateral-menu">
+    <p>¿Una institución quiere usar IQ Platform con sus propias técnicas?</p>
+    <a href="#">Para instituciones →</a>
+  </div>
+</div>
+
+<main>
+  <section class="portada">
+    <div>
+      <h1>La mesa de cada técnica, lista para practicar.</h1>
+      <p class="sub">Consultar la técnica, verla en 3D y validar la mesa armada con cámara: tres herramientas para estudiar instrumentación quirúrgica fuera del laboratorio.</p>
+      <div class="acciones">
+        <a class="boton grande" href="#">Crear cuenta gratis</a>
+        <a class="boton grande claro" href="#">Conocer los productos</a>
+      </div>
+    </div>
+    <div class="ventana" aria-label="Vista de DataIQ">
+      <div class="ventana-barra"><b>DataIQ</b><span class="campo-busca">Buscar una técnica…</span></div>
+      <div class="ventana-cuerpo">
+        <div class="lista">
+          <h4>Cirugía general</h4>
+          <div>Mastectomía</div><div class="activa">Tiroidectomía</div><div>Colecistectomía</div>
+          <h4>Urología</h4>
+          <div>Prostatectomía</div>
+          <h4>Ginecología</h4>
+          <div>Cesárea</div><div>Histerectomía vaginal</div>
+          <h4>Ortopedia</h4>
+          <div>Reemplazo total de cadera</div>
+        </div>
+        <div class="detalle">
+          <h3>Tiroidectomía</h3>
+          <span class="esp">Cirugía general</span>
+          <div class="pestanas"><span>Datos clínicos</span><span>Instrumental</span><span class="activa">Mesa de Mayo</span><span>Mesa de reserva</span></div>
+          <div class="mesa">
+            <div class="bandeja" id="bandeja"></div>
+            <div class="leyenda">
+              <div><b>1</b>Mango de bisturí N.° 3 y hoja #15</div>
+              <div><b>2</b>Tijera de Metzenbaum</div>
+              <div><b>3</b>Tijera de Mayo</div>
+              <div><b>4</b>Pinza de disección con y sin garra</div>
+              <div><b>5</b>Separador de Farabeuf</div>
+              <div><b>6</b>Separador de Senn Miller</div>
+              <div class="sel"><b>7</b>Pinza de Allis</div>
+              <div><b>8</b>Pinza Lahey</div>
+              <div><b>9</b>Pinza Rochester</div>
+              <div><b>10</b>Pinza Mosquito curva</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="productos">
+    <h2>Productos</h2>
+    <p>Tres herramientas que comparten el mismo contenido, para cada momento del estudio.</p>
+    <div class="fila-productos">
+      <div class="tarjeta"><div class="arte-tarjeta"></div><div class="texto"><strong>DataIQ</strong><p>Consultar cada técnica: datos clínicos, instrumental y mesa.</p></div></div>
+      <div class="tarjeta"><div class="arte-tarjeta"></div><div class="texto"><strong>SIMIQ3D</strong><p>Pedir una técnica y recorrer su mesa en 3D.</p></div></div>
+      <div class="tarjeta"><div class="arte-tarjeta"></div><div class="texto"><strong>SIVRI</strong><p>Armar la mesa real y que la cámara la revise.</p></div></div>
+    </div>
+  </section>
+</main>
+<script>
+  [[1,7,5],[2,6,5],[3,5,5],[4,4,1],[5,4,2],[6,4,4],[7,1,3],[8,1,6],[9,2,7],[10,3,7]].forEach(function (o) {
+    var i = document.createElement("i");
+    i.textContent = o[0]; i.style.gridRow = o[1]; i.style.gridColumn = o[2];
+    if (o[0] === 7) i.className = "sel";
+    document.getElementById("bandeja").appendChild(i);
+  });
+  var artes = document.querySelectorAll(".producto-menu .arte svg");
+  document.querySelectorAll(".arte-tarjeta").forEach(function (d, k) { d.appendChild(artes[k].cloneNode(true)); });
+  if (location.hash === "#menu") document.body.classList.add("menu-abierto");
+  document.getElementById("productos").addEventListener("click", function () { document.body.classList.toggle("menu-abierto"); });
+</script>
+</body>
+</html>
