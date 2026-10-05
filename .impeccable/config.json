@@ -1,0 +1,80 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/estandar.html"
+        ],
+        "createdAt": "2026-10-05T01:02:07.125Z",
+        "reason": "Claude: boceto descartado de la ronda de decisión (Estándar, no elegido); no se construye ni se publica"
+      },
+      {
+        "rule": "skipped-heading",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/estandar.html"
+        ],
+        "createdAt": "2026-10-05T01:02:07.155Z",
+        "reason": "Claude: boceto descartado de la ronda de decisión (Estándar, no elegido); no se construye ni se publica"
+      },
+      {
+        "rule": "overused-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/estandar.html"
+        ],
+        "createdAt": "2026-10-05T01:02:07.185Z",
+        "reason": "Claude: boceto descartado de la ronda de decisión (Estándar, no elegido); no se construye ni se publica"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/inicio.html"
+        ],
+        "createdAt": "2026-10-05T01:41:02.972Z",
+        "reason": "Claude: falsos positivos verificados; el detector no resuelve padding-block/padding-inline de .seccion/.ancho, y las barras de las maquetas (ventana, campo de chat, pie de cámara) centran su texto con altura fija a propósito"
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          "diseno/mockups/inicio.html"
+        ],
+        "createdAt": "2026-10-05T01:59:08.982Z",
+        "reason": "Claude: lo que el detector toma por tarjeta interior es la funda de Mayo dibujada (objeto ilustrado) dentro del escenario y de las ventanas de producto, no un contenedor de interfaz"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "diseno/mockups/inicio.html"
+        ],
+        "createdAt": "2026-10-05T02:02:46.243Z",
+        "reason": "Claude: barrido de estilos computados verificado; solo los titulares de 30 px o más (h1, h2, h3 de producto, número del riel) tienen interlineado menor a 1.3, a propósito; ningún texto de cuerpo lo tiene"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/estandar.html"
+        ],
+        "createdAt": "2026-10-05T02:07:34.304Z",
+        "reason": "Claude: bocetos de la ronda de decisión de estilo (Estándar y Campo estéril); no son parte del sistema ni se construyen"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/campo-esteril.html"
+        ],
+        "createdAt": "2026-10-05T02:07:34.311Z",
+        "reason": "Claude: bocetos de la ronda de decisión de estilo (Estándar y Campo estéril); no son parte del sistema ni se construyen"
+      }
+    ]
+  }
+}

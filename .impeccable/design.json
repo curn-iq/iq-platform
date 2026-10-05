@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T02:08:12+00:00",
+  "title": "Design System: IQ Platform",
+  "extensions": {
+    "colorMeta": {
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Blanco clínico",
+        "canonical": "#f3f6f6",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 197.1)",
+          "oklch(26.4% 0.003 197.1)",
+          "oklch(37.9% 0.003 197.1)",
+          "oklch(49.3% 0.003 197.1)",
+          "oklch(60.7% 0.003 197.1)",
+          "oklch(72.1% 0.003 197.1)",
+          "oklch(83.6% 0.003 197.1)",
+          "oklch(95.0% 0.003 197.1)"
+        ]
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(26.4% 0.000 89.9)",
+          "oklch(37.9% 0.000 89.9)",
+          "oklch(49.3% 0.000 89.9)",
+          "oklch(60.7% 0.000 89.9)",
+          "oklch(72.1% 0.000 89.9)",
+          "oklch(83.6% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "#dbe4e6",
+        "tonalRamp": [
+          "oklch(15.0% 0.010 212.5)",
+          "oklch(26.4% 0.010 212.5)",
+          "oklch(37.9% 0.010 212.5)",
+          "oklch(49.3% 0.010 212.5)",
+          "oklch(60.7% 0.010 212.5)",
+          "oklch(72.1% 0.010 212.5)",
+          "oklch(83.6% 0.010 212.5)",
+          "oklch(95.0% 0.010 212.5)"
+        ]
+      },
+      "filete-2": {
+        "role": "neutral",
+        "displayName": "Filete fuerte",
+        "canonical": "#c4d1d4",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 213.1)",
+          "oklch(26.4% 0.015 213.1)",
+          "oklch(37.9% 0.015 213.1)",
+          "oklch(49.3% 0.015 213.1)",
+          "oklch(60.7% 0.015 213.1)",
+          "oklch(72.1% 0.015 213.1)",
+          "oklch(83.6% 0.015 213.1)",
+          "oklch(95.0% 0.015 213.1)"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta petróleo",
+        "canonical": "#0a1b22",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 226.9)",
+          "oklch(26.4% 0.027 226.9)",
+          "oklch(37.9% 0.027 226.9)",
+          "oklch(49.3% 0.027 226.9)",
+          "oklch(60.7% 0.027 226.9)",
+          "oklch(72.1% 0.027 226.9)",
+          "oklch(83.6% 0.027 226.9)",
+          "oklch(95.0% 0.027 226.9)"
+        ]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Tinta media",
+        "canonical": "#364b53",
+        "tonalRamp": [
+          "oklch(15.0% 0.029 223.4)",
+          "oklch(26.4% 0.029 223.4)",
+          "oklch(37.9% 0.029 223.4)",
+          "oklch(49.3% 0.029 223.4)",
+          "oklch(60.7% 0.029 223.4)",
+          "oklch(72.1% 0.029 223.4)",
+          "oklch(83.6% 0.029 223.4)",
+          "oklch(95.0% 0.029 223.4)"
+        ]
+      },
+      "tinta-3": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#566a72",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 224.1)",
+          "oklch(26.4% 0.027 224.1)",
+          "oklch(37.9% 0.027 224.1)",
+          "oklch(49.3% 0.027 224.1)",
+          "oklch(60.7% 0.027 224.1)",
+          "oklch(72.1% 0.027 224.1)",
+          "oklch(83.6% 0.027 224.1)",
+          "oklch(95.0% 0.027 224.1)"
+        ]
+      },
+      "marca": {
+        "role": "primary",
+        "displayName": "Verde quirúrgico",
+        "canonical": "#0d6a5e",
+        "tonalRamp": [
+          "oklch(15.0% 0.082 181.2)",
+          "oklch(26.4% 0.082 181.2)",
+          "oklch(37.9% 0.082 181.2)",
+          "oklch(49.3% 0.082 181.2)",
+          "oklch(60.7% 0.082 181.2)",
+          "oklch(72.1% 0.082 181.2)",
+          "oklch(83.6% 0.082 181.2)",
+          "oklch(95.0% 0.082 181.2)"
+        ]
+      },
+      "marca-hondo": {
+        "role": "primary",
+        "displayName": "Verde quirúrgico hondo",
+        "canonical": "#08463e",
+        "tonalRamp": [
+          "oklch(15.0% 0.060 181.6)",
+          "oklch(26.4% 0.060 181.6)",
+          "oklch(37.9% 0.060 181.6)",
+          "oklch(49.3% 0.060 181.6)",
+          "oklch(60.7% 0.060 181.6)",
+          "oklch(72.1% 0.060 181.6)",
+          "oklch(83.6% 0.060 181.6)",
+          "oklch(95.0% 0.060 181.6)"
+        ]
+      },
+      "marca-claro": {
+        "role": "primary",
+        "displayName": "Verde de agua clara",
+        "canonical": "#ddefeb",
+        "tonalRamp": [
+          "oklch(15.0% 0.020 181.1)",
+          "oklch(26.4% 0.020 181.1)",
+          "oklch(37.9% 0.020 181.1)",
+          "oklch(49.3% 0.020 181.1)",
+          "oklch(60.7% 0.020 181.1)",
+          "oklch(72.1% 0.020 181.1)",
+          "oklch(83.6% 0.020 181.1)",
+          "oklch(95.0% 0.020 181.1)"
+        ]
+      },
+      "pano": {
+        "role": "primary",
+        "displayName": "Verde paño",
+        "canonical": "#1d7564",
+        "tonalRamp": [
+          "oklch(15.0% 0.085 176.6)",
+          "oklch(26.4% 0.085 176.6)",
+          "oklch(37.9% 0.085 176.6)",
+          "oklch(49.3% 0.085 176.6)",
+          "oklch(60.7% 0.085 176.6)",
+          "oklch(72.1% 0.085 176.6)",
+          "oklch(83.6% 0.085 176.6)",
+          "oklch(95.0% 0.085 176.6)"
+        ]
+      },
+      "menta": {
+        "role": "secondary",
+        "displayName": "Menta de detección",
+        "canonical": "#38e2b3",
+        "tonalRamp": [
+          "oklch(15.0% 0.120 169.3)",
+          "oklch(26.4% 0.120 169.3)",
+          "oklch(37.9% 0.120 169.3)",
+          "oklch(49.3% 0.120 169.3)",
+          "oklch(60.7% 0.120 169.3)",
+          "oklch(72.1% 0.120 169.3)",
+          "oklch(83.6% 0.120 169.3)",
+          "oklch(95.0% 0.120 169.3)"
+        ]
+      },
+      "alerta-noche": {
+        "role": "secondary",
+        "displayName": "Rojo de alerta",
+        "canonical": "#ff6b6b",
+        "tonalRamp": [
+          "oklch(15.0% 0.120 22.8)",
+          "oklch(26.4% 0.120 22.8)",
+          "oklch(37.9% 0.120 22.8)",
+          "oklch(49.3% 0.120 22.8)",
+          "oklch(60.7% 0.120 22.8)",
+          "oklch(72.1% 0.120 22.8)",
+          "oklch(83.6% 0.120 22.8)",
+          "oklch(95.0% 0.120 22.8)"
+        ]
+      },
+      "noche": {
+        "role": "neutral",
+        "displayName": "Noche",
+        "canonical": "#061217",
+        "tonalRamp": [
+          "oklch(15.0% 0.021 225.8)",
+          "oklch(26.4% 0.021 225.8)",
+          "oklch(37.9% 0.021 225.8)",
+          "oklch(49.3% 0.021 225.8)",
+          "oklch(60.7% 0.021 225.8)",
+          "oklch(72.1% 0.021 225.8)",
+          "oklch(83.6% 0.021 225.8)",
+          "oklch(95.0% 0.021 225.8)"
+        ]
+      },
+      "noche-2": {
+        "role": "neutral",
+        "displayName": "Noche 2",
+        "canonical": "#0c1e24",
+        "tonalRamp": [
+          "oklch(15.0% 0.026 221.8)",
+          "oklch(26.4% 0.026 221.8)",
+          "oklch(37.9% 0.026 221.8)",
+          "oklch(49.3% 0.026 221.8)",
+          "oklch(60.7% 0.026 221.8)",
+          "oklch(72.1% 0.026 221.8)",
+          "oklch(83.6% 0.026 221.8)",
+          "oklch(95.0% 0.026 221.8)"
+        ]
+      },
+      "filete-noche": {
+        "role": "neutral",
+        "displayName": "Filete noche",
+        "canonical": "#1d353d",
+        "tonalRamp": [
+          "oklch(15.0% 0.033 221.3)",
+          "oklch(26.4% 0.033 221.3)",
+          "oklch(37.9% 0.033 221.3)",
+          "oklch(49.3% 0.033 221.3)",
+          "oklch(60.7% 0.033 221.3)",
+          "oklch(72.1% 0.033 221.3)",
+          "oklch(83.6% 0.033 221.3)",
+          "oklch(95.0% 0.033 221.3)"
+        ]
+      },
+      "niebla-noche": {
+        "role": "neutral",
+        "displayName": "Niebla",
+        "canonical": "#a9bec5",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 219.8)",
+          "oklch(26.4% 0.025 219.8)",
+          "oklch(37.9% 0.025 219.8)",
+          "oklch(49.3% 0.025 219.8)",
+          "oklch(60.7% 0.025 219.8)",
+          "oklch(72.1% 0.025 219.8)",
+          "oklch(83.6% 0.025 219.8)",
+          "oklch(95.0% 0.025 219.8)"
+        ]
+      },
+      "acero-brillo": {
+        "role": "tertiary",
+        "displayName": "Acero, brillo",
+        "canonical": "#fbfdfd",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 197.1)",
+          "oklch(26.4% 0.002 197.1)",
+          "oklch(37.9% 0.002 197.1)",
+          "oklch(49.3% 0.002 197.1)",
+          "oklch(60.7% 0.002 197.1)",
+          "oklch(72.1% 0.002 197.1)",
+          "oklch(83.6% 0.002 197.1)",
+          "oklch(95.0% 0.002 197.1)"
+        ]
+      },
+      "acero": {
+        "role": "tertiary",
+        "displayName": "Acero satinado",
+        "canonical": "#b3bec4",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 231.3)",
+          "oklch(26.4% 0.015 231.3)",
+          "oklch(37.9% 0.015 231.3)",
+          "oklch(49.3% 0.015 231.3)",
+          "oklch(60.7% 0.015 231.3)",
+          "oklch(72.1% 0.015 231.3)",
+          "oklch(83.6% 0.015 231.3)",
+          "oklch(95.0% 0.015 231.3)"
+        ]
+      },
+      "acero-sombra": {
+        "role": "tertiary",
+        "displayName": "Acero, sombra",
+        "canonical": "#8b979d",
+        "tonalRamp": [
+          "oklch(15.0% 0.016 229.1)",
+          "oklch(26.4% 0.016 229.1)",
+          "oklch(37.9% 0.016 229.1)",
+          "oklch(49.3% 0.016 229.1)",
+          "oklch(60.7% 0.016 229.1)",
+          "oklch(72.1% 0.016 229.1)",
+          "oklch(83.6% 0.016 229.1)",
+          "oklch(95.0% 0.016 229.1)"
+        ]
+      },
+      "acero-filo": {
+        "role": "tertiary",
+        "displayName": "Acero, filo",
+        "canonical": "#3f4b52",
+        "tonalRamp": [
+          "oklch(15.0% 0.019 233.5)",
+          "oklch(26.4% 0.019 233.5)",
+          "oklch(37.9% 0.019 233.5)",
+          "oklch(49.3% 0.019 233.5)",
+          "oklch(60.7% 0.019 233.5)",
+          "oklch(72.1% 0.019 233.5)",
+          "oklch(83.6% 0.019 233.5)",
+          "oklch(95.0% 0.019 233.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titular de la banda de cierre; único momento tipográfico extremo (hasta 236px)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titular de portada, tres líneas que suben desde su máscara al cargar."
+      },
+      "headline-section": {
+        "displayName": "Headline de sección",
+        "purpose": "Títulos de sección."
+      },
+      "headline-product": {
+        "displayName": "Headline de producto",
+        "purpose": "Nombres de producto en el carril horizontal."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Perfiles Estudiantes y Docentes."
+      },
+      "lema": {
+        "displayName": "Lema",
+        "purpose": "Lo que resuelve cada producto, máx. 26ch."
+      },
+      "body-large": {
+        "displayName": "Body large",
+        "purpose": "Entradilla (34ch) y texto de sección (46ch)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto base."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Navegación, botones, selector."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Martian Mono: «demostración» y texto literal de documento fuente."
+      },
+      "data-detection": {
+        "displayName": "Data, detección",
+        "purpose": "Martian Mono 600: etiquetas de detección, confianzas y «Va aquí»."
+      }
+    },
+    "shadows": [
+      {
+        "name": "boton",
+        "value": "inset 0 1px 0 rgba(255,255,255,.14), 0 1px 2px rgba(10,27,34,.25)",
+        "purpose": "Botón primario en reposo."
+      },
+      {
+        "name": "boton-hover",
+        "value": "inset 0 1px 0 rgba(255,255,255,.14), 0 8px 16px -10px rgba(10,27,34,.5)",
+        "purpose": "Botón primario al pasar, con translateY(-1px)."
+      },
+      {
+        "name": "escenario",
+        "value": "0 1px 2px rgba(10,27,34,.05), 0 16px 32px -24px rgba(10,27,34,.3)",
+        "purpose": "Contenedor del héroe."
+      },
+      {
+        "name": "desplegable",
+        "value": "0 18px 28px -22px rgba(10,27,34,.4)",
+        "purpose": "Menú de Productos."
+      },
+      {
+        "name": "funda",
+        "value": "0 1px 2px rgba(0,0,0,.25), 0 28px 50px -22px rgba(10,27,34,.55)",
+        "purpose": "El objeto paño."
+      },
+      {
+        "name": "pieza",
+        "value": "drop-shadow(0 2px 1.4px rgba(3,20,28,.6)) drop-shadow(0 6px 8px rgba(3,20,28,.22))",
+        "purpose": "Cada pieza de acero (filter)."
+      },
+      {
+        "name": "pieza-marcada",
+        "value": "drop-shadow(0 12px 8px rgba(3,20,28,.4))",
+        "purpose": "Pieza marcada o al pasar, con translate(-2px,-6px)."
+      },
+      {
+        "name": "panel-flotante",
+        "value": "0 12px 30px -16px rgba(10,27,34,.45)",
+        "purpose": "Leyenda «Ver las 10 piezas»."
+      },
+      {
+        "name": "filete-interior",
+        "value": "inset 0 0 0 1px var(--filete)",
+        "purpose": "Borde de paneles y tarjetas en lugar de elevarlas."
+      }
+    ],
+    "motion": [
+      {
+        "name": "expo",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Entradas, desplazamientos, flechas, inclinación de la funda."
+      },
+      {
+        "name": "cuarta",
+        "value": "cubic-bezier(.25, 1, .5, 1)",
+        "purpose": "Color y opacidad."
+      },
+      {
+        "name": "vaiven",
+        "value": "cubic-bezier(.87, 0, .13, 1)",
+        "purpose": "Barrido de la cámara y giro 3D de la maqueta."
+      },
+      {
+        "name": "ciclo-vistas",
+        "value": "5500ms",
+        "purpose": "Cambio automático Referencia/3D/Cámara; pausa al pasar el puntero, se detiene al interactuar."
+      },
+      {
+        "name": "coreografia-carga",
+        "value": "titular 1s expo (70ms entre líneas); entradilla .3s, acciones .4s, escenario .15s; piezas desde .6s + 70ms cada una",
+        "purpose": "Única coreografía de carga."
+      },
+      {
+        "name": "barrido",
+        "value": "1.1s vaiven",
+        "purpose": "Escaneo de la cámara."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "duraciones a .01ms, sin ciclo automático ni carril fijo",
+        "purpose": "prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tableta",
+        "value": "1100px"
+      },
+      {
+        "name": "celular",
+        "value": "760px"
+      }
+    ],
+    "materials": [
+      {
+        "name": "acero",
+        "value": "linearGradient #e4eaed 0, #fbfdfd .32, #b3bec4 .56, #8b979d .74, #d3dbdf 1; stroke #3f4b52 .6",
+        "purpose": "Instrumental dibujado en SVG."
+      },
+      {
+        "name": "hoja",
+        "value": "linearGradient #f4f7f8 0, #ffffff .5, #aab5bb 1; stroke #4f5c63 .55",
+        "purpose": "Hojas de bisturí y tijeras."
+      },
+      {
+        "name": "tela",
+        "value": "--tela: feTurbulence fractalNoise .32 + feDiffuseLighting, soft-light sobre --pano",
+        "purpose": "Solo la funda de Mayo y sus miniaturas; nunca superficies de página."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal (Crear cuenta, Crear cuenta gratis): verde lleno con flecha que avanza.",
+      "html": "<a class=\"ds-boton\" href=\"#\">Crear cuenta gratis <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-boton{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 26px;border-radius:12px;background:var(--marca);color:#fff;font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:650;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(10,27,34,.25);transition:background .2s var(--cuarta),transform .35s var(--expo),box-shadow .35s var(--expo)} .ds-boton svg{transition:transform .35s var(--expo)} .ds-boton:hover{background:var(--marca-hondo);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px -10px rgba(10,27,34,.5)} .ds-boton:hover svg{transform:translateX(3px)} .ds-boton:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Botón claro",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "Solo sobre la banda verde de cierre.",
+      "html": "<div class=\"ds-banda\"><a class=\"ds-claro\" href=\"#\">Crear cuenta gratis <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-banda{background:#1d7564;padding:24px} .ds-claro{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 26px;border-radius:12px;background:#fff;color:var(--marca-hondo);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:650;text-decoration:none;transition:background .2s var(--cuarta)} .ds-claro:hover{background:var(--marca-claro)} .ds-claro:focus-visible{outline:2.5px solid #fff;outline-offset:3px}"
+    },
+    {
+      "name": "Enlace con flecha",
+      "kind": "custom",
+      "refersTo": "link-arrow",
+      "description": "Acción secundaria (Conocer los productos, Explorar técnicas).",
+      "html": "<a class=\"ds-enlace\" href=\"#\">Conocer los productos <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-enlace{display:inline-flex;align-items:center;gap:8px;font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:650;color:var(--marca);text-decoration:none} .ds-enlace svg{transition:transform .35s var(--expo)} .ds-enlace:hover svg{transform:translateX(3px)} .ds-enlace:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px;border-radius:6px}"
+    },
+    {
+      "name": "Barra de navegación",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Categorías abstractas; los módulos viven dentro del desplegable de Productos.",
+      "html": "<header class=\"ds-barra\"><span class=\"ds-marca\">IQ Platform</span><nav class=\"ds-nav\"><button aria-expanded=\"false\">Productos <svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M3 4.5l3 3 3-3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></button><a href=\"#\">Para instituciones</a><a href=\"#\">Quiénes somos</a></nav><div class=\"ds-der\"><a class=\"ds-ingresar\" href=\"#\">Ingresar</a><a class=\"ds-crear\" href=\"#\">Crear cuenta</a></div></header>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-barra{display:flex;align-items:center;gap:44px;height:72px;padding:0 32px;background:var(--fondo);border-bottom:1px solid var(--filete);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;} .ds-marca{font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--tinta)} .ds-nav{display:flex;gap:2px} .ds-nav a,.ds-nav button,.ds-ingresar{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--tinta-2);font:inherit;font-size:15.5px;font-weight:550;text-decoration:none;cursor:pointer;transition:background .2s var(--cuarta),color .2s var(--cuarta)} .ds-nav a:hover,.ds-nav button:hover,.ds-ingresar:hover{background:#e6eded;color:var(--tinta)} .ds-nav a:focus-visible,.ds-nav button:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-der{margin-left:auto;display:flex;gap:8px;align-items:center} .ds-crear{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:10px;background:var(--marca);color:#fff;font-size:15.5px;font-weight:650;text-decoration:none} .ds-crear:hover{background:var(--marca-hondo)}"
+    },
+    {
+      "name": "Selector de vista",
+      "kind": "chip",
+      "refersTo": "view-selector-tab",
+      "description": "Referencia · 3D · Cámara; cambia solo cada 5.5 s con trazo de progreso.",
+      "html": "<div class=\"ds-selector\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\"><b>Referencia</b><span>DataIQ</span><i class=\"ds-avance\"></i></button><button role=\"tab\" aria-selected=\"false\"><b>3D</b><span>SIMIQ3D</span></button><button role=\"tab\" aria-selected=\"false\"><b>Cámara</b><span>SIVRI</span></button></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-selector{display:flex;gap:6px;padding:5px;width:max-content;border-radius:14px;background:rgba(10,27,34,.05);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;} .ds-selector button{position:relative;overflow:hidden;display:inline-flex;align-items:baseline;gap:9px;height:46px;padding:12px 18px 0;border:0;border-radius:10px;background:transparent;color:var(--tinta-3);font:inherit;cursor:pointer;transition:background .3s var(--cuarta),color .3s var(--cuarta)} .ds-selector b{font-size:16px;font-weight:650} .ds-selector span{font-size:13px;font-weight:500;opacity:.75} .ds-selector button:hover{color:var(--tinta)} .ds-selector button[aria-selected=true]{background:#fff;color:var(--tinta);box-shadow:0 1px 2px rgba(10,27,34,.1)} .ds-selector button:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-avance{position:absolute;left:12px;right:12px;bottom:5px;height:2px;border-radius:2px;background:rgba(10,27,34,.1)} .ds-avance::after{content:'';position:absolute;inset:0;width:40%;background:currentColor;opacity:.45}"
+    },
+    {
+      "name": "Etiqueta de detección",
+      "kind": "chip",
+      "refersTo": "detection-label",
+      "description": "Cámara: caja menta con nombre y confianza; rojo solo para fuera de lugar.",
+      "html": "<div class=\"ds-cam\"><span class=\"ds-det\">Allis 0,97</span><span class=\"ds-det ds-error\">Senn Miller</span><span class=\"ds-demo\">SIVRI · demostración</span></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-cam{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:20px;background:var(--noche);border-radius:16px} .ds-det{font-family:'Martian Mono',ui-monospace,monospace;font-size:14px;font-weight:600;padding:4px 8px;background:var(--menta);color:var(--noche);outline:2.2px solid var(--menta);outline-offset:0} .ds-error{background:var(--alerta-noche);outline-color:var(--alerta-noche)} .ds-demo{font-family:'Martian Mono',ui-monospace,monospace;font-size:12.5px;color:var(--niebla-noche)}"
+    },
+    {
+      "name": "Producto del carril",
+      "kind": "card",
+      "refersTo": "headline-product",
+      "description": "Producto en el carril: nombre, lema y capacidades reguladas por filetes, sin íconos.",
+      "html": "<article class=\"ds-prod\"><h3>DataIQ</h3><p class=\"ds-lema\">Cada técnica, con su instrumental y su mesa.</p><ul><li>Búsqueda de técnicas por nombre o especialidad.</li><li>Mesa de Mayo y mesa de reserva, pieza por pieza y en su posición.</li></ul><a href=\"#\">Explorar técnicas <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></article>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-prod{display:grid;gap:18px;max-width:440px;font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-prod h3{margin:0;font-size:56px;line-height:1;font-weight:650;letter-spacing:-.04em} .ds-lema{margin:0;font-size:21px;line-height:1.35;font-weight:550;letter-spacing:-.015em} .ds-prod ul{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--filete)} .ds-prod li{padding:13px 0;border-top:1px solid var(--filete);color:var(--tinta-2);font-size:16px;line-height:1.5} .ds-prod a{display:inline-flex;gap:8px;align-items:center;color:var(--marca);font-weight:650;text-decoration:none} .ds-prod a:hover svg{transform:translateX(3px)} .ds-prod svg{transition:transform .35s var(--expo)}"
+    },
+    {
+      "name": "Ventana de producto",
+      "kind": "card",
+      "refersTo": "demo-tag",
+      "description": "Maqueta de interfaz con barra de 44 px y marca «demostración».",
+      "html": "<div class=\"ds-ventana\"><div class=\"ds-vbarra\"><span class=\"ds-puntos\"><i></i><i></i><i></i></span>SIMIQ3D<span class=\"ds-demo\">demostración</span></div><div class=\"ds-vcuerpo\"></div></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1)} .ds-ventana{display:grid;grid-template-rows:44px 160px;border-radius:16px;overflow:hidden;border:1px solid var(--filete);background:var(--fondo);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;} .ds-vbarra{display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid var(--filete);background:#fff;font-size:14px;font-weight:650;color:var(--tinta)} .ds-puntos{display:flex;gap:6px} .ds-puntos i{width:9px;height:9px;border-radius:50%;background:#c4d1d4} .ds-demo{margin-left:auto;font-family:'Martian Mono',ui-monospace,monospace;font-size:12.5px;font-weight:400;color:var(--tinta-3)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Campo estéril",
+    "overview": "El sistema es el campo quirúrgico visto con ojos de producto de tecnología médica: blanco clínico frío como fondo, tinta azul petróleo casi negra, el verde quirúrgico del paño como único color de marca y el acero del instrumental como material. Todo es limpio, preciso y plano; la profundidad la ponen los objetos (la funda, las piezas de acero), no la interfaz. El registro es profesional, moderno, tecnológico y clínico. Una versión anterior de tela y oficio artesanal fue rechazada por el usuario; nada rústico vuelve.\n\nLa composición es ancha y horizontal, a pantalla completa: rejilla de 12 columnas con medianil de 24 px y márgenes laterales fluidos, nunca una columna centrada con vacíos a los lados. El recorrido alterna capítulos claros y oscuros (cámara, instituciones, pie) y termina en una banda verde plana. La tipografía es una sola familia, Host Grotesk, grande y apretada en titulares; Martian Mono aparece solo cuando el dato es técnico.\n\nEl objeto firma es la mesa de Mayo real (Tiroidectomía), dibujada por código: la funda verde con el instrumental de acero en sus posiciones reales. La misma mesa se muestra como referencia, inclinada en 3D y escaneada por la cámara. Los datos reales se muestran como tales; lo que es ilustrativo se marca «demostración».",
+    "keyCharacteristics": [
+      "Blanco clínico frío, tinta petróleo y verde de paño como única marca.",
+      "Acero satinado dibujado en SVG para el instrumental; ningún raster.",
+      "Menta exclusiva de las detecciones de cámara; rojo exclusivo de «fuera de lugar».",
+      "Capítulos oscuros para cámara, instituciones y pie; banda verde plana de cierre.",
+      "Host Grotesk en todo; Martian Mono solo para datos técnicos.",
+      "Composiciones anchas y horizontales a pantalla completa.",
+      "Sombras neutras, sin brillos; filetes finos de 1 px como estructura."
+    ],
+    "rules": [
+      {
+        "name": "The Dos Acentos Cautivos Rule",
+        "body": "La menta y el rojo viven solo dentro de la cámara (vista Cámara, ventana de SIVRI) y en enlaces sobre capítulos oscuros, en el caso de la menta. Fuera de ahí no existen: ni estados genéricos de éxito o error, ni decoración.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paño Es Objeto Rule",
+        "body": "La textura no tejida `--tela` se aplica solo a la funda de Mayo y sus miniaturas. Ninguna superficie de página, tarjeta o banda lleva textura; la banda de cierre usa `pano` plano.",
+        "section": "colors"
+      },
+      {
+        "name": "The Una Sola Marca Rule",
+        "body": "El verde es el único color de marca. No se agregan segundos acentos decorativos; los tonos claros intermedios (hover `#e6eded`, `#cfe7e1`) son pasos de estado, no colores nuevos.",
+        "section": "colors"
+      },
+      {
+        "name": "The -0.04em Rule",
+        "body": "Los titulares de 38px o más van a 650 con -0.04em; nunca más apretado. Los de 26px van a -0.03em, los menores a -0.01/-0.02em.",
+        "section": "typography"
+      },
+      {
+        "name": "The Voz De La Máquina Rule",
+        "body": "Martian Mono solo para datos técnicos: etiquetas de detección, confianzas, posiciones, texto literal de documentos y la marca «demostración». Nunca en titulares, botones ni cuerpo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Un Solo Gigante Rule",
+        "body": "El titular de cierre (hasta 236px) es el único momento tipográfico extremo. Ningún otro texto compite con él.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sin Columna Central Rule",
+        "body": "Nada se centra en una columna angosta con vacíos a los lados. El ancho de la ventana es el lienzo.",
+        "section": "layout"
+      },
+      {
+        "name": "The Sombra Neutra Rule",
+        "body": "Toda sombra es tinta neutra difusa. Sin sombras de color, sin brillos (`glow`), sin sombras duras desplazadas. El barrido de la cámara es un instrumento de escaneo, no un brillo decorativo.",
+        "section": "elevation"
+      },
+      {
+        "name": "The El Objeto Pesa Rule",
+        "body": "La elevación fuerte es de los objetos dibujados (funda, piezas, riel). Las tarjetas de interfaz se bordean con filete (`inset 0 0 0 1px`), no se levantan.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** usar la rejilla de 12 columnas con medianil de 24px y margen `lado`, a pantalla completa.",
+      "**Do** dar a cada grupo pesos desiguales (6/3/3, 4/5/3, 5+6) en lugar de repartos iguales.",
+      "**Do** dibujar el instrumental en SVG con el degradado de acero y contorno `acero-filo`, en sus posiciones reales de la mesa.",
+      "**Do** usar solo datos reales (la mesa de Mayo de Tiroidectomía) y marcar todo lo ilustrativo con «demostración» en Martian Mono.",
+      "**Do** ordenar listas con filetes de 1px, sin íconos.",
+      "**Do** usar capítulos oscuros (`noche`) para cámara, instituciones y pie, y cerrar con la banda `pano` plana.",
+      "**Do** mantener titulares a 650 y -0.04em, nunca más apretados.",
+      "**Do** probar en 1100px y 760px y respetar `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** hablar del funcionamiento interno (versiones, revisión, roles, licencia, despliegue) ni mostrar cifras del catálogo.",
+      "**Don't** poner créditos ni el nombre de la institución fuera de «Quiénes somos».",
+      "**Don't** mostrar estados de disponibilidad («Disponible», «Próximamente») en los mockups.",
+      "**Don't** usar kickers ni eyebrows sobre los títulos.",
+      "**Don't** armar filas de tarjetas con ícono en recuadro ni tríos iguales de tres columnas.",
+      "**Don't** usar sombras de color, brillos ni sombras duras desplazadas.",
+      "**Don't** aplicar `--tela` ni ninguna textura a superficies de página; solo a la funda.",
+      "**Don't** usar menta o rojo fuera de la cámara (la menta, salvo enlaces sobre oscuro).",
+      "**Don't** usar entradas genéricas de aparecer al hacer scroll; la carga tiene una sola coreografía.",
+      "**Don't** volver a texturas artesanales o rústicas."
+    ]
+  }
+}

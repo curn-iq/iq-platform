@@ -18,3 +18,9 @@ tesis-ing-iq-curn/
 .vscode/
 .idea/
 .DS_Store
+
+# Impeccable: capturas y cachés de trabajo (se regeneran)
+.impeccable/review/
+.impeccable/questions/
+.impeccable/hook.cache.json
+.impeccable/mocks/decision/*.png
