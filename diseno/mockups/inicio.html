@@ -21,6 +21,8 @@
   --marca: #0d6a5e;
   --marca-hondo: #08463e;
   --marca-claro: #ddefeb;
+  --marca-claro-hover: var(--marca-claro-hover);
+  --hover-neutro: #e6eded;
   --pano: #1d7564;
   /* Cámara: menta para detecciones, rojo solo para "fuera de lugar" */
   --menta: #38e2b3;
@@ -82,12 +84,12 @@ h1, h2 { text-wrap: balance; }
   background: transparent; color: var(--tinta-2); font-size: 15.5px; font-weight: 550; cursor: pointer;
   transition: background .2s var(--cuarta), color .2s var(--cuarta);
 }
-.nav > a:hover, .nav > button:hover, .nav > button[aria-expanded="true"] { background: #e6eded; color: var(--tinta); }
+.nav > a:hover, .nav > button:hover, .nav > button[aria-expanded="true"] { background: var(--hover-neutro); color: var(--tinta); }
 .nav svg { transition: transform .35s var(--expo); }
 .nav button[aria-expanded="true"] svg { transform: rotate(180deg); }
 .derecha { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .ingresar { height: 40px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; color: var(--tinta-2); font-size: 15.5px; font-weight: 600; }
-.ingresar:hover { background: #e6eded; color: var(--tinta); }
+.ingresar:hover { background: var(--hover-neutro); color: var(--tinta); }
 .boton {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   height: 42px; padding: 0 18px; border: 0; border-radius: 10px;
@@ -99,8 +101,6 @@ h1, h2 { text-wrap: balance; }
 .boton svg { transition: transform .35s var(--expo); }
 .boton:hover svg { transform: translateX(3px); }
 .boton.grande { height: 56px; padding: 0 26px; font-size: 17px; border-radius: 12px; }
-.boton.claro { background: #fff; color: var(--marca-hondo); box-shadow: none; }
-.boton.claro:hover { background: var(--marca-claro); }
 .enlace { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; color: var(--marca); }
 .enlace svg { transition: transform .35s var(--expo); }
 .enlace:hover svg { transform: translate(3px, 0); }
@@ -121,6 +121,7 @@ h1, h2 { text-wrap: balance; }
 .panel-cabeza { grid-column: 1 / 4; display: grid; gap: 12px; }
 .panel-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
 .panel-linea { color: var(--tinta-3); font-size: 16px; line-height: 1.5; max-width: 26ch; }
+.panel-cabeza .enlace { justify-self: start; margin-top: 6px; }
 .panel-lista { grid-column: 4 / 9; list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
 .panel-lista a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 4px; border-bottom: 1px solid var(--filete); transition: padding .35s var(--expo); }
 .panel-lista strong { display: block; font-size: 20px; font-weight: 650; letter-spacing: -.02em; transition: color .2s var(--cuarta); }
@@ -132,23 +133,18 @@ h1, h2 { text-wrap: balance; }
 .panel-vista { grid-column: 9 / 13; }
 .vista-pie { margin-top: 12px; color: var(--tinta-3); font-size: 14px; }
 /* Vista previa de Herramientas: la misma mesa cambia según la herramienta señalada */
-.vista-mesa { position: relative; isolation: isolate; display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 16px; background: linear-gradient(180deg, #ffffff, #eef3f4); perspective: 1200px; overflow: hidden; }
-.vista-mesa::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--noche); opacity: 0; transition: opacity .5s var(--cuarta); }
-.vista-mesa[data-vista="camara"]::before { opacity: 1; }
-.vista-mesa .mini-funda { width: 62%; transform-style: preserve-3d; transition: transform 1s var(--expo), filter .5s var(--cuarta); }
-.vista-mesa[data-vista="3d"] .mini-funda { transform: rotateX(44deg) rotateZ(-28deg) scale(.88); }
-.vista-mesa[data-vista="camara"] .mini-funda { filter: saturate(.55) brightness(.86); }
-.vista-mesa .numero { transition: opacity .3s var(--cuarta); }
-.vista-mesa[data-vista="camara"] .numero { opacity: 0; }
-.vista-mesa .detecciones { opacity: 0; transition: opacity .4s var(--cuarta); }
-.vista-mesa[data-vista="camara"] .detecciones { opacity: 1; }
-.vista-mesa[data-vista="camara"] .pieza[data-n="6"] .forma { transform: translate(100px, 0); }
 /* Vistas previas de las otras categorías */
+.vista-herramienta .vh { display: none; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; align-items: start; }
+.vista-herramienta[data-vista="referencia"] .vh[data-de="referencia"], .vista-herramienta[data-vista="3d"] .vh[data-de="3d"], .vista-herramienta[data-vista="camara"] .vh[data-de="camara"] { display: grid; animation: aparecer .35s var(--expo); }
+.vh > svg { width: 96px; height: 96px; }
+.vh-nombre { margin-bottom: 6px; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.vh ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.vh li { padding: 9px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 15px; line-height: 1.4; }
 .vista-titulo { padding-bottom: 8px; color: var(--tinta-3); font-size: 14px; font-weight: 650; }
 .vista-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
 .vista-lista li { padding: 10px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 15.5px; }
-.vista-frase { padding: 28px; border-radius: 16px; background: var(--noche); color: #fff; font-size: 26px; line-height: 1.12; font-weight: 650; letter-spacing: -.03em; }
-.vista-frase em { font-style: normal; color: var(--menta); }
+.vista-frase { padding: 28px; border-radius: 16px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 26px; line-height: 1.12; font-weight: 650; letter-spacing: -.03em; }
+.vista-frase em { font-style: normal; color: var(--marca); }
 /* Menú completo en celular */
 .panel-movil { position: fixed; top: var(--barra); left: 0; right: 0; bottom: 0; z-index: 45; overflow-y: auto; padding: 8px var(--lado) 32px; background: var(--superficie); animation: bajar .4s var(--expo); }
 .panel-movil[hidden] { display: none; }
@@ -328,7 +324,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .macro-nombre { font-size: 16px; line-height: 1.3; font-weight: 650; letter-spacing: -.01em; }
 .macro-fuente { color: var(--tinta-3); font-size: 13px; font-style: italic; line-height: 1.4; }
 .ver-todas { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14px; font-weight: 650; cursor: pointer; }
-.ver-todas:hover { background: #cfe7e1; }
+.ver-todas:hover { background: var(--marca-claro-hover); }
 .riel-camara .macro-num { color: var(--alerta-noche); }
 .riel-camara .macro-nombre { color: #fff; }
 .riel-camara .macro-fuente { color: var(--niebla-noche); font-style: normal; }
@@ -495,6 +491,9 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .aviso-cuenta[hidden] { display: none; }
 .aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
 .aviso-cuenta b { font-weight: 700; }
+.aviso-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.aviso-acciones .ingresar { color: var(--marca-hondo); }
+.aviso-acciones .ingresar:hover { background: rgba(8, 70, 62, .08); color: var(--marca-hondo); }
 
 /* Lo que dice la investigación: capítulo oscuro */
 .investigacion { overflow: clip; }
@@ -517,10 +516,10 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .guia.atras { stroke-dasharray: 2 6; }
 .luz { fill: none; stroke: var(--marca); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .luz.atras { opacity: .3; stroke-width: 1.8; }
-.cola { fill: none; stroke: var(--marca); stroke-width: 9; stroke-linecap: round; opacity: .28; }
-.espiral.completo .luz.delante { filter: drop-shadow(0 2px 6px rgba(13, 106, 94, .3)); }
+.cola { fill: none; stroke: var(--marca); stroke-width: 7; stroke-linecap: round; opacity: .16; }
+.espiral.completo .luz.delante { filter: drop-shadow(0 2px 6px rgba(10, 27, 34, .16)); }
 .pulso { fill: var(--marca-hondo); }
-.pulso-halo { fill: var(--marca); opacity: .25; }
+.pulso-halo { fill: none; stroke: var(--marca); stroke-width: 1.5; opacity: .35; }
 .motas { opacity: .45; }
 .motas circle { fill: var(--marca); }
 .estacion .nodo { fill: var(--superficie); stroke: var(--filete-2); stroke-width: 1.8; transition: fill .35s var(--cuarta), stroke .35s var(--cuarta); }
@@ -555,7 +554,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .grupo-p > summary { padding: 22px 0; font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
 .grupo-p > summary svg { flex: none; color: var(--marca); transition: transform .4s var(--expo); }
 .grupo-p[open] > summary svg { transform: rotate(180deg); }
-.lista-preguntas { margin-bottom: 20px; padding-left: 24px; border-left: 2px solid var(--marca-claro); animation: aparecer .4s var(--expo); }
+.lista-preguntas { margin-bottom: 20px; padding-left: 24px; border-left: 1px solid var(--filete); animation: aparecer .4s var(--expo); }
 .lista-preguntas details + details { border-top: 1px solid var(--filete); }
 .lista-preguntas summary { padding: 14px 0; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .lista-preguntas summary svg { flex: none; color: var(--marca); transition: transform .35s var(--expo); }
@@ -602,8 +601,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .inv-texto { grid-column: 1 / -1; }
   .espiral { grid-column: 1 / -1; justify-self: center; width: min(100%, 820px); margin: 0; }
   .especialidad:nth-child(4) { padding-left: 0; border-left: 0; }
-  .hallazgos { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
-  .hallazgo:nth-child(3) { padding-left: 0; border-left: 0; }
   .pie-rejilla { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pie-rejilla > div:first-child { grid-column: 1 / -1; }
 }
@@ -611,7 +608,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 @media (max-width: 960px) {
   .nav, .derecha .boton, .panel-nav { display: none !important; }
   .menu-movil { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
-  .menu-movil[aria-expanded="true"] { background: #e6eded; }
+  .menu-movil[aria-expanded="true"] { background: var(--hover-neutro); }
 }
 /* ---------- Celular ---------- */
 @media (max-width: 760px) {
@@ -643,8 +640,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .dq-lista { display: none; }
   .s3 { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 220px; }
   .chat { border-right: 0; border-bottom: 1px solid var(--filete); }
-  .especialidades, .hallazgos { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-  .especialidad, .especialidad + .especialidad, .especialidad:nth-child(4), .hallazgo, .hallazgo + .hallazgo, .hallazgo:nth-child(3) { flex: none; width: 74vw; scroll-snap-align: start; padding: 22px 0 8px; border-left: 0; }
+  .especialidades { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .especialidad, .especialidad + .especialidad, .especialidad:nth-child(4) { flex: none; width: 74vw; scroll-snap-align: start; padding: 22px 0 8px; border-left: 0; }
   .lista-preguntas details p { padding-right: 0; }
   .lista-preguntas { padding-left: 16px; }
   .perfil-chico { grid-template-columns: 96px minmax(0, 1fr); gap: 18px; }
@@ -677,12 +674,12 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 <header class="barra">
   <a class="marca-iq" href="#inicio" aria-label="IQ Platform, inicio">
-    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#38e2b3"/></svg>
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
     IQ Platform
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" data-menu="panel-especialidades" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
@@ -703,13 +700,25 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     <li><a href="#" data-vista="camara"><span><strong>SIVRI</strong><span>La cámara revisa la mesa armada</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
   </ul>
   <div class="panel-vista">
-    <div class="vista-mesa" id="vista-herramientas" data-vista="referencia"><div class="mini-funda"><svg class="mesa-panel" viewBox="0 0 700 700" aria-hidden="true"></svg></div></div>
-    <p class="vista-pie">Tiroidectomía · Mesa de Mayo</p>
+    <div class="vista-herramienta" id="vista-herramientas" data-vista="referencia">
+      <div class="vh" data-de="referencia">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><rect x="30" y="24" width="60" height="72" rx="7" fill="#fff" stroke="#0a1b22" stroke-width="2"/><path d="M40 40 H66" stroke="#0a1b22" stroke-width="4" stroke-linecap="round"/><circle cx="42" cy="56" r="3" fill="#0d6a5e"/><circle cx="42" cy="68" r="3" fill="#0d6a5e"/><circle cx="42" cy="80" r="3" fill="#0d6a5e"/><path d="M51 56 H78 M51 68 H74 M51 80 H70" stroke="#566a72" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <div><p class="vh-nombre">DataIQ</p><ul><li>Buscar por nombre o especialidad</li><li>Mesa de Mayo y de reserva, pieza por pieza</li><li>Datos clínicos, suturas y equipos</li></ul></div>
+      </div>
+      <div class="vh" data-de="3d">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><path d="M60 26 L90 43 L60 60 L30 43 Z" fill="#fff" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M30 43 V78 L60 95 V60 Z" fill="#fff" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M90 43 V78 L60 95 V60 Z" fill="#0d6a5e" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M96 30 a10 10 0 0 1 4 14" fill="none" stroke="#0d6a5e" stroke-width="2.4" stroke-linecap="round"/><path d="M101 46 l-1 -5 -4 3" fill="none" stroke="#0d6a5e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><p class="vh-nombre">SIMIQ3D</p><ul><li>Pedir cualquier técnica conversando</li><li>Girar y recorrer la mesa</li><li>Tocar una pieza para ver qué es</li></ul></div>
+      </div>
+      <div class="vh" data-de="camara">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><path d="M28 42 V32 a4 4 0 0 1 4 -4 H42 M78 28 H88 a4 4 0 0 1 4 4 V42 M92 78 V88 a4 4 0 0 1 -4 4 H78 M42 92 H32 a4 4 0 0 1 -4 -4 V78" fill="none" stroke="#0a1b22" stroke-width="3" stroke-linecap="round"/><rect x="42" y="46" width="36" height="28" rx="5" fill="#fff" stroke="#0a1b22" stroke-width="2"/><circle cx="76" cy="74" r="12" fill="#0d6a5e"/><path d="M70.5 74 L74.5 78 L81.5 70.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><p class="vh-nombre">SIVRI</p><ul><li>Reconoce el instrumental en tiempo real</li><li>Lo compara con la técnica elegida</li><li>Señala qué hay que mover</li></ul></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="panel-nav" id="panel-especialidades" role="region" aria-label="Especialidades" hidden>
-  <div class="panel-cabeza"><p class="panel-nombre">Especialidades</p><p class="panel-linea">Cada técnica, con su instrumental y su mesa.</p></div>
+  <div class="panel-cabeza"><p class="panel-nombre">Especialidades</p><p class="panel-linea">Cada técnica, con su instrumental y su mesa.</p><a class="enlace" href="catalogo.html">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
   <ul class="panel-lista" id="panel-lista-esp"></ul>
   <div class="panel-vista"><p class="vista-titulo" id="vista-esp-titulo"></p><ul class="vista-lista" id="vista-esp"></ul></div>
 </div>
@@ -736,7 +745,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 <nav class="panel-movil" id="panel-movil" aria-label="Menú" hidden>
   <details><summary>Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></details>
-  <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"></ul></details>
+  <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"><li><a href="catalogo.html">Ver todas las técnicas</a></li></ul></details>
   <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
   <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
   <div class="acciones-movil">
@@ -921,12 +930,12 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <section class="seccion ancho tramo" id="especialidades" aria-labelledby="t-especialidades">
     <div class="catalogo-cabeza">
       <h2 class="titulo-seccion" id="t-especialidades">Técnicas por especialidad.</h2>
-      <a class="enlace" href="#">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="enlace" href="catalogo.html">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
     <div class="especialidades" id="cat-especialidades"></div>
     <div class="aviso-cuenta" id="aviso-cuenta" hidden aria-live="polite">
       <p id="aviso-cuenta-texto"></p>
-      <a class="boton" href="#">Crear cuenta gratis</a>
+      <div class="aviso-acciones"><a class="boton" href="#">Crear cuenta gratis</a><a class="ingresar" id="aviso-ingresar" href="#">Ya tengo cuenta</a></div>
     </div>
   </section>
 
@@ -954,7 +963,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
               <stop offset=".55" stop-color="#0d6a5e" stop-opacity=".025"/>
               <stop offset="1" stop-color="#0d6a5e" stop-opacity="0"/>
             </radialGradient>
-            <filter id="difuso" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
           </defs>
           <ellipse class="ambiente" cx="380" cy="350" rx="420" ry="360" fill="url(#ambiente)"/>
           <g class="motas"></g>
@@ -963,10 +971,10 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
           <g class="niveles"></g>
           <path class="guia delante"/>
           <path class="luz delante"/>
-          <path class="cola" filter="url(#difuso)"/>
+          <path class="cola"/>
           <path class="haz"/>
           <g class="estaciones"></g>
-          <circle class="pulso-halo" r="14" filter="url(#difuso)"/>
+          <circle class="pulso-halo" r="14"/>
           <circle class="pulso" r="5"/>
           <g class="logros"></g>
         </svg>
@@ -1044,7 +1052,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <div class="pie-rejilla">
     <div>
       <a class="marca-iq" href="#inicio">
-        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#38e2b3"/></svg>
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
         IQ Platform
       </a>
       <p>Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.</p>
@@ -1069,7 +1077,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     abierto = id && abierto !== id ? id : null;
     paneles.forEach(function (p) { p.hidden = p.id !== abierto; });
     abridores.forEach(function (b) { b.setAttribute("aria-expanded", String(b.dataset.menu === abierto)); });
-    if (abierto === "panel-herramientas") prepararVistaHerramientas();
   }
   // Mientras no existan las otras páginas, los enlaces no llevan a ningún lado
   document.addEventListener("click", function (e) { var a = e.target.closest("a[href='#']"); if (a) e.preventDefault(); });
@@ -1082,15 +1089,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   }
   document.addEventListener("mouseover", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
   document.addEventListener("focusin", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
-  var vistaLista = false;
-  function prepararVistaHerramientas() {
-    if (vistaLista) return;
-    vistaLista = true;
-    var svg = document.querySelector(".mesa-panel");
-    construirMesa(svg, { rejilla: false, numeros: true, interactiva: false, deteccion: true });
-    ubicarEtiquetas(svg);
-  }
-  abridores.forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); abrirMenu(b.dataset.menu); }); });
+  // Un clic abre el desplegable; otro clic con el desplegable abierto lleva a la página de la sección
+  abridores.forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); if (abierto === b.dataset.menu && b.dataset.destino) { location.href = b.dataset.destino; return; } abrirMenu(b.dataset.menu); }); });
   paneles.forEach(function (p) { p.addEventListener("click", function (e) { if (e.target.closest("a")) abrirMenu(null); }); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && abierto) { var b = document.querySelector("[data-menu='" + abierto + "']"); abrirMenu(null); if (b) b.focus(); }
@@ -1105,6 +1105,10 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     ["Ginecología", ["Cesárea", "Ooforectomía con salpingectomía", "Histerectomía vaginal", "Colporrafia anterior y posterior"]],
     ["Ortopedia", ["Reemplazo total de cadera", "Reemplazo total de rodilla"]]
   ];
+  // Técnicas cuya mesa aún no está en el catálogo: su aviso no la promete
+  var SIN_MESA = ["Nefrectomía laparoscópica"];
+  // Técnicas con su página en el mockup (Cirugía general)
+  function rutaTecnica(t) { return ["Mastectomía", "Tiroidectomía", "Colecistectomía", "Hemicolectomía derecha", "Eventrorrafia"].indexOf(t) === -1 ? "#" : "tecnica.html#" + t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
   var catalogo = document.getElementById("cat-especialidades");
   var listaEsp = document.getElementById("panel-lista-esp");
   function mostrarEspecialidad(i) {
@@ -1122,11 +1126,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     col.innerHTML = "<h3></h3><ul></ul>";
     col.children[0].textContent = e[0];
     var li0 = document.createElement("li"), fl = document.createElement("a");
-    fl.href = "#";
+    fl.href = "catalogo.html#esp-" + ESPECIALIDADES.indexOf(e);
     fl.dataset.esp = ESPECIALIDADES.indexOf(e);
     fl.innerHTML = "<span><strong></strong><span></span></span>" + flecha;
     fl.querySelector("strong").textContent = e[0];
-    fl.querySelector("strong + span").textContent = e[1].length === 1 ? "1 técnica" : e[1].slice(0, 2).join(", ") + (e[1].length > 2 ? "…" : "");
+    fl.querySelector("strong + span").textContent = e[1].slice(0, 2).join(", ") + (e[1].length > 2 ? "…" : "");
     li0.appendChild(fl);
     listaEsp.appendChild(li0);
     e[1].forEach(function (t) {
@@ -1137,8 +1141,9 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       b.firstChild.textContent = t;
       b.addEventListener("click", function () {
         catalogo.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        avisoTexto.innerHTML = "Para ver <b></b> por dentro, con su mesa y su instrumental, se crea una cuenta gratuita.";
+        avisoTexto.innerHTML = "Para ver <b></b> por dentro, " + (SIN_MESA.indexOf(t) === -1 ? "con su mesa y su instrumental" : "con su instrumental") + ", se crea una cuenta gratuita.";
         avisoTexto.querySelector("b").textContent = t;
+        document.getElementById("aviso-ingresar").href = rutaTecnica(t);
         aviso.hidden = false;
       });
       li.appendChild(b);
@@ -1147,7 +1152,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     catalogo.appendChild(col);
     ["movil-especialidades", "pie-especialidades"].forEach(function (id) {
       var li = document.createElement("li"), a = document.createElement("a");
-      a.href = "#";
+      a.href = "catalogo.html#esp-" + ESPECIALIDADES.indexOf(e);
       a.textContent = e[0];
       li.appendChild(a);
       document.getElementById(id).appendChild(li);
