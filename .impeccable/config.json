@@ -101,6 +101,15 @@
         ],
         "createdAt": "2026-10-05T19:33:06.416Z",
         "reason": "Claude: mismo falso positivo verificado en inicio.html y catalogo.html; el panel del menú (panel-lista) es el componente compartido de la barra"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/cuenta.html"
+        ],
+        "createdAt": "2026-10-05T20:45:08.278Z",
+        "reason": "Claude: falsos positivos verificados en capturas; el panel del menú (panel-lista) es el compartido de la barra, y puerta-der tiene padding con clamp()/var(--lado) que el detector no resuelve"
       }
     ]
   }

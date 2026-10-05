@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Catálogo de técnicas</title>
+<title>Ingresar · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -487,7 +487,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 #quien { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
 #preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
 .pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
-
 .aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
 .aviso-cuenta[hidden] { display: none; }
 .aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
@@ -495,6 +494,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .aviso-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .aviso-acciones .ingresar { color: var(--marca-hondo); }
 .aviso-acciones .ingresar:hover { background: rgba(8, 70, 62, .08); color: var(--marca-hondo); }
+
 /* Lo que dice la investigación: capítulo oscuro */
 .investigacion { overflow: clip; }
 .inv { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; align-items: center; }
@@ -653,69 +653,79 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .pie-rejilla { grid-template-columns: 1fr 1fr; }
 }
 
-/* ---------- Catálogo: buscador, filtro lateral y lista ---------- */
-.cat-cabeza { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; align-items: end; padding-block: clamp(56px, 8vh, 96px) 36px; }
-.cat-titulos { grid-column: 1 / 6; display: grid; gap: 16px; }
-.cat-buscar { grid-column: 7 / 13; position: relative; }
-.cat-buscar > svg { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--tinta-3); pointer-events: none; }
-.cat-buscar input { width: 100%; height: 60px; padding: 0 20px 0 54px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2), 0 10px 24px -18px rgba(10, 27, 34, .35); font: inherit; font-size: 17px; color: var(--tinta); transition: box-shadow .3s var(--cuarta); }
-.cat-buscar input:not(:placeholder-shown) { padding-right: 56px; }
-.texto-seccion { text-wrap: pretty; }
-.cat-buscar input::placeholder { color: var(--tinta-3); }
-.cat-buscar input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca), 0 10px 24px -18px rgba(10, 27, 34, .35); }
-.cat-buscar input::-webkit-search-cancel-button { display: none; }
-.limpiar { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--tinta-3); cursor: pointer; }
-.limpiar:hover { background: var(--hover-neutro); color: var(--tinta); }
-.limpiar[hidden] { display: none; }
-.cat-cuerpo { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; border-top: 2px solid var(--tinta); padding-bottom: clamp(72px, 10vh, 112px); }
-.cat-filtro { grid-column: 1 / 6; position: sticky; top: var(--barra); align-self: start; padding-top: 24px; }
-.cat-filtro ul { max-width: 320px; list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-/* Firma: la selección es una placa que se desliza a la especialidad elegida */
-.placa { position: absolute; z-index: 0; left: 0; width: min(100%, 320px); top: 0; height: 0; border-radius: 10px; background: var(--marca-claro); transition: transform .45s var(--expo), height .45s var(--expo); pointer-events: none; }
-.cat-filtro button { position: relative; z-index: 1; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; padding: 10px 14px; border: 0; border-radius: 10px; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-2); text-align: left; cursor: pointer; transition: color .2s var(--cuarta), background .2s var(--cuarta); }
-.cat-filtro button:hover { color: var(--tinta); }
-.cat-filtro button:not([aria-pressed="true"]):hover { background: rgba(10, 27, 34, .04); }
-.cat-filtro button[aria-pressed="true"] { color: var(--marca-hondo); font-weight: 650; }
-.cat-filtro button svg { opacity: 0; transform: translateX(-4px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
-.cat-filtro button[aria-pressed="true"] svg { opacity: 1; transform: none; }
-.cat-lista { grid-column: 7 / 13; }
-.cat-grupo[hidden] { display: none; }
-.cat-grupo h2 { position: sticky; top: var(--barra); z-index: 2; padding: 26px 0 12px; background: var(--fondo); font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
-.cat-grupo ul { list-style: none; margin: 0 0 12px; padding: 0; border-bottom: 1px solid var(--filete); }
-.cat-grupo li[hidden] { display: none; }
-.tecnica { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 4px; border: 0; border-top: 1px solid var(--filete); background: transparent; font-size: 17px; font-weight: 500; letter-spacing: -.01em; color: var(--tinta); text-align: left; cursor: pointer; transition: color .2s var(--cuarta), padding .35s var(--expo); }
-.tecnica svg { flex: none; color: var(--marca); opacity: 0; transform: translateX(-6px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
-.tecnica:hover, .tecnica[aria-expanded="true"] { color: var(--marca); padding-left: 10px; }
-.tecnica:hover svg, .tecnica[aria-expanded="true"] svg { opacity: 1; transform: none; }
-.tecnica mark { background: var(--marca-claro); color: var(--marca-hondo); border-radius: 3px; padding: 0 1px; }
-.cat-lista .aviso-cuenta { margin: 0 0 16px; }
-.cat-vacio { padding: 40px 0 8px; display: grid; gap: 16px; justify-items: start; }
-.cat-vacio[hidden] { display: none; }
-.cat-vacio h2 { font-size: 26px; font-weight: 650; letter-spacing: -.03em; }
-.cat-vacio p { color: var(--tinta-2); font-size: 17px; }
-.boton.suave { background: var(--marca-claro); color: var(--marca-hondo); box-shadow: none; }
-.boton.suave:hover { background: var(--marca-claro-hover); }
+/* ---------- Ingresar / Crear cuenta: la técnica que se quería abrir a la izquierda, el formulario a la derecha ---------- */
+.puerta { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); min-height: calc(100svh - var(--barra)); }
+.puerta-izq { grid-column: 1 / 7; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 22px; padding: clamp(48px, 9vh, 96px) clamp(28px, 4vw, 72px) clamp(40px, 7vh, 80px) var(--lado); }
+.puerta-der { grid-column: 7 / 13; display: grid; align-content: start; justify-items: center; padding: clamp(48px, 9vh, 96px) var(--lado) clamp(40px, 7vh, 80px); background: var(--superficie); border-left: 1px solid var(--filete); }
+.ruta { display: flex; align-items: center; gap: 8px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.ruta svg { color: var(--filete-2); }
+.puerta-izq h2 { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.puerta-izq .especialidad-tec { margin-top: 10px; color: var(--tinta-3); font-size: 17px; }
+.vista-bloqueada { min-width: 0; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); padding: 0 22px 22px; }
+.pestanas-falsas { display: flex; gap: 24px; border-bottom: 1px solid var(--filete); overflow: hidden; }
+.pestanas-falsas span { padding: 14px 0 12px; color: var(--tinta-3); font-size: 15px; font-weight: 550; white-space: nowrap; opacity: .6; }
+.pestanas-falsas span:first-child { color: var(--tinta); font-weight: 650; opacity: 1; box-shadow: inset 0 -2px var(--tinta); }
+.cuerpo-bloqueado { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; min-height: 230px; padding-top: 20px; }
+.cuerpo-bloqueado .hueso { display: block; height: 12px; margin: 6px 0; border-radius: 8px; background: var(--filete); }
+.candado { position: absolute; inset: 0; display: grid; place-content: end center; justify-items: center; gap: 10px; padding-bottom: 4px; text-align: center; background: linear-gradient(rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, .97) 52%); }
+.candado span:first-child { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+.candado p { max-width: 30ch; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
+.promesa-movil { display: none; align-items: center; gap: 10px; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
+.promesa-movil span:first-child { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+.chips-esp { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips-esp span { padding: 6px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; }
+/* Formulario */
+.formulario { width: min(100%, 420px); display: grid; gap: 20px; }
+.formulario h1 { font-size: 26px; line-height: 1.15; font-weight: 650; letter-spacing: -.03em; }
+.pestanas-cuenta { position: relative; display: flex; gap: 28px; border-bottom: 1px solid var(--filete); }
+.pestanas-cuenta button { padding: 10px 0 12px; border: 0; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-3); cursor: pointer; transition: color .2s var(--cuarta); }
+.pestanas-cuenta button:hover { color: var(--tinta); }
+.pestanas-cuenta button[aria-selected="true"] { color: var(--tinta); font-weight: 650; }
+.pestanas-cuenta button:focus-visible { outline-offset: -3px; }
+.raya { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
+.google { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; height: 48px; border: 0; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); font-size: 16px; font-weight: 600; color: var(--tinta); cursor: pointer; transition: background .2s var(--cuarta); }
+.google:hover { background: var(--fondo); }
+.nota-google { margin-top: -10px; color: var(--tinta-3); font-size: 14px; text-align: center; }
+.separador { display: flex; align-items: center; gap: 14px; color: var(--tinta-3); font-size: 14px; }
+.separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--filete); }
+.campo { display: grid; gap: 6px; }
+.campo label, .campo .etiqueta { font-size: 14px; font-weight: 600; color: var(--tinta-2); }
+.campo input { width: 100%; height: 48px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); font: inherit; font-size: 16px; color: var(--tinta); }
+.campo input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca); }
+.clave { position: relative; }
+.clave input { padding-right: 84px; }
+.clave button { position: absolute; right: 6px; top: 6px; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; font-size: 14px; font-weight: 600; color: var(--marca); cursor: pointer; }
+.clave button:hover { background: var(--marca-claro); }
+.fila-olvido { display: flex; justify-content: flex-end; margin-top: -8px; }
+.fila-olvido a { font-size: 14px; }
+.fila-olvido a, .acepto a { color: var(--marca); font-weight: 600; }
+.campo input::placeholder { color: var(--tinta-3); opacity: 1; }
+.fila-olvido a:hover, .acepto a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.acepto { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; font-size: 15px; line-height: 1.5; color: var(--tinta-2); cursor: pointer; }
+.acepto input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--marca); cursor: pointer; }
+.error-politica { display: flex; align-items: flex-start; gap: 10px; margin-top: -6px; color: var(--tinta); font-size: 14.5px; font-weight: 600; line-height: 1.45; }
+.error-politica[hidden] { display: none; }
+.error-politica svg { flex: none; margin-top: 1px; }
+.acepto.con-error input { outline: 2px solid var(--tinta); outline-offset: 2px; }
+.formulario .boton { width: 100%; justify-content: center; height: 50px; }
+.hoja-cuenta[hidden] { display: none; }
+.hoja-cuenta { display: grid; gap: 18px; animation: aparecer .35s var(--expo); }
+.pie { --antes: var(--superficie); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (max-width: 1100px) {
-  .cat-titulos { grid-column: 1 / -1; }
-  .cat-buscar { grid-column: 1 / -1; }
-  .cat-filtro { grid-column: 1 / 5; }
-  .cat-lista { grid-column: 5 / 13; }
+  .puerta-izq { grid-column: 1 / 6; }
+  .puerta-der { grid-column: 6 / 13; }
+  .cuerpo-bloqueado { grid-template-columns: 1fr; }
+  .pestanas-falsas { -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); }
 }
 @media (max-width: 760px) {
-  .cat-cabeza { padding-block: 36px 24px; }
-  .cat-filtro { grid-column: 1 / -1; z-index: 3; margin-inline: calc(-1 * var(--lado)); padding: 12px var(--lado); background: var(--fondo); border-bottom: 1px solid var(--filete); overflow-x: auto; scrollbar-width: none; }
-  .cat-filtro ul { display: flex; gap: 8px; width: max-content; max-width: none; }
-  .placa { display: none; }
-  .cat-filtro button { min-height: 40px; padding: 8px 16px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filete-2); white-space: nowrap; font-size: 15px; }
-  .cat-filtro button[aria-pressed="true"] { background: var(--marca); color: #fff; box-shadow: none; }
-  .cat-filtro button svg { display: none; }
-  .cat-lista { grid-column: 1 / -1; }
-  .cat-grupo h2 { top: calc(var(--barra) + 65px); font-size: 20px; }
-  .tecnica { font-size: 17px; }
+  .puerta { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .puerta-izq, .puerta-der { grid-column: 1 / -1; }
+  .puerta-izq { gap: 14px; padding: 28px var(--lado) 20px; }
+  .vista-bloqueada, .chips-esp { display: none; }
+  .promesa-movil { display: flex; }
+  .puerta-der { padding: 28px var(--lado) 44px; border-left: 0; border-top: 1px solid var(--filete); }
 }
-.pie { --antes: var(--fondo); }
-.nav > button[aria-current="page"] { color: var(--marca-hondo); font-weight: 650; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 </style>
 </head>
 <body>
@@ -743,7 +753,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
@@ -819,30 +829,49 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 </nav>
 
 <main>
-  <section class="ancho" id="catalogo" aria-labelledby="t-catalogo">
-    <div class="cat-cabeza">
-      <div class="cat-titulos">
-        <h1 class="titulo-seccion" id="t-catalogo">Técnicas</h1>
-        <p class="texto-seccion">Cada técnica, con su instrumental y su mesa.</p>
-      </div>
-      <div class="cat-buscar" role="search">
-        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <label class="sr-only" for="buscar">Buscar una técnica o especialidad</label>
-        <input type="search" id="buscar" placeholder="Buscar técnica o especialidad" autocomplete="off">
-        <button type="button" class="limpiar" id="limpiar" aria-label="Borrar la búsqueda" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-      </div>
-    </div>
-    <div class="cat-cuerpo">
-      <nav class="cat-filtro" aria-label="Especialidad"><span class="placa" aria-hidden="true"></span><ul id="cat-filtro"></ul></nav>
-      <div class="cat-lista" id="cat-lista" aria-live="polite">
-        <div class="cat-vacio" id="cat-vacio" hidden>
-          <h2 id="cat-vacio-titulo"></h2>
-          <p>Prueba con otra palabra o revisa la especialidad elegida.</p>
-          <button type="button" class="boton suave" id="ver-todas">Ver todas las técnicas</button>
+  <div class="puerta">
+    <section class="puerta-izq" aria-labelledby="pt-nombre">
+      <nav class="ruta" aria-label="Ruta"><a href="catalogo.html">Técnicas</a><span id="pt-ruta-sep"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="pt-ruta-esp">Cirugía general</span></nav>
+      <div><h2 id="pt-nombre">Tiroidectomía</h2><p class="especialidad-tec" id="pt-esp">Cirugía general</p></div>
+      <div class="vista-bloqueada" id="pt-bloqueada">
+        <div class="pestanas-falsas" aria-hidden="true"><span>Datos clínicos</span><span>Instrumental</span><span>Mesa de Mayo</span><span>Mesa de reserva</span></div>
+        <div class="cuerpo-bloqueado" aria-hidden="true"><div><span class='hueso' style='width:82%'></span><span class='hueso' style='width:64%'></span><span class='hueso' style='width:90%'></span><span class='hueso' style='width:58%'></span></div><div><span class='hueso' style='width:74%'></span><span class='hueso' style='width:86%'></span><span class='hueso' style='width:60%'></span><span class='hueso' style='width:70%'></span></div>
+          <div class="candado"><span><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><p id="pt-candado">Con una cuenta gratuita se abre por dentro: datos clínicos, instrumental y sus mesas.</p></div>
         </div>
       </div>
-    </div>
-  </section>
+      <p class="promesa-movil"><span><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span id="pt-promesa">Con una cuenta gratuita se abre por dentro.</span></p>
+      <div class="chips-esp" id="pt-chips" hidden></div>
+    </section>
+    <section class="puerta-der" aria-labelledby="t-cuenta">
+      <div class="formulario">
+        <h1 id="t-cuenta">Ingresar a IQ Platform</h1>
+        <div class="pestanas-cuenta" role="tablist" aria-label="Cuenta">
+          <button type="button" role="tab" id="tab-ingresar" aria-controls="hoja-ingresar" aria-selected="true">Ingresar</button>
+          <button type="button" role="tab" id="tab-crear" aria-controls="hoja-crear" aria-selected="false" tabindex="-1">Crear cuenta</button>
+          <span class="raya" aria-hidden="true"></span>
+        </div>
+        <button type="button" class="google" data-entrar><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>Continuar con Google</button>
+        <p class="nota-google">Con el correo de la universidad, si lo tienes.</p>
+        <p class="separador">o con correo y contraseña</p>
+
+        <form class="hoja-cuenta" role="tabpanel" id="hoja-ingresar" aria-labelledby="tab-ingresar" data-entrar>
+          <div class="campo"><label for="i-correo">Correo</label><input type="email" id="i-correo" autocomplete="email" placeholder="nombre@correo.com"></div>
+          <div class="campo"><label for="i-clave">Contraseña</label><div class="clave"><input type="password" id="i-clave" autocomplete="current-password"><button type="button" data-ver="i-clave">Mostrar</button></div></div>
+          <div class="fila-olvido"><a href="#">¿Olvidaste tu contraseña?</a></div>
+          <button type="submit" class="boton">Ingresar</button>
+        </form>
+
+        <form class="hoja-cuenta" role="tabpanel" id="hoja-crear" aria-labelledby="tab-crear" data-entrar hidden>
+          <div class="campo"><label for="c-nombre">Nombre</label><input type="text" id="c-nombre" autocomplete="name"></div>
+          <div class="campo"><label for="c-correo">Correo</label><input type="email" id="c-correo" autocomplete="email" placeholder="nombre@correo.com"></div>
+          <div class="campo"><label for="c-clave">Contraseña</label><div class="clave"><input type="password" id="c-clave" autocomplete="new-password"><button type="button" data-ver="c-clave">Mostrar</button></div></div>
+          <label class="acepto" id="c-acepto-fila"><input type="checkbox" id="c-acepto" aria-describedby="c-error"><span>Acepto la <a href="#">política de tratamiento de datos personales</a>.</span></label>
+          <p class="error-politica" id="c-error" role="alert" hidden><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 5.8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="1.2" fill="currentColor"/></svg><span>Para crear la cuenta hay que aceptar la política de tratamiento de datos.</span></p>
+          <button type="submit" class="boton">Crear cuenta gratis</button>
+        </form>
+      </div>
+    </section>
+  </div>
 </main>
 
 <footer class="pie ancho tramo">
@@ -894,7 +923,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   });
   document.addEventListener("click", function (e) { if (abierto && !document.getElementById(abierto).contains(e.target)) abrirMenu(null); });
 
-
   /* ---------- Catálogo real: técnicas por especialidad ---------- */
   var ESPECIALIDADES = [
     ["Cirugía general", ["Mastectomía", "Tiroidectomía", "Colecistectomía", "Hemicolectomía derecha", "Eventrorrafia"]],
@@ -932,268 +960,87 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     });
   });
 
-  /* ---------- Instrumental dibujado en acero ----------
-     Cada pieza en coordenadas locales: vertical, punta en y=0, anillos o mango en y=100. */
-  function anillo(cx) { return "<path class='acero' fill-rule='evenodd' d='M" + (cx - 7) + " 92a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z M" + (cx - 4.3) + " 92a4.3 4.3 0 1 0 8.6 0a4.3 4.3 0 1 0 -8.6 0Z'/>"; }
-  function argollas(b, cremallera) {
-    var s = anillo(-7.6) + anillo(7.6);
-    s += "<path class='acero' d='M-10.8 87.4 L-2.9 " + (b + 8) + " L-0.7 " + (b + 8) + " L-4.6 86.1 Z'/>";
-    s += "<path class='acero' d='M10.8 87.4 L2.9 " + (b + 8) + " L0.7 " + (b + 8) + " L4.6 86.1 Z'/>";
-    if (cremallera) s += "<path class='caja' d='M-5.6 79.5 l2.6 -1.6 v3.2z M5.6 79.5 l-2.6 -1.6 v3.2z'/>";
-    return s + "<rect class='caja' x='-3.4' y='" + b + "' width='6.8' height='8.6' rx='1.4'/>";
-  }
-  function estrias(desde, hasta, x, ancho) { var s = ""; for (var y = desde; y < hasta; y += 3.2) s += "<path class='raya' d='M" + x + " " + y.toFixed(1) + " h" + ancho + "'/>"; return s; }
-  function tijera(b, t, w) {
-    return argollas(b, false) +
-      "<path class='acero' d='M" + (-w) + " " + b + " C" + (-w * 1.1) + " " + (b - 16) + " " + (-w * 0.8) + " " + (t + 8) + " " + (w * 0.25) + " " + (t + 1.5) + " Q" + (w * 0.7) + " " + t + " " + (w * 0.95) + " " + (t + 2.2) + " C" + (w * 1.05) + " " + (t + 10) + " " + (w * 1.15) + " " + (b - 16) + " " + w + " " + b + " Z'/>" +
-      "<path class='raya' d='M0 " + b + " C0 " + (b - 16) + " .3 " + (t + 9) + " 1.2 " + (t + 2.2) + "'/>";
-  }
-  var dibujos = {
-    bisturi: function () { return "<rect class='acero' x='-3.6' y='32' width='7.2' height='68' rx='1.8'/>" + estrias(64, 94, -2.5, 5) + "<path class='hoja' d='M-2.3 33 L-2.3 15 C-2.3 7 1.6 1.5 3.6 4.8 C5 8 3.4 18 2.3 33 Z'/>"; },
-    metzenbaum: function () { return tijera(52, 16, 2.6); },
-    mayo: function () { return tijera(46, 6, 3.6); },
-    diseccion: function () { return "<path class='acero' fill-rule='evenodd' d='M-1.3 0 L-5.4 66 Q-6 97 0 100 Q6 97 5.4 66 L1.3 0 Z M-0.35 7 L-3.2 66 Q-3.4 90 0 92 Q3.4 90 3.2 66 L0.35 7 Z'/>" + estrias(40, 64, -4.6, 1.6) + estrias(40, 64, 3, 1.6); },
-    farabeuf: function () { return "<path class='acero' d='M-13 4 H2.4 V96 H-15 V91 H-2.4 V9 H-13 Z'/><path class='raya' d='M-0.6 22 V78'/>"; },
-    senn: function () { return "<rect class='acero' x='-1.9' y='16' width='3.8' height='68' rx='1.2'/>" + estrias(40, 62, -1.3, 2.6) + "<rect class='acero' x='-5.4' y='13.5' width='10.8' height='3.2' rx='1'/><path class='punta' d='M-4.2 14 V4.5 Q-4.2 2 -2.2 3.4 M0 14 V3.5 Q0 1 2 2.4 M4.2 14 V4.5 Q4.2 2 6.2 3.4'/><rect class='acero' x='-6.8' y='83.5' width='13.6' height='6' rx='1.5'/>"; },
-    allis: function () { return argollas(44, true) + "<path class='acero' d='M-1.9 44 L-1.3 11 L-4.3 6.5 L-4.3 2 L4.3 2 L4.3 6.5 L1.3 11 L1.9 44 Z'/><path class='raya' d='M-3.8 3.3 h7.6'/>"; },
-    lahey: function () { return argollas(44, true) + "<path class='acero' d='M-2.1 44 L-1.5 9 L-3.8 3.2 L-2.6 2 L-0.5 6.2 L0.5 6.2 L2.6 2 L3.8 3.2 L1.5 9 L2.1 44 Z'/>"; },
-    rochester: function () { return argollas(44, true) + "<path class='acero' d='M-2.8 44 L-1.7 6 Q0 2 1.7 6 L2.8 44 Z'/>" + estrias(10, 42, -1.5, 3); },
-    mosquito: function () { return argollas(46, true) + "<path class='acero' d='M-2.3 46 C-2.3 32 -1.2 20 2.6 9.5 Q4.2 8 3.9 10.6 C1.8 20 1.9 32 2.3 46 Z'/><path class='raya' d='M0 46 C0 32 .6 20 3 10'/>"; }
-  };
-
-  /* Mesa de Mayo de Tiroidectomía: datos reales del documento de IQ.
-     [número, fila, columna, nombre normalizado, texto de la fuente, dibujo, largo relativo, nombre corto] */
-  var MESA = [
-    [1, 7, 5, "Mango de bisturí N.° 3 y hoja #15", "M.B #3 H.B #15", "bisturi", .84, "Bisturí N.° 3"],
-    [2, 6, 5, "Tijera de Metzenbaum", "Tijera de metzembaum", "metzenbaum", 1, "Metzenbaum"],
-    [3, 5, 5, "Tijera de Mayo", "Tijera de mayo", "mayo", .88, "Tijera de Mayo"],
-    [4, 4, 1, "Pinza de disección con y sin garra", "Diseccion c/s garras", "diseccion", .9, "Disección"],
-    [5, 4, 2, "Separador de Farabeuf", "Separador de farabeauf", "farabeuf", .9, "Farabeuf"],
-    [6, 4, 4, "Separador de Senn Miller", "Separador senn Miller", "senn", .72, "Senn Miller"],
-    [7, 1, 3, "Pinza de Allis", "Pinzas allis", "allis", .92, "Allis"],
-    [8, 1, 6, "Pinza Lahey", "Pinza lahey", "lahey", .95, "Lahey"],
-    [9, 2, 7, "Pinza Rochester", "Pinza Rochester", "rochester", .95, "Rochester"],
-    [10, 3, 7, "Pinza Mosquito curva", "Pinza mosquito", "mosquito", .74, "Mosquito"]
-  ];
-  // Confianza de la demostración de SIVRI (valores de ejemplo)
-  var CONFIANZA = { 1: "0,97", 2: "0,95", 3: "0,96", 4: "0,93", 5: "0,98", 6: "0,91", 7: "0,97", 8: "0,94", 9: "0,96", 10: "0,92" };
-  function pieza(n) { return MESA.filter(function (x) { return x[0] === n; })[0]; }
-
-  function construirMesa(svg, op) {
-    var h = "";
-    if (op.rejilla) {
-      h += "<g class='rejilla' aria-hidden='true'>";
-      for (var c = 1; c < 7; c++) h += "<path d='M" + c * 100 + " 0 V700 M0 " + c * 100 + " H700'/>";
-      h += "</g>";
-    }
-    MESA.forEach(function (o, i) {
-      var x = (o[2] - 1) * 100, y = (o[1] - 1) * 100, k = 1.2 * o[6];
-      h += "<g class='pieza' data-n='" + o[0] + "' style='--i:" + i + "'" + (op.interactiva ? " tabindex='0' role='button' aria-label='" + o[0] + ": " + o[3] + "'" : "") + ">" +
-        (op.interactiva ? "<rect class='hit' x='" + (x + 4) + "' y='" + (y + 4) + "' width='92' height='92' rx='10'/>" : "") +
-        "<g class='forma'" + (op.mover && o[0] === 6 ? " transform='translate(100 0)'" : "") + "><g transform='translate(" + (x + 54) + " " + (y + 54) + ") rotate(40) scale(" + (k * 1.15) + " " + k + ") translate(0 -50)'>" + dibujos[o[5]]() + "</g></g>" +
-        (op.numeros ? "<g class='numero'><circle cx='" + (x + 19) + "' cy='" + (y + 19) + "' r='16'/><text x='" + (x + 19) + "' y='" + (y + 19.5) + "'>" + o[0] + "</text></g>" : "") +
-        "</g>";
-    });
-    if (op.deteccion) h += "<g class='detecciones'></g>";
-    svg.innerHTML = h;
-    if (op.deteccion) dibujarDetecciones(svg, op.mover);
-  }
-
-  /* Cajas de detección; las etiquetas se ubican después, cuando la fuente cargó */
-  function dibujarDetecciones(svg, yaMovida) {
-    var h = "", angosto = matchMedia("(max-width: 760px)").matches;
-    MESA.forEach(function (o, i) {
-      var bb = svg.querySelector(".pieza[data-n='" + o[0] + "'] .forma").getBBox();
-      var mal = o[0] === 6, dx = mal && !yaMovida ? 100 : 0;
-      var x = bb.x - 5 + dx, y = bb.y - 5, w = bb.width + 10, alto = bb.height + 10;
-      h += "<g class='det" + (mal ? " error" : "") + "' style='--i:" + i + ";--per:" + Math.round(2 * (w + alto)) + "'>" +
-        "<rect class='caja-det' x='" + x.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-        "<g class='etq'><rect x='" + x.toFixed(1) + "' y='" + (y - 26).toFixed(1) + "' width='120' height='24' rx='4'/><text x='" + (x + 8).toFixed(1) + "' y='" + (y - 14).toFixed(1) + "'>" + o[7] + (angosto ? "" : " " + CONFIANZA[o[0]]) + "</text></g></g>";
-      if (mal) {
-        var ox = x - 100;
-        h += "<rect class='destino' x='" + ox.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-          "<text class='destino-etq' x='" + ox.toFixed(1) + "' y='" + (y + alto + 16).toFixed(1) + "'>Va aquí</text>";
-      }
-    });
-    svg.querySelector(".detecciones").innerHTML = h;
-  }
-  function choque(a, b) { var w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y); return w > 0 && h > 0 ? w * h : 0; }
-  function ubicarEtiquetas(svg) {
-    var grupos = svg.querySelectorAll(".det");
-    var cajas = [].map.call(grupos, function (g) { var r = g.querySelector(".caja-det"); return { x: +r.getAttribute("x"), y: +r.getAttribute("y"), w: +r.getAttribute("width"), h: +r.getAttribute("height") }; });
-    var destino = svg.querySelector(".destino");
-    if (destino) cajas.push({ x: +destino.getAttribute("x"), y: +destino.getAttribute("y"), w: +destino.getAttribute("width"), h: +destino.getAttribute("height") });
-    var puestas = [];
-    var aviso = svg.querySelector(".destino-etq");
-    if (aviso) { var ba = aviso.getBBox(); puestas.push({ x: ba.x - 4, y: ba.y - 4, w: ba.width + 8, h: ba.height + 8 }); }
-    grupos.forEach(function (g, i) {
-      var c = cajas[i], t = g.querySelector(".etq text"), r = g.querySelector(".etq rect");
-      var fs = parseFloat(getComputedStyle(t).fontSize) || 14;
-      var w = t.getComputedTextLength() + fs * 1.1, h = fs + 10, mejor = null, menor = Infinity;
-      [[c.x, c.y - h - 3], [c.x + c.w - w, c.y - h - 3], [c.x, c.y + c.h + 3], [c.x + c.w - w, c.y + c.h + 3], [c.x - w - 3, c.y], [c.x + c.w + 3, c.y], [c.x + 3, c.y + 3]].forEach(function (p, k) {
-        var e = { x: Math.min(Math.max(p[0], 2), 698 - w), y: Math.min(Math.max(p[1], 2), 698 - h), w: w, h: h };
-        var costo = k * 4;
-        puestas.forEach(function (q) { costo += choque(e, q) * 6; });
-        cajas.forEach(function (o, j) { if (j !== i) costo += choque(e, o); });
-        if (costo < menor) { menor = costo; mejor = e; }
-      });
-      puestas.push(mejor);
-      r.setAttribute("x", mejor.x.toFixed(1)); r.setAttribute("y", mejor.y.toFixed(1)); r.setAttribute("width", w.toFixed(1));
-      r.setAttribute("height", h.toFixed(1));
-      t.setAttribute("x", (mejor.x + fs * .55).toFixed(1)); t.setAttribute("y", (mejor.y + h / 2).toFixed(1));
-    });
-  }
 
 
   mostrarEspecialidad(0);
   listaEsp.querySelector("a").classList.add("activa");
   document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
 
-
-  /* ---------- Catálogo: filtro por especialidad, búsqueda y aviso de cuenta ---------- */
-  var filtro = document.getElementById("cat-filtro"), placa = document.querySelector(".cat-filtro .placa");
-  var lista = document.getElementById("cat-lista"), vacio = document.getElementById("cat-vacio");
-  var buscar = document.getElementById("buscar"), limpiar = document.getElementById("limpiar");
-  var elegida = -1, avisoAbierto = null;
-  // Sin tildes ni mayúsculas, letra por letra, para que los índices coincidan con el texto original
-  function plano(t) { return Array.from(t).map(function (c) { return c.normalize("NFD")[0].toLowerCase(); }).join(""); }
-  var botonesEsp = [];
-  [["Todas", -1]].concat(ESPECIALIDADES.map(function (e, i) { return [e[0], i]; })).forEach(function (par) {
-    var li = document.createElement("li"), b = document.createElement("button");
-    b.type = "button";
-    b.setAttribute("aria-pressed", String(par[1] === -1));
-    b.innerHTML = "<span></span>" + flecha;
-    b.firstChild.textContent = par[0];
-    b.addEventListener("click", function () { elegir(par[1]); });
-    li.appendChild(b);
-    filtro.appendChild(li);
-    botonesEsp.push(b);
-  });
-  var grupos = ESPECIALIDADES.map(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    sec.className = "cat-grupo";
-    h.textContent = e[0];
-    sec.appendChild(h); sec.appendChild(ul);
-    var filas = e[1].map(function (t) {
-      var li = document.createElement("li"), b = document.createElement("button");
-      b.type = "button";
-      b.className = "tecnica";
-      b.setAttribute("aria-expanded", "false");
-      b.innerHTML = "<span></span>" + flecha;
-      b.firstChild.textContent = t;
-      b.addEventListener("click", function () { alternarAviso(li, b, t); });
-      li.appendChild(b);
-      ul.appendChild(li);
-      return { li: li, b: b, t: t, p: plano(t) };
+  /* ---------- Ingresar / Crear cuenta ---------- */
+  function slugDe(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-"); }
+  var CON_DETALLE = ["mastectomia", "tiroidectomia", "colecistectomia", "hemicolectomia-derecha", "eventrorrafia"];
+  // El hash dice qué pestaña abrir y qué técnica se quería ver: #crear~tiroidectomia
+  var partes = decodeURIComponent(location.hash.slice(1)).split("~"), modo = partes[0] === "crear" ? "crear" : "ingresar", clave = partes[1] || "";
+  var tecnica = null, especialidad = null;
+  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { if (slugDe(t) === clave) { tecnica = t; especialidad = e[0]; } }); });
+  if (tecnica) {
+    if (SIN_MESA.indexOf(tecnica) !== -1) {
+      // Sin mesa en el catálogo: la vista no la muestra ni la promete
+      document.querySelectorAll(".pestanas-falsas span").forEach(function (sp) { if (/Mesa/.test(sp.textContent)) sp.remove(); });
+      document.getElementById("pt-candado").textContent = "Con una cuenta gratuita se abre por dentro: datos clínicos e instrumental.";
+    }
+    document.getElementById("pt-nombre").textContent = tecnica;
+    document.getElementById("pt-esp").textContent = especialidad;
+    document.getElementById("pt-ruta-esp").textContent = especialidad;
+  } else {
+    // Sin técnica de por medio: el catálogo en general
+    document.getElementById("pt-nombre").textContent = "Todas las técnicas";
+    document.getElementById("pt-esp").textContent = "Cada técnica, con su instrumental y su mesa.";
+    document.getElementById("pt-ruta-sep").hidden = true; document.getElementById("pt-ruta-esp").hidden = true;
+    document.getElementById("pt-candado").textContent = "Con una cuenta gratuita se abre cada técnica por dentro, y SIMIQ3D y SIVRI.";
+    document.getElementById("pt-promesa").textContent = "Con una cuenta gratuita se abre cada técnica por dentro.";
+    var chips = document.getElementById("pt-chips");
+    ESPECIALIDADES.forEach(function (e) { var c = document.createElement("span"); c.textContent = e[0]; chips.appendChild(c); });
+    chips.hidden = false;
+  }
+  var destino = tecnica ? (CON_DETALLE.indexOf(clave) !== -1 ? "tecnica.html#" + clave : "catalogo.html") : "catalogo.html";
+  // Mockup: entrar o registrarse lleva a donde se iba, sin autenticación real
+  document.querySelectorAll("[data-entrar]").forEach(function (el) {
+    el.addEventListener(el.tagName === "FORM" ? "submit" : "click", function (e) {
+      e.preventDefault();
+      // La autorización de datos (Decreto 1377) es lo único que no se puede saltar al crear la cuenta
+      if (el.id === "hoja-crear" && !acepto.checked) { error.hidden = false; filaAcepto.classList.add("con-error"); acepto.focus(); return; }
+      location.href = destino;
     });
-    lista.insertBefore(sec, vacio);
-    return { sec: sec, nombre: plano(e[0]), filas: filas };
   });
-  // Técnicas con su página en el mockup (Cirugía general)
-  function slugDe(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
-  function rutaTecnica(t) { return "cuenta.html#ingresar~" + slugDe(t); }
-  function alternarAviso(li, b, t) {
-    var mismo = avisoAbierto && avisoAbierto.li === li;
-    cerrarAviso();
-    if (mismo) return;
-    var div = document.createElement("div");
-    div.className = "aviso-cuenta";
-    div.setAttribute("role", "status");
-    div.id = "aviso-tecnica";
-    div.innerHTML = "<p>Para ver <b></b> por dentro, " + (SIN_MESA.indexOf(t) === -1 ? "con su mesa y su instrumental" : "con su instrumental") + ", se crea una cuenta gratuita.</p><div class='aviso-acciones'><a class='boton' href='cuenta.html#crear~" + slugDe(t) + "'>Crear cuenta gratis</a><a class='ingresar' href='" + rutaTecnica(t) + "'>Ya tengo cuenta</a></div>";
-    div.querySelector("b").textContent = t;
-    li.appendChild(div);
-    b.setAttribute("aria-expanded", "true");
-    b.setAttribute("aria-controls", "aviso-tecnica");
-    avisoAbierto = { li: li, b: b, div: div };
-  }
-  function cerrarAviso() {
-    if (!avisoAbierto) return;
-    avisoAbierto.div.remove();
-    avisoAbierto.b.setAttribute("aria-expanded", "false");
-    avisoAbierto.b.removeAttribute("aria-controls");
-    avisoAbierto = null;
-  }
-  function moverPlaca() {
-    var b = botonesEsp[elegida + 1];
-    if (!b.offsetParent) return;
-    var li = b.parentNode;
-    placa.style.height = b.offsetHeight + "px";
-    placa.style.transform = "translateY(" + li.offsetTop + "px)";
-  }
-  // FLIP: cada fila que sigue a la vista se desliza desde donde estaba
-  function conFlip(cambio) {
-    var antes = new Map();
-    if (!reducido) grupos.forEach(function (g) { g.filas.forEach(function (f) { if (f.li.offsetParent) antes.set(f.li, f.li.getBoundingClientRect().top); }); });
-    cambio();
-    if (reducido) return;
-    grupos.forEach(function (g) {
-      g.filas.forEach(function (f) {
-        if (!f.li.offsetParent) return;
-        var y0 = antes.get(f.li), y1 = f.li.getBoundingClientRect().top;
-        if (y0 === undefined) f.li.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" });
-        else if (Math.abs(y0 - y1) > 1) f.li.animate([{ transform: "translateY(" + (y0 - y1) + "px)" }, { transform: "none" }], { duration: 520, easing: "cubic-bezier(.16,1,.3,1)" });
-      });
-    });
-  }
-  function aplicar() {
-    var q = plano(buscar.value.trim()), hay = false;
-    limpiar.hidden = !buscar.value;
-    cerrarAviso();
-    grupos.forEach(function (g, i) {
-      var enEsp = elegida === -1 || elegida === i;
-      var porNombre = q && g.nombre.indexOf(q) !== -1;
-      var visibles = 0;
-      g.filas.forEach(function (f) {
-        var pos = q ? f.p.indexOf(q) : -1;
-        var ve = enEsp && (!q || porNombre || pos !== -1);
-        f.li.hidden = !ve;
-        var span = f.b.firstChild;
-        if (ve && pos !== -1) {
-          span.textContent = "";
-          span.append(f.t.slice(0, pos));
-          var m = document.createElement("mark"); m.textContent = f.t.slice(pos, pos + q.length); span.append(m);
-          span.append(f.t.slice(pos + q.length));
-        } else span.textContent = f.t;
-        if (ve) visibles++;
-      });
-      g.sec.hidden = !visibles;
-      if (visibles) hay = true;
-    });
-    vacio.hidden = hay;
-    if (!hay) document.getElementById("cat-vacio-titulo").textContent = q ? "Ninguna técnica coincide con «" + buscar.value.trim() + "»." : "No hay técnicas en esta especialidad.";
-  }
-  function elegir(i) {
-    elegida = i;
-    botonesEsp.forEach(function (b, j) { b.setAttribute("aria-pressed", String(j === i + 1)); });
-    moverPlaca();
-    // En celular, el chip elegido entra a la vista
-    var nav = filtro.parentNode, chip = botonesEsp[i + 1];
-    if (nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: chip.offsetLeft - 16, behavior: reducido ? "auto" : "smooth" });
-    conFlip(aplicar);
-  }
-  buscar.addEventListener("input", function () { conFlip(aplicar); });
-  limpiar.addEventListener("click", function () { buscar.value = ""; conFlip(aplicar); buscar.focus(); });
-  document.getElementById("ver-todas").addEventListener("click", function () { buscar.value = ""; elegir(-1); });
-  addEventListener("resize", moverPlaca);
-  // Escape cierra el aviso y devuelve el foco a su técnica
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && avisoAbierto && !abierto) { var b = avisoAbierto.b; cerrarAviso(); b.focus(); }
+  var acepto = document.getElementById("c-acepto"), error = document.getElementById("c-error"), filaAcepto = document.getElementById("c-acepto-fila");
+  acepto.addEventListener("change", function () { if (acepto.checked) { error.hidden = true; filaAcepto.classList.remove("con-error"); } });
+  // «Ingresar» y «Crear cuenta» de la barra, en esta misma página: cambian de pestaña sin perder la técnica
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest('a[href^="cuenta.html#"]');
+    if (!a) return;
+    e.preventDefault(); abrirMenu(null);
+    elegir(document.getElementById(a.getAttribute("href").indexOf("#crear") !== -1 ? "tab-crear" : "tab-ingresar"));
+    scrollTo(0, 0);
   });
-  if (document.fonts) document.fonts.ready.then(moverPlaca);
-  placa.style.transition = "none";
-  moverPlaca();
-  requestAnimationFrame(function () { placa.style.transition = ""; });
-
-  /* ---------- Atajos para las capturas del mockup ---------- */
-  var atajo = decodeURIComponent(location.hash.replace("#", ""));
-  if (atajo === "panel-movil") abrirMenu(atajo);
+  document.querySelectorAll("[data-ver]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var inp = document.getElementById(b.dataset.ver), ver = inp.type === "password";
+      inp.type = ver ? "text" : "password"; b.textContent = ver ? "Ocultar" : "Mostrar";
+    });
+  });
+  // Pestañas: la raya se desliza bajo la elegida y el título acompaña
+  var tabs = [].slice.call(document.querySelectorAll(".pestanas-cuenta [role=tab]")), raya = document.querySelector(".pestanas-cuenta .raya");
+  function moverRaya() { var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0]; raya.style.width = t.offsetWidth + "px"; raya.style.transform = "translateX(" + t.offsetLeft + "px)"; }
+  function elegir(t) {
+    tabs.forEach(function (x) { var si = x === t; x.setAttribute("aria-selected", String(si)); x.tabIndex = si ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !si; });
+    document.getElementById("t-cuenta").textContent = t.id === "tab-crear" ? "Crear una cuenta gratis" : "Ingresar a IQ Platform";
+    document.title = (t.id === "tab-crear" ? "Crear cuenta" : "Ingresar") + " · IQ Platform";
+    moverRaya();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { elegir(t); });
+    t.addEventListener("keydown", function (e) { if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return; var j = (i + 1) % 2; elegir(tabs[j]); tabs[j].focus(); });
+  });
+  addEventListener("resize", moverRaya);
+  if (document.fonts) document.fonts.ready.then(moverRaya);
+  raya.style.transition = "none";
+  elegir(document.getElementById("tab-" + modo));
+  requestAnimationFrame(function () { raya.style.transition = ""; });
+  if (modo === "crear") document.getElementById("c-acepto").checked = false;
+  if (location.hash.indexOf("error") !== -1) { error.hidden = false; filaAcepto.classList.add("con-error"); }
+  var atajo = location.hash.replace("#", "");
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("esp-") === 0) elegir(+atajo.slice(4));
-  // Desde el menú, dentro del mismo catálogo: el cambio de hash elige la especialidad
-  addEventListener("hashchange", function () { var h = location.hash.slice(1); if (h.indexOf("esp-") === 0) elegir(+h.slice(4)); });
-  if (atajo.indexOf("buscar-") === 0) { buscar.value = atajo.slice(7); aplicar(); }
-  if (atajo.indexOf("aviso-") === 0) { var f = grupos[0].filas[+atajo.slice(6)]; alternarAviso(f.li, f.b, f.t); }
 })();
 </script>
 </body>

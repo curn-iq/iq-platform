@@ -684,8 +684,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
-    <a class="ingresar" href="#">Ingresar</a>
-    <a class="boton" href="#">Crear cuenta</a>
+    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
+    <a class="boton" href="cuenta.html#crear">Crear cuenta</a>
     <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -749,8 +749,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
   <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
   <div class="acciones-movil">
-    <a class="boton grande" href="#">Crear cuenta gratis</a>
-    <a class="ingresar" href="#">Ingresar</a>
+    <a class="boton grande" href="cuenta.html#crear">Crear cuenta gratis</a>
+    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
   </div>
 </nav>
 
@@ -765,7 +765,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       </h1>
       <p class="lede">Consultarla, verla en 3D y comprobarla con la cámara, fuera del laboratorio.</p>
       <div class="acciones">
-        <a class="boton grande" href="#">Crear cuenta gratis
+        <a class="boton grande" href="cuenta.html#crear">Crear cuenta gratis
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         <a class="enlace" href="#camino">Ver cómo funciona
@@ -935,7 +935,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     <div class="especialidades" id="cat-especialidades"></div>
     <div class="aviso-cuenta" id="aviso-cuenta" hidden aria-live="polite">
       <p id="aviso-cuenta-texto"></p>
-      <div class="aviso-acciones"><a class="boton" href="#">Crear cuenta gratis</a><a class="ingresar" id="aviso-ingresar" href="#">Ya tengo cuenta</a></div>
+      <div class="aviso-acciones"><a class="boton" id="aviso-crear" href="cuenta.html#crear">Crear cuenta gratis</a><a class="ingresar" id="aviso-ingresar" href="#">Ya tengo cuenta</a></div>
     </div>
   </section>
 
@@ -1108,7 +1108,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   // Técnicas cuya mesa aún no está en el catálogo: su aviso no la promete
   var SIN_MESA = ["Nefrectomía laparoscópica"];
   // Técnicas con su página en el mockup (Cirugía general)
-  function rutaTecnica(t) { return ["Mastectomía", "Tiroidectomía", "Colecistectomía", "Hemicolectomía derecha", "Eventrorrafia"].indexOf(t) === -1 ? "#" : "tecnica.html#" + t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
+  function slugDe(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
+  function rutaTecnica(t) { return "cuenta.html#ingresar~" + slugDe(t); }
   var catalogo = document.getElementById("cat-especialidades");
   var listaEsp = document.getElementById("panel-lista-esp");
   function mostrarEspecialidad(i) {
@@ -1144,6 +1145,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         avisoTexto.innerHTML = "Para ver <b></b> por dentro, " + (SIN_MESA.indexOf(t) === -1 ? "con su mesa y su instrumental" : "con su instrumental") + ", se crea una cuenta gratuita.";
         avisoTexto.querySelector("b").textContent = t;
         document.getElementById("aviso-ingresar").href = rutaTecnica(t);
+        document.getElementById("aviso-crear").href = "cuenta.html#crear~" + slugDe(t);
         aviso.hidden = false;
       });
       li.appendChild(b);
