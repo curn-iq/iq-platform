@@ -5,6 +5,10 @@
 > Claude Code (o cualquier colaborador) pueda trabajar sin tener que reconstruir
 > este contexto desde cero ni depender del Drive del proyecto.
 
+**Idioma: responder SIEMPRE en español.** Todo mensaje al usuario va en
+español, sin excepción: respuestas, avisos cortos entre pasos, resúmenes y
+preguntas. Nunca en inglés.
+
 ## Quiénes somos y qué es esto
 
 Proyecto de grado de Ingeniería de Sistemas en la Corporación Universitaria Rafael
@@ -278,6 +282,9 @@ basado en rol a los tres módulos, usando el JWT emitido por DataIQ. **No se
 categoriza como "M4"** porque, a diferencia de M1/M2/M3, no tiene backend ni
 base de datos propios — es una capa de frontend/routing sobre los módulos
 existentes. Dónde vivirá exactamente en el repo está **por definir**.
+
+**Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
+mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.
 
 ## Comunicación entre módulos (regla central, no romper)
 
