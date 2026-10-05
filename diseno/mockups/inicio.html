@@ -25,7 +25,7 @@
   /* Cámara: menta para detecciones, rojo solo para "fuera de lugar" */
   --menta: #38e2b3;
   --alerta-noche: #ff6b6b;
-  /* Capítulos oscuros */
+  /* Noche: la vista de cámara y el pie */
   --noche: #061217;
   --noche-2: #0c1e24;
   --filete-noche: #1d353d;
@@ -77,7 +77,7 @@ h1, h2 { text-wrap: balance; }
 .marca-iq { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
 .nav { display: flex; gap: 2px; }
 .nav > a, .nav > button {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
   height: 40px; padding: 0 14px; border: 0; border-radius: 8px;
   background: transparent; color: var(--tinta-2); font-size: 15.5px; font-weight: 550; cursor: pointer;
   transition: background .2s var(--cuarta), color .2s var(--cuarta);
@@ -106,28 +106,61 @@ h1, h2 { text-wrap: balance; }
 .enlace:hover svg { transform: translate(3px, 0); }
 .menu-movil { display: none; }
 
-/* Desplegable de Productos */
-.desplegable {
+/* Barra: cada botón solo abre su panel; las opciones de adentro son las que llevan a otra página */
+.panel-nav {
   position: fixed; top: var(--barra); left: 0; right: 0; z-index: 45;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, .9fr); gap: 12px;
-  padding: 20px var(--lado) 28px;
-  background: var(--superficie);
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start;
+  padding: 40px var(--lado) 44px;
+  background: var(--fondo);
   border-bottom: 1px solid var(--filete);
-  box-shadow: 0 18px 28px -22px rgba(10, 27, 34, .4);
+  box-shadow: 0 24px 40px -32px rgba(10, 27, 34, .4);
   animation: bajar .4s var(--expo);
 }
-.desplegable[hidden] { display: none; }
+.panel-nav[hidden] { display: none; }
 @keyframes bajar { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-.prod-menu { display: grid; gap: 12px; align-content: start; padding: 12px; border-radius: 14px; transition: background .2s var(--cuarta); }
-.prod-menu:hover { background: var(--fondo); }
-.prod-menu .mini { display: block; height: 120px; border-radius: 10px; border: 1px solid var(--filete); overflow: hidden; }
-.prod-menu .mini svg { display: block; width: 100%; height: 100%; }
-.prod-menu strong { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
-.prod-menu .linea { display: block; margin-top: 4px; color: var(--tinta-3); font-size: 15px; line-height: 1.45; }
-.inst-menu { margin: 12px 0 12px 12px; padding: 20px; border-radius: 14px; background: var(--fondo); display: grid; align-content: space-between; gap: 16px; }
-.inst-menu p { color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
-.inst-menu strong { display: block; font-size: 18px; margin-bottom: 6px; color: var(--tinta); }
-.solo-movil { display: none; }
+.panel-cabeza { grid-column: 1 / 4; display: grid; gap: 12px; }
+.panel-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.panel-linea { color: var(--tinta-3); font-size: 16px; line-height: 1.5; max-width: 26ch; }
+.panel-lista { grid-column: 4 / 9; list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.panel-lista a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 4px; border-bottom: 1px solid var(--filete); transition: padding .35s var(--expo); }
+.panel-lista strong { display: block; font-size: 20px; font-weight: 650; letter-spacing: -.02em; transition: color .2s var(--cuarta); }
+.panel-lista a span span { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 15px; }
+.panel-lista svg { color: var(--marca); opacity: 0; transform: translateX(-6px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
+.panel-lista a:hover, .panel-lista a:focus-visible, .panel-lista a.activa { padding-left: 12px; }
+.panel-lista a:hover svg, .panel-lista a:focus-visible svg, .panel-lista a.activa svg { opacity: 1; transform: none; }
+.panel-lista a.activa strong { color: var(--marca); }
+.panel-vista { grid-column: 9 / 13; }
+.vista-pie { margin-top: 12px; color: var(--tinta-3); font-size: 14px; }
+/* Vista previa de Herramientas: la misma mesa cambia según la herramienta señalada */
+.vista-mesa { position: relative; isolation: isolate; display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 16px; background: linear-gradient(180deg, #ffffff, #eef3f4); perspective: 1200px; overflow: hidden; }
+.vista-mesa::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--noche); opacity: 0; transition: opacity .5s var(--cuarta); }
+.vista-mesa[data-vista="camara"]::before { opacity: 1; }
+.vista-mesa .mini-funda { width: 62%; transform-style: preserve-3d; transition: transform 1s var(--expo), filter .5s var(--cuarta); }
+.vista-mesa[data-vista="3d"] .mini-funda { transform: rotateX(44deg) rotateZ(-28deg) scale(.88); }
+.vista-mesa[data-vista="camara"] .mini-funda { filter: saturate(.55) brightness(.86); }
+.vista-mesa .numero { transition: opacity .3s var(--cuarta); }
+.vista-mesa[data-vista="camara"] .numero { opacity: 0; }
+.vista-mesa .detecciones { opacity: 0; transition: opacity .4s var(--cuarta); }
+.vista-mesa[data-vista="camara"] .detecciones { opacity: 1; }
+.vista-mesa[data-vista="camara"] .pieza[data-n="6"] .forma { transform: translate(100px, 0); }
+/* Vistas previas de las otras categorías */
+.vista-titulo { padding-bottom: 8px; color: var(--tinta-3); font-size: 14px; font-weight: 650; }
+.vista-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.vista-lista li { padding: 10px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 15.5px; }
+.vista-frase { padding: 28px; border-radius: 16px; background: var(--noche); color: #fff; font-size: 26px; line-height: 1.12; font-weight: 650; letter-spacing: -.03em; }
+.vista-frase em { font-style: normal; color: var(--menta); }
+/* Menú completo en celular */
+.panel-movil { position: fixed; top: var(--barra); left: 0; right: 0; bottom: 0; z-index: 45; overflow-y: auto; padding: 8px var(--lado) 32px; background: var(--superficie); animation: bajar .4s var(--expo); }
+.panel-movil[hidden] { display: none; }
+.panel-movil details { border-bottom: 1px solid var(--filete); }
+.panel-movil summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 16px 0; font-size: 18px; font-weight: 650; cursor: pointer; }
+.panel-movil summary::-webkit-details-marker { display: none; }
+.panel-movil summary svg { transition: transform .3s var(--expo); }
+.panel-movil details[open] summary svg { transform: rotate(180deg); }
+.panel-movil details ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 2px; }
+.panel-movil details li a { display: block; padding: 8px 0; color: var(--tinta-2); font-size: 16px; }
+.panel-movil .acciones-movil { display: grid; gap: 10px; margin-top: 24px; }
+.panel-movil .acciones-movil .ingresar { justify-content: center; height: 48px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--filete); }
 
 /* ---------- Portada: titular a la izquierda, la mesa a la derecha ---------- */
 .portada {
@@ -314,7 +347,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .escenario[data-vista="camara"] .estado .demo { color: var(--niebla-noche); }
 
 /* ---------- Secciones ---------- */
-.seccion { padding-block: clamp(96px, 14vh, 160px); }
+.seccion { --fa: clamp(72px, 10vh, 112px); --fb: var(--fa); padding-block: var(--fa) var(--fb); }
 .titulo-seccion { font-size: clamp(38px, 4.2vw, 68px); line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
 .texto-seccion { color: var(--tinta-2); font-size: 18px; line-height: 1.6; max-width: 46ch; }
 
@@ -399,54 +432,141 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .pie-camara .no b { color: var(--alerta-noche); }
 .pie-camara .boton { margin-left: auto; height: 34px; padding: 0 14px; font-size: 14px; border-radius: 9px; background: var(--menta); color: var(--noche); box-shadow: none; }
 
-/* Para quien estudia y para quien enseña: dos perfiles de distinto peso */
+/* Para quien estudia y para quien enseña: dos perfiles pequeños, cada uno con su ilustración */
 .quien { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; align-items: start; }
-.quien > header { grid-column: 1 / 5; display: grid; gap: 22px; }
-.estudiante { grid-column: 5 / 10; display: grid; gap: 18px; padding-top: 28px; border-top: 1px solid var(--filete); }
-.docente { grid-column: 10 / 13; display: grid; gap: 18px; padding-top: 28px; border-top: 1px solid var(--filete); }
-.estudiante h3, .docente h3 { font-size: 26px; font-weight: 650; letter-spacing: -.03em; }
-.estudiante > p, .docente > p { color: var(--tinta-2); font-size: 16.5px; line-height: 1.55; max-width: 44ch; }
-.practica { border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); padding: 8px 20px 14px; }
-.practica-fila { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 18px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--filete); font-size: 15px; }
-.practica-fila b { font-weight: 650; }
-.barra-p { height: 6px; border-radius: 6px; background: var(--fondo); overflow: hidden; }
-.barra-p i { display: block; height: 100%; border-radius: 6px; background: var(--marca); }
-.practica-fila .por { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--marca); }
-.practica .demo { display: block; padding-top: 10px; }
-.clase { border-radius: 16px; background: var(--marca-hondo); color: #fff; padding: 20px; display: grid; gap: 12px; }
-.clase strong { font-size: 18px; font-weight: 650; line-height: 1.3; }
-.clase ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
-.clase li { display: flex; justify-content: space-between; gap: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, .16); }
-.clase li span { color: #b8dcd4; }
-.clase .demo { color: #b8dcd4; }
+.quien > header { grid-column: 1 / 6; display: grid; gap: 22px; }
+.perfiles { grid-column: 7 / 13; display: grid; }
+.perfil-chico { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 28px; align-items: center; padding-block: 24px; border-top: 1px solid var(--filete); }
+.perfil-chico:last-child { border-bottom: 1px solid var(--filete); }
+.perfil-chico h3 { font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
+.perfil-chico p { margin-top: 8px; color: var(--tinta-2); font-size: 16px; line-height: 1.5; }
+.pictograma { width: 120px; height: 120px; }
+.pictograma .tarjeta, .pictograma .sello { transform-box: fill-box; transform-origin: center; transition: transform .6s var(--expo); }
+.perfil-chico:hover .tarjeta.atras { transform: rotate(-8deg) translateX(-4px); }
+.perfil-chico:hover .tarjeta.frente { transform: rotate(6deg) translateX(4px); }
+.perfil-chico:hover .sello { transform: scale(1.12) rotate(-8deg); }
 
-/* Para instituciones: el documento de cada programa, tal como lo escribe */
-.instituciones { background: var(--noche); color: #fff; }
-.inst { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; align-items: center; }
-.inst-texto { grid-column: 1 / 6; display: grid; gap: 26px; }
-.inst-texto .texto-seccion { color: var(--niebla-noche); }
-.inst-puntos { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--filete-noche); }
-.inst-puntos li { padding: 14px 0; border-top: 1px solid var(--filete-noche); color: var(--niebla-noche); font-size: 16px; line-height: 1.5; }
-.inst-puntos b { color: #fff; font-weight: 650; }
-.instituciones .enlace { color: var(--menta); }
-.traduccion { grid-column: 7 / 13; border-radius: 20px; background: var(--noche-2); box-shadow: inset 0 0 0 1px var(--filete-noche); padding: 24px 26px 18px; }
-.traduccion-titulo { font-size: 20px; font-weight: 650; letter-spacing: -.02em; margin-bottom: 18px; }
-.traduccion-cabeza { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.25fr); gap: 12px; padding-bottom: 14px; font-size: 13px; font-weight: 600; color: var(--niebla-noche); }
-.traduccion-fila { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.25fr); gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--filete-noche); }
-.traduccion-fila .doc { font-family: var(--datos); font-size: 13.5px; color: #d3e2e7; }
-.traduccion-fila .iq { font-size: 16px; font-weight: 600; color: #fff; }
-.traduccion-fila svg { justify-self: center; }
-.pie-trad { display: flex; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--filete-noche); font-size: 13px; color: var(--niebla-noche); }
+/* Técnicas por especialidad: el catálogo, a lo ancho */
+.catalogo-cabeza, .inv-cabeza { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; }
+.catalogo-cabeza .titulo-seccion, .inv-cabeza .titulo-seccion { grid-column: 1 / 7; }
+.catalogo-cabeza .texto-seccion, .inv-cabeza .texto-seccion { grid-column: 8 / 13; }
+.catalogo-cabeza .enlace { grid-column: 10 / 13; justify-self: end; padding-bottom: 6px; }
+.especialidades { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 48px; border-top: 2px solid var(--tinta); }
+.especialidad { padding: 22px 22px 8px 0; }
+.especialidad + .especialidad { padding-left: 22px; border-left: 1px solid var(--filete); }
+.especialidad h3 { margin-bottom: 14px; font-size: 20px; font-weight: 650; letter-spacing: -.02em; }
+.especialidad ul { list-style: none; margin: 0; padding: 0; }
+.especialidad button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border: 0; border-top: 1px solid var(--filete); background: transparent; color: var(--tinta-2); font-size: 15.5px; text-align: left; cursor: pointer; transition: color .2s var(--cuarta); }
+.especialidad button svg { flex: none; opacity: 0; transform: translateX(-4px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
+.especialidad button:hover, .especialidad button[aria-pressed="true"] { color: var(--marca); }
+.especialidad button:hover svg, .especialidad button[aria-pressed="true"] svg { opacity: 1; transform: none; }
+/* Tramos de color: cada sección tiene el suyo. El cambio al vecino ocurre dentro de los
+   rellenos (--fa arriba, --fb abajo), nunca debajo del contenido: media curva suave a cada
+   lado del límite, que se encuentran en la mezcla de ambos colores. Mezcla en OKLab. */
+:where(.tramo) { --fa: 0px; --fb: 0px; --antes: var(--color); --despues: var(--color); }
+.tramo {
+  --arriba: color-mix(in oklab, var(--antes), var(--color));
+  --abajo: color-mix(in oklab, var(--color), var(--despues));
+  position: relative; isolation: isolate; background-color: var(--color);
+}
+/* El fundido va en una capa detrás del contenido; el fondo de la sección es su color sólido */
+.tramo::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(in oklab,
+    var(--arriba) 0,
+    color-mix(in oklab, var(--color) 44%, var(--arriba)) calc(var(--fa) * .25),
+    color-mix(in oklab, var(--color) 75%, var(--arriba)) calc(var(--fa) * .5),
+    color-mix(in oklab, var(--color) 94%, var(--arriba)) calc(var(--fa) * .75),
+    var(--color) var(--fa),
+    var(--color) calc(100% - var(--fb)),
+    color-mix(in oklab, var(--abajo) 6%, var(--color)) calc(100% - var(--fb) * .75),
+    color-mix(in oklab, var(--abajo) 25%, var(--color)) calc(100% - var(--fb) * .5),
+    color-mix(in oklab, var(--abajo) 56%, var(--color)) calc(100% - var(--fb) * .25),
+    var(--abajo) 100%);
+}
+#inicio { --color: var(--fondo); --despues: var(--superficie); --fb: 96px; }
+#camino { --antes: var(--fondo); --color: var(--superficie); --despues: var(--fondo); --fa: 96px; --fb: 96px; }
+#especialidades { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
+#investigacion { --antes: var(--fondo); --color: var(--superficie); --despues: var(--fondo); }
+#quien { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
+#preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
+.pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
+.aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
+.aviso-cuenta[hidden] { display: none; }
+.aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
+.aviso-cuenta b { font-weight: 700; }
+
+/* Lo que dice la investigación: capítulo oscuro */
+.investigacion { overflow: clip; }
+.inv { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; align-items: center; }
+.inv-texto { position: relative; z-index: 1; grid-column: 1 / 6; display: grid; gap: 28px; justify-items: start; }
+.conclusiones { list-style: none; margin: 0; padding: 0; width: 100%; border-top: 1px solid var(--filete); }
+.conclusiones li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 17px; line-height: 1.45; }
+.conclusiones b { color: var(--tinta); font-weight: 600; }
+/* La espiral vive suelta en la sección, sin marco, y sale por el borde derecho */
+.espiral { grid-column: 6 / 13; margin: 0 calc(-1 * var(--lado)) 0 0; pointer-events: none; }
+.logros-lista { display: none; list-style: none; margin: 4px 0 0; padding: 0; gap: 10px; justify-items: start; }
+.logros-lista li { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px 0 8px; border-radius: 20px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); color: var(--tinta); font-size: 15px; font-weight: 600; opacity: .3; transition: opacity .5s var(--cuarta); }
+.logros-lista li.visible { opacity: 1; }
+.logros-lista .ficha { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; }
+.logros-lista li.final { background: var(--marca); box-shadow: none; color: #fff; }
+.logros-lista li.final .ficha { background: #fff; color: var(--marca); }
+.espiral > svg { display: block; width: 100%; height: auto; overflow: hidden; transition: opacity .6s var(--cuarta); }
+.espiral.apagando > svg { opacity: 0; }
+.guia { fill: none; stroke: var(--filete-2); stroke-width: 1.4; }
+.guia.atras { stroke-dasharray: 2 6; }
+.luz { fill: none; stroke: var(--marca); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.luz.atras { opacity: .3; stroke-width: 1.8; }
+.cola { fill: none; stroke: var(--marca); stroke-width: 9; stroke-linecap: round; opacity: .28; }
+.espiral.completo .luz.delante { filter: drop-shadow(0 2px 6px rgba(13, 106, 94, .3)); }
+.pulso { fill: var(--marca-hondo); }
+.pulso-halo { fill: var(--marca); opacity: .25; }
+.motas { opacity: .45; }
+.motas circle { fill: var(--marca); }
+.estacion .nodo { fill: var(--superficie); stroke: var(--filete-2); stroke-width: 1.8; transition: fill .35s var(--cuarta), stroke .35s var(--cuarta); }
+.estacion .anillo { fill: none; stroke: var(--marca); stroke-width: 1.6; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.estacion.encendida .nodo { fill: var(--marca); stroke: var(--marca); }
+.estacion.encendida .anillo { animation: anillo 1.1s var(--expo); }
+@keyframes anillo { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(3.6); } }
+.nivel { fill: none; stroke: var(--marca); stroke-width: 1.6; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.nivel.destello { animation: nivel 1.2s var(--expo); }
+@keyframes nivel { from { opacity: .8; transform: scale(1); } to { opacity: 0; transform: scale(1.14); } }
+.haz { fill: none; stroke: url(#haz); stroke-width: 3; stroke-linecap: round; }
+/* Logros: aparecen al cerrar cada vuelta */
+.logro { opacity: 0; transform: translateX(-14px); transition: opacity .5s var(--cuarta), transform .7s var(--expo); }
+.logro.visible { opacity: 1; transform: none; }
+.logro-fondo { fill: var(--superficie); stroke: var(--filete); stroke-width: 1.2; filter: drop-shadow(0 6px 10px rgba(10, 27, 34, .08)); }
+.logro .ficha { fill: var(--marca); }
+.logro .visto { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.logro text { font-family: var(--letra); font-size: 17px; font-weight: 600; fill: var(--tinta); dominant-baseline: middle; }
+.logro.final .logro-fondo { fill: var(--marca); stroke: var(--marca); }
+.logro.final .ficha { fill: #fff; }
+.logro.final .visto { stroke: var(--marca); }
+.logro.final text { fill: #fff; }
+
+/* Preguntas frecuentes: compactas, una pestaña por grupo y dos columnas */
+.seccion.compacta { --fa: clamp(64px, 9vh, 104px); --fb: var(--fa); }
+.preguntas { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 32px; align-items: start; }
+.preguntas > header { grid-column: 1 / 6; display: grid; gap: 22px; justify-items: start; }
+.grupos-preguntas { grid-column: 7 / 13; border-top: 1px solid var(--tinta); }
+.grupo-p { border-bottom: 1px solid var(--filete-2); }
+.grupo-p > summary, .lista-preguntas summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 24px; cursor: pointer; }
+.grupo-p > summary::-webkit-details-marker, .lista-preguntas summary::-webkit-details-marker { display: none; }
+.grupo-p > summary { padding: 22px 0; font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
+.grupo-p > summary svg { flex: none; color: var(--marca); transition: transform .4s var(--expo); }
+.grupo-p[open] > summary svg { transform: rotate(180deg); }
+.lista-preguntas { margin-bottom: 20px; padding-left: 24px; border-left: 2px solid var(--marca-claro); animation: aparecer .4s var(--expo); }
+.lista-preguntas details + details { border-top: 1px solid var(--filete); }
+.lista-preguntas summary { padding: 14px 0; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.lista-preguntas summary svg { flex: none; color: var(--marca); transition: transform .35s var(--expo); }
+.lista-preguntas details[open] summary svg { transform: rotate(45deg); }
+.lista-preguntas details p { max-width: 56ch; padding: 0 40px 16px 0; color: var(--tinta-2); font-size: 16px; line-height: 1.55; }
 
 /* Cierre: el campo, plano */
-.cierre { background: var(--pano); color: #fff; padding-block: clamp(96px, 14vh, 150px) clamp(64px, 9vh, 96px); overflow: hidden; }
-.cierre h2 { font-size: clamp(60px, 13.6vw, 236px); line-height: .98; font-weight: 650; letter-spacing: -.04em; }
-.cierre-fila { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-top: clamp(40px, 6vh, 64px); padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, .26); }
-.cierre-fila p { font-size: 20px; max-width: 40ch; color: #e6f3f0; }
 
 /* Pie */
-.pie { background: var(--noche); color: var(--niebla-noche); padding-block: 64px 40px; }
-.pie-rejilla { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
+.pie { color: var(--niebla-noche); padding-block: 120px 40px; }
+.pie-rejilla { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr)); gap: 40px; }
 .pie .marca-iq { color: #fff; }
 .pie-rejilla > div:first-child p { margin-top: 14px; max-width: 34ch; font-size: 15px; line-height: 1.55; }
 .pie-titulo { color: #fff; font-size: 15px; font-weight: 650; margin-bottom: 14px; }
@@ -460,6 +580,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 /* ---------- Tableta ---------- */
 @media (max-width: 1100px) {
+  .barra { gap: 20px; }
+  .nav > a, .nav > button { padding: 0 9px; }
   .portada { min-height: 0; row-gap: 40px; padding-block: 48px 40px; }
   .cabeza { grid-column: 1 / -1; }
   .lede { max-width: 52ch; }
@@ -471,24 +593,30 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .recorrido { grid-column: 8 / 13; }
   .producto { grid-template-columns: minmax(0, 1fr); width: min(760px, 84vw); }
   .producto-visual { min-height: 340px; }
-  .quien > header, .estudiante, .docente { grid-column: 1 / -1; }
-  .inst-texto, .traduccion { grid-column: 1 / -1; }
-  .pie-rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .quien > header, .perfiles { grid-column: 1 / -1; }
+  .grupos-preguntas { grid-column: 1 / -1; }
+  .catalogo-cabeza .titulo-seccion, .catalogo-cabeza .texto-seccion, .inv-cabeza .titulo-seccion, .inv-cabeza .texto-seccion, .preguntas > header { grid-column: 1 / -1; }
+  .catalogo-cabeza .texto-seccion, .inv-cabeza .texto-seccion { margin-top: 18px; }
+  .catalogo-cabeza .enlace { grid-column: 1 / -1; justify-self: start; margin-top: 18px; }
+  .especialidades { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .inv-texto { grid-column: 1 / -1; }
+  .espiral { grid-column: 1 / -1; justify-self: center; width: min(100%, 820px); margin: 0; }
+  .especialidad:nth-child(4) { padding-left: 0; border-left: 0; }
+  .hallazgos { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .hallazgo:nth-child(3) { padding-left: 0; border-left: 0; }
+  .pie-rejilla { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pie-rejilla > div:first-child { grid-column: 1 / -1; }
+}
+/* ---------- Barra compacta: por debajo de 960px los menús pasan al panel ---------- */
+@media (max-width: 960px) {
+  .nav, .derecha .boton, .panel-nav { display: none !important; }
+  .menu-movil { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+  .menu-movil[aria-expanded="true"] { background: #e6eded; }
 }
 /* ---------- Celular ---------- */
 @media (max-width: 760px) {
   :root { --barra: 64px; }
   .barra { gap: 12px; }
-  .nav, .derecha .boton { display: none; }
-  .menu-movil { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
-  .menu-movil[aria-expanded="true"] { background: #e6eded; }
-  .desplegable { bottom: 0; overflow-y: auto; grid-template-columns: minmax(0, 1fr); align-content: start; padding: 12px var(--lado) 32px; }
-  .prod-menu { grid-template-columns: 96px minmax(0, 1fr); align-items: center; padding: 10px 0; }
-  .prod-menu .mini { height: 72px; }
-  .inst-menu { margin: 8px 0 0; }
-  .solo-movil { display: grid; gap: 10px; margin-top: 8px; }
-  .solo-movil a:not(.boton) { padding: 14px 0; font-size: 18px; font-weight: 650; border-top: 1px solid var(--filete); }
   .portada { padding-block: 36px 32px; }
   .acciones .boton { width: 100%; }
   .escenario { padding: 12px; border-radius: 20px; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; gap: 12px; }
@@ -515,10 +643,16 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .dq-lista { display: none; }
   .s3 { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 220px; }
   .chat { border-right: 0; border-bottom: 1px solid var(--filete); }
-  .practica-fila { grid-template-columns: minmax(0, 1fr) auto; }
-  .practica-fila .barra-p { grid-column: 1 / -1; grid-row: 2; }
-  .traduccion { padding: 18px; }
-  .traduccion-cabeza, .traduccion-fila { grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1.2fr); gap: 8px; }
+  .especialidades, .hallazgos { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .especialidad, .especialidad + .especialidad, .especialidad:nth-child(4), .hallazgo, .hallazgo + .hallazgo, .hallazgo:nth-child(3) { flex: none; width: 74vw; scroll-snap-align: start; padding: 22px 0 8px; border-left: 0; }
+  .lista-preguntas details p { padding-right: 0; }
+  .lista-preguntas { padding-left: 16px; }
+  .perfil-chico { grid-template-columns: 96px minmax(0, 1fr); gap: 18px; }
+  .pictograma { width: 96px; height: 96px; }
+  .panel-nav { display: none !important; }
+  .espiral { width: 100%; }
+  .espiral .logros { display: none; }
+  .logros-lista { display: grid; }
   .pie-rejilla { grid-template-columns: 1fr 1fr; }
 }
 </style>
@@ -547,59 +681,85 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     IQ Platform
   </a>
   <nav class="nav" aria-label="Principal">
-    <button type="button" class="abre-productos" aria-expanded="false" aria-controls="productos-menu">Productos
-      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <a href="#instituciones">Para instituciones</a>
-    <a href="#">Quiénes somos</a>
+    <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
     <a class="ingresar" href="#">Ingresar</a>
-    <a class="boton" href="#cierre">Crear cuenta</a>
-    <button type="button" class="menu-movil abre-productos" aria-expanded="false" aria-controls="productos-menu" aria-label="Abrir menú">
+    <a class="boton" href="#">Crear cuenta</a>
+    <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
   </div>
 </header>
 
-<div class="desplegable" id="productos-menu" role="region" aria-label="Productos" hidden>
-  <a class="prod-menu" href="#productos">
-    <span class="mini"><svg viewBox="0 0 240 120" aria-hidden="true"><rect width="240" height="120" fill="#f3f6f6"/><rect x="70" y="14" width="100" height="92" rx="6" fill="#1d7564"/><g stroke="#fff" stroke-opacity=".25"><path d="M84 14v92M98 14v92M112 14v92M126 14v92M140 14v92M154 14v92M70 27h100M70 40h100M70 53h100M70 66h100M70 79h100M70 92h100"/></g><g fill="#e4eaed"><circle cx="105" cy="21" r="4"/><circle cx="147" cy="21" r="4"/><circle cx="161" cy="34" r="4"/><circle cx="77" cy="60" r="4"/><circle cx="133" cy="86" r="4"/></g><rect x="182" y="24" width="44" height="6" rx="3" fill="#c4d1d4"/><rect x="182" y="38" width="36" height="6" rx="3" fill="#dbe4e6"/><rect x="182" y="52" width="40" height="6" rx="3" fill="#dbe4e6"/></svg></span>
-    <span><strong>DataIQ</strong><span class="linea">Cada técnica, con su instrumental y su mesa, para consultar en cualquier momento.</span></span>
-  </a>
-  <a class="prod-menu" href="#productos">
-    <span class="mini"><svg viewBox="0 0 240 120" aria-hidden="true"><rect width="240" height="120" fill="#f3f6f6"/><path d="M120 18l70 34-70 34-70-34z" fill="#1d7564"/><path d="M50 52v8l70 34 70-34v-8l-70 34z" fill="#0e463c"/><g fill="#e4eaed"><path d="M108 40l10-5 10 5-10 5z"/><path d="M136 54l10-5 10 5-10 5z"/><path d="M96 58l10-5 10 5-10 5z"/></g></svg></span>
-    <span><strong>SIMIQ3D</strong><span class="linea">La mesa de cada técnica en 3D, para girarla y recorrerla pieza por pieza.</span></span>
-  </a>
-  <a class="prod-menu" href="#productos">
-    <span class="mini"><svg viewBox="0 0 240 120" aria-hidden="true"><rect width="240" height="120" fill="#061217"/><rect x="74" y="16" width="92" height="88" rx="6" fill="#2d5a51"/><g fill="none" stroke-width="2"><rect x="88" y="26" width="22" height="22" rx="2" stroke="#38e2b3"/><rect x="128" y="30" width="22" height="22" rx="2" stroke="#38e2b3"/><rect x="104" y="66" width="22" height="22" rx="2" stroke="#ff6b6b"/></g><path d="M64 12h12M64 12v12M176 12h-12M176 12v12M64 108h12M64 108v-12M176 108h-12M176 108v-12" stroke="#fff" stroke-opacity=".7" stroke-width="2"/></svg></span>
-    <span><strong>SIVRI</strong><span class="linea">La cámara revisa la mesa armada y señala qué pieza mover.</span></span>
-  </a>
-  <div class="inst-menu">
-    <p><strong>Para instituciones</strong>IQ Platform con las técnicas de cada programa, como las enseña.</p>
-    <a class="enlace" href="#instituciones">Conocer la propuesta <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-  </div>
-  <div class="solo-movil">
-    <a href="#">Quiénes somos</a>
-    <a class="boton grande" href="#cierre">Crear cuenta gratis</a>
+<div class="panel-nav" id="panel-herramientas" role="region" aria-label="Herramientas" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Herramientas</p><p class="panel-linea">Tres formas de recorrer cada técnica.</p></div>
+  <ul class="panel-lista" data-vista-de="vista-herramientas">
+    <li><a href="#" data-vista="referencia"><span><strong>DataIQ</strong><span>Cada técnica, con su instrumental y su mesa</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#" data-vista="3d"><span><strong>SIMIQ3D</strong><span>La mesa en 3D, a una pregunta de distancia</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#" data-vista="camara"><span><strong>SIVRI</strong><span>La cámara revisa la mesa armada</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista">
+    <div class="vista-mesa" id="vista-herramientas" data-vista="referencia"><div class="mini-funda"><svg class="mesa-panel" viewBox="0 0 700 700" aria-hidden="true"></svg></div></div>
+    <p class="vista-pie">Tiroidectomía · Mesa de Mayo</p>
   </div>
 </div>
 
+<div class="panel-nav" id="panel-especialidades" role="region" aria-label="Especialidades" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Especialidades</p><p class="panel-linea">Cada técnica, con su instrumental y su mesa.</p></div>
+  <ul class="panel-lista" id="panel-lista-esp"></ul>
+  <div class="panel-vista"><p class="vista-titulo" id="vista-esp-titulo"></p><ul class="vista-lista" id="vista-esp"></ul></div>
+</div>
+
+<div class="panel-nav" id="panel-porque" role="region" aria-label="Por qué IQ Platform" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">¿Por qué IQ Platform?</p><p class="panel-linea">Qué hay detrás de cada herramienta.</p></div>
+  <ul class="panel-lista">
+    <li><a href="#"><span><strong>Cómo funciona</strong><span>Las tres herramientas, juntas</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>La investigación</strong><span>Por qué practicar así</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Quiénes somos</strong><span>El equipo detrás</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista"><p class="vista-frase">Con respuesta inmediata, <em>se aprende antes.</em></p></div>
+</div>
+
+<div class="panel-nav" id="panel-ayuda" role="region" aria-label="Ayuda" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Ayuda</p><p class="panel-linea">Respuestas cortas para empezar.</p></div>
+  <ul class="panel-lista">
+    <li><a href="#"><span><strong>Preguntas frecuentes</strong><span>Cuenta, técnicas y herramientas</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Guía para estudiantes</strong><span>Por dónde empezar</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Para docentes</strong><span>Acompañar la práctica</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista"><p class="vista-titulo">Lo más preguntado</p><ul class="vista-lista"><li>¿Cuánto cuesta?</li><li>¿Sirve si estudio en otra universidad?</li><li>¿Por cuál herramienta empiezo?</li></ul></div>
+</div>
+
+<nav class="panel-movil" id="panel-movil" aria-label="Menú" hidden>
+  <details><summary>Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></details>
+  <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"></ul></details>
+  <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
+  <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
+  <div class="acciones-movil">
+    <a class="boton grande" href="#">Crear cuenta gratis</a>
+    <a class="ingresar" href="#">Ingresar</a>
+  </div>
+</nav>
+
 <main>
   <!-- Portada -->
-  <section class="portada ancho" id="inicio" aria-labelledby="titular">
+  <section class="portada ancho tramo" id="inicio" aria-labelledby="titular">
     <div class="cabeza">
       <h1 id="titular" aria-label="La mesa de cada técnica, lista para practicar.">
         <span class="l" aria-hidden="true"><span>La mesa de</span></span>
         <span class="l" aria-hidden="true"><span>cada técnica,</span></span>
         <span class="l" aria-hidden="true"><span>lista para practicar.</span></span>
       </h1>
-      <p class="lede">Consultar la técnica, verla en 3D y validar la mesa armada con cámara: tres herramientas para estudiar instrumentación quirúrgica fuera del laboratorio.</p>
+      <p class="lede">Consultarla, verla en 3D y comprobarla con la cámara, fuera del laboratorio.</p>
       <div class="acciones">
-        <a class="boton grande" href="#cierre">Crear cuenta gratis
+        <a class="boton grande" href="#">Crear cuenta gratis
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a class="enlace" href="#productos">Conocer los productos
+        <a class="enlace" href="#camino">Ver cómo funciona
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v10M3.5 8.5L8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
@@ -628,7 +788,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
           <div class="macro"><svg id="macro" viewBox="-24 -6 48 112" aria-hidden="true"></svg></div>
           <p class="macro-num" id="macro-num"></p>
           <p class="macro-nombre" id="macro-nombre"></p>
-          <p class="macro-fuente" id="macro-fuente"></p>
           <button type="button" class="ver-todas" id="ver-todas" aria-expanded="false" aria-controls="lista-piezas">Ver las 10 piezas</button>
         </div>
         <div class="vista-riel riel-3d">
@@ -655,12 +814,12 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     </div>
   </section>
 
-  <!-- Productos -->
-  <section class="productos" id="productos" aria-labelledby="t-productos">
+  <!-- Tres formas de recorrer una técnica -->
+  <section class="productos tramo" id="camino" aria-labelledby="t-productos">
     <div class="fijo">
       <div class="productos-cabeza ancho">
-        <h2 class="titulo-seccion" id="t-productos">Tres productos.<br>La misma mesa.</h2>
-        <p class="texto-seccion">Cada uno cubre un momento del estudio: conocer la técnica, verla en el espacio y comprobar la mesa que se armó.</p>
+        <h2 class="titulo-seccion" id="t-productos">Tres formas de<br>recorrer una técnica.</h2>
+        <p class="texto-seccion">Se empieza por cualquiera.</p>
         <div class="recorrido" aria-hidden="true">
           <div class="actual"><i></i>DataIQ</div>
           <div><i></i>SIMIQ3D</div>
@@ -673,11 +832,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
             <div class="producto-nombre"><h3 id="p-dataiq">DataIQ</h3></div>
             <p class="producto-lema">Cada técnica, con su instrumental y su mesa.</p>
             <ul class="capacidades">
-              <li>Búsqueda de técnicas por nombre o especialidad.</li>
-              <li>Mesa de Mayo y mesa de reserva, pieza por pieza y en su posición.</li>
-              <li>Datos clínicos, suturas y equipos de cada técnica.</li>
+              <li>Buscar por nombre o especialidad</li>
+              <li>Mesa de Mayo y de reserva, pieza por pieza</li>
+              <li>Datos clínicos, suturas y equipos</li>
             </ul>
-            <a class="enlace" href="#">Explorar técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="enlace" href="#">Conocer DataIQ <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
           <div class="producto-visual">
             <div class="ventana">
@@ -705,11 +864,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         <article class="producto" aria-labelledby="p-simiq">
           <div class="producto-texto">
             <div class="producto-nombre"><h3 id="p-simiq">SIMIQ3D</h3></div>
-            <p class="producto-lema">La mesa de cada técnica, en 3D y a una pregunta de distancia.</p>
+            <p class="producto-lema">La mesa en 3D, a una pregunta de distancia.</p>
             <ul class="capacidades">
-              <li>Una conversación para pedir cualquier técnica.</li>
-              <li>La mesa armada en 3D, para girarla y recorrerla.</li>
-              <li>Cada pieza con su nombre y una descripción breve.</li>
+              <li>Pedir cualquier técnica conversando</li>
+              <li>Girar y recorrer la mesa</li>
+              <li>Tocar una pieza para ver qué es</li>
             </ul>
             <a class="enlace" href="#">Conocer SIMIQ3D <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
@@ -738,11 +897,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         <article class="producto" aria-labelledby="p-sivri">
           <div class="producto-texto">
             <div class="producto-nombre"><h3 id="p-sivri">SIVRI</h3></div>
-            <p class="producto-lema">La cámara revisa la mesa armada y dice qué mover.</p>
+            <p class="producto-lema">La cámara revisa la mesa armada.</p>
             <ul class="capacidades">
-              <li>Reconoce el instrumental sobre la mesa, en tiempo real.</li>
-              <li>Compara cada pieza con la mesa de la técnica elegida.</li>
-              <li>Señala al instante qué está bien y qué hay que mover.</li>
+              <li>Reconoce el instrumental en tiempo real</li>
+              <li>Lo compara con la técnica elegida</li>
+              <li>Señala qué hay que mover</li>
             </ul>
             <a class="enlace" href="#">Conocer SIVRI <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
@@ -758,69 +917,130 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     </div>
   </section>
 
+  <!-- Técnicas por especialidad -->
+  <section class="seccion ancho tramo" id="especialidades" aria-labelledby="t-especialidades">
+    <div class="catalogo-cabeza">
+      <h2 class="titulo-seccion" id="t-especialidades">Técnicas por especialidad.</h2>
+      <a class="enlace" href="#">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="especialidades" id="cat-especialidades"></div>
+    <div class="aviso-cuenta" id="aviso-cuenta" hidden aria-live="polite">
+      <p id="aviso-cuenta-texto"></p>
+      <a class="boton" href="#">Crear cuenta gratis</a>
+    </div>
+  </section>
+
+  <!-- Lo que dice la investigación -->
+  <section class="investigacion seccion ancho tramo" id="investigacion" aria-labelledby="t-investigacion">
+    <div class="inv">
+      <div class="inv-texto">
+        <h2 class="titulo-seccion" id="t-investigacion">Con respuesta inmediata, se aprende antes.</h2>
+        <ul class="conclusiones">
+          <li><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M15 3L6 16h7l-2 9 9-13h-7z" fill="none" stroke="#0d6a5e" stroke-width="1.8" stroke-linejoin="round"/></svg><span><b>La respuesta inmediata</b> es lo que más pesa al aprender un procedimiento.</span></li>
+          <li><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="7.5" width="21" height="15" rx="3" fill="none" stroke="#0d6a5e" stroke-width="1.8"/><path d="M9.5 15.2l3 3 6-6.4" fill="none" stroke="#0d6a5e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Un sistema automático</b> puede darla con la precisión de un evaluador, sin esperar turno.</span></li>
+          <li><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="#0d6a5e" stroke-width="1.8"/><path d="M14 8.5v5.8l3.6 2.4" fill="none" stroke="#0d6a5e" stroke-width="1.8" stroke-linecap="round"/></svg><span><b>Repasar con juego</b> ayuda a reconocer el instrumental y a recordarlo.</span></li>
+        </ul>
+        <a class="enlace" href="#">Ver la investigación <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <figure class="espiral" id="espiral" aria-label="Animación: un pulso de luz sube en espiral, cada vez más rápido, y en cada vuelta se suma un logro: instrumental reconocido, posiciones memorizadas, mesa completa sin errores, un paso adelante">
+        <svg viewBox="0 0 900 640" aria-hidden="true">
+          <defs>
+            <linearGradient id="haz" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="-120">
+              <stop offset="0" stop-color="#0d6a5e"/>
+              <stop offset="1" stop-color="#0d6a5e" stop-opacity="0"/>
+            </linearGradient>
+            <radialGradient id="ambiente">
+              <stop offset="0" stop-color="#0d6a5e" stop-opacity=".07"/>
+              <stop offset=".55" stop-color="#0d6a5e" stop-opacity=".025"/>
+              <stop offset="1" stop-color="#0d6a5e" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="difuso" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+          <ellipse class="ambiente" cx="380" cy="350" rx="420" ry="360" fill="url(#ambiente)"/>
+          <g class="motas"></g>
+          <path class="guia atras"/>
+          <path class="luz atras"/>
+          <g class="niveles"></g>
+          <path class="guia delante"/>
+          <path class="luz delante"/>
+          <path class="cola" filter="url(#difuso)"/>
+          <path class="haz"/>
+          <g class="estaciones"></g>
+          <circle class="pulso-halo" r="14" filter="url(#difuso)"/>
+          <circle class="pulso" r="5"/>
+          <g class="logros"></g>
+        </svg>
+        <ol class="logros-lista" id="logros-lista" aria-hidden="true"></ol>
+      </figure>
+    </div>
+  </section>
+
   <!-- Para quien estudia y para quien enseña -->
-  <section class="seccion ancho" id="quien" aria-labelledby="t-quien">
+  <section class="seccion compacta ancho tramo" id="quien" aria-labelledby="t-quien">
     <div class="quien">
       <header>
         <h2 class="titulo-seccion" id="t-quien">Para quien estudia y para quien enseña.</h2>
-        <p class="texto-seccion">Las mismas técnicas, para repasar a cualquier hora y para acompañar lo que se enseña en clase.</p>
+        <p class="texto-seccion">Para repasar a cualquier hora y para acompañar la clase.</p>
       </header>
-      <article class="estudiante">
-        <h3>Estudiantes</h3>
-        <p>Repasar la mesa de cada técnica cuando y donde sea, y comprobar si quedó bien armada antes de llegar al laboratorio.</p>
-        <div class="practica" aria-label="Ejemplo de práctica de un estudiante">
-          <div class="practica-fila"><b>Tiroidectomía</b><div class="barra-p"><i style="width:90%"></i></div><span class="por">9 de 10</span></div>
-          <div class="practica-fila"><b>Cesárea</b><div class="barra-p"><i style="width:100%"></i></div><span class="por">Completa</span></div>
-          <div class="practica-fila"><b>Colecistectomía</b><div class="barra-p"><i style="width:45%"></i></div><span class="por">En práctica</span></div>
-          <span class="demo">demostración</span>
-        </div>
+      <div class="perfiles">
+      <article class="perfil-chico">
+        <svg class="pictograma" viewBox="0 0 120 120" aria-hidden="true">
+          <rect width="120" height="120" rx="24" fill="#ddefeb"/>
+          <g class="tarjeta atras"><rect x="26" y="30" width="50" height="62" rx="7" fill="#fff" stroke="#0d6a5e" stroke-width="2" transform="rotate(-9 51 61)"/></g>
+          <g class="tarjeta frente"><g transform="rotate(5 64 57)"><rect x="39" y="26" width="50" height="62" rx="7" fill="#fff" stroke="#0a1b22" stroke-width="2"/><path d="M48 40 H72 M48 49 H80 M48 58 H66" stroke="#0a1b22" stroke-width="2.4" stroke-linecap="round"/></g></g>
+          <g class="sello"><circle cx="86" cy="86" r="17" fill="#0d6a5e"/><path d="M93 82.5 A8 8 0 1 0 93.6 89" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M94.5 76.5 V83 H88" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+        </svg>
+        <div><h3>Estudiantes</h3><p>Repasar cada técnica las veces que haga falta, al propio ritmo.</p></div>
       </article>
-      <article class="docente">
-        <h3>Docentes</h3>
-        <p>Que sus estudiantes repasen cada técnica tal como se enseña en clase, también fuera del laboratorio.</p>
-        <div class="clase" aria-label="Ejemplo de técnicas de una clase">
-          <strong>Técnicas para repasar esta semana</strong>
-          <ul><li>Tiroidectomía<span>Mesa de Mayo</span></li><li>Cesárea<span>Mayo y reserva</span></li></ul>
-          <span class="demo">demostración</span>
-        </div>
+      <article class="perfil-chico">
+        <svg class="pictograma" viewBox="0 0 120 120" aria-hidden="true">
+          <rect width="120" height="120" rx="24" fill="#ddefeb"/>
+          <rect x="30" y="22" width="54" height="72" rx="7" fill="#fff" stroke="#0a1b22" stroke-width="2"/>
+          <path d="M40 37 H66" stroke="#0a1b22" stroke-width="4" stroke-linecap="round"/>
+          <path d="M40 51 H74 M40 60 H70 M40 69 H60" stroke="#566a72" stroke-width="2.4" stroke-linecap="round"/>
+          <g class="sello"><circle cx="84" cy="86" r="17" fill="#0d6a5e"/><path d="M76.5 86 L81.8 91.3 L92 80.8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+        </svg>
+        <div><h3>Docentes</h3><p>Enseñar con las mismas mesas y validar su contenido.</p></div>
       </article>
-    </div>
-  </section>
-
-  <!-- Para instituciones -->
-  <section class="instituciones seccion ancho" id="instituciones" aria-labelledby="t-inst">
-    <div class="inst">
-      <div class="inst-texto">
-        <h2 class="titulo-seccion" id="t-inst">Cada institución, con sus técnicas.</h2>
-        <p class="texto-seccion">Cada programa de Instrumentación Quirúrgica tiene su IQ Platform, con las técnicas como las enseña y el texto original de su documento siempre a la vista.</p>
-        <ul class="inst-puntos">
-          <li><b>Sus técnicas y sus mesas.</b> Las que documenta el programa, pieza por pieza.</li>
-          <li><b>Lo mismo en los tres productos.</b> Consulta, 3D y cámara, en computador y en celular.</li>
-        </ul>
-        <a class="enlace" href="#">Conocer la propuesta para instituciones <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      </div>
-      <div class="traduccion" aria-label="Cada pieza con el texto original del documento">
-        <p class="traduccion-titulo">El texto del documento, siempre a la vista</p>
-        <div class="traduccion-cabeza"><span>En el documento del programa</span><span></span><span>Pieza en IQ Platform</span></div>
-        <div id="traduccion"></div>
-        <div class="pie-trad"><span>Tiroidectomía · Mesa de Mayo</span></div>
       </div>
     </div>
   </section>
 
-  <!-- Cierre -->
-  <section class="cierre ancho" id="cierre" aria-labelledby="t-cierre">
-    <h2 id="t-cierre">Cada pieza<br>en su lugar.</h2>
-    <div class="cierre-fila">
-      <p>Una cuenta gratuita para estudiantes de cualquier institución.</p>
-      <a class="boton grande claro" href="#">Crear cuenta gratis
-        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+  <!-- Preguntas frecuentes -->
+  <section class="seccion compacta ancho tramo" id="preguntas" aria-labelledby="t-preguntas">
+    <div class="preguntas">
+      <header>
+        <h2 class="titulo-seccion" id="t-preguntas">Preguntas frecuentes.</h2>
+        <a class="enlace" href="#">Ir a la ayuda <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </header>
+      <div class="grupos-preguntas">
+        <details class="grupo-p" open><summary>Cuenta <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M5.5 8.5L11 14l5.5-5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="lista-preguntas">
+            <details><summary>¿Cuánto cuesta? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Nada. La cuenta es gratuita.</p></details>
+            <details><summary>¿Sirve si estudio en otra universidad? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Sí. Cualquier estudiante puede crear su cuenta.</p></details>
+            <details><summary>¿Qué puedo ver sin cuenta? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>El catálogo de técnicas. Para abrir una técnica y usar SIMIQ3D y SIVRI se crea una cuenta.</p></details>
+          </div>
+        </details>
+        <details class="grupo-p"><summary>Técnicas <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M5.5 8.5L11 14l5.5-5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="lista-preguntas">
+            <details><summary>¿Las técnicas son confiables? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Sí. Cada técnica está validada por docentes y estudiantes de Instrumentación Quirúrgica.</p></details>
+            <details><summary>¿Incluyen la mesa de reserva? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Sí, junto con la mesa de Mayo, en las técnicas que la utilizan.</p></details>
+          </div>
+        </details>
+        <details class="grupo-p"><summary>Herramientas <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M5.5 8.5L11 14l5.5-5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="lista-preguntas">
+            <details><summary>¿Por cuál herramienta empiezo? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Por la que se prefiera. Las tres usan las mismas técnicas.</p></details>
+            <details><summary>¿Qué necesito para usar SIVRI? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Una cámara que vea la mesa armada.</p></details>
+            <details><summary>¿Funciona en el celular? <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary><p>Sí, en computador y en celular.</p></details>
+          </div>
+        </details>
+      </div>
     </div>
   </section>
+
 </main>
 
-<footer class="pie ancho">
+<footer class="pie ancho tramo">
   <div class="pie-rejilla">
     <div>
       <a class="marca-iq" href="#inicio">
@@ -829,9 +1049,10 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       </a>
       <p>Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.</p>
     </div>
-    <div><p class="pie-titulo">Productos</p><ul><li><a href="#productos">DataIQ</a></li><li><a href="#productos">SIMIQ3D</a></li><li><a href="#productos">SIVRI</a></li></ul></div>
-    <div><p class="pie-titulo">Plataforma</p><ul><li><a href="#instituciones">Para instituciones</a></li><li><a href="#">Quiénes somos</a></li><li><a href="#">Ingresar</a></li></ul></div>
-    <div><p class="pie-titulo">Legal</p><ul><li><a href="#">Política de tratamiento de datos</a></li><li><a href="#">Términos de uso</a></li></ul></div>
+    <div><p class="pie-titulo">Herramientas</p><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></div>
+    <div><p class="pie-titulo">Especialidades</p><ul id="pie-especialidades"></ul></div>
+    <div><p class="pie-titulo">¿Por qué IQ Platform?</p><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></div>
+    <div><p class="pie-titulo">Ayuda</p><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Para docentes</a></li><li><a href="#">Política de tratamiento de datos</a></li><li><a href="#">Términos de uso</a></li></ul></div>
   </div>
   <div class="pie-base"><span>© 2026 IQ Platform</span><span>IQ Platform es un nombre provisional.</span></div>
 </footer>
@@ -840,14 +1061,98 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 (function () {
   var reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- Menú de productos ---------- */
-  var menu = document.getElementById("productos-menu");
-  var abridores = document.querySelectorAll(".abre-productos");
-  function abrirMenu(si) { menu.hidden = !si; abridores.forEach(function (b) { b.setAttribute("aria-expanded", String(si)); }); }
-  abridores.forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); abrirMenu(menu.hidden); }); });
-  menu.addEventListener("click", function (e) { if (e.target.closest("a")) abrirMenu(false); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !menu.hidden) { abrirMenu(false); abridores[0].focus(); } });
-  document.addEventListener("click", function (e) { if (!menu.hidden && !menu.contains(e.target)) abrirMenu(false); });
+  /* ---------- Menús de la barra: uno abierto a la vez ---------- */
+  var paneles = document.querySelectorAll(".panel-nav, .panel-movil");
+  var abridores = document.querySelectorAll("[data-menu]");
+  var abierto = null;
+  function abrirMenu(id) {
+    abierto = id && abierto !== id ? id : null;
+    paneles.forEach(function (p) { p.hidden = p.id !== abierto; });
+    abridores.forEach(function (b) { b.setAttribute("aria-expanded", String(b.dataset.menu === abierto)); });
+    if (abierto === "panel-herramientas") prepararVistaHerramientas();
+  }
+  // Mientras no existan las otras páginas, los enlaces no llevan a ningún lado
+  document.addEventListener("click", function (e) { var a = e.target.closest("a[href='#']"); if (a) e.preventDefault(); });
+  // Al señalar una opción, su vista previa cambia
+  function senalar(a) {
+    var lista = a.closest(".panel-lista");
+    lista.querySelectorAll("a").forEach(function (x) { x.classList.toggle("activa", x === a); });
+    if (a.dataset.vista) document.getElementById(lista.dataset.vistaDe).dataset.vista = a.dataset.vista;
+    if (a.dataset.esp) mostrarEspecialidad(+a.dataset.esp);
+  }
+  document.addEventListener("mouseover", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
+  document.addEventListener("focusin", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
+  var vistaLista = false;
+  function prepararVistaHerramientas() {
+    if (vistaLista) return;
+    vistaLista = true;
+    var svg = document.querySelector(".mesa-panel");
+    construirMesa(svg, { rejilla: false, numeros: true, interactiva: false, deteccion: true });
+    ubicarEtiquetas(svg);
+  }
+  abridores.forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); abrirMenu(b.dataset.menu); }); });
+  paneles.forEach(function (p) { p.addEventListener("click", function (e) { if (e.target.closest("a")) abrirMenu(null); }); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && abierto) { var b = document.querySelector("[data-menu='" + abierto + "']"); abrirMenu(null); if (b) b.focus(); }
+  });
+  document.addEventListener("click", function (e) { if (abierto && !document.getElementById(abierto).contains(e.target)) abrirMenu(null); });
+
+  /* ---------- Catálogo real: técnicas por especialidad ---------- */
+  var ESPECIALIDADES = [
+    ["Cirugía general", ["Mastectomía", "Tiroidectomía", "Colecistectomía", "Hemicolectomía derecha", "Eventrorrafia"]],
+    ["Urología", ["Cistolitotomía endoscópica", "Ureterolitotomía endoscópica", "Prostatectomía"]],
+    ["Cirugía laparoscópica", ["Hemicolectomía laparoscópica", "Histerectomía laparoscópica", "Prostatectomía laparoscópica", "Nefrectomía laparoscópica"]],
+    ["Ginecología", ["Cesárea", "Ooforectomía con salpingectomía", "Histerectomía vaginal", "Colporrafia anterior y posterior"]],
+    ["Ortopedia", ["Reemplazo total de cadera", "Reemplazo total de rodilla"]]
+  ];
+  var catalogo = document.getElementById("cat-especialidades");
+  var listaEsp = document.getElementById("panel-lista-esp");
+  function mostrarEspecialidad(i) {
+    var e = ESPECIALIDADES[i], ul = document.getElementById("vista-esp");
+    document.getElementById("vista-esp-titulo").textContent = e[0];
+    ul.innerHTML = "";
+    e[1].forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  }
+  var aviso = document.getElementById("aviso-cuenta");
+  var avisoTexto = document.getElementById("aviso-cuenta-texto");
+  var flecha = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  ESPECIALIDADES.forEach(function (e) {
+    var col = document.createElement("div");
+    col.className = "especialidad";
+    col.innerHTML = "<h3></h3><ul></ul>";
+    col.children[0].textContent = e[0];
+    var li0 = document.createElement("li"), fl = document.createElement("a");
+    fl.href = "#";
+    fl.dataset.esp = ESPECIALIDADES.indexOf(e);
+    fl.innerHTML = "<span><strong></strong><span></span></span>" + flecha;
+    fl.querySelector("strong").textContent = e[0];
+    fl.querySelector("strong + span").textContent = e[1].length === 1 ? "1 técnica" : e[1].slice(0, 2).join(", ") + (e[1].length > 2 ? "…" : "");
+    li0.appendChild(fl);
+    listaEsp.appendChild(li0);
+    e[1].forEach(function (t) {
+      var li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.innerHTML = "<span></span>" + flecha;
+      b.firstChild.textContent = t;
+      b.addEventListener("click", function () {
+        catalogo.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        avisoTexto.innerHTML = "Para ver <b></b> por dentro, con su mesa y su instrumental, se crea una cuenta gratuita.";
+        avisoTexto.querySelector("b").textContent = t;
+        aviso.hidden = false;
+      });
+      li.appendChild(b);
+      col.children[1].appendChild(li);
+    });
+    catalogo.appendChild(col);
+    ["movil-especialidades", "pie-especialidades"].forEach(function (id) {
+      var li = document.createElement("li"), a = document.createElement("a");
+      a.href = "#";
+      a.textContent = e[0];
+      li.appendChild(a);
+      document.getElementById(id).appendChild(li);
+    });
+  });
 
   /* ---------- Instrumental dibujado en acero ----------
      Cada pieza en coordenadas locales: vertical, punta en y=0, anillos o mango en y=100. */
@@ -994,7 +1299,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     dibujarMacro(macro, o);
     document.getElementById("macro-num").textContent = o[0];
     document.getElementById("macro-nombre").textContent = o[3];
-    document.getElementById("macro-fuente").textContent = "«" + o[4] + "» en el documento";
   }
 
   var lista = document.getElementById("lista-piezas"), verTodas = document.getElementById("ver-todas");
@@ -1067,24 +1371,176 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   mas.innerHTML = "<b></b><span>y 3 piezas más</span>";
   items.appendChild(mas);
 
-  /* Del documento a IQ Platform: datos reales de la misma mesa */
-  var trad = document.getElementById("traduccion");
-  [1, 2, 4, 5, 7].forEach(function (n) {
-    var o = pieza(n), f = document.createElement("div");
-    f.className = "traduccion-fila";
-    f.innerHTML = "<span class='doc'></span><svg width='18' height='18' viewBox='0 0 18 18' aria-hidden='true'><path d='M3 9h11M10 4.5L14.5 9 10 13.5' fill='none' stroke='#38e2b3' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg><span class='iq'></span>";
-    f.children[0].textContent = o[4];
-    f.children[2].textContent = o[3];
-    trad.appendChild(f);
-  });
-
   /* Etiquetas de detección: se miden con la fuente ya cargada */
   function etiquetas() { document.querySelectorAll(".detecciones").forEach(function (d) { ubicarEtiquetas(d.ownerSVGElement); }); }
   etiquetas();
   if (document.fonts) document.fonts.ready.then(etiquetas);
 
+  // El panel de especialidades abre mostrando la primera
+  mostrarEspecialidad(0);
+  listaEsp.querySelector("a").classList.add("activa");
+  document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
+
+  /* ---------- Espiral: cada vuelta sube un nivel, va más rápido y suma un logro ---------- */
+  var esp = document.getElementById("espiral"), NS = "http://www.w3.org/2000/svg";
+  var VUELTA = 2 * Math.PI, VUELTAS = 3, TOTAL = VUELTA * VUELTAS, CX = 360, BASE = 540, PASO = 130, INCL = .26;
+  function radio(th) { return 130 + 28 * th / VUELTA; }
+  function punto(th) { var r = radio(th); return [CX - r * Math.cos(th), BASE - PASO * th / VUELTA + r * INCL * Math.sin(th)]; }
+  function n1(v) { return v.toFixed(1); }
+  // Tramos de la espiral hasta "hasta": los de adelante y los de atrás por separado, para la profundidad
+  function tramo(desde, hasta, delante) {
+    var d = "", dentro = false, previo = null, pasos = Math.max(2, Math.ceil((hasta - desde) / .05));
+    for (var i = 0; i <= pasos; i++) {
+      var th = desde + (hasta - desde) * i / pasos, p = punto(th), f = Math.sin(th) >= 0;
+      if (f === delante) {
+        if (!dentro) d += previo ? "M" + n1(previo[0]) + " " + n1(previo[1]) + "L" : "M";
+        else d += "L";
+        d += n1(p[0]) + " " + n1(p[1]);
+        dentro = true;
+      } else dentro = false;
+      previo = p;
+    }
+    return d;
+  }
+  var q = function (sel) { return esp.querySelector(sel); };
+  q(".guia.atras").setAttribute("d", tramo(0, TOTAL, false));
+  q(".guia.delante").setAttribute("d", tramo(0, TOTAL, true));
+  // Tres puntos por vuelta que se encienden al paso del pulso
+  var estaciones = [];
+  for (var k = 0; k < VUELTAS; k++) [Math.PI / 9, Math.PI / 2, 8 * Math.PI / 9].forEach(function (a) {
+    var th = k * VUELTA + a, p = punto(th), g = document.createElementNS(NS, "g"), r = 5.5;
+    g.setAttribute("class", "estacion");
+    g.innerHTML = "<circle class='anillo' cx='" + n1(p[0]) + "' cy='" + n1(p[1]) + "' r='" + r + "'/><circle class='nodo' cx='" + n1(p[0]) + "' cy='" + n1(p[1]) + "' r='" + r + "'/>";
+    q(".estaciones").appendChild(g);
+    estaciones.push({ g: g, th: th });
+  });
+  // Anillo de cada nivel, que destella al cerrar la vuelta
+  var niveles = [];
+  for (k = 0; k < VUELTAS; k++) {
+    var rn = radio((k + 1) * VUELTA), e = document.createElementNS(NS, "ellipse");
+    e.setAttribute("class", "nivel");
+    e.setAttribute("cx", CX); e.setAttribute("cy", n1(BASE - PASO * (k + 1))); e.setAttribute("rx", n1(rn)); e.setAttribute("ry", n1(rn * INCL));
+    q(".niveles").appendChild(e);
+    niveles.push(e);
+  }
+  // Logros: uno por vuelta, a la derecha de su nivel; el último, junto al haz
+  var cima = punto(TOTAL);
+  var LOGROS = ["Instrumental reconocido", "Posiciones memorizadas", "Mesa completa, sin errores", "Un paso adelante"];
+  var logros = LOGROS.map(function (texto, i) {
+    var sitio = document.createElementNS(NS, "g"), g = document.createElementNS(NS, "g");
+    sitio.appendChild(g);
+    g.setAttribute("class", "logro" + (i === VUELTAS ? " final" : ""));
+    g.innerHTML = "<rect class='logro-fondo' height='44' rx='22'/><circle class='ficha' cx='22' cy='22' r='11'/><path class='visto' d='M16.8 22.2l3.6 3.6 6.6-7'/><text x='42' y='23'></text>";
+    g.querySelector("text").textContent = texto;
+    q(".logros").appendChild(sitio);
+    var t = g.querySelector("text"), w = (t.getComputedTextLength ? t.getComputedTextLength() : texto.length * 9) + 62;
+    g.querySelector("rect").setAttribute("width", n1(w));
+    return { g: g, sitio: sitio, i: i };
+  });
+  // En celular los logros se montan sobre el lado derecho de la espiral y el lienzo se recorta
+  var angosto = matchMedia("(max-width: 760px)");
+  function ubicarLogros() {
+    logros.forEach(function (l) {
+      var x, y;
+      if (l.i < VUELTAS) { var rl = radio((l.i + .5) * VUELTA); x = CX + rl + 18; y = BASE - PASO * (l.i + .5); }
+      else { x = cima[0] + 22; y = cima[1] - 96; }
+      l.sitio.setAttribute("transform", "translate(" + n1(x) + " " + n1(y - 22) + ")");
+    });
+    esp.querySelector("svg").setAttribute("viewBox", angosto.matches ? "110 40 500 540" : "0 0 900 640");
+  }
+  // En celular los logros van como lista debajo de la espiral
+  var listaLogros = document.getElementById("logros-lista");
+  logros.forEach(function (l, i) {
+    var li = document.createElement("li");
+    if (i === VUELTAS) li.className = "final";
+    li.innerHTML = "<span class='ficha'><svg width='12' height='12' viewBox='0 0 12 12'><path d='M2.5 6.2l2.4 2.4 4.6-4.9' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span></span>";
+    li.lastChild.textContent = LOGROS[i];
+    listaLogros.appendChild(li);
+    l.li = li;
+  });
+  ubicarLogros();
+  if (angosto.addEventListener) angosto.addEventListener("change", ubicarLogros);
+  function medirLogros() {
+    logros.forEach(function (l) {
+      var t = l.g.querySelector("text");
+      if (t.getComputedTextLength) l.g.querySelector("rect").setAttribute("width", n1(t.getComputedTextLength() + 62));
+    });
+  }
+  if (document.fonts) document.fonts.ready.then(medirLogros);
+  var haz = q(".haz"), largoHaz = cima[1] + 120;
+  haz.setAttribute("d", "M" + n1(cima[0]) + " " + n1(cima[1]) + " V-120");
+  haz.style.strokeDasharray = largoHaz;
+  // Motas de luz que suben despacio alrededor de la espiral
+  var semilla = 5, motas = [];
+  function azar() { semilla = (semilla * 16807) % 2147483647; return semilla / 2147483647; }
+  for (var m = 0; m < 34; m++) {
+    var c = document.createElementNS(NS, "circle");
+    c.setAttribute("r", n1(.8 + azar() * 1.8));
+    q(".motas").appendChild(c);
+    motas.push({ c: c, x: 120 + azar() * 520, y: azar() * 640, v: .012 + azar() * .03, fase: azar() * 6.3, o: .25 + azar() * .55 });
+  }
+  function moverMotas(dt, impulso) {
+    motas.forEach(function (mo) {
+      mo.y -= mo.v * dt * (1 + impulso * 2.5);
+      if (mo.y < -10) mo.y += 660;
+      mo.fase += dt * .0012;
+      var alto = 1 - Math.abs(mo.y - 340) / 360;
+      mo.c.setAttribute("cx", n1(mo.x + Math.sin(mo.fase) * 6));
+      mo.c.setAttribute("cy", n1(mo.y));
+      mo.c.setAttribute("opacity", Math.max(0, mo.o * alto).toFixed(2));
+    });
+  }
+  // El pulso acelera: velocidad que crece de forma exponencial (cada vuelta tarda menos)
+  var ACEL = .00035, W0 = TOTAL * ACEL / (Math.exp(ACEL * 4600) - 1);
+  var ENTRADA = 500, VIAJE = 4600, SUBIDA = 700, FIN = 8300, CICLO_E = 9000;
+  var vueltaPrevia = 0;
+  function cuadroEspiral(t, dt) {
+    var th = t < ENTRADA ? 0 : Math.min(TOTAL, W0 / ACEL * (Math.exp(ACEL * (t - ENTRADA)) - 1));
+    q(".luz.atras").setAttribute("d", th > 0 ? tramo(0, th, false) : "");
+    q(".luz.delante").setAttribute("d", th > 0 ? tramo(0, th, true) : "");
+    var p = punto(th), subida = Math.max(0, Math.min(1, (t - ENTRADA - VIAJE) / SUBIDA));
+    var py = p[1] - subida * subida * (largoHaz + 30);
+    var c0 = punto(Math.max(0, th - .9));
+    q(".cola").setAttribute("d", th > 0 && subida < 1 ? "M" + n1(c0[0]) + " " + n1(c0[1]) + tramo(Math.max(0, th - .9), th, true).replace(/^M[^L]*/, "") : "");
+    ["pulso", "pulso-halo"].forEach(function (n) { var el = q("." + n); el.setAttribute("cx", n1(p[0])); el.setAttribute("cy", n1(py)); el.style.opacity = subida >= 1 ? 0 : 1; });
+    q(".pulso").setAttribute("r", Math.sin(th) < 0 && th < TOTAL ? 3.5 : 5);
+    haz.style.strokeDashoffset = largoHaz * (1 - subida);
+    q(".ambiente").setAttribute("opacity", (.45 + .55 * th / TOTAL).toFixed(2));
+    estaciones.forEach(function (s) { s.g.classList.toggle("encendida", th >= s.th); });
+    var vuelta = Math.min(VUELTAS, Math.floor(th / VUELTA + 1e-9));
+    logros.forEach(function (l, i) { var v = i < VUELTAS ? vuelta > i : subida >= 1; l.g.classList.toggle("visible", v); l.li.classList.toggle("visible", v); });
+    if (vuelta > vueltaPrevia) {
+      var nv = niveles[vuelta - 1];
+      nv.classList.remove("destello"); void nv.getBBox(); nv.classList.add("destello");
+    }
+    vueltaPrevia = vuelta;
+    esp.classList.toggle("completo", th >= TOTAL);
+    moverMotas(dt || 0, th > 0 && th < TOTAL ? th / TOTAL : 0);
+  }
+  var inicioE = 0, ultimoE = 0, corriendoE = false, fijoE = false;
+  function bucleE(ahora) {
+    if (!corriendoE) return;
+    if (!inicioE) inicioE = ahora;
+    var t = ahora - inicioE;
+    if (t >= CICLO_E) { inicioE = ahora; t = 0; vueltaPrevia = 0; }
+    esp.classList.toggle("apagando", t > FIN);
+    cuadroEspiral(t, Math.min(48, ahora - (ultimoE || ahora)));
+    ultimoE = ahora;
+    requestAnimationFrame(bucleE);
+  }
+  cuadroEspiral(ENTRADA + VIAJE + SUBIDA, 0);
+  moverMotas(0, 0);
+  if (!reducido && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (e.isIntersecting && !corriendoE && !fijoE) { corriendoE = true; inicioE = 0; ultimoE = 0; vueltaPrevia = 0; requestAnimationFrame(bucleE); }
+        else if (!e.isIntersecting) corriendoE = false;
+      });
+    }, { threshold: .3 }).observe(esp);
+  }
+
   /* ---------- Productos: recorrido horizontal con el scroll ---------- */
-  var seccion = document.getElementById("productos");
+  var seccion = document.getElementById("camino");
   var carril = document.getElementById("carril");
   var pasos = seccion.querySelectorAll(".recorrido div");
   var horizontal = matchMedia("(min-width: 761px)");
@@ -1118,9 +1574,15 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = location.hash.replace("#", "");
-  if (atajo === "menu") abrirMenu(true);
+  if (atajo === "panel-movil") abrirMenu(atajo);
+  if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
   if (atajo === "vista-3d" || atajo === "vista-camara" || atajo === "lista") { ciclando = false; mostrar(atajo === "vista-3d" ? "3d" : atajo === "lista" ? "referencia" : "camara"); if (atajo === "lista") verLista(true); }
   else { mostrar("referencia"); iniciarCiclo(); }
+  if (atajo.indexOf("espiral-") === 0) {
+    corriendoE = false; fijoE = true; vueltaPrevia = 9;
+    cuadroEspiral(+atajo.slice(8));
+    atajo = "desde-investigacion";
+  }
   if (atajo.indexOf("desde-") === 0) {
     var meta = document.getElementById(atajo.slice(6)), ocultar = true;
     document.querySelectorAll("main > section").forEach(function (sec) { if (sec === meta) ocultar = false; if (ocultar) sec.style.display = "none"; });
