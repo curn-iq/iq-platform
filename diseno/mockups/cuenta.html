@@ -21,7 +21,7 @@
   --marca: #0d6a5e;
   --marca-hondo: #08463e;
   --marca-claro: #ddefeb;
-  --marca-claro-hover: var(--marca-claro-hover);
+  --marca-claro-hover: #cfe7e1;
   --hover-neutro: #e6eded;
   --pano: #1d7564;
   /* Cámara: menta para detecciones, rojo solo para "fuera de lugar" */
@@ -612,6 +612,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 }
 /* ---------- Celular ---------- */
 @media (max-width: 760px) {
+  .ilustracion { display: none; }
   :root { --barra: 64px; }
   .barra { gap: 12px; }
   .portada { padding-block: 36px 32px; }
@@ -659,7 +660,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .puerta-der { grid-column: 7 / 13; display: grid; align-content: start; justify-items: center; padding: clamp(48px, 9vh, 96px) var(--lado) clamp(40px, 7vh, 80px); background: var(--superficie); border-left: 1px solid var(--filete); }
 .ruta { display: flex; align-items: center; gap: 8px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
 .ruta svg { color: var(--filete-2); }
-.puerta-izq h2 { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.puerta-izq .pt-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
 .puerta-izq .especialidad-tec { margin-top: 10px; color: var(--tinta-3); font-size: 17px; }
 .vista-bloqueada { min-width: 0; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); padding: 0 22px 22px; }
 .pestanas-falsas { display: flex; gap: 24px; border-bottom: 1px solid var(--filete); overflow: hidden; }
@@ -672,6 +673,17 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .candado p { max-width: 30ch; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
 .promesa-movil { display: none; align-items: center; gap: 10px; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
 .promesa-movil span:first-child { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+/* Ingreso directo: un saludo según la hora, sin técnica de por medio */
+.saludo { display: grid; gap: 28px; }
+.saludo-texto { display: grid; gap: 16px; animation: aparecer .5s var(--expo); }
+.saludo-texto[hidden] { display: none; }
+.ilustracion { margin: 12px 0 0; width: min(100%, 560px); }
+.ilustracion svg { display: block; width: 100%; height: auto; }
+/* Crear cuenta en el ingreso directo: el formulario pasa a la izquierda y el saludo a la derecha */
+.puerta.invertida .puerta-izq { grid-column: 7 / 13; grid-row: 1; padding: clamp(48px, 9vh, 96px) var(--lado) clamp(40px, 7vh, 80px) clamp(28px, 4vw, 72px); }
+.puerta.invertida .puerta-der { grid-column: 1 / 7; grid-row: 1; border-left: 0; border-right: 1px solid var(--filete); }
+.saludo[hidden], .puerta-izq .ruta[hidden], .vista-bloqueada[hidden], .promesa-movil[hidden] { display: none; }
+.saludo .saludo-titulo { font-size: clamp(46px, 5.6vw, 100px); line-height: .98; font-weight: 650; letter-spacing: -.04em; }
 .chips-esp { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips-esp span { padding: 6px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; }
 /* Formulario */
@@ -715,13 +727,16 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 @media (max-width: 1100px) {
   .puerta-izq { grid-column: 1 / 6; }
   .puerta-der { grid-column: 6 / 13; }
+  .puerta.invertida .puerta-izq { grid-column: 8 / 13; }
+  .puerta.invertida .puerta-der { grid-column: 1 / 8; }
   .cuerpo-bloqueado { grid-template-columns: 1fr; }
   .pestanas-falsas { -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); }
 }
 @media (max-width: 760px) {
   .puerta { grid-template-columns: minmax(0, 1fr); min-height: 0; }
-  .puerta-izq, .puerta-der { grid-column: 1 / -1; }
-  .puerta-izq { gap: 14px; padding: 28px var(--lado) 20px; }
+  .puerta-izq, .puerta-der, .puerta.invertida .puerta-izq, .puerta.invertida .puerta-der { grid-column: 1 / -1; grid-row: auto; }
+  .puerta.invertida .puerta-der { border-right: 0; }
+  .puerta-izq, .puerta.invertida .puerta-izq { gap: 14px; padding: 28px var(--lado) 20px; }
   .vista-bloqueada, .chips-esp { display: none; }
   .promesa-movil { display: flex; }
   .puerta-der { padding: 28px var(--lado) 44px; border-left: 0; border-top: 1px solid var(--filete); }
@@ -830,9 +845,9 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 <main>
   <div class="puerta">
-    <section class="puerta-izq" aria-labelledby="pt-nombre">
+    <section class="puerta-izq" id="puerta-izq" aria-labelledby="pt-nombre">
       <nav class="ruta" aria-label="Ruta"><a href="catalogo.html">Técnicas</a><span id="pt-ruta-sep"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="pt-ruta-esp">Cirugía general</span></nav>
-      <div><h2 id="pt-nombre">Tiroidectomía</h2><p class="especialidad-tec" id="pt-esp">Cirugía general</p></div>
+      <div id="pt-cabeza"><p class="pt-nombre" id="pt-nombre">Tiroidectomía</p><p class="especialidad-tec" id="pt-esp">Cirugía general</p></div>
       <div class="vista-bloqueada" id="pt-bloqueada">
         <div class="pestanas-falsas" aria-hidden="true"><span>Datos clínicos</span><span>Instrumental</span><span>Mesa de Mayo</span><span>Mesa de reserva</span></div>
         <div class="cuerpo-bloqueado" aria-hidden="true"><div><span class='hueso' style='width:82%'></span><span class='hueso' style='width:64%'></span><span class='hueso' style='width:90%'></span><span class='hueso' style='width:58%'></span></div><div><span class='hueso' style='width:74%'></span><span class='hueso' style='width:86%'></span><span class='hueso' style='width:60%'></span><span class='hueso' style='width:70%'></span></div>
@@ -840,7 +855,112 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         </div>
       </div>
       <p class="promesa-movil"><span><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span id="pt-promesa">Con una cuenta gratuita se abre por dentro.</span></p>
-      <div class="chips-esp" id="pt-chips" hidden></div>
+      <div class="saludo" id="saludo" hidden>
+        <div class="saludo-texto" id="saludo-ingresar"><p class="saludo-titulo" id="saludo-hora">Buenas tardes.</p>
+          <!-- Ilustración: una instrumentadora prepara la mesa de Mayo bajo la lámpara -->
+          <figure class="ilustracion"><svg viewBox="40 0 500 430" aria-hidden="true" focusable="false">
+            <path d="M72 262C58 160 150 78 272 76C404 74 508 136 502 246C496 350 404 402 282 398C160 394 86 356 72 262Z" fill="#e3efec"/>
+            <path d="M118 330H460M140 290H440" stroke="#d3e5e0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M392 0V44H318V62" fill="none" stroke="#9eaab0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M252 104Q318 46 384 104Z" fill="#c4d1d4"/>
+            <ellipse cx="318" cy="104" rx="66" ry="9" fill="#ffffff"/>
+            <path d="M258 108H378L438 262H210Z" fill="#ffffff" opacity=".45"/>
+            <circle cx="122" cy="132" r="30" fill="#0d6a5e"/>
+            <path d="M108 133L118 143L137 122" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="300" cy="404" rx="200" ry="8" fill="#d3e0de"/>
+            <rect x="424" y="258" width="9" height="138" fill="#9eaab0"/>
+            <rect x="356" y="392" width="118" height="9" rx="4.5" fill="#8b979d"/>
+            <circle cx="366" cy="404" r="6" fill="#2f3b40"/>
+            <circle cx="464" cy="404" r="6" fill="#2f3b40"/>
+            <path d="M286 252H458V262H286Z" fill="#17655a"/>
+            <path d="M286 252L302 230H472L458 252Z" fill="#1d7564"/>
+            <path d="M458 252L472 230V240L458 262Z" fill="#145a4e"/>
+            <g fill="none" stroke="#e6edef" stroke-width="3" stroke-linecap="round">
+              <path d="M318 247L340 234"/>
+              <path d="M352 248L376 234M360 249L380 236"/>
+              <circle cx="349" cy="250" r="3"/><circle cx="357" cy="251" r="3"/>
+              <path d="M396 248L420 234M402 249L422 237"/>
+              <path d="M436 247L452 237"/>
+            </g>
+            <path d="M162 328H182L180 394H164Z" fill="#08463e"/>
+            <path d="M188 328H208L206 394H190Z" fill="#08463e"/>
+            <path d="M158 392H184V404H156Q156 396 158 392Z" fill="#2f3b40"/>
+            <path d="M186 392H212Q216 396 216 404H186Z" fill="#2f3b40"/>
+            <path d="M160 192Q148 238 154 274" fill="none" stroke="#0b5c52" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="155" cy="280" r="8" fill="#e9e1cb"/>
+            <path d="M154 192Q158 176 174 174H194Q210 176 214 192L222 336H146Z" fill="#0d6a5e"/>
+            <path d="M200 178Q210 180 213 192L221 336H204Z" fill="#0b5c52" opacity=".55"/>
+            <path d="M184 196V330" stroke="#0b5c52" stroke-width="2"/>
+            <rect x="177" y="156" width="13" height="20" fill="#b07a5a"/>
+            <path d="M172 174L184 186L196 174Z" fill="#ddefeb"/>
+            <circle cx="184" cy="138" r="22" fill="#b07a5a"/>
+            <path d="M160 140Q158 110 184 110Q211 110 208 136Q198 126 184 126Q170 126 160 140Z" fill="#2f8f7b"/>
+            <path d="M160 140Q154 146 158 152Q164 146 164 138Z" fill="#2f8f7b"/>
+            <path d="M186 138H206Q208 154 198 160L186 158Z" fill="#eef6f4"/>
+            <path d="M208 194Q228 228 240 244L276 240" fill="none" stroke="#0d6a5e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M208 194Q228 228 240 244" fill="none" stroke="#0b5c52" stroke-width="2" opacity=".5"/>
+            <circle cx="282" cy="239" r="8" fill="#e9e1cb"/>
+            <path d="M286 238L306 226" stroke="#e6edef" stroke-width="3" stroke-linecap="round"/>
+          </svg></figure>
+        </div>
+        <div class="saludo-texto" id="saludo-crear" hidden><p class="saludo-titulo" id="saludo-crear-t">Mucho gusto.</p>
+          <!-- Ilustración: una estudiante aprende con la app, frente a la mesa en cuadrícula -->
+          <figure class="ilustracion"><svg aria-hidden="true" focusable="false" viewBox="40 0 500 430">
+            <path d="M78 246C70 150 160 74 284 74C410 74 506 140 500 250C494 352 400 400 278 398C156 396 86 342 78 246Z" fill="#e3efec"/>
+            <path d="M118 330H460M140 290H440" stroke="#d3e5e0" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="300" cy="404" rx="200" ry="8" fill="#d3e0de"/>
+            <circle cx="486" cy="78" r="22" fill="none" stroke="#d3e0de" stroke-width="7"/>
+            <path d="M486 56A22 22 0 1 1 464 78" fill="none" stroke="#0d6a5e" stroke-width="7" stroke-linecap="round"/>
+            <rect x="94" y="102" width="252" height="200" rx="12" fill="#d3e0de"/>
+            <rect x="86" y="94" width="252" height="200" rx="12" fill="#ffffff"/>
+            <path d="M86 106Q86 94 98 94H326Q338 94 338 106V118H86Z" fill="#f3f6f6"/>
+            <circle cx="101" cy="106" r="3.5" fill="#c4d1d4"/><circle cx="113" cy="106" r="3.5" fill="#c4d1d4"/><circle cx="125" cy="106" r="3.5" fill="#c4d1d4"/>
+            <rect x="102" y="132" width="144" height="144" rx="5" fill="#1d7564"/>
+            <path d="M138 132V276M174 132V276M210 132V276M102 168H246M102 204H246M102 240H246" stroke="#ffffff" stroke-opacity=".16" stroke-width="1.2"/>
+            <g fill="none" stroke="#e6edef" stroke-width="2.6" stroke-linecap="round">
+              <path d="M112 160L130 142"/>
+              <path d="M146 196L166 176M152 198L168 182"/><circle cx="144" cy="198" r="2.6"/><circle cx="151" cy="200" r="2.6"/>
+              <path d="M218 158L238 140"/>
+              <path d="M110 268L130 248M116 270L132 254"/>
+              <path d="M220 232L238 212"/>
+              <path d="M184 266L202 246"/>
+            </g>
+            <rect x="176" y="170" width="32" height="32" rx="3" fill="#ddefeb"/>
+            <rect x="176" y="170" width="32" height="32" rx="3" fill="none" stroke="#0d6a5e" stroke-width="1.6" stroke-dasharray="4 3"/>
+            <rect x="258" y="134" width="64" height="7" rx="3.5" fill="#c4d1d4"/>
+            <rect x="258" y="150" width="48" height="7" rx="3.5" fill="#dbe4e6"/>
+            <rect x="258" y="174" width="66" height="74" rx="7" fill="#ddefeb"/>
+            <g fill="none" stroke="#0d6a5e" stroke-width="2.6" stroke-linecap="round">
+              <path d="M280 236L304 190M288 238L306 196"/><circle cx="277" cy="240" r="4"/><circle cx="288" cy="242" r="4"/>
+            </g>
+            <rect x="258" y="262" width="66" height="7" rx="3.5" fill="#dbe4e6"/>
+            <rect x="258" y="262" width="42" height="7" rx="3.5" fill="#0d6a5e"/>
+            <rect x="462" y="388" width="58" height="12" rx="2" fill="#0d6a5e"/>
+            <rect x="468" y="376" width="48" height="12" rx="2" fill="#c4d1d4"/>
+            <rect x="460" y="364" width="54" height="12" rx="2" fill="#ddefeb"/>
+            <path d="M394 318H414L412 394H396Z" fill="#0b5c52"/>
+            <path d="M418 318H438L436 394H420Z" fill="#0b5c52"/>
+            <path d="M368 404Q368 396 372 392H398V404Z" fill="#2f3b40"/>
+            <path d="M416 392H440V404H414Q414 396 416 392Z" fill="#2f3b40"/>
+            <path d="M442 192L448 222" stroke="#0b5c52" stroke-width="16" stroke-linecap="round"/>
+            <path d="M448 222L447 278" stroke="#d9a07f" stroke-width="11" stroke-linecap="round"/>
+            <path d="M384 190Q388 176 404 174H424Q440 176 444 190L450 322H378Z" fill="#0d6a5e"/>
+            <path d="M432 178Q442 180 444 190L450 322H434Z" fill="#0b5c52" opacity=".55"/>
+            <path d="M390 262H408" stroke="#0b5c52" stroke-width="2" stroke-linecap="round"/>
+            <rect x="430" y="246" width="30" height="40" rx="4" fill="#2f3b40" transform="rotate(-8 445 266)"/>
+            <rect x="434" y="251" width="22" height="30" rx="2" fill="#ddefeb" transform="rotate(-8 445 266)"/>
+            <circle cx="448" cy="284" r="6.5" fill="#d9a07f"/>
+            <rect x="406" y="156" width="13" height="20" fill="#d9a07f"/>
+            <path d="M402 174L412 188L424 174Z" fill="#d9a07f"/>
+            <circle cx="412" cy="138" r="22" fill="#d9a07f"/>
+            <path d="M392 134Q390 110 414 110Q438 110 436 138Q434 150 428 158Q428 140 418 130Q406 126 392 134Z" fill="#2f2e41"/>
+            <path d="M432 120Q454 122 452 148Q450 166 438 174Q446 150 434 136Z" fill="#2f2e41"/>
+            <path d="M388 194L378 214" stroke="#0d6a5e" stroke-width="16" stroke-linecap="round"/>
+            <path d="M378 214L366 234L342 210" fill="none" stroke="#d9a07f" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="338" cy="206" r="6.5" fill="#d9a07f"/>
+          </svg></figure>
+        </div>
+      </div>
     </section>
     <section class="puerta-der" aria-labelledby="t-cuenta">
       <div class="formulario">
@@ -851,7 +971,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
           <span class="raya" aria-hidden="true"></span>
         </div>
         <button type="button" class="google" data-entrar><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>Continuar con Google</button>
-        <p class="nota-google">Con el correo de la universidad, si lo tienes.</p>
+        <p class="nota-google">Admite cuentas personales e institucionales.</p>
         <p class="separador">o con correo y contraseña</p>
 
         <form class="hoja-cuenta" role="tabpanel" id="hoja-ingresar" aria-labelledby="tab-ingresar" data-entrar>
@@ -983,28 +1103,30 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     document.getElementById("pt-esp").textContent = especialidad;
     document.getElementById("pt-ruta-esp").textContent = especialidad;
   } else {
-    // Sin técnica de por medio: el catálogo en general
-    document.getElementById("pt-nombre").textContent = "Todas las técnicas";
-    document.getElementById("pt-esp").textContent = "Cada técnica, con su instrumental y su mesa.";
-    document.getElementById("pt-ruta-sep").hidden = true; document.getElementById("pt-ruta-esp").hidden = true;
-    document.getElementById("pt-candado").textContent = "Con una cuenta gratuita se abre cada técnica por dentro, y SIMIQ3D y SIVRI.";
-    document.getElementById("pt-promesa").textContent = "Con una cuenta gratuita se abre cada técnica por dentro.";
-    var chips = document.getElementById("pt-chips");
-    ESPECIALIDADES.forEach(function (e) { var c = document.createElement("span"); c.textContent = e[0]; chips.appendChild(c); });
-    chips.hidden = false;
+    // Ingreso directo: nada bloqueado; un saludo según la hora
+    ["pt-bloqueada", "pt-cabeza"].forEach(function (id) { document.getElementById(id).hidden = true; });
+    document.querySelector(".puerta-izq .ruta").hidden = true;
+    document.querySelector(".promesa-movil").hidden = true;
+    var hora = new Date().getHours();
+    document.getElementById("saludo-hora").textContent = hora < 12 ? "Buenos días." : hora < 19 ? "Buenas tardes." : "Buenas noches.";
+    document.getElementById("saludo").hidden = false;
+    document.getElementById("puerta-izq").setAttribute("aria-labelledby", "saludo-hora");
   }
+  var directo = !tecnica;
   var destino = tecnica ? (CON_DETALLE.indexOf(clave) !== -1 ? "tecnica.html#" + clave : "catalogo.html") : "catalogo.html";
   // Mockup: entrar o registrarse lleva a donde se iba, sin autenticación real
   document.querySelectorAll("[data-entrar]").forEach(function (el) {
     el.addEventListener(el.tagName === "FORM" ? "submit" : "click", function (e) {
       e.preventDefault();
       // La autorización de datos (Decreto 1377) es lo único que no se puede saltar al crear la cuenta
-      if (el.id === "hoja-crear" && !acepto.checked) { error.hidden = false; filaAcepto.classList.add("con-error"); acepto.focus(); return; }
+      var enCrear = document.getElementById("tab-crear").getAttribute("aria-selected") === "true";
+      if ((el.id === "hoja-crear" || (el.classList.contains("google") && enCrear)) && !acepto.checked) { marcarError(); acepto.focus(); return; }
       location.href = destino;
     });
   });
   var acepto = document.getElementById("c-acepto"), error = document.getElementById("c-error"), filaAcepto = document.getElementById("c-acepto-fila");
-  acepto.addEventListener("change", function () { if (acepto.checked) { error.hidden = true; filaAcepto.classList.remove("con-error"); } });
+  function marcarError() { error.hidden = false; filaAcepto.classList.add("con-error"); acepto.setAttribute("aria-invalid", "true"); }
+  acepto.addEventListener("change", function () { if (acepto.checked) { error.hidden = true; filaAcepto.classList.remove("con-error"); acepto.removeAttribute("aria-invalid"); } });
   // «Ingresar» y «Crear cuenta» de la barra, en esta misma página: cambian de pestaña sin perder la técnica
   document.addEventListener("click", function (e) {
     var a = e.target.closest('a[href^="cuenta.html#"]');
@@ -1025,6 +1147,19 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   function elegir(t) {
     tabs.forEach(function (x) { var si = x === t; x.setAttribute("aria-selected", String(si)); x.tabIndex = si ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !si; });
     document.getElementById("t-cuenta").textContent = t.id === "tab-crear" ? "Crear una cuenta gratis" : "Ingresar a IQ Platform";
+    var crear = t.id === "tab-crear";
+    if (directo) {
+      document.getElementById("saludo-ingresar").hidden = crear;
+      document.getElementById("saludo-crear").hidden = !crear;
+      document.getElementById("puerta-izq").setAttribute("aria-labelledby", crear ? "saludo-crear-t" : "saludo-hora");
+      var puerta = document.querySelector(".puerta"), paneles = [document.getElementById("puerta-izq"), document.querySelector(".puerta-der")];
+      var antes = paneles.map(function (el) { return el.getBoundingClientRect().left; });
+      puerta.classList.toggle("invertida", crear);
+      if (animarCambio && !reducido) paneles.forEach(function (el, k) {
+        var dx = antes[k] - el.getBoundingClientRect().left;
+        if (Math.abs(dx) > 1) el.animate([{ transform: "translateX(" + dx + "px)" }, { transform: "none" }], { duration: 700, easing: "cubic-bezier(.16,1,.3,1)" });
+      });
+    }
     document.title = (t.id === "tab-crear" ? "Crear cuenta" : "Ingresar") + " · IQ Platform";
     moverRaya();
   }
@@ -1035,10 +1170,12 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   addEventListener("resize", moverRaya);
   if (document.fonts) document.fonts.ready.then(moverRaya);
   raya.style.transition = "none";
+  var animarCambio = false;
   elegir(document.getElementById("tab-" + modo));
+  animarCambio = true;
   requestAnimationFrame(function () { raya.style.transition = ""; });
   if (modo === "crear") document.getElementById("c-acepto").checked = false;
-  if (location.hash.indexOf("error") !== -1) { error.hidden = false; filaAcepto.classList.add("con-error"); }
+  if (location.hash.indexOf("error") !== -1) marcarError();
   var atajo = location.hash.replace("#", "");
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
 })();

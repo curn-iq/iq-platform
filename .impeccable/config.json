@@ -110,6 +110,14 @@
         ],
         "createdAt": "2026-10-05T20:45:08.278Z",
         "reason": "Claude: falsos positivos verificados en capturas; el panel del menú (panel-lista) es el compartido de la barra, y puerta-der tiene padding con clamp()/var(--lado) que el detector no resuelve"
+      },
+      {
+        "rule": "shape-assembled-illustration",
+        "value": "*",
+        "files": [
+          "diseno/mockups/cuenta.html"
+        ],
+        "createdAt": "2026-10-06T02:08:32.503Z"
       }
     ]
   }
