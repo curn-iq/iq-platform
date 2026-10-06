@@ -194,11 +194,14 @@ navegación (ver más abajo) NO se considera un módulo.
     | Visitante (sin cuenta) | Entrar al shell, ver el catálogo de técnicas publicadas y los datos clínicos de cada una | Nada |
     | `usuario` | Ver el instrumental y las mesas de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
     | `colaborador` | Crear técnicas y editar versiones en **borrador**; enviarlas a revisión | Lo asigna un admin |
-    | `revisor` | Aprobar o rechazar versiones (nunca las propias); archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
-    | `admin` | Gestionar roles | Mauricio |
+    | `revisor` | Publicar directamente sus propias técnicas y versiones (sin pasar por revisión); aprobar o rechazar las de los colaboradores; archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado; la decanatura del programa también es revisor |
+    | `admin` | Gestionar roles | El equipo operativo del proyecto (decidido por Mauricio el 2026-10-06) |
 
-  - Un contenido incorrecto nunca llega a estudiantes: queda en borrador
-    hasta que un revisor distinto al autor lo aprueba.
+  - Un contenido incorrecto nunca llega a estudiantes: lo de un
+    colaborador queda en borrador hasta que un revisor lo aprueba. Un
+    revisor (docente o instrumentador titulado) publica lo suyo
+    directamente, sin que otro lo revise; un colaborador nunca se
+    autopublica (decidido por Mauricio el 2026-10-06).
   - **MVP: una sola plataforma, la de la CURN** (decidido el 2026-10-05). Se
     abre a estudiantes de cualquier institución, que usan el catálogo de la
     CURN; no hay catálogos ni espacios por institución. La prioridad es

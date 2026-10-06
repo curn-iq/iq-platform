@@ -74,7 +74,6 @@ Table TecnicaVersion {
 
   checks {
     `(estado IN ('borrador', 'en_revision')) = (revisado_por IS NULL AND fecha_revision IS NULL)` [name: 'revision_coherente']
-    `revisado_por <> creado_por` [name: 'sin_autoaprobacion']
   }
 
   Note: '''

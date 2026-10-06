@@ -34,8 +34,9 @@ flowchart LR
 | Usar SIVRI y SIMIQ3D | | ✔ | ✔ | ✔ | ✔ |
 | Funciones personales (p. ej. progreso en SIVRI) | | ✔ | ✔ | ✔ | ✔ |
 | Crear técnicas y editar borradores | | | ✔ | ✔ | ✔ |
-| Enviar un borrador a revisión | | | ✔ | ✔ | ✔ |
-| Aprobar o rechazar versiones (nunca las propias) | | | | ✔ | ✔ |
+| Enviar un borrador a revisión | | | ✔ | | |
+| Publicar sus propias versiones sin revisión | | | | ✔ | ✔ |
+| Aprobar o rechazar versiones de colaboradores | | | | ✔ | ✔ |
 | Archivar una técnica publicada | | | | ✔ | ✔ |
 | Crear y editar instrumental | | | | ✔ | ✔ |
 | Gestionar roles | | | | | ✔ |
@@ -82,14 +83,16 @@ flowchart LR
 
 Cada técnica tiene como máximo una versión publicada y una en curso
 (`borrador` o `en_revision`). Las transiciones se validan en el dominio
-(`app/dominio/tecnicas.py`).
+(`app/dominio/tecnicas.py`). Un colaborador envía su borrador a revisión;
+un revisor publica el suyo directamente.
 
 ```mermaid
 stateDiagram-v2
     [*] --> borrador: crear técnica o editar una publicada
-    borrador --> en_revision: el autor la envía
+    borrador --> en_revision: un colaborador la envía
+    borrador --> publicada: un revisor publica la suya
     en_revision --> borrador: un revisor la rechaza
-    en_revision --> publicada: un revisor distinto al autor la aprueba
+    en_revision --> publicada: un revisor la aprueba
     publicada --> reemplazada: se aprueba una versión nueva
     publicada --> archivada: un revisor la retira
     reemplazada --> [*]
