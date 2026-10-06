@@ -772,7 +772,12 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .pub-grupo { padding: 10px 10px 4px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
 .pub-lista a, .pub-lista .ocupada { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 10px; border-radius: 10px; font-size: 15.5px; }
 .pub-lista a:hover, .pub-lista a:focus-visible { background: var(--hover-neutro); }
-.pub-lista .ocupada { color: var(--tinta-3); }
+.constancia-pub { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 6px 12px 6px 10px; border-radius: 10px; color: var(--marca-hondo); font-size: 15px; font-weight: 600; animation: lavar-pub 1.2s var(--expo) both; }
+.constancia-pub svg { flex: none; color: var(--marca); }
+@keyframes lavar-pub { 0%, 30% { background: var(--marca-claro); } 100% { background: transparent; } }
+.pub-lista .ocupada { color: var(--tinta-3); flex-direction: column; align-items: flex-start; gap: 2px; }
+.vacio-pub { display: flex; align-items: center; gap: 10px; margin-top: 28px; padding: 28px 24px; border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); color: var(--tinta-2); font-size: 16.5px; }
+.vacio-pub svg { flex: none; color: var(--marca); }
 .pub-lista .ocupada small { font-size: 13px; font-weight: 600; }
 .pub-vacio { padding: 16px 10px; color: var(--tinta-3); font-size: 15px; }
 
@@ -923,7 +928,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     </div>
     <div class="gestion-acciones">
       <button type="button" class="boton suave" id="abrir-publicadas" aria-expanded="false" aria-controls="buscador-pub">Editar una publicada</button>
-      <a class="boton" href="#"><svg class="mas" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Nueva técnica</a>
+      <a class="boton" id="nueva-tec" href="editor.html?nueva=1#paso-1"><svg class="mas" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Nueva técnica</a>
       <div class="buscador-pub" id="buscador-pub" role="dialog" aria-label="Editar una técnica publicada" hidden>
         <label><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="solo-lector">Buscar una técnica publicada</span><input type="search" id="buscar-pub" placeholder="Buscar una técnica publicada" autocomplete="off"></label>
         <ul class="pub-lista" id="pub-lista"></ul>
@@ -1066,7 +1071,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
      Colecistectomía no tiene mesa de reserva y la mesa de Nefrectomía laparoscópica aún no llega. */
   function slugDe(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-"); }
   var SECCIONES = ["Datos clínicos", "Instrumental", "Mesa de Mayo", "Mesa de reserva"];
-  var BORRADORES = [
+  var BORRADORES_TODOS = [
     { nombre: "Hemicolectomía laparoscópica", esp: "Cirugía laparoscópica", version: 2, estado: "devuelta", editada: "3 oct",
       secciones: ["pendiente", "en-curso", "en-curso", "pendiente"],
       comentario: { seccion: 2, fecha: "4 oct", texto: "La leyenda de la mesa de Mayo tiene dos objetos con el número 4 y no aparece el 9. Revisa la numeración con el documento de la técnica antes de enviarla de nuevo." } },
@@ -1077,6 +1082,52 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     { nombre: "Tiroidectomía", esp: "Cirugía general", version: 2, estado: "en-revision", editada: "1 oct",
       secciones: ["completa", "completa", "completa", "completa"] }
   ];
+
+  /* ---------- Quién edita (demostración): ?como=revisor o ?como=admin publica lo suyo sin revisión ---------- */
+  var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
+  var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
+    admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
+  var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
+  if (PUBLICA) {
+    document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
+    document.querySelector(".quien-nombre").textContent = QUIEN.n;
+    document.querySelector(".quien-correo").textContent = QUIEN.m;
+    document.querySelector(".quien-soy .rol").textContent = QUIEN.rol;
+    var aqui = location.pathname.split("/").pop(), items = [["borradores.html", "Mis borradores", PUBLICADA ? 0 : 1]].concat(QUIEN.menu);
+    document.querySelector(".cuenta-lista").innerHTML = items.map(function (it) { return "<li><a href='" + it[0] + "'" + (it[0] === aqui ? " aria-current='page'" : "") + ">" + it[1] + (it[2] ? "<span class='cifra'>" + it[2] + "</span>" : "") + "</a></li>"; }).join("");
+    var qm = document.querySelector(".quien-movil"), caja = qm.parentNode, cerrar = caja.querySelector("a[href='inicio.html']");
+    qm.textContent = QUIEN.n + " · " + QUIEN.rol;
+    caja.querySelectorAll("a.ingresar").forEach(function (a) { if (a !== cerrar) a.remove(); });
+    items.forEach(function (it) { var a = document.createElement("a"); a.className = "ingresar"; a.href = it[0]; a.textContent = it[1]; if (it[0] === aqui) a.setAttribute("aria-current", "page"); caja.insertBefore(a, cerrar); });
+    // Todo enlace a una pantalla con sesión conserva quién es (salvo Usuarios y roles, que es solo del admin)
+    document.querySelectorAll("a[href^='borradores.html'], a[href^='editor.html'], a[href^='tecnica.html'], a[href^='revision.html'], a[href^='instrumental.html']").forEach(function (a) {
+      var h = a.getAttribute("href"); if (h.indexOf("?") !== -1) return;
+      var i = h.indexOf("#"); a.setAttribute("href", i === -1 ? h + CONSULTA : h.slice(0, i) + CONSULTA + h.slice(i));
+    });
+  }
+  document.getElementById("nueva-tec").href = "editor.html?nueva=1" + (PUBLICA ? "&como=" + COMO : "") + "#paso-1";
+  // Constancia al volver de publicar una técnica nueva
+  var NUEVA_PUB = PARAMS.get("nueva-publicada");
+  if (PUBLICA && NUEVA_PUB !== null) {
+    var cons = document.createElement("p"); cons.className = "constancia-pub"; cons.setAttribute("role", "status");
+    cons.innerHTML = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3.5 8.4l2.9 2.8 6.1-6.4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg><span></span>";
+    cons.querySelector("span").textContent = (NUEVA_PUB || "La técnica") + " se publicó y ya está en el catálogo.";
+    document.getElementById("resumen").after(cons);
+  }
+  // Quien publica lo suyo no tiene versiones en revisión ni devueltas: solo su borrador
+  var BORRADORES = PUBLICA ? (PUBLICADA ? [] : BORRADORES_TODOS.filter(function (b) { return b.nombre === "Colecistectomía"; })) : BORRADORES_TODOS;
+  if (PUBLICA) {
+    document.getElementById("resumen").textContent = PUBLICADA ? "Nada en curso." : "1 técnica en curso. Se publica al terminarla, sin pasar por revisión.";
+    // Sin nada en curso no hay matriz que leer: una tarjeta con lo último que pasó
+    if (PUBLICADA) {
+      document.querySelector(".gestion-filtros").style.display = "none";
+      document.querySelector(".tabla-caja").style.display = "none";
+      var vacio = document.createElement("p"); vacio.className = "vacio-pub";
+      vacio.innerHTML = "<svg width='18' height='18' viewBox='0 0 16 16' aria-hidden='true'><path d='M3.5 8.4l2.9 2.8 6.1-6.4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>La versión 2 de Colecistectomía ya está publicada.";
+      document.querySelector(".tabla-caja").after(vacio);
+    }
+    document.getElementById("filtros").style.display = "none";
+  }
   var ESTADOS = { "devuelta": "Devuelta", "borrador": "Borrador", "en-revision": "En revisión" };
   var NOMBRE_MARCA = { "completa": "Completa", "en-curso": "En curso", "pendiente": "Pendiente", "sin-mesa": "La técnica no tiene esa mesa" };
   var ICONO_ESTADO = {
@@ -1105,7 +1156,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     b.secciones.forEach(function (s, c) { h += "<td class='sec" + (b.comentario && b.comentario.seccion === c ? " senalada" : "") + "' data-etq='" + SECCIONES[c] + "'>" + marca(s, c, f) + "</td>"; });
     h += "<td class='accion'>" + (b.estado === "en-revision"
       ? "<a class='continuar ver' href='#'>Ver" + flechaFila + "</a>"
-      : "<a class='continuar' href='" + (slug === "colecistectomia" ? "editor.html#paso-1" : "#") + "'>Continuar" + flechaFila + "</a>") + "</td>";
+      : "<a class='continuar' href='" + (slug === "colecistectomia" ? "editor.html" + CONSULTA + "#paso-1" : "#") + "'>Continuar" + flechaFila + "</a>") + "</td>";
     tr.innerHTML = h;
     tr.querySelector(".tec-nombre").textContent = b.nombre;
     tr.querySelector(".tec-meta").textContent = b.esp + " · Versión " + b.version;
@@ -1167,7 +1218,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   // Editar una publicada: buscador sobre las técnicas del catálogo; las que ya están en curso no se pueden abrir dos veces
   var abrirPub = document.getElementById("abrir-publicadas"), buscadorPub = document.getElementById("buscador-pub");
   var buscarPub = document.getElementById("buscar-pub"), listaPub = document.getElementById("pub-lista");
-  var enCurso = BORRADORES.map(function (b) { return b.nombre; });
+  var enCurso = BORRADORES_TODOS.map(function (b) { return b.nombre; }), propias = BORRADORES.map(function (b) { return b.nombre; });
   function pintarPublicadas() {
     var q = buscarPub.value.trim().normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(), h = "";
     ESPECIALIDADES.forEach(function (e) {
@@ -1176,7 +1227,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       h += "<li class='pub-grupo'>" + e[0] + "</li>";
       tecs.forEach(function (t) {
         h += enCurso.indexOf(t) !== -1
-          ? "<li><span class='ocupada'>" + t + "<small>Ya está en curso</small></span></li>"
+          ? "<li><span class='ocupada'>" + t + "<small>" + (PUBLICA && propias.indexOf(t) === -1 ? "En curso por Daniela Ortiz" : "Ya está en curso") + "</small></span></li>"
           : "<li><a href='#'>" + t + flechaFila + "</a></li>";
       });
     });

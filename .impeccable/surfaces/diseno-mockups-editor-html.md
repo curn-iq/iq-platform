@@ -9,7 +9,7 @@ related_targets: []
 
 ## Alcance y modo
 
-Donde el colaborador escribe una versión en borrador. Modo **Operate**. Se llega desde «Continuar», «Nueva técnica» y «Editar una publicada» en Mis borradores, y desde «Editar técnica» / «Continuar borrador» en el detalle. La demostración es la versión 2 de Colecistectomía, en borrador, con los datos reales que el detalle ya muestra: anestesia, ropa, posición, equipos, suturas, equipo médico-quirúrgico, instrumental y la mesa de Mayo de 7 × 6 con sus diez objetos; no tiene mesa de reserva. Decisiones del usuario: la mesa se arma arrastrando un objeto a su celda o tocando la celda y eligiendo el objeto (las dos vías hacen lo mismo); autoguardado, sin botón Guardar; «Enviar a revisión» queda bloqueado hasta que todas las secciones estén completas. Una mesa que la técnica no lleva se declara con «Esta técnica no lleva mesa de reserva» y cuenta como completa. Los campos clínicos sin dato quedan vacíos para escribir: el mockup no inventa contenido clínico.
+Donde el colaborador escribe una versión en borrador; un revisor o admin usa el mismo editor y publica lo suyo directo (variante `?como=revisor` / `?como=admin`). Modo **Operate**. Se llega desde «Continuar», «Nueva técnica» y «Editar una publicada» en Mis borradores, y desde «Editar técnica» / «Continuar borrador» en el detalle. La demostración es la versión 2 de Colecistectomía, en borrador, con los datos reales que el detalle ya muestra: anestesia, ropa, posición, equipos, suturas, equipo médico-quirúrgico, instrumental y la mesa de Mayo de 7 × 6 con sus diez objetos; no tiene mesa de reserva. Decisiones del usuario: la mesa se arma arrastrando un objeto a su celda o tocando la celda y eligiendo el objeto (las dos vías hacen lo mismo); autoguardado, sin botón Guardar; «Enviar a revisión» queda bloqueado hasta que todas las secciones estén completas. Una mesa que la técnica no lleva se declara con «Esta técnica no lleva mesa de reserva» y cuenta como completa. Los campos clínicos sin dato quedan vacíos para escribir: el mockup no inventa contenido clínico.
 
 ## Direction contract
 
@@ -17,7 +17,7 @@ THESIS: escribir una técnica es un recorrido en orden, como se arma en el quir�
 
 OWN-WORLD: el de DESIGN.md y el de Mis borradores: `fondo`, hojas en `superficie` con filete, las mismas marcas de avance de 22 px (completa, en curso, pendiente), la mesa serena del detalle (rejilla `filete`, instrumental en acero, números en círculo) con una capa de celdas encima para soltar y tocar; botones `boton` y `boton suave`, Host Grotesk, cifras tabulares.
 
-STORY: el colaborador ve en qué paso va y qué le falta, completa cada paso con lo que la fuente trae, ubica cada objeto en su celda y, cuando todo está completo, envía la versión a revisión sin preocuparse por guardar.
+STORY: el colaborador ve en qué paso va y qué le falta, completa cada paso con lo que la fuente trae, ubica cada objeto en su celda y, cuando todo está completo, envía la versión a revisión sin preocuparse por guardar. Si es revisor o admin, en el último paso la publica directamente tras confirmar.
 
 FIRST VIEWPORT: barra con «Mi cuenta»; la ruta «Mis borradores ›», el nombre de la técnica a 40 px con «Cirugía general · Versión 2 · Borrador» y, a la derecha, el estado del guardado y «Ver la versión publicada»; la fila de los cinco pasos con su número o marca, su nombre y lo que falta; el paso abierto (en la mesa: la lista de objetos con su número a la izquierda y la cuadrícula a la derecha); una barra fija abajo con Anterior y «Siguiente: …».
 

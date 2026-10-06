@@ -881,7 +881,7 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 .donde-cabeza p { color: var(--tinta-3); font-size: 14.5px; }
 .esp-grupo { margin-top: 22px; }
 .esp-grupo h3 { margin: 0 0 12px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
-a@keyframes encender { from { background: var(--marca-claro); transform: scale(.6); } }
+@keyframes encender { from { background: var(--marca-claro); transform: scale(.6); } }
 .sin-mesas { margin-top: 16px; padding: 18px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-2); font-size: 15.5px; line-height: 1.5; }
 
 /* Editar en su lugar */
@@ -1017,7 +1017,7 @@ a@keyframes encender { from { background: var(--marca-claro); transform: scale(.
 <div class="panel-cuenta" id="panel-cuenta" role="region" aria-label="Mi cuenta" hidden>
   <div class="quien-soy"><span class="avatar" aria-hidden="true">LP</span><div><p class="quien-nombre">Laura Pérez</p><p class="quien-correo">laura.perez@correo.com</p><span class="rol">Revisor</span></div></div>
   <p class="cuenta-titulo">Gestión de DataIQ</p>
-  <ul class="cuenta-lista"><li><a href="#">Mis borradores<span class="cifra">1</span></a></li><li><a href="revision.html">Por revisar<span class="cifra">2</span></a></li><li><a href="instrumental.html" aria-current="page">Instrumental<span class="cifra">143</span></a></li></ul>
+  <ul class="cuenta-lista"><li><a href="borradores.html?como=revisor">Mis borradores<span class="cifra">1</span></a></li><li><a href="revision.html">Por revisar<span class="cifra">2</span></a></li><li><a href="instrumental.html" aria-current="page">Instrumental<span class="cifra">143</span></a></li></ul>
   <a class="salir" href="inicio.html">Cerrar sesión<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </div>
 
@@ -1083,6 +1083,7 @@ a@keyframes encender { from { background: var(--marca-claro); transform: scale(.
   </div>
   <div class="acciones-movil solo-sesion">
     <p class="quien-movil">Laura Pérez · Revisor</p>
+    <a class="ingresar" href="borradores.html?como=revisor">Mis borradores</a>
     <a class="ingresar" href="revision.html">Por revisar</a>
     <a class="ingresar" href="instrumental.html" aria-current="page">Instrumental</a>
     <a class="ingresar" href="inicio.html">Cerrar sesión</a>
@@ -1125,6 +1126,29 @@ a@keyframes encender { from { background: var(--marca-claro); transform: scale(.
 
 <script>
 (function () {
+  /* ---------- Quién edita (demostración): ?como=revisor o ?como=admin publica lo suyo sin revisión ---------- */
+  var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
+  var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
+    admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
+  var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
+  if (PUBLICA) {
+    document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
+    document.querySelector(".quien-nombre").textContent = QUIEN.n;
+    document.querySelector(".quien-correo").textContent = QUIEN.m;
+    document.querySelector(".quien-soy .rol").textContent = QUIEN.rol;
+    var aqui = location.pathname.split("/").pop(), items = [["borradores.html", "Mis borradores", PUBLICADA ? 0 : 1]].concat(QUIEN.menu);
+    document.querySelector(".cuenta-lista").innerHTML = items.map(function (it) { return "<li><a href='" + it[0] + "'" + (it[0] === aqui ? " aria-current='page'" : "") + ">" + it[1] + (it[2] ? "<span class='cifra'>" + it[2] + "</span>" : "") + "</a></li>"; }).join("");
+    var qm = document.querySelector(".quien-movil"), caja = qm.parentNode, cerrar = caja.querySelector("a[href='inicio.html']");
+    qm.textContent = QUIEN.n + " · " + QUIEN.rol;
+    caja.querySelectorAll("a.ingresar").forEach(function (a) { if (a !== cerrar) a.remove(); });
+    items.forEach(function (it) { var a = document.createElement("a"); a.className = "ingresar"; a.href = it[0]; a.textContent = it[1]; if (it[0] === aqui) a.setAttribute("aria-current", "page"); caja.insertBefore(a, cerrar); });
+    // Todo enlace a una pantalla con sesión conserva quién es (salvo Usuarios y roles, que es solo del admin)
+    document.querySelectorAll("a[href^='borradores.html'], a[href^='editor.html'], a[href^='tecnica.html'], a[href^='revision.html'], a[href^='instrumental.html']").forEach(function (a) {
+      var h = a.getAttribute("href"); if (h.indexOf("?") !== -1) return;
+      var i = h.indexOf("#"); a.setAttribute("href", i === -1 ? h + CONSULTA : h.slice(0, i) + CONSULTA + h.slice(i));
+    });
+  }
+
   // Siempre abre arriba: el navegador no restaura el scroll de la visita anterior al recargar o volver
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   scrollTo(0, 0);

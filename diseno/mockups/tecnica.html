@@ -672,6 +672,42 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 /* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
 .editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
 .editar-tec:hover { background: var(--hover-neutro); }
+.editar-tec.inerte { color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--filete); cursor: default; }
+.editar-tec.inerte:hover { background: none; }
+.editar-tec.inerte svg { display: none !important; }
+.recien-publicada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; color: var(--marca-hondo); font-size: 15px; font-weight: 600; animation: lavar 1.2s var(--expo) both; }
+.recien-publicada[hidden] { display: none; }
+/* Más acciones (revisor y admin): archivar, con confirmación en el mismo panel */
+.mas-tec { position: relative; }
+.mas-tec[hidden] { display: none; }
+.mas-boton { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 10px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); cursor: pointer; }
+.mas-boton:hover, .mas-boton[aria-expanded="true"] { background: var(--hover-neutro); color: var(--tinta); }
+.mas-panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: 320px; padding: 8px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .3s var(--expo); }
+.mas-panel[hidden], #mas-menu[hidden], .mas-confirmar[hidden] { display: none; }
+.mas-item { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: none; color: var(--tinta); font-size: 15.5px; font-weight: 550; text-align: left; cursor: pointer; }
+.mas-item svg { flex: none; margin-top: 2px; color: var(--tinta-2); }
+.mas-item:hover { background: var(--hover-neutro); }
+.mas-item[aria-disabled="true"] { color: var(--tinta-3); cursor: default; }
+.mas-item[aria-disabled="true"]:hover { background: none; }
+.mas-item[aria-disabled="true"] svg { color: var(--tinta-3); }
+.mas-item small[hidden] { display: none; }
+.mas-item small { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 13.5px; font-weight: 500; }
+.mas-confirmar { padding: 8px; }
+.tec-cabeza .mas-confirmar p { margin: 0; color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
+.mas-confirmar p b { color: var(--tinta); font-weight: 650; }
+@media (max-width: 760px) { .tec-acciones .editar-tec { flex: 1 1 calc(100% - 52px); } .mas-tec { flex: none; } .mas-panel { width: calc(100vw - 2 * var(--lado)); } }
+.mas-confirmar .botones { display: flex; gap: 8px; margin-top: 12px; }
+.mas-confirmar .boton { height: 40px; padding: 0 16px; font-size: 15px; }
+.tec-archivada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2) !important; font-size: 15px !important; font-weight: 600; }
+.tec-archivada[hidden] { display: none; }
+.tec-archivada:focus { outline: none; }
+.tec-archivada svg { flex: none; align-self: flex-start; margin-top: 2px; }
+.tec-archivada.solo-ahora { animation: lavar-archivada 1.2s var(--expo) both; }
+@keyframes lavar-archivada { 0%, 30% { background: var(--marca-claro); } 100% { background: var(--fondo); } }
+.recien-publicada svg { flex: none; align-self: flex-start; margin-top: 3px; color: var(--marca); }
+.recien-publicada path { stroke-dasharray: 1; animation: trazar-pub .5s .15s var(--expo) both; }
+@keyframes lavar { 0%, 30% { background: var(--marca-claro); } 100% { background: transparent; } }
+@keyframes trazar-pub { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @media (max-width: 960px) { .cuenta-txt, .cuenta .flecha { display: none; } .cuenta { padding: 0 6px; } }
 @media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
 .panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
@@ -722,6 +758,8 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 .lado a { display: block; padding: 8px 10px; border-radius: 8px; font-size: 15.5px; line-height: 1.35; color: var(--tinta-2); transition: background .2s var(--cuarta), color .2s var(--cuarta); }
 .lado a:hover { background: var(--fondo); color: var(--tinta); }
 .lado a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
+.lado a.archivada { color: var(--tinta-3); }
+.lado a.archivada::after { content: "Archivada"; margin-left: 8px; padding: 0 7px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-3); font-size: 12px; font-weight: 600; }
 .lado-abrir { display: none; }
 /* Panel de la técnica */
 .panel-tec { min-width: 0; padding: 28px clamp(24px, 3vw, 48px) 40px; }
@@ -968,9 +1006,16 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     </nav>
     <article class="panel-tec" aria-labelledby="t-tecnica">
       <header class="tec-cabeza">
-        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p></div>
+        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p><p class="recien-publicada" id="recien-publicada" role="status" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.9 2.8 6.1-6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>Versión 2 publicada hace un momento. La versión 1 quedó en el historial.</p><p class="tec-archivada" id="tec-archivada" role="status" tabindex="-1" hidden><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Técnica archivada. Ya no se ve en el catálogo ni en los módulos; sus versiones quedan en el historial.</p></div>
         <div class="tec-acciones">
           <a class="editar-tec solo-sesion" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
+          <div class="mas-tec" id="mas-tec" hidden>
+            <button type="button" class="mas-boton" id="mas-boton" aria-expanded="false" aria-controls="mas-panel" aria-label="Más acciones"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="4" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="14" cy="9" r="1.6" fill="currentColor"/></svg></button>
+            <div class="mas-panel" id="mas-panel" hidden>
+              <div id="mas-menu"><button type="button" class="mas-item" id="archivar"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Archivar técnica<small id="archivar-nota" hidden>No se puede mientras tenga una versión en curso.</small></span></button></div>
+              <div class="mas-confirmar" id="archivar-confirmar" hidden><p>Archivar <b id="arch-nombre"></b>. Deja de verse en el catálogo, en SIVRI y en SIMIQ3D; sus versiones se conservan en el historial.</p><div class="botones"><button type="button" class="boton" id="si-archivar">Archivar</button><button type="button" class="boton suave" id="no-archivar">Cancelar</button></div></div>
+            </div>
+          </div>
           <a class="boton suave" id="ir-3d" href="#">Ver en 3D <small>SIMIQ3D</small></a>
           <a class="boton" id="ir-camara" href="#">Comprobar con la cámara <small>SIVRI</small></a>
         </div>
@@ -1046,6 +1091,29 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 
 <script>
 (function () {
+  /* ---------- Quién edita (demostración): ?como=revisor o ?como=admin publica lo suyo sin revisión ---------- */
+  var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
+  var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
+    admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
+  var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
+  if (PUBLICA) {
+    document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
+    document.querySelector(".quien-nombre").textContent = QUIEN.n;
+    document.querySelector(".quien-correo").textContent = QUIEN.m;
+    document.querySelector(".quien-soy .rol").textContent = QUIEN.rol;
+    var aqui = location.pathname.split("/").pop(), items = [["borradores.html", "Mis borradores", PUBLICADA ? 0 : 1]].concat(QUIEN.menu);
+    document.querySelector(".cuenta-lista").innerHTML = items.map(function (it) { return "<li><a href='" + it[0] + "'" + (it[0] === aqui ? " aria-current='page'" : "") + ">" + it[1] + (it[2] ? "<span class='cifra'>" + it[2] + "</span>" : "") + "</a></li>"; }).join("");
+    var qm = document.querySelector(".quien-movil"), caja = qm.parentNode, cerrar = caja.querySelector("a[href='inicio.html']");
+    qm.textContent = QUIEN.n + " · " + QUIEN.rol;
+    caja.querySelectorAll("a.ingresar").forEach(function (a) { if (a !== cerrar) a.remove(); });
+    items.forEach(function (it) { var a = document.createElement("a"); a.className = "ingresar"; a.href = it[0]; a.textContent = it[1]; if (it[0] === aqui) a.setAttribute("aria-current", "page"); caja.insertBefore(a, cerrar); });
+    // Todo enlace a una pantalla con sesión conserva quién es (salvo Usuarios y roles, que es solo del admin)
+    document.querySelectorAll("a[href^='borradores.html'], a[href^='editor.html'], a[href^='tecnica.html'], a[href^='revision.html'], a[href^='instrumental.html']").forEach(function (a) {
+      var h = a.getAttribute("href"); if (h.indexOf("?") !== -1) return;
+      var i = h.indexOf("#"); a.setAttribute("href", i === -1 ? h + CONSULTA : h.slice(0, i) + CONSULTA + h.slice(i));
+    });
+  }
+
   // Siempre abre arriba: el navegador no restaura el scroll de la visita anterior al recargar o volver
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   scrollTo(0, 0);
@@ -1387,7 +1455,11 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   addEventListener("resize", escalarNumeros);
   function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
   // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
+  // Versiones en curso del catálogo, sea quien sea el que mira; tras publicar, Colecistectomía queda sin nada en curso
   var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
+  if (PUBLICA && PUBLICADA) delete EN_CURSO.colecistectomia;
+  document.getElementById("editar-tec").addEventListener("click", function (e) { if (this.classList.contains("inerte")) e.preventDefault(); });
+  // Para quien publica, solo Colecistectomía es suya; las demás son de Daniela Ortiz
   // Sin sesión (#v-técnica): datos clínicos libres; instrumental y mesas piden cuenta en su pestaña
   var prefijo = "";
   function claveDe(h) { prefijo = h.indexOf("v-") === 0 ? "v-" : ""; document.body.classList.toggle("sin-sesion", !!prefijo); return prefijo ? h.slice(2) : h; }
@@ -1411,7 +1483,20 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     // Los módulos también requieren cuenta
     ["ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).href = prefijo ? "cuenta.html#crear~" + clave : "#"; });
   }
+  var ARCHIVADAS = {}, claveVista = null, masBoton = document.getElementById("mas-boton"), masPanel = document.getElementById("mas-panel");
+  function cerrarMas() { masPanel.hidden = true; masBoton.setAttribute("aria-expanded", "false"); document.getElementById("mas-menu").hidden = false; document.getElementById("archivar-confirmar").hidden = true; }
+  masBoton.addEventListener("click", function (e) { e.stopPropagation(); var abrir = masPanel.hidden; cerrarMas(); masPanel.hidden = !abrir; masBoton.setAttribute("aria-expanded", String(abrir)); });
+  masPanel.addEventListener("click", function (e) { e.stopPropagation(); });
+  document.addEventListener("click", function () { if (!masPanel.hidden) cerrarMas(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !masPanel.hidden) { cerrarMas(); masBoton.focus(); } });
+  document.getElementById("archivar").addEventListener("click", function () { if (this.getAttribute("aria-disabled") === "true") return; document.getElementById("mas-menu").hidden = true; document.getElementById("archivar-confirmar").hidden = false; document.getElementById("si-archivar").focus(); });
+  document.getElementById("no-archivar").addEventListener("click", function () { cerrarMas(); masBoton.focus(); });
+  document.getElementById("si-archivar").addEventListener("click", function () {
+    ARCHIVADAS[claveVista] = true; pintar(claveVista);
+    var a = document.getElementById("tec-archivada"); a.classList.remove("solo-ahora"); void a.offsetWidth; a.classList.add("solo-ahora"); a.focus();
+  });
   function pintar(clave) {
+    claveVista = clave;
     var T = TECNICAS[clave];
     puertas(clave, T);
     document.getElementById("t-tecnica").textContent = T.nombre;
@@ -1420,11 +1505,25 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     document.title = T.nombre + " · IQ Platform";
     // Una sola versión en curso por técnica: si ya hay una, el botón lleva a ella
     var curso = EN_CURSO[clave], editar = document.getElementById("editar-tec");
-    editar.querySelector("span").textContent = curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
+    var ajena = !!(PUBLICA && curso && clave !== "colecistectomia");
+    editar.querySelector("span").textContent = ajena ? (curso === "en-revision" ? "Revisar versión 2" : "En curso por Daniela Ortiz") : curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
+    editar.classList.toggle("inerte", ajena && curso !== "en-revision");
+    if (ajena && curso !== "en-revision") editar.setAttribute("aria-disabled", "true"); else editar.removeAttribute("aria-disabled");
     editar.querySelector(".ico-lapiz").style.display = curso === "en-revision" ? "none" : "";
     editar.querySelector(".ico-reloj").style.display = curso === "en-revision" ? "" : "none";
     // El editor de la demostración es el de Colecistectomía; las demás versiones en curso llevan a Mis borradores
-    editar.href = clave === "colecistectomia" ? "editor.html#paso-1" : curso ? "borradores.html" : "#";
+    editar.href = ajena ? (curso === "en-revision" ? "revision.html" + CONSULTA : "#") : clave === "colecistectomia" && curso ? "editor.html" + CONSULTA + "#paso-1" : curso ? "borradores.html" + CONSULTA : "#";
+    var pub = document.getElementById("recien-publicada");
+    // Archivar: solo quien publica, solo sin versión en curso; una archivada deja de ofrecer los módulos
+    var arch = !!ARCHIVADAS[clave];
+    document.getElementById("mas-tec").hidden = !PUBLICA || arch;
+    if (curso) document.getElementById("archivar").setAttribute("aria-disabled", "true"); else document.getElementById("archivar").removeAttribute("aria-disabled");
+    document.getElementById("archivar-nota").hidden = !curso;
+    document.getElementById("arch-nombre").textContent = T.nombre;
+    document.getElementById("tec-archivada").hidden = !arch;
+    ["editar-tec", "ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).style.display = arch ? "none" : ""; });
+    cerrarMas();
+    pub.hidden = !(PUBLICA && PUBLICADA && clave === "colecistectomia");
     var fichas = document.getElementById("fichas"), cl = T.clinicos;
     var filas = [["Anestesia", cl && cl.anestesia], ["Ropa", cl && cl.ropa], ["Posición del paciente", cl && cl.posicion, 1], ["Equipos biomédicos", cl && cl.equipos, 1]];
     fichas.innerHTML = "";
@@ -1458,7 +1557,8 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     pintarMesa("reserva", T.reserva);
     escalarNumeros();
     itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + prefijo + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
-    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + " ";
+    itemsLado.forEach(function (it) { var h = it.a.getAttribute("href"); it.a.classList.toggle("archivada", h !== "#" && !!ARCHIVADAS[h.slice(1 + prefijo.length)]); });
+    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + (ARCHIVADAS[clave] ? " · archivada" : "") + " ";
   }
 
   // Columna de técnicas: las mismas del catálogo, con la actual marcada

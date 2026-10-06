@@ -823,7 +823,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .guardado svg { color: var(--marca); }
 .guardado .girando { display: none; width: 14px; height: 14px; border: 2px solid var(--filete-2); border-top-color: var(--marca); border-radius: 50%; animation: girar-g .7s linear infinite; }
 .guardado.guardando .girando { display: inline-block; }
-.guardado.guardando svg { display: none; }
+.guardado.guardando svg, .guardado.sin-cambios svg { display: none; }
+.guardado.sin-cambios { color: var(--tinta-3); }
 @keyframes girar-g { to { transform: rotate(360deg); } }
 .ver-publicada { display: inline-flex; align-items: center; gap: 6px; color: var(--marca); font-size: 15px; font-weight: 650; }
 .ver-publicada:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -1041,9 +1042,24 @@ html { scroll-padding-bottom: 96px; }
 .motivo-bloqueo { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 14px 16px; border-radius: 12px; background: var(--fondo); color: var(--tinta); font-size: 15px; line-height: 1.5; }
 .motivo-bloqueo svg { margin-top: 1px; color: var(--tinta-2); }
 .motivo-bloqueo[hidden] { display: none; }
-.boton[disabled], .boton[aria-disabled="true"] { background: var(--filete); color: var(--tinta-3); box-shadow: none; cursor: not-allowed; transform: none; }
+.boton[disabled], .boton[aria-disabled="true"] { background: var(--filete); color: var(--tinta-2); box-shadow: none; cursor: not-allowed; transform: none; }
 .envio .boton { height: 48px; width: 100%; }
 .envio .aclara { color: var(--tinta-3); font-size: 14px; line-height: 1.5; }
+/* Técnica nueva: nombre y especialidad abren los datos clínicos */
+.identidad-ed { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--filete); }
+.identidad-ed[hidden] { display: none; }
+.identidad-ed .campo-ed { margin: 0; }
+.sel-esp { position: relative; display: block; }
+.sel-esp::after { content: ""; position: absolute; right: 16px; top: 50%; width: 12px; height: 12px; margin-top: -6px; pointer-events: none; background: var(--tinta-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.identidad-ed select:has(option[value=""]:checked) { color: var(--tinta-2); }
+.identidad-ed select { appearance: none; -webkit-appearance: none; cursor: pointer; width: 100%; height: 48px; padding: 0 42px 0 14px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 16px; }
+.identidad-ed select:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+@media (max-width: 760px) { .identidad-ed { grid-template-columns: minmax(0, 1fr); } }
+.confirmar-pub { padding: 16px; border-radius: 12px; background: var(--fondo); animation: bajar .3s var(--expo); }
+.confirmar-pub[hidden], .envio .boton[hidden] { display: none; }
+.confirmar-pub p { font-size: 15.5px; line-height: 1.5; }
+.confirmar-pub .botones { display: flex; gap: 8px; margin-top: 12px; }
+.confirmar-pub .boton { width: auto; height: 44px; padding: 0 18px; }
 
 /* Barra fija: en qué paso va y cómo moverse */
 .ed-pie { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px var(--lado); background: color-mix(in oklab, var(--superficie) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -1px 0 var(--filete); }
@@ -1219,6 +1235,10 @@ html { scroll-padding-bottom: 96px; }
     <div class="paso-titulo"><h2 id="t-paso-1">Datos clínicos</h2><p>Lo que se sabe del procedimiento antes de armar la mesa.</p></div>
     <div class="clinicos-ed">
       <div class="tarjeta">
+        <div class="identidad-ed" id="identidad-ed" hidden>
+          <div class="campo-ed"><label for="c-nombre">Nombre de la técnica <span class="falta" data-falta="c-nombre">Falta</span></label><input id="c-nombre" placeholder="Como la nombra su documento" autocomplete="off"></div>
+          <div class="campo-ed"><label for="c-esp">Especialidad <span class="falta" data-falta="c-esp">Falta</span></label><span class="sel-esp"><select id="c-esp"><option value="">Elegir especialidad</option><option>Cirugía general</option><option>Urología</option><option>Cirugía laparoscópica</option><option>Ginecología</option><option>Ortopedia</option></select></span></div>
+        </div>
         <h3>Descripción</h3>
         <div class="campo-ed"><label for="c-sirve">Para qué sirve <span class="falta" data-falta="c-sirve">Falta</span></label><textarea id="c-sirve" data-oblig placeholder="En qué consiste el procedimiento y qué busca resolver."></textarea></div>
         <div class="campo-ed"><label for="c-indicaciones">Indicaciones <span class="falta" data-falta="c-indicaciones">Falta</span></label><textarea id="c-indicaciones" data-oblig placeholder="En qué casos se realiza."></textarea></div>
@@ -1228,11 +1248,11 @@ html { scroll-padding-bottom: 96px; }
       <div class="tarjeta">
         <h3>Preparación</h3>
         <div class="campo-ed"><label for="c-cups">Código CUPS <span class="opcional">Opcional</span></label><input id="c-cups" inputmode="numeric" placeholder="Código del procedimiento"></div>
-        <div class="campo-ed"><label for="c-anestesia">Anestesia</label><input id="c-anestesia" data-oblig></div>
-        <div class="campo-ed"><label for="c-ropa">Ropa</label><input id="c-ropa" data-oblig></div>
-        <div class="campo-ed"><label for="c-posicion">Posición del paciente</label><input id="c-posicion" data-oblig></div>
+        <div class="campo-ed"><label for="c-anestesia">Anestesia <span class="falta" data-falta="c-anestesia">Falta</span></label><input id="c-anestesia" data-oblig placeholder="Tipo de anestesia"></div>
+        <div class="campo-ed"><label for="c-ropa">Ropa <span class="falta" data-falta="c-ropa">Falta</span></label><input id="c-ropa" data-oblig placeholder="Paquete de ropa"></div>
+        <div class="campo-ed"><label for="c-posicion">Posición del paciente <span class="falta" data-falta="c-posicion">Falta</span></label><input id="c-posicion" data-oblig placeholder="Cómo se ubica al paciente"></div>
         <div class="campo-ed"><p class="etiqueta-ed">Equipos biomédicos</p><div class="fichas-ed" id="c-equipos"></div></div>
-        <div class="campo-ed"><p class="etiqueta-ed">Suturas por plano</p><div class="suturas-ed" id="c-suturas"></div><button type="button" class="agregar" data-agregar="sutura"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar plano</button></div>
+        <div class="campo-ed"><p class="etiqueta-ed">Suturas por plano <span class="falta" id="falta-suturas">Falta</span></p><div class="suturas-ed" id="c-suturas"></div><button type="button" class="agregar" data-agregar="sutura"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar plano</button></div>
         <div class="campo-ed"><p class="etiqueta-ed">Equipo médico-quirúrgico</p><div class="fichas-ed" id="c-dispositivos"></div></div>
       </div>
     </div>
@@ -1314,14 +1334,15 @@ html { scroll-padding-bottom: 96px; }
 
   <!-- Paso 5 -->
   <section class="paso-hoja" id="hoja-paso-5" aria-labelledby="t-paso-5" hidden>
-    <div class="paso-titulo"><h2 id="t-paso-5">Revisar y enviar</h2><p>Un revisor distinto al autor la aprueba antes de publicarla.</p></div>
+    <div class="paso-titulo"><h2 id="t-paso-5">Revisar y enviar</h2><p id='paso5-sub'>Un revisor la aprueba antes de publicarla.</p></div>
     <div class="revisar">
       <div class="tarjeta"><ol class="resumen-ed" id="resumen-ed"></ol></div>
       <div class="tarjeta envio">
-        <div class="campo-ed"><label for="nota-revisor">Nota para el revisor <span class="opcional">Opcional</span></label><textarea id="nota-revisor" placeholder="Qué cambió frente a la versión publicada."></textarea></div>
+        <div class="campo-ed"><label for="nota-revisor"><span id="nota-etq">Nota para el revisor</span> <span class="opcional">Opcional</span></label><textarea id="nota-revisor" placeholder="Qué cambió frente a la versión publicada."></textarea></div>
         <p class="motivo-bloqueo" id="motivo-bloqueo"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4.5" y="9" width="11" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 9V6.8a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span id="motivo-txt"></span></p>
         <button type="button" class="boton" id="enviar">Enviar a revisión</button>
-        <p class="aclara">Mientras esté en revisión no se puede editar; si el revisor la devuelve, vuelve a Mis borradores con su comentario.</p>
+        <div class="confirmar-pub" id="confirmar-pub" hidden><p>Publicar la versión 2 de <b>Colecistectomía</b>. Desde ese momento es la que ven estudiantes, SIVRI y SIMIQ3D.</p><div class="botones"><button type="button" class="boton" id="si-publicar">Publicar</button><button type="button" class="boton suave" id="no-publicar">Cancelar</button></div></div>
+        <p class="aclara" id="aclara-envio">Mientras esté en revisión no se puede editar; si el revisor la devuelve, vuelve a Mis borradores con su comentario.</p>
       </div>
     </div>
   </section>
@@ -1639,8 +1660,10 @@ html { scroll-padding-bottom: 96px; }
     return "~generico";
   }
   var T = TECNICAS["colecistectomia"];
+  // ?nueva=1: la misma pantalla para una técnica que aún no existe (versión 1, todo vacío)
+  var NUEVA = new URLSearchParams(location.search).get("nueva") === "1";
   var MESAS = {
-    mayo: { filas: T.mayo.filas, cols: T.mayo.cols, items: T.mayo.items.map(function (o) { return [o[0], o[1].map(function (c) { return c.slice(); }), o[2], o[3].slice()]; }) },
+    mayo: NUEVA ? { filas: 4, cols: 6, items: [] } : { filas: T.mayo.filas, cols: T.mayo.cols, items: T.mayo.items.map(function (o) { return [o[0], o[1].map(function (c) { return c.slice(); }), o[2], o[3].slice()]; }) },
     reserva: { filas: 6, cols: 8, items: [] }
   };
   var NOMBRES_PASO = ["Datos clínicos", "Instrumental", "Mesa de Mayo", "Mesa de reserva", "Revisar y enviar"];
@@ -1649,16 +1672,18 @@ html { scroll-padding-bottom: 96px; }
   // Autoguardado: cada cambio pasa por «Guardando…» y queda «Guardado»
   var guardado = document.getElementById("guardado"), guardadoTxt = document.getElementById("guardado-txt"), tGuardar;
   function guardar() {
-    guardado.classList.add("guardando"); guardadoTxt.textContent = "Guardando…";
+    guardado.classList.remove("sin-cambios"); guardado.classList.add("guardando"); guardadoTxt.textContent = "Guardando…";
     clearTimeout(tGuardar);
     tGuardar = setTimeout(function () { guardado.classList.remove("guardando"); guardadoTxt.textContent = "Guardado hace un momento"; }, 800);
     actualizar();
   }
 
   /* Paso 1: datos clínicos, con lo que la ficha de IQ ya trae */
-  document.getElementById("c-anestesia").value = T.clinicos.anestesia;
-  document.getElementById("c-ropa").value = T.clinicos.ropa;
-  document.getElementById("c-posicion").value = T.clinicos.posicion;
+  if (!NUEVA) {
+    document.getElementById("c-anestesia").value = T.clinicos.anestesia;
+    document.getElementById("c-ropa").value = T.clinicos.ropa;
+    document.getElementById("c-posicion").value = T.clinicos.posicion;
+  }
   var xIcono = "<svg width='12' height='12' viewBox='0 0 12 12' aria-hidden='true'><path d='M3 3l6 6M9 3l-6 6' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'/></svg>";
   var masIcono = "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M8 3v10M3 8h10' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'/></svg>";
   function fichas(id, lista) {
@@ -1684,8 +1709,8 @@ html { scroll-padding-bottom: 96px; }
     s.appendChild(q);
     return s;
   }
-  fichas("c-equipos", T.clinicos.equipos.split(/,\s*/));
-  fichas("c-dispositivos", T.insumos.replace(/\.$/, "").split(/,\s*/));
+  fichas("c-equipos", NUEVA ? [] : T.clinicos.equipos.split(/,\s*/));
+  fichas("c-dispositivos", NUEVA ? [] : T.insumos.replace(/\.$/, "").split(/,\s*/));
   var cajaSuturas = document.getElementById("c-suturas");
   function filaSutura(plano_, sutura, nueva) {
     var d = document.createElement("div"), q = document.createElement("button");
@@ -1702,7 +1727,7 @@ html { scroll-padding-bottom: 96px; }
     cajaSuturas.appendChild(d);
     if (nueva) d.querySelector("input").focus();
   }
-  T.suturas.forEach(function (s) { filaSutura(s[0], s[1]); });
+  if (!NUEVA) T.suturas.forEach(function (s) { filaSutura(s[0], s[1]); });
   document.querySelector("[data-agregar='sutura']").addEventListener("click", function () { filaSutura("", "", true); });
   document.getElementById("hoja-paso-1").addEventListener("input", guardar);
 
@@ -1710,6 +1735,7 @@ html { scroll-padding-bottom: 96px; }
   var CATALOGO_INST = [["Accesorio especializado", ["Canastilla extractora de cálculos", "Clamp intestinal tipo Kocher", "Clamp laparoscópico", "Clipadora laparoscópica", "Dilatadores de Hegar", "Dilatadores uretrales", "Electrobisturí con gancho", "Espéculo de Graves", "Espéculo Vaginal", "Evacuador de Ellik", "Fibra del láser", "Guía Sensor/Cebra", "Histerómetro Sims", "Movilizador uterino (Sistema RUMI)", "Pieza de mano del Lithoclast", "Tenáculo de Schroeder", "Varilla del Lithoclast"]], ["Bisturí", ["Mango de bisturí N.° 3", "Mango de bisturí N.° 4", "Mango de bisturí N.° 7"]], ["Catéter/Sonda", ["Catéter Ureteral", "Sonda metálica"]], ["Cánula", ["Cánula de Frazier", "Cánula de succión-irrigación", "Cánula de Yankauer"]], ["Equipo endoscópico", ["Aguja de Veress", "Cable de fuente de luz", "Camisa del Cistoscopio", "Camisa del Nefroscopio", "Cistoscopio", "Cámara endoscópica", "Lente laparoscópica 0°/30°", "Manguera de insuflador", "Morcelador", "Nefroscopio", "Ureteroscopio"]], ["Insumo", ["Suero fisiológico"]], ["Pinza", ["Gancho de Hurd", "Pinza aplicadora de clips (Ligaclip/Hemolock)", "Pinza Bipolar laparoscópica", "Pinza Cística", "Pinza de Allis", "Pinza de Babcock", "Pinza de Babcock laparoscópica", "Pinza de Campo", "Pinza de Campo de Backhaus", "Pinza de cuerpo extraño", "Pinza de disección Adson Braun", "Pinza de disección Adson con garra", "Pinza de disección Adson sin garra", "Pinza de disección con garra", "Pinza de disección sin garra", "Pinza de Foerster", "Pinza Grasper laparoscópica", "Pinza Heaney", "Pinza Hook laparoscópica", "Pinza Kelly", "Pinza Kelly Adson", "Pinza Kocher", "Pinza Maryland", "Pinza Moninjan", "Pinza Mosquito curva", "Pinza Randall", "Pinza Rochester", "Pinza Uterina"]], ["Portaagujas", ["Portaagujas (sin especificar)", "Portaagujas de Mayo Hegar", "Portaagujas laparoscópico", "Portaagujas largo", "Portaagujas mediano"]], ["Recipiente", ["Platón grande", "Riñonera/Coca"]], ["Separador", ["Separador abdominal", "Separador abdominal Universal con Valva de Balfour", "Separador de Deaver (tamaño no especificado)", "Separador de Deaver ancho", "Separador de Deaver angosto", "Separador de Doyen", "Separador de Farabeuf", "Separador de Richardson", "Separador de Senn Miller", "Separador Mayo Collins", "Separador vesical", "Valva de Balfour (inferior)", "Valva de contrapeso de Auvard", "Valva maleable"]], ["Set/Equipo", ["Equipo de pequeña cirugía"]], ["Tijera", ["Tijera Armónico ACE 36", "Tijera de Mayo", "Tijera de Metzenbaum", "Tijera de Potts Smith", "Tijera laparoscópica"]], ["Trocar", ["Trocar 10-12mm", "Trocar 5mm"]], ["Sin clasificar", ["Bandeja", "Camisa del trocar 10mm", "Camisa del trocar 5mm", "Caucho de succión", "Cincel", "Cistoflo", "Compresa", "Cureta", "Elevador de periostio", "Equipo en Y TUR", "Fibra óptica", "Gasa", "Guantes", "Gubia de Letzel", "Guía hidrofílica", "Guía rígida", "Hoja de bisturí #10", "Hoja de bisturí #10-11", "Hoja de bisturí #11-15", "Hoja de bisturí #15", "Hoja de bisturí #20", "Instrumental", "Instrumental sobrante", "Lente de 30°", "Lente del Nefroscopio", "Litotriptor electrohidráulico", "Litotriptor neumático", "Litotriptor ultrasónico", "Mango de bisturí (sin especificar)", "Manipulador uterino de Cohen", "Martillo", "Obturador del Nefroscopio", "Paquete de ropa", "Pinza Bozeman", "Pinza erina de Schroeder", "Pinza Lahey", "Pinza reductora de Kern", "Puente con canal operador", "Punzón del trocar 10mm", "Punzón del trocar 5mm", "Raspa de Moore", "Separador de Bennet Blond", "Separador de Hibbs", "Separador de Hoffman", "Separador de Wolkman", "Sonda Foley", "Tijera de energía", "Torunda", "Óptica de 30°"]]];
   // La ficha de IQ de Colecistectomía, pasada a sus nombres canónicos con los alias del catálogo
   var SELECCION = ["Mango de bisturí N.° 3", "Mango de bisturí N.° 4", "Tijera de Metzenbaum", "Tijera de Mayo", "Pinza Kelly", "Pinza Rochester", "Pinza de disección con garra", "Pinza de disección sin garra", "Pinza de Babcock", "Pinza de Foerster", "Pinza Randall", "Pinza Moninjan", "Pinza Cística", "Pinza Kelly Adson", "Separador de Doyen", "Separador de Farabeuf", "Separador de Deaver (tamaño no especificado)", "Valva maleable", "Portaagujas (sin especificar)"];
+  if (NUEVA) SELECCION.length = 0;
   // Lo más usado en las mesas de reserva cargadas, de más a menos técnicas
   var RAPIDOS_RESERVA = ["Compresa", "Paquete de ropa", "Portaagujas (sin especificar)", "Pinza de Foerster", "Bandeja", "Gasa", "Pinza de Campo"];
   function sinTilde(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
@@ -1814,7 +1840,7 @@ html { scroll-padding-bottom: 96px; }
       });
       div.appendChild(ul); cajaEl.appendChild(div);
     });
-    if (!SELECCION.length) cajaEl.innerHTML = "<p class='sel-vacio'>Todavía no hay instrumental. Los sugeridos y el catálogo están debajo.</p>";
+    if (!SELECCION.length) cajaEl.innerHTML = "<p class='sel-vacio'>Todavía no hay instrumental. Se agrega desde los sugeridos o el catálogo.</p>";
     // Sugeridos de la especialidad que aún no están
     var pend = SUGERIDOS.filter(function (x) { return SELECCION.indexOf(x[0]) === -1; }), ulS = document.getElementById("sugeridos"), vm = document.getElementById("ver-mas");
     ulS.innerHTML = "";
@@ -1829,7 +1855,8 @@ html { scroll-padding-bottom: 96px; }
       b.addEventListener("click", function () { agregarInst(x[0]); });
       ulS.appendChild(b);
     });
-    if (!pend.length) ulS.innerHTML = "<p class='sel-vacio'>Ya tiene todo lo que usan las otras técnicas.</p>";
+    if (NUEVA) { var espN = document.getElementById("c-esp").value; pend = []; ulS.innerHTML = "<p class='sel-vacio'></p>"; ulS.firstChild.textContent = espN ? "Las técnicas de " + espN + " se comparan con esta cuando tenga su primer instrumento." : "Aparecen al elegir la especialidad en Datos clínicos."; }
+    else if (!pend.length) ulS.innerHTML = "<p class='sel-vacio'>Ya tiene todo lo que usan las otras técnicas.</p>";
     vm.hidden = pend.length <= cuantosVisibles;
     vm.textContent = verMas ? "Ver menos" : "Ver " + (pend.length - cuantosVisibles) + " más";
     vm.setAttribute("aria-expanded", String(verMas));
@@ -2016,7 +2043,7 @@ html { scroll-padding-bottom: 96px; }
   /* Estado de cada paso: lo que dice la marca y lo que falta */
   function llenado(id) { return document.getElementById(id).value.trim() !== ""; }
   function estados() {
-    var oblig = [["c-sirve", "Para qué sirve"], ["c-indicaciones", "Indicaciones"], ["c-anestesia", "Anestesia"], ["c-ropa", "Ropa"], ["c-posicion", "Posición del paciente"]];
+    var oblig = (NUEVA ? [["c-nombre", "Nombre"], ["c-esp", "Especialidad"]] : []).concat([["c-sirve", "Para qué sirve"], ["c-indicaciones", "Indicaciones"], ["c-anestesia", "Anestesia"], ["c-ropa", "Ropa"], ["c-posicion", "Posición del paciente"]]);
     var faltan = oblig.filter(function (x) { return !llenado(x[0]); }).map(function (x) { return x[1]; });
     if (!cajaSuturas.children.length) faltan.push("Suturas");
     var total = oblig.length + 1, hechos = total - faltan.length;
@@ -2031,7 +2058,7 @@ html { scroll-padding-bottom: 96px; }
     }
     var lista = [e1, e2, mesa(MESAS.mayo), mesa(MESAS.reserva, true)];
     var pendientes = lista.filter(function (x) { return x.estado !== "completa"; }).length;
-    lista.push({ estado: pendientes ? "bloqueado" : "listo", falta: pendientes ? (pendientes === 1 ? "Falta 1 paso" : "Faltan " + pendientes + " pasos") : "Lista para enviar", detalle: [] });
+    lista.push({ estado: pendientes ? "bloqueado" : "listo", falta: pendientes ? (pendientes === 1 ? "Falta 1 paso" : "Faltan " + pendientes + " pasos") : (PUBLICA ? "Lista para publicar" : "Lista para enviar"), detalle: [] });
     return lista;
   }
   function marcaPaso(tipo, recien) {
@@ -2043,7 +2070,7 @@ html { scroll-padding-bottom: 96px; }
     return "<svg class='mk " + tipo + (recien ? " recien" : "") + "' viewBox='0 0 22 22' aria-hidden='true'>" + aro + dentro + "</svg>";
   }
   var pasosOl = document.getElementById("pasos"), previos = [], actual = 1;
-  var NOMBRE_ESTADO = { completa: "completo", "en-curso": "en curso", pendiente: "pendiente", bloqueado: "bloqueado", listo: "listo para enviar" };
+  var NOMBRE_ESTADO = { completa: "completo", "en-curso": "en curso", pendiente: "pendiente", bloqueado: "bloqueado", listo: "listo" };
   function actualizar() {
     var E = estados();
     pasosOl.innerHTML = "";
@@ -2060,6 +2087,7 @@ html { scroll-padding-bottom: 96px; }
     // En celular la tira de pasos se desplaza hasta el paso abierto
     if (pasosOl.scrollWidth > pasosOl.clientWidth) pasosOl.scrollLeft = pasosOl.children[actual - 1].offsetLeft - 20;
     document.querySelectorAll("[data-falta]").forEach(function (t) { t.hidden = llenado(t.dataset.falta); });
+    document.getElementById("falta-suturas").hidden = cajaSuturas.children.length > 0;
     document.getElementById("inst-cuenta").textContent = SELECCION.length + " en esta técnica.";
     // Paso 5: resumen y envío bloqueado hasta completar
     var res = document.getElementById("resumen-ed"), faltaTxt = [];
@@ -2075,7 +2103,7 @@ html { scroll-padding-bottom: 96px; }
     var enviar = document.getElementById("enviar"), bloqueo = document.getElementById("motivo-bloqueo");
     enviar.disabled = faltaTxt.length > 0;
     bloqueo.hidden = !faltaTxt.length;
-    document.getElementById("motivo-txt").textContent = "Para enviar falta completar " + faltaTxt.join("; ") + ".";
+    document.getElementById("motivo-txt").textContent = (PUBLICA ? "Para publicar falta completar " : "Para enviar falta completar ") + faltaTxt.join("; ") + ".";
     moverRayaPaso();
   }
   function moverRayaPaso() {
@@ -2101,10 +2129,70 @@ html { scroll-padding-bottom: 96px; }
   }
   anterior.addEventListener("click", function () { irA(actual - 1); });
   siguiente.addEventListener("click", function () { irA(actual + 1); });
-  document.getElementById("enviar").addEventListener("click", function () { if (!this.disabled) location.href = "borradores.html"; });
+  document.getElementById("enviar").addEventListener("click", function () {
+    if (this.disabled) return;
+    if (!PUBLICA) { location.href = "borradores.html"; return; }
+    this.hidden = true; var c = document.getElementById("confirmar-pub"); c.hidden = false; document.getElementById("si-publicar").focus();
+  });
+  document.getElementById("no-publicar").addEventListener("click", function () { document.getElementById("confirmar-pub").hidden = true; var e = document.getElementById("enviar"); e.hidden = false; e.focus(); });
+  document.getElementById("si-publicar").addEventListener("click", function () { location.href = NUEVA ? "borradores.html" + CONSULTA + "&nueva-publicada=" + encodeURIComponent(document.getElementById("c-nombre").value.trim()) : "tecnica.html" + CONSULTA + "&publicada=1#tec-colecistectomia"; });
   addEventListener("resize", moverRayaPaso);
   if (document.fonts) document.fonts.ready.then(moverRayaPaso);
 
+
+  /* ---------- Quién edita (demostración): ?como=revisor o ?como=admin publica lo suyo sin revisión ---------- */
+  var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
+  var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
+    admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
+  var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
+  if (PUBLICA) {
+    document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
+    document.querySelector(".quien-nombre").textContent = QUIEN.n;
+    document.querySelector(".quien-correo").textContent = QUIEN.m;
+    document.querySelector(".quien-soy .rol").textContent = QUIEN.rol;
+    var aqui = location.pathname.split("/").pop(), items = [["borradores.html", "Mis borradores", PUBLICADA ? 0 : 1]].concat(QUIEN.menu);
+    document.querySelector(".cuenta-lista").innerHTML = items.map(function (it) { return "<li><a href='" + it[0] + "'" + (it[0] === aqui ? " aria-current='page'" : "") + ">" + it[1] + (it[2] ? "<span class='cifra'>" + it[2] + "</span>" : "") + "</a></li>"; }).join("");
+    var qm = document.querySelector(".quien-movil"), caja = qm.parentNode, cerrar = caja.querySelector("a[href='inicio.html']");
+    qm.textContent = QUIEN.n + " · " + QUIEN.rol;
+    caja.querySelectorAll("a.ingresar").forEach(function (a) { if (a !== cerrar) a.remove(); });
+    items.forEach(function (it) { var a = document.createElement("a"); a.className = "ingresar"; a.href = it[0]; a.textContent = it[1]; if (it[0] === aqui) a.setAttribute("aria-current", "page"); caja.insertBefore(a, cerrar); });
+    // Todo enlace a una pantalla con sesión conserva quién es (salvo Usuarios y roles, que es solo del admin)
+    document.querySelectorAll("a[href^='borradores.html'], a[href^='editor.html'], a[href^='tecnica.html'], a[href^='revision.html'], a[href^='instrumental.html']").forEach(function (a) {
+      var h = a.getAttribute("href"); if (h.indexOf("?") !== -1) return;
+      var i = h.indexOf("#"); a.setAttribute("href", i === -1 ? h + CONSULTA : h.slice(0, i) + CONSULTA + h.slice(i));
+    });
+  }
+  if (PUBLICA) {
+    NOMBRES_PASO[4] = "Revisar y publicar";
+    document.getElementById("t-paso-5").textContent = "Revisar y publicar";
+    document.getElementById("paso5-sub").textContent = "Con rol " + QUIEN.rol.toLowerCase() + ", lo propio se publica sin pasar por otro revisor.";
+    document.getElementById("nota-etq").textContent = "Nota de la versión";
+    document.getElementById("enviar").textContent = "Publicar versión 2";
+    document.getElementById("aclara-envio").textContent = "La versión 1 queda como reemplazada y se conserva en el historial.";
+
+  }
+  /* ---------- Técnica nueva: versión 1, sin publicada con qué comparar ---------- */
+  if (NUEVA) {
+    var nomH = document.getElementById("ed-nombre"), espH = document.getElementById("ed-esp"), nomIn = document.getElementById("c-nombre"), espIn = document.getElementById("c-esp");
+    document.getElementById("identidad-ed").hidden = false;
+    nomH.textContent = "Técnica nueva"; espH.textContent = "Versión 1"; document.title = "Técnica nueva · IQ Platform";
+    document.querySelector(".ver-publicada").style.display = "none";
+    document.getElementById("t-sugeridos").textContent = "Sugeridos de la especialidad";
+    document.getElementById("nota-revisor").placeholder = "Qué conviene saber de esta técnica.";
+    noLleva.checked = false; noLleva.dispatchEvent(new Event("change"));
+    nomIn.addEventListener("input", function () { nomH.textContent = nomIn.value.trim() || "Técnica nueva"; document.title = nomH.textContent + " · IQ Platform"; });
+    espIn.addEventListener("change", function () { espH.textContent = (espIn.value ? espIn.value + " · " : "") + "Versión 1"; document.getElementById("t-sugeridos").textContent = espIn.value ? "Sugeridos para " + espIn.value : "Sugeridos de la especialidad"; pintarPaso2(); guardar(); });
+    if (PUBLICA) {
+      document.getElementById("enviar").textContent = "Publicar versión 1";
+      document.getElementById("aclara-envio").textContent = "Para cambiarla después se crea la versión 2 en borrador.";
+      document.getElementById("enviar").addEventListener("click", function () {
+        var nombre = nomIn.value.trim(), p = document.querySelector("#confirmar-pub p");
+        p.innerHTML = "Publicar la versión 1" + (nombre ? " de <b></b>" : "") + ". Desde ese momento aparece en el catálogo y la ven estudiantes, SIVRI y SIMIQ3D.";
+        if (nombre) p.querySelector("b").textContent = nombre;
+      });
+    }
+    clearTimeout(tGuardar); guardado.classList.remove("guardando"); guardado.classList.add("sin-cambios"); guardadoTxt.textContent = "Sin cambios todavía";
+  }
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
