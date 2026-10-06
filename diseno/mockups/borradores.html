@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tiroidectomía · IQ Platform</title>
+<title>Mis borradores · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -650,6 +650,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .pie-rejilla { grid-template-columns: 1fr 1fr; }
 }
 
+
+.pie { --antes: var(--fondo); }
+.panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
+.panel-movil .ingresar[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); box-shadow: none; }
+
 /* ---------- Mi cuenta: nombre, rol y la gestión que el rol permite ---------- */
 .cuenta { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 10px 0 6px; border: 0; border-radius: 12px; background: transparent; color: var(--tinta); font-size: 15.5px; font-weight: 600; cursor: pointer; transition: background .2s var(--cuarta); }
 .cuenta:hover, .cuenta[aria-expanded="true"] { background: var(--hover-neutro); }
@@ -673,169 +678,156 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .salir { margin-top: 8px; color: var(--tinta-2); }
 .solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
-.editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
-.editar-tec:hover { background: var(--hover-neutro); }
-@media (max-width: 960px) { .cuenta-txt, .cuenta .flecha { display: none; } .cuenta { padding: 0 6px; } }
-@media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
-.panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
-
-/* ---------- Detalle de técnica: la ventana de DataIQ, técnicas a la izquierda y la técnica con pestañas ---------- */
-.nav > button[aria-current="page"] { color: var(--marca-hondo); font-weight: 650; }
-.app { display: grid; align-content: start; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100svh - var(--barra)); border-bottom: 1px solid var(--filete); }
-/* Columna de técnicas */
-.lado { position: sticky; top: var(--barra); align-self: start; height: calc(100svh - var(--barra)); overflow-y: auto; padding: 20px 16px 32px; background: var(--superficie); border-right: 1px solid var(--filete); scrollbar-width: thin; }
-.lado-buscar { position: relative; margin-bottom: 18px; }
-.lado-buscar svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--tinta-3); pointer-events: none; }
-.lado-buscar input { width: 100%; height: 42px; padding: 0 12px 0 38px; border: 0; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete); font: inherit; font-size: 15px; color: var(--tinta); }
-.lado-buscar input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca); }
-.lado-buscar input::placeholder { color: var(--tinta-3); }
-.lado h2 { margin: 18px 10px 6px; font-size: 13px; font-weight: 650; color: var(--tinta-3); }
-.lado ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.lado li[hidden], .lado section[hidden] { display: none; }
-.lado a { display: block; padding: 8px 10px; border-radius: 8px; font-size: 15.5px; line-height: 1.35; color: var(--tinta-2); transition: background .2s var(--cuarta), color .2s var(--cuarta); }
-.lado a:hover { background: var(--fondo); color: var(--tinta); }
-.lado a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
-.lado-abrir { display: none; }
-/* Panel de la técnica */
-.panel-tec { min-width: 0; padding: 28px clamp(24px, 3vw, 48px) 40px; }
-.tec-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-.tec-cabeza h1 { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
-.tec-cabeza p { margin-top: 10px; color: var(--tinta-3); font-size: 17px; }
-.tec-acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+/* ---------- Mis borradores: la matriz de avance ---------- */
+.gestion { padding: 48px var(--lado) 104px; }
+.gestion-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.gestion-cabeza h1 { display: flex; align-items: baseline; gap: 14px; font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.gestion-cabeza .resumen { margin-top: 12px; color: var(--tinta-2); font-size: 17px; }
+.gestion-acciones { position: relative; display: flex; gap: 10px; }
 .boton.suave { background: var(--marca-claro); color: var(--marca-hondo); box-shadow: none; }
-.boton.suave:hover { background: var(--marca-claro-hover); }
-.boton small { font-size: 13px; font-weight: 500; color: var(--marca-claro-hover); }
-.boton.suave small { color: var(--marca-hondo); font-weight: 450; }
-/* Pestañas: la raya activa se desliza bajo la elegida */
-.pestanas-tec { position: relative; display: flex; gap: 28px; margin: 24px 0 22px; border-bottom: 1px solid var(--filete); overflow-x: auto; scrollbar-width: none; }
-.pestanas-tec button { position: relative; padding: 10px 0 12px; border: 0; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-3); white-space: nowrap; cursor: pointer; transition: color .2s var(--cuarta); }
-.pestanas-tec button:hover { color: var(--tinta); }
-.pestanas-tec button:focus-visible { outline-offset: -3px; }
-.pestanas-tec button[aria-selected="true"] { color: var(--tinta); font-weight: 650; }
-.raya { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
-.hoja[hidden] { display: none; }
-/* En el detalle la mesa es un diagrama claro y sereno: sin paño, rejilla fina, sombras suaves y entrada rápida */
-.tec-funda .rejilla-r path { stroke: var(--filete); stroke-width: 1; }
-.tec-funda .hit { stroke: none; }
-.tec-funda .pieza .forma { filter: drop-shadow(0 1px 1px rgba(3, 20, 28, .22)) drop-shadow(0 4px 6px rgba(3, 20, 28, .08)); }
-.tec-funda .mesa .pieza.activa .forma { filter: drop-shadow(0 10px 8px rgba(3, 20, 28, .22)); }
-.tec-funda .caucho { stroke: #8b979d; }
-.tec-funda .caucho-luz { stroke: #fff; }
-.tec-funda .numero { transform: scale(var(--num-escala, 1)); }
-.leyenda-tec li.hueco { cursor: default; color: var(--tinta-3); }
-.leyenda-tec li.hueco b { background: transparent; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); }
-.tec-funda .mesa .pieza { animation-duration: .35s; animation-delay: calc(var(--i) * 25ms); }
-.sin-mesa { display: grid; place-items: center; min-height: 220px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); font-size: 16px; }
-.sin-mesa[hidden] { display: none; }
-.tec-cabeza h1 .demo { margin-left: 12px; font-size: 12.5px; letter-spacing: 0; vertical-align: middle; }
-/* Plantilla sin datos: barras en lugar de texto */
-.hueso { display: block; height: 12px; margin: 5px 0; border-radius: 8px; background: var(--filete); }
-.hoja { animation: aparecer .4s var(--expo); }
-/* Datos clínicos */
-.clinicos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px 48px; align-items: start; }
-.para-que { padding: 20px 22px; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
-.para-que header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-.para-que h2, .clinicos h2 { font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
-.para-que p { color: var(--tinta-2); font-size: 16px; line-height: 1.55; }
-.fichas { margin: 22px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--filete); }
-.fichas div:not(.ancha):nth-child(odd) { padding-right: 24px; }
-.fichas div { padding: 12px 0; border-bottom: 1px solid var(--filete); }
-.fichas div.ancha { grid-column: 1 / -1; }
-.fichas dt { font-size: 13.5px; font-weight: 600; color: var(--tinta-3); }
-.fichas dd { margin: 3px 0 0; font-size: 16px; line-height: 1.45; color: var(--tinta); }
-.suturas { margin-top: 12px; border-top: 1px solid var(--filete); }
-.suturas div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--filete); }
-.suturas dt { font-size: 14.5px; font-weight: 600; color: var(--tinta-2); }
-.suturas dd { margin: 0; font-size: 15px; line-height: 1.45; color: var(--tinta); }
-.insumos { margin-top: 20px; }
-.insumos p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: var(--tinta-2); }
-/* Instrumental en columnas reguladas por filete */
-.instrumental { list-style: none; margin: 0; padding: 0; columns: 3 220px; column-gap: 40px; border-top: 1px solid var(--filete); }
-.instrumental li { break-inside: avoid; padding: 12px 2px; border-bottom: 1px solid var(--filete); font-size: 16px; color: var(--tinta); }
-/* La mesa y su leyenda lado a lado; la mesa de Mayo cabe entera en la primera pantalla */
-.tec-mesa[hidden] { display: none; }
-.tec-mesa { --mesa-lado: min(46%, calc((100svh - 360px) * var(--aspecto, 1)), calc(440px * var(--aspecto, 1))); display: grid; grid-template-columns: var(--mesa-lado) minmax(220px, 1fr); gap: 36px; align-items: start; }
-.tec-mesa > .tec-funda { grid-column: 1; grid-row: 1; }
-.tec-info { grid-column: 2; grid-row: 1; display: grid; gap: 4px; align-content: start; }
-.tec-info h2 { font-size: 20px; font-weight: 650; letter-spacing: -.02em; }
-.tec-info > p { color: var(--tinta-3); font-size: 15px; }
-.tec-funda { position: relative; width: 100%; aspect-ratio: var(--aspecto, 1); border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
-.tec-funda svg { position: absolute; z-index: 1; inset: 4.5%; display: block; width: 91%; height: 91%; overflow: visible; }
-/* Señalar: la pieza se levanta y las demás se atenúan */
-.tec-funda svg .forma { transition: transform .45s var(--expo), filter .45s var(--expo), opacity .3s var(--cuarta); }
-/* Solo se atenúa el dibujo: los números siguen legibles; la tela clara se atenúa menos */
-.tec-funda svg.marcando .pieza:not(.activa) .forma { opacity: .38; }
-.tec-funda svg.marcando .pieza.plana:not(.activa) .forma { opacity: .55; }
-.tec-funda .mesa .pieza.activa .forma, .tec-funda .objeto.activa .forma { transform: translate(-3px, -12px); filter: drop-shadow(0 18px 10px rgba(3, 20, 28, .45)); }
-.objeto { cursor: pointer; }
-.objeto .hit { fill: transparent; }
-.objeto .forma { filter: drop-shadow(0 2px 1.4px rgba(3, 20, 28, .55)) drop-shadow(0 6px 8px rgba(3, 20, 28, .2)); transition: transform .45s var(--expo), filter .45s var(--expo); transform-box: fill-box; transform-origin: center; }
-.objeto.activa .numero circle { fill: #fff; }
-.objeto.activa .numero text { fill: var(--marca-hondo); }
-.tela-plana { fill: #eef3f3; stroke: #8b979d; stroke-width: 1.4; }
-.pliegue { fill: none; stroke: #8b979d; stroke-width: 1.2; }
-.trama { fill: none; stroke: #b3bec4; stroke-width: .8; }
-.bandeja-borde { fill: #c9d3d7; stroke: #8b979d; stroke-width: 1.4; }
-.bandeja-fondo { fill: #dde4e7; }
-.caucho { fill: none; stroke: rgba(255, 255, 255, .78); stroke-width: 6; stroke-linecap: round; }
-.caucho-luz { fill: none; stroke: var(--filete); stroke-width: 2; stroke-linecap: round; }
-.sutura-hilo { fill: none; stroke: var(--tinta-3); stroke-width: 1.2; }
-.rejilla-r path { stroke: rgba(255, 255, 255, .2); stroke-width: 1.2; }
-.leyenda-tec { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--filete); }
-.leyenda-tec li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 44px; padding: 8px 6px; border-bottom: 1px solid var(--filete); border-radius: 0; font-size: 16px; color: var(--tinta-2); cursor: pointer; transition: color .2s var(--cuarta), background .2s var(--cuarta); }
-.leyenda-tec li b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(6, 18, 23, .72); color: #fff; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; transition: background .2s var(--cuarta); }
-.leyenda-tec li.activa { color: var(--tinta); background: var(--marca-claro); }
-.leyenda-tec li.activa b { background: var(--marca); }
-@media (max-width: 1100px) {
-  .app { grid-template-columns: 240px minmax(0, 1fr); }
-  .clinicos { grid-template-columns: minmax(0, 1fr); }
-  .tec-mesa { grid-template-columns: minmax(0, 1fr); gap: 6px; }
-  .tec-info { display: contents; }
-  .tec-mesa > .tec-funda { grid-column: auto; grid-row: auto; order: 1; margin: 12px 0 6px; width: min(100%, calc(440px * var(--aspecto, 1))); }
-  .tec-info .leyenda-tec { order: 2; }
-  .leyenda-tec { grid-template-columns: 1fr 1fr; column-gap: 24px; }
+.boton.suave:hover { background: var(--marca-claro-hover); box-shadow: none; }
+.boton.suave[aria-expanded="true"] { background: var(--marca-claro-hover); }
+.boton .mas { transition: transform .35s var(--expo); }
+.boton:hover .mas { transform: rotate(90deg); }
+
+/* Filtros con la placa que se desliza, como en el catálogo */
+.gestion-filtros { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin: 36px 0 14px; }
+.filtros { position: relative; display: inline-flex; gap: 2px; padding: 4px; border: 1px solid var(--filete); border-radius: 12px; background: var(--superficie); }
+.filtros button { position: relative; z-index: 1; height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: var(--tinta-2); font-size: 15px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: color .2s var(--cuarta); }
+.filtros button:hover { color: var(--tinta); }
+.filtros button[aria-pressed="true"] { color: var(--marca-hondo); }
+.filtros button .cifra { margin-left: 6px; }
+.filtros button[aria-pressed="true"] .cifra { color: var(--marca-hondo); }
+.filtros .placa { position: absolute; top: 4px; left: 0; height: 36px; border-radius: 9px; background: var(--marca-claro); transition: transform .45s var(--expo), width .45s var(--expo); }
+.leyenda-marcas { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding: 0; list-style: none; color: var(--tinta-3); font-size: 14px; }
+.leyenda-marcas li { display: inline-flex; align-items: center; gap: 8px; }
+.leyenda-marcas .mk { width: 16px; height: 16px; }
+.leyenda-marcas .mk * { animation: none; stroke-dashoffset: 0; opacity: 1; }
+.leyenda-marcas .raya-sin { width: 14px; height: 2px; border-radius: 2px; background: var(--tinta-3); }
+
+.tabla-caja { overflow-x: auto; border: 1px solid var(--filete); border-radius: 16px; background: var(--superficie); scrollbar-width: thin; }
+.matriz { width: 100%; min-width: 900px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.matriz th { padding: 14px 16px; border-bottom: 1px solid var(--filete); color: var(--tinta-3); font-size: 13px; font-weight: 650; line-height: 1.3; text-align: left; vertical-align: bottom; }
+.matriz th.sec, .matriz td.sec { width: 104px; text-align: center; }
+.matriz th.sec { border-left: 1px solid var(--filete); }
+.matriz td.sec { border-left: 1px solid var(--filete); }
+.matriz td { padding: 18px 16px; border-bottom: 1px solid var(--filete); vertical-align: middle; }
+.matriz tr:last-child td { border-bottom: 0; }
+.fila td { transition: background .2s var(--cuarta); }
+.fila:hover td { background: color-mix(in oklab, var(--fondo) 55%, var(--superficie)); }
+.fila.con-comentario td { border-bottom: 0; }
+.fila[hidden], .comentario[hidden] { display: none; }
+.tec-nombre { font-size: 17px; font-weight: 650; letter-spacing: -.01em; line-height: 1.3; }
+.tec-meta { margin-top: 2px; color: var(--tinta-3); font-size: 14px; }
+.editada { color: var(--tinta-2); font-size: 15px; white-space: nowrap; }
+.estado-v { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.estado-v.borrador { box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); }
+.estado-v.devuelta { background: var(--tinta); color: #fff; }
+.estado-v.en-revision { background: var(--marca-claro); color: var(--marca-hondo); }
+/* Marcas de sección: se trazan al cargar, una columna tras otra */
+.mk { display: inline-block; width: 22px; height: 22px; vertical-align: middle; overflow: visible; }
+.mk .aro { fill: none; stroke-width: 1.8; stroke-dasharray: 1; stroke-dashoffset: 1; animation: trazar .55s var(--expo) forwards; animation-delay: calc(.12s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
+.mk .relleno { opacity: 0; animation: mostrar .3s var(--cuarta) forwards; animation-delay: calc(.4s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
+.mk.completa .aro { stroke: var(--marca); }
+.mk.completa .relleno circle { fill: var(--marca); }
+.mk.completa .relleno path { fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.mk.en-curso .aro { stroke: var(--marca); }
+.mk.en-curso .relleno { fill: var(--marca); }
+.mk.pendiente .aro { stroke: var(--filete-2); }
+.matriz .raya-sin { display: inline-block; width: 14px; height: 2px; border-radius: 2px; background: var(--tinta-3); vertical-align: middle; }
+.matriz td.senalada { background: var(--marca-claro); }
+.fila:hover td.senalada { background: var(--marca-claro); }
+.fecha-est { display: none; margin-top: 6px; color: var(--tinta-2); font-size: 14px; white-space: nowrap; }
+.solo-movil { display: none !important; }
+.matriz td.tec { min-width: 240px; }
+.ver-comentario { white-space: nowrap; }
+.accion { width: 1%; white-space: nowrap; text-align: right; }
+.continuar { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 10px; color: var(--marca); font-size: 15px; font-weight: 650; transition: background .2s var(--cuarta); }
+.continuar:hover { background: var(--marca-claro); }
+.continuar svg { transition: transform .35s var(--expo); }
+.continuar:hover svg { transform: translateX(3px); }
+.continuar.ver { color: var(--tinta-2); }
+.continuar.ver:hover { background: var(--hover-neutro); }
+.ver-comentario { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 0; border: 0; background: none; color: var(--marca); font-size: 14px; font-weight: 600; cursor: pointer; }
+.ver-comentario svg { transition: transform .3s var(--expo); }
+.ver-comentario[aria-expanded="false"] svg { transform: rotate(-90deg); }
+/* El comentario de la revisión se despliega bajo su fila */
+.comentario td { padding: 0 16px; }
+.comentario-caja { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .45s var(--expo); }
+.comentario-caja.cerrado { grid-template-rows: 0fr; }
+.comentario-caja > div { overflow: hidden; }
+.nota { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; margin-bottom: 18px; padding: 16px 18px; border-radius: 12px; background: var(--fondo); }
+.nota svg { margin-top: 2px; color: var(--tinta-2); }
+.nota-cabeza { color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.nota p:last-child { max-width: 72ch; margin-top: 4px; color: var(--tinta); font-size: 16px; line-height: 1.55; }
+.vacio-filtro td { padding: 48px 16px; color: var(--tinta-3); text-align: center; }
+.vacio-filtro[hidden] { display: none; }
+
+/* Editar una publicada: buscador sobre las técnicas del catálogo */
+.buscador-pub { position: absolute; top: calc(100% + 10px); right: 0; z-index: 30; width: 380px; padding: 8px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .35s var(--expo); }
+.buscador-pub[hidden] { display: none; }
+.buscador-pub label { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-3); }
+.buscador-pub label:focus-within { box-shadow: inset 0 0 0 2px var(--marca); }
+.buscador-pub input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--tinta); font: inherit; font-size: 15.5px; }
+.buscador-pub input::placeholder { color: var(--tinta-3); }
+.pub-lista { max-height: 340px; margin: 8px 0 0; padding: 0; overflow-y: auto; list-style: none; scrollbar-width: thin; }
+.pub-grupo { padding: 10px 10px 4px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.pub-lista a, .pub-lista .ocupada { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 10px; border-radius: 10px; font-size: 15.5px; }
+.pub-lista a:hover, .pub-lista a:focus-visible { background: var(--hover-neutro); }
+.pub-lista .ocupada { color: var(--tinta-3); }
+.pub-lista .ocupada small { font-size: 13px; font-weight: 600; }
+.pub-vacio { padding: 16px 10px; color: var(--tinta-3); font-size: 15px; }
+
+@media (max-width: 1180px) {
+  .matriz th.editada-col, .matriz td.editada { display: none; }
+  .fecha-est { display: block; }
+  .matriz th.sec, .matriz td.sec { width: 88px; }
+  .matriz th, .matriz td { padding-inline: 12px; }
+  .matriz { min-width: 780px; }
+}
+@media (max-width: 960px) {
+  .cuenta-txt, .cuenta .flecha { display: none; }
+  .cuenta { padding: 0 6px; }
 }
 @media (max-width: 760px) {
-  .cuenta-txt { display: none; }
-  .cuenta { padding: 0 6px; }
-  .app { grid-template-columns: minmax(0, 1fr); }
-  .lado { position: static; height: auto; padding: 12px var(--lado); border-right: 0; border-bottom: 1px solid var(--filete); }
-  .lado-abrir { display: flex; width: 100%; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete); font-size: 15px; font-weight: 600; color: var(--tinta); cursor: pointer; }
-  .lado-abrir svg { transition: transform .3s var(--expo); }
-  .lado.abierto .lado-abrir svg { transform: rotate(180deg); }
-  .lado-cuerpo { display: none; padding-top: 14px; }
-  .lado.abierto .lado-cuerpo { display: block; }
-  .panel-tec { padding: 24px var(--lado) 32px; }
-  .tec-acciones { width: 100%; }
-  .tec-acciones .boton { flex: 1 1 100%; justify-content: center; }
-  .pestanas-tec { -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 88%, transparent); gap: 22px; margin-inline: calc(-1 * var(--lado)); padding-inline: var(--lado); }
-  .fichas { grid-template-columns: 1fr; }
-  .suturas div { grid-template-columns: 1fr; gap: 2px; }
-  .leyenda-tec { grid-template-columns: 1fr; }
+  .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; }
+  .gestion { padding-top: 32px; }
+  .gestion-cabeza h1 { font-size: 30px; }
+  .gestion-acciones { width: 100%; }
+  .gestion-acciones .boton { flex: 1; justify-content: center; }
+  .buscador-pub { left: 0; width: auto; }
+  .gestion-filtros { margin-top: 28px; }
+  .filtros { display: flex; flex: 1 1 100%; min-width: 0; gap: 8px; margin-inline: calc(-1 * var(--lado)); padding: 0 var(--lado); border: 0; border-radius: 0; background: none; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--lado); scrollbar-width: none; }
+  .filtros .placa { display: none; }
+  .filtros button { flex: none; height: 40px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); scroll-snap-align: start; }
+  .filtros button[aria-pressed="true"] { background: var(--marca); color: #fff; box-shadow: none; }
+  .filtros button[aria-pressed="true"] .cifra { color: #fff; }
+  .tabla-caja { overflow: visible; border: 0; border-radius: 0; background: none; }
+  .matriz { min-width: 0; }
+  .matriz thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .matriz, .matriz tbody { display: block; }
+  .fila { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 8px; margin-bottom: 12px; padding: 18px; border: 1px solid var(--filete); border-radius: 16px; background: var(--superficie); }
+  .fila.con-comentario { margin-bottom: 0; border-bottom: 0; border-radius: 16px 16px 0 0; }
+  .fila td, .matriz td.sec { display: block; padding: 0; border: 0; background: none !important; }
+  .fila td.tec { grid-column: 1 / -1; }
+  .fila td.est { grid-column: 1 / 3; }
+  .matriz td.editada { display: block; grid-column: 3 / 5; align-self: center; text-align: right; }
+  .fecha-est { display: none; }
+  .fila.con-comentario td.accion { display: none; }
+  .comentario .solo-movil { display: flex !important; margin-bottom: 18px; }
+  .matriz td.senalada { margin: 8px -4px 0; padding: 8px 4px 6px; border-top: 0; border-radius: 10px; background: var(--marca-claro) !important; }
+  .matriz td.sec { width: auto; padding-top: 12px; border-top: 1px solid var(--filete); }
+  .matriz td.sec::before { content: attr(data-etq); display: flex; align-items: flex-end; justify-content: center; min-height: 2.4em; margin-bottom: 8px; color: var(--tinta-3); font-size: 12.5px; font-weight: 600; line-height: 1.2; }
+  .fila td.accion { grid-column: 1 / -1; width: auto; text-align: left; }
+  .continuar { width: 100%; justify-content: center; box-shadow: inset 0 0 0 1px var(--filete); }
+  .comentario { display: block; margin-bottom: 12px; border: 1px solid var(--filete); border-top: 0; border-radius: 0 0 16px 16px; background: var(--superficie); }
+  .comentario td { display: block; padding: 0 18px; }
+  .vacio-filtro { display: block; }
+  .vacio-filtro td { display: block; }
 }
-.pie { --antes: var(--fondo); }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="acero" gradientUnits="userSpaceOnUse" x1="-8" y1="0" x2="8" y2="0">
-      <stop offset="0" stop-color="#e4eaed"/>
-      <stop offset=".32" stop-color="#fbfdfd"/>
-      <stop offset=".56" stop-color="#b3bec4"/>
-      <stop offset=".74" stop-color="#8b979d"/>
-      <stop offset="1" stop-color="#d3dbdf"/>
-    </linearGradient>
-    <linearGradient id="hoja" gradientUnits="userSpaceOnUse" x1="-3" y1="0" x2="5" y2="0">
-      <stop offset="0" stop-color="#f4f7f8"/>
-      <stop offset=".5" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#aab5bb"/>
-    </linearGradient>
-  </defs>
-</svg>
-
 <header class="barra">
   <a class="marca-iq" href="inicio.html" aria-label="IQ Platform, inicio">
     <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
@@ -843,7 +835,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
@@ -858,7 +850,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 <div class="panel-cuenta" id="panel-cuenta" role="region" aria-label="Mi cuenta" hidden>
   <div class="quien-soy"><span class="avatar" aria-hidden="true">DO</span><div><p class="quien-nombre">Daniela Ortiz</p><p class="quien-correo">daniela.ortiz@correo.com</p><span class="rol">Colaborador</span></div></div>
   <p class="cuenta-titulo">Gestión de DataIQ</p>
-  <ul class="cuenta-lista"><li><a href="borradores.html">Mis borradores<span class="cifra">4</span></a></li></ul>
+  <ul class="cuenta-lista"><li><a href="borradores.html" aria-current="page">Mis borradores<span class="cifra">4</span></a></li></ul>
   <a class="salir" href="inicio.html">Cerrar sesión<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </div>
 
@@ -920,79 +912,65 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
   <div class="acciones-movil">
     <p class="quien-movil">Daniela Ortiz · Colaborador</p>
-    <a class="ingresar" href="borradores.html">Mis borradores</a>
+    <a class="ingresar" href="borradores.html" aria-current="page">Mis borradores</a>
     <a class="ingresar" href="inicio.html">Cerrar sesión</a>
   </div>
 </nav>
 
-<main>
-  <div class="app">
-    <nav class="lado" id="lado" aria-label="Técnicas">
-      <button type="button" class="lado-abrir" id="lado-abrir" aria-expanded="false" aria-controls="lado-cuerpo">Cirugía general · Tiroidectomía <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="lado-cuerpo" id="lado-cuerpo">
-        <div class="lado-buscar"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><label class="sr-only" for="buscar-tec">Buscar técnica</label><input type="search" id="buscar-tec" placeholder="Buscar técnica" autocomplete="off"></div>
-        <div id="lado-grupos"></div>
+<main class="gestion" id="contenido">
+  <header class="gestion-cabeza">
+    <div>
+      <h1>Mis borradores <span class="demo">demostración</span></h1>
+      <p class="resumen" id="resumen">4 técnicas en curso. Una volvió de revisión con un comentario.</p>
+    </div>
+    <div class="gestion-acciones">
+      <button type="button" class="boton suave" id="abrir-publicadas" aria-expanded="false" aria-controls="buscador-pub">Editar una publicada</button>
+      <a class="boton" href="#"><svg class="mas" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Nueva técnica</a>
+      <div class="buscador-pub" id="buscador-pub" role="dialog" aria-label="Editar una técnica publicada" hidden>
+        <label><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="solo-lector">Buscar una técnica publicada</span><input type="search" id="buscar-pub" placeholder="Buscar una técnica publicada" autocomplete="off"></label>
+        <ul class="pub-lista" id="pub-lista"></ul>
       </div>
-    </nav>
-    <article class="panel-tec" aria-labelledby="t-tecnica">
-      <header class="tec-cabeza">
-        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p></div>
-        <div class="tec-acciones">
-          <a class="editar-tec" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
-          <a class="boton suave" href="#">Ver en 3D <small>SIMIQ3D</small></a>
-          <a class="boton" href="#">Comprobar con la cámara <small>SIVRI</small></a>
-        </div>
-      </header>
-      <div class="pestanas-tec" role="tablist" aria-label="Contenido de la técnica">
-        <button type="button" role="tab" id="tab-clinicos" aria-controls="hoja-clinicos" aria-selected="true">Datos clínicos</button>
-        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental</button>
-        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo</button>
-        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva</button>
-        <span class="raya" aria-hidden="true"></span>
-      </div>
+    </div>
+  </header>
 
-      <section class="hoja" role="tabpanel" id="hoja-clinicos" aria-labelledby="tab-clinicos">
-        <div class="clinicos">
-          <div>
-            <div class="para-que">
-              <header><h2>Para qué sirve</h2><span class="demo">demostración</span></header>
-              <p>Descripción breve del procedimiento y de sus indicaciones: en qué casos se realiza y qué busca resolver.</p>
-            </div>
-            <dl class="fichas" id="fichas"></dl>
-          </div>
-          <div>
-            <h2>Suturas</h2>
-            <dl class="suturas" id="suturas"></dl>
-            <div class="insumos">
-              <h2 id="insumos-titulo">Equipo médico-quirúrgico</h2>
-              <p id="insumos"></p>
-            </div>
-          </div>
-        </div>
-      </section>
+  <div class="gestion-filtros">
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por estado">
+      <span class="placa" aria-hidden="true"></span>
+      <button type="button" data-filtro="todas" aria-pressed="true">Todas<span class="cifra"></span></button>
+      <button type="button" data-filtro="devuelta" aria-pressed="false">Devueltas<span class="cifra"></span></button>
+      <button type="button" data-filtro="borrador" aria-pressed="false">Borradores<span class="cifra"></span></button>
+      <button type="button" data-filtro="en-revision" aria-pressed="false">En revisión<span class="cifra"></span></button>
+    </div>
+    <ul class="leyenda-marcas" aria-label="Qué indica cada marca">
+      <li><svg class="mk completa" viewBox="0 0 22 22" aria-hidden="true"><circle class="aro" cx="11" cy="11" r="9" pathLength="1"/><g class="relleno"><circle cx="11" cy="11" r="9"/><path d="M7 11.4l2.7 2.6L15 8.6"/></g></svg>Completa</li>
+      <li><svg class="mk en-curso" viewBox="0 0 22 22" aria-hidden="true"><circle class="aro" cx="11" cy="11" r="9" pathLength="1"/><path class="relleno" d="M11 2a9 9 0 0 0 0 18Z"/></svg>En curso</li>
+      <li><svg class="mk pendiente" viewBox="0 0 22 22" aria-hidden="true"><circle class="aro" cx="11" cy="11" r="9" pathLength="1"/></svg>Pendiente</li>
+      <li><span class="raya-sin" aria-hidden="true"></span>La técnica no tiene esa mesa</li>
+    </ul>
+  </div>
 
-      <section class="hoja" role="tabpanel" id="hoja-instrumental" aria-labelledby="tab-instrumental" hidden>
-        <ul class="instrumental" id="lista-instrumental"></ul>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-mayo" aria-labelledby="tab-mayo" hidden>
-        <p class="sin-mesa" id="sin-mayo" hidden>Sin mesa de Mayo.</p>
-        <div class="tec-mesa" id="caja-mayo">
-          <div class="tec-info"><h2>Mesa de Mayo</h2><p>Señala un número para ubicar su pieza.</p><ol class="leyenda-tec" id="leyenda-mayo"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div>
-        </div>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-reserva" aria-labelledby="tab-reserva" hidden>
-        <p class="sin-mesa" id="sin-reserva" hidden>Sin mesa de reserva.</p>
-        <div class="tec-mesa" id="caja-reserva">
-          <div class="tec-info"><h2>Mesa de reserva</h2><p>Señala un número para ubicar su objeto.</p><ol class="leyenda-tec" id="leyenda-reserva"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div>
-        </div>
-      </section>
-    </article>
+  <div class="tabla-caja">
+    <table class="matriz">
+      <caption class="solo-lector">Técnicas en curso y avance de cada sección</caption>
+      <thead>
+        <tr>
+          <th scope="col">Técnica</th>
+          <th scope="col">Estado</th>
+          <th scope="col" class="editada-col">Editada</th>
+          <th scope="col" class="sec">Datos clínicos</th>
+          <th scope="col" class="sec">Instrumental</th>
+          <th scope="col" class="sec">Mesa de Mayo</th>
+          <th scope="col" class="sec">Mesa de reserva</th>
+          <th scope="col"><span class="solo-lector">Acción</span></th>
+        </tr>
+      </thead>
+      <tbody id="filas">
+        <tr class="vacio-filtro" id="vacio-filtro" hidden><td colspan="8">No hay técnicas en este estado.</td></tr>
+      </tbody>
+    </table>
   </div>
 </main>
+
 
 <footer class="pie ancho tramo">
   <div class="pie-rejilla">
@@ -1083,392 +1061,145 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   });
 
 
-  /* ---------- Instrumental dibujado en acero ----------
-     Cada pieza en coordenadas locales: vertical, punta en y=0, anillos o mango en y=100. */
-  function anillo(cx) { return "<path class='acero' fill-rule='evenodd' d='M" + (cx - 7) + " 92a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z M" + (cx - 4.3) + " 92a4.3 4.3 0 1 0 8.6 0a4.3 4.3 0 1 0 -8.6 0Z'/>"; }
-  function argollas(b, cremallera) {
-    var s = anillo(-7.6) + anillo(7.6);
-    s += "<path class='acero' d='M-10.8 87.4 L-2.9 " + (b + 8) + " L-0.7 " + (b + 8) + " L-4.6 86.1 Z'/>";
-    s += "<path class='acero' d='M10.8 87.4 L2.9 " + (b + 8) + " L0.7 " + (b + 8) + " L4.6 86.1 Z'/>";
-    if (cremallera) s += "<path class='caja' d='M-5.6 79.5 l2.6 -1.6 v3.2z M5.6 79.5 l-2.6 -1.6 v3.2z'/>";
-    return s + "<rect class='caja' x='-3.4' y='" + b + "' width='6.8' height='8.6' rx='1.4'/>";
-  }
-  function estrias(desde, hasta, x, ancho) { var s = ""; for (var y = desde; y < hasta; y += 3.2) s += "<path class='raya' d='M" + x + " " + y.toFixed(1) + " h" + ancho + "'/>"; return s; }
-  function tijera(b, t, w) {
-    return argollas(b, false) +
-      "<path class='acero' d='M" + (-w) + " " + b + " C" + (-w * 1.1) + " " + (b - 16) + " " + (-w * 0.8) + " " + (t + 8) + " " + (w * 0.25) + " " + (t + 1.5) + " Q" + (w * 0.7) + " " + t + " " + (w * 0.95) + " " + (t + 2.2) + " C" + (w * 1.05) + " " + (t + 10) + " " + (w * 1.15) + " " + (b - 16) + " " + w + " " + b + " Z'/>" +
-      "<path class='raya' d='M0 " + b + " C0 " + (b - 16) + " .3 " + (t + 9) + " 1.2 " + (t + 2.2) + "'/>";
-  }
-  var dibujos = {
-    bisturi: function () { return "<rect class='acero' x='-3.6' y='32' width='7.2' height='68' rx='1.8'/>" + estrias(64, 94, -2.5, 5) + "<path class='hoja' d='M-2.3 33 L-2.3 15 C-2.3 7 1.6 1.5 3.6 4.8 C5 8 3.4 18 2.3 33 Z'/>"; },
-    metzenbaum: function () { return tijera(52, 16, 2.6); },
-    mayo: function () { return tijera(46, 6, 3.6); },
-    diseccion: function () { return "<path class='acero' fill-rule='evenodd' d='M-1.3 0 L-5.4 66 Q-6 97 0 100 Q6 97 5.4 66 L1.3 0 Z M-0.35 7 L-3.2 66 Q-3.4 90 0 92 Q3.4 90 3.2 66 L0.35 7 Z'/>" + estrias(40, 64, -4.6, 1.6) + estrias(40, 64, 3, 1.6); },
-    farabeuf: function () { return "<path class='acero' d='M-13 4 H2.4 V96 H-15 V91 H-2.4 V9 H-13 Z'/><path class='raya' d='M-0.6 22 V78'/>"; },
-    senn: function () { return "<rect class='acero' x='-1.9' y='16' width='3.8' height='68' rx='1.2'/>" + estrias(40, 62, -1.3, 2.6) + "<rect class='acero' x='-5.4' y='13.5' width='10.8' height='3.2' rx='1'/><path class='punta' d='M-4.2 14 V4.5 Q-4.2 2 -2.2 3.4 M0 14 V3.5 Q0 1 2 2.4 M4.2 14 V4.5 Q4.2 2 6.2 3.4'/><rect class='acero' x='-6.8' y='83.5' width='13.6' height='6' rx='1.5'/>"; },
-    allis: function () { return argollas(44, true) + "<path class='acero' d='M-1.9 44 L-1.3 11 L-4.3 6.5 L-4.3 2 L4.3 2 L4.3 6.5 L1.3 11 L1.9 44 Z'/><path class='raya' d='M-3.8 3.3 h7.6'/>"; },
-    lahey: function () { return argollas(44, true) + "<path class='acero' d='M-2.1 44 L-1.5 9 L-3.8 3.2 L-2.6 2 L-0.5 6.2 L0.5 6.2 L2.6 2 L3.8 3.2 L1.5 9 L2.1 44 Z'/>"; },
-    rochester: function () { return argollas(44, true) + "<path class='acero' d='M-2.8 44 L-1.7 6 Q0 2 1.7 6 L2.8 44 Z'/>" + estrias(10, 42, -1.5, 3); },
-    mosquito: function () { return argollas(46, true) + "<path class='acero' d='M-2.3 46 C-2.3 32 -1.2 20 2.6 9.5 Q4.2 8 3.9 10.6 C1.8 20 1.9 32 2.3 46 Z'/><path class='raya' d='M0 46 C0 32 .6 20 3 10'/>"; }
-  };
-
-  /* Mesa de Mayo de Tiroidectomía: datos reales del documento de IQ.
-     [número, fila, columna, nombre normalizado, texto de la fuente, dibujo, largo relativo, nombre corto] */
-  var MESA = [
-    [1, 7, 5, "Mango de bisturí N.° 3 y hoja #15", "M.B #3 H.B #15", "bisturi", .84, "Bisturí N.° 3"],
-    [2, 6, 5, "Tijera de Metzenbaum", "Tijera de metzembaum", "metzenbaum", 1, "Metzenbaum"],
-    [3, 5, 5, "Tijera de Mayo", "Tijera de mayo", "mayo", .88, "Tijera de Mayo"],
-    [4, 4, 1, "Pinza de disección con y sin garra", "Diseccion c/s garras", "diseccion", .9, "Disección"],
-    [5, 4, 2, "Separador de Farabeuf", "Separador de farabeauf", "farabeuf", .9, "Farabeuf"],
-    [6, 4, 4, "Separador de Senn Miller", "Separador senn Miller", "senn", .72, "Senn Miller"],
-    [7, 1, 3, "Pinza de Allis", "Pinzas allis", "allis", .92, "Allis"],
-    [8, 1, 6, "Pinza Lahey", "Pinza lahey", "lahey", .95, "Lahey"],
-    [9, 2, 7, "Pinza Rochester", "Pinza Rochester", "rochester", .95, "Rochester"],
-    [10, 3, 7, "Pinza Mosquito curva", "Pinza mosquito", "mosquito", .74, "Mosquito"]
+  /* ---------- Mis borradores (demostración sobre técnicas reales) ----------
+     Regla del avance: lo que las fichas de IQ ya traen marca «en curso» (Colecistectomía tiene anestesia,
+     ropa, posición y suturas, pero no la descripción) y lo que no tiene nada queda «pendiente». Lo que la
+     colaboradora completó en su borrador es demostración: Tiroidectomía, ya enviada a revisión, aparece completa.
+     Colecistectomía no tiene mesa de reserva y la mesa de Nefrectomía laparoscópica aún no llega. */
+  function slugDe(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-"); }
+  var SECCIONES = ["Datos clínicos", "Instrumental", "Mesa de Mayo", "Mesa de reserva"];
+  var BORRADORES = [
+    { nombre: "Hemicolectomía laparoscópica", esp: "Cirugía laparoscópica", version: 2, estado: "devuelta", editada: "3 oct",
+      secciones: ["pendiente", "en-curso", "en-curso", "pendiente"],
+      comentario: { seccion: 2, fecha: "4 oct", texto: "La leyenda de la mesa de Mayo tiene dos objetos con el número 4 y no aparece el 9. Revisa la numeración con el documento de la técnica antes de enviarla de nuevo." } },
+    { nombre: "Colecistectomía", esp: "Cirugía general", version: 2, estado: "borrador", editada: "Hoy, 10:42",
+      secciones: ["en-curso", "completa", "completa", "sin-mesa"] },
+    { nombre: "Nefrectomía laparoscópica", esp: "Cirugía laparoscópica", version: 2, estado: "borrador", editada: "Ayer",
+      secciones: ["pendiente", "en-curso", "pendiente", "pendiente"] },
+    { nombre: "Tiroidectomía", esp: "Cirugía general", version: 2, estado: "en-revision", editada: "1 oct",
+      secciones: ["completa", "completa", "completa", "completa"] }
   ];
-  // Confianza de la demostración de SIVRI (valores de ejemplo)
-  var CONFIANZA = { 1: "0,97", 2: "0,95", 3: "0,96", 4: "0,93", 5: "0,98", 6: "0,91", 7: "0,97", 8: "0,94", 9: "0,96", 10: "0,92" };
-  function pieza(n) { return MESA.filter(function (x) { return x[0] === n; })[0]; }
-
-  function construirMesa(svg, op) {
-    var h = "";
-    if (op.rejilla) {
-      h += "<g class='rejilla' aria-hidden='true'>";
-      for (var c = 1; c < 7; c++) h += "<path d='M" + c * 100 + " 0 V700 M0 " + c * 100 + " H700'/>";
-      h += "</g>";
-    }
-    MESA.forEach(function (o, i) {
-      var x = (o[2] - 1) * 100, y = (o[1] - 1) * 100, k = 1.2 * o[6];
-      h += "<g class='pieza' data-n='" + o[0] + "' style='--i:" + i + "'" + (op.interactiva ? " tabindex='0' role='button' aria-label='" + o[0] + ": " + o[3] + "'" : "") + ">" +
-        (op.interactiva ? "<rect class='hit' x='" + (x + 4) + "' y='" + (y + 4) + "' width='92' height='92' rx='10'/>" : "") +
-        "<g class='forma'" + (op.mover && o[0] === 6 ? " transform='translate(100 0)'" : "") + "><g transform='translate(" + (x + 54) + " " + (y + 54) + ") rotate(40) scale(" + (k * 1.15) + " " + k + ") translate(0 -50)'>" + dibujos[o[5]]() + "</g></g>" +
-        (op.numeros ? "<g class='numero'><circle cx='" + (x + 19) + "' cy='" + (y + 19) + "' r='16'/><text x='" + (x + 19) + "' y='" + (y + 19.5) + "'>" + o[0] + "</text></g>" : "") +
-        "</g>";
-    });
-    if (op.deteccion) h += "<g class='detecciones'></g>";
-    svg.innerHTML = h;
-    if (op.deteccion) dibujarDetecciones(svg, op.mover);
+  var ESTADOS = { "devuelta": "Devuelta", "borrador": "Borrador", "en-revision": "En revisión" };
+  var NOMBRE_MARCA = { "completa": "Completa", "en-curso": "En curso", "pendiente": "Pendiente", "sin-mesa": "La técnica no tiene esa mesa" };
+  var ICONO_ESTADO = {
+    "devuelta": "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M6 3L2.5 6.5 6 10' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/><path d='M3 6.5h6.5a4 4 0 0 1 0 8H7' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'/></svg>",
+    "borrador": "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M10.5 2.5l3 3-8 8H2.5v-3z' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linejoin='round'/></svg>",
+    "en-revision": "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.6'/><path d='M8 4.8V8l2.2 1.6' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'/></svg>"
+  };
+  var flechaFila = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  function marca(tipo, c, f) {
+    var estilo = " style='--c:" + c + ";--f:" + f + "'";
+    if (tipo === "sin-mesa") return "<span class='raya-sin' aria-hidden='true'></span><span class='solo-lector'>" + NOMBRE_MARCA[tipo] + "</span>";
+    var aro = "<circle class='aro' cx='11' cy='11' r='9' pathLength='1'" + estilo + "/>";
+    var dentro = tipo === "completa" ? "<g class='relleno'" + estilo + "><circle cx='11' cy='11' r='9'/><path d='M7 11.4l2.7 2.6L15 8.6'/></g>"
+      : tipo === "en-curso" ? "<path class='relleno'" + estilo + " d='M11 2a9 9 0 0 0 0 18Z'/>" : "";
+    return "<svg class='mk " + tipo + "' viewBox='0 0 22 22' aria-hidden='true'>" + aro + dentro + "</svg><span class='solo-lector'>" + NOMBRE_MARCA[tipo] + "</span>";
   }
-
-  /* Cajas de detección; las etiquetas se ubican después, cuando la fuente cargó */
-  function dibujarDetecciones(svg, yaMovida) {
-    var h = "", angosto = matchMedia("(max-width: 760px)").matches;
-    MESA.forEach(function (o, i) {
-      var bb = svg.querySelector(".pieza[data-n='" + o[0] + "'] .forma").getBBox();
-      var mal = o[0] === 6, dx = mal && !yaMovida ? 100 : 0;
-      var x = bb.x - 5 + dx, y = bb.y - 5, w = bb.width + 10, alto = bb.height + 10;
-      h += "<g class='det" + (mal ? " error" : "") + "' style='--i:" + i + ";--per:" + Math.round(2 * (w + alto)) + "'>" +
-        "<rect class='caja-det' x='" + x.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-        "<g class='etq'><rect x='" + x.toFixed(1) + "' y='" + (y - 26).toFixed(1) + "' width='120' height='24' rx='4'/><text x='" + (x + 8).toFixed(1) + "' y='" + (y - 14).toFixed(1) + "'>" + o[7] + (angosto ? "" : " " + CONFIANZA[o[0]]) + "</text></g></g>";
-      if (mal) {
-        var ox = x - 100;
-        h += "<rect class='destino' x='" + ox.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-          "<text class='destino-etq' x='" + ox.toFixed(1) + "' y='" + (y + alto + 16).toFixed(1) + "'>Va aquí</text>";
-      }
-    });
-    svg.querySelector(".detecciones").innerHTML = h;
-  }
-  function choque(a, b) { var w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y); return w > 0 && h > 0 ? w * h : 0; }
-  function ubicarEtiquetas(svg) {
-    var grupos = svg.querySelectorAll(".det");
-    var cajas = [].map.call(grupos, function (g) { var r = g.querySelector(".caja-det"); return { x: +r.getAttribute("x"), y: +r.getAttribute("y"), w: +r.getAttribute("width"), h: +r.getAttribute("height") }; });
-    var destino = svg.querySelector(".destino");
-    if (destino) cajas.push({ x: +destino.getAttribute("x"), y: +destino.getAttribute("y"), w: +destino.getAttribute("width"), h: +destino.getAttribute("height") });
-    var puestas = [];
-    var aviso = svg.querySelector(".destino-etq");
-    if (aviso) { var ba = aviso.getBBox(); puestas.push({ x: ba.x - 4, y: ba.y - 4, w: ba.width + 8, h: ba.height + 8 }); }
-    grupos.forEach(function (g, i) {
-      var c = cajas[i], t = g.querySelector(".etq text"), r = g.querySelector(".etq rect");
-      var fs = parseFloat(getComputedStyle(t).fontSize) || 14;
-      var w = t.getComputedTextLength() + fs * 1.1, h = fs + 10, mejor = null, menor = Infinity;
-      [[c.x, c.y - h - 3], [c.x + c.w - w, c.y - h - 3], [c.x, c.y + c.h + 3], [c.x + c.w - w, c.y + c.h + 3], [c.x - w - 3, c.y], [c.x + c.w + 3, c.y], [c.x + 3, c.y + 3]].forEach(function (p, k) {
-        var e = { x: Math.min(Math.max(p[0], 2), 698 - w), y: Math.min(Math.max(p[1], 2), 698 - h), w: w, h: h };
-        var costo = k * 4;
-        puestas.forEach(function (q) { costo += choque(e, q) * 6; });
-        cajas.forEach(function (o, j) { if (j !== i) costo += choque(e, o); });
-        if (costo < menor) { menor = costo; mejor = e; }
+  var cuerpo = document.getElementById("filas"), vacioFiltro = document.getElementById("vacio-filtro");
+  BORRADORES.forEach(function (b, f) {
+    var tr = document.createElement("tr"), slug = slugDe(b.nombre), idNota = "nota-" + slug;
+    tr.className = "fila" + (b.comentario ? " con-comentario" : "");
+    tr.dataset.estado = b.estado;
+    var h = "<td class='tec'><p class='tec-nombre'></p><p class='tec-meta'></p>" +
+      (b.comentario ? "<button type='button' class='ver-comentario' aria-expanded='true' aria-controls='" + idNota + "'><svg width='12' height='12' viewBox='0 0 12 12' aria-hidden='true'><path d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>Comentario de la revisión</button>" : "") + "</td>" +
+      "<td class='est'><span class='estado-v " + b.estado + "'>" + ICONO_ESTADO[b.estado] + ESTADOS[b.estado] + "</span><span class='fecha-est'>" + b.editada + "</span></td>" +
+      "<td class='editada'>" + b.editada + "</td>";
+    b.secciones.forEach(function (s, c) { h += "<td class='sec" + (b.comentario && b.comentario.seccion === c ? " senalada" : "") + "' data-etq='" + SECCIONES[c] + "'>" + marca(s, c, f) + "</td>"; });
+    h += "<td class='accion'>" + (b.estado === "en-revision"
+      ? "<a class='continuar ver' href='#'>Ver" + flechaFila + "</a>"
+      : "<a class='continuar' href='" + (slug === "colecistectomia" ? "editor.html#paso-1" : "#") + "'>Continuar" + flechaFila + "</a>") + "</td>";
+    tr.innerHTML = h;
+    tr.querySelector(".tec-nombre").textContent = b.nombre;
+    tr.querySelector(".tec-meta").textContent = b.esp + " · Versión " + b.version;
+    var accion = tr.querySelector(".continuar");
+    accion.setAttribute("aria-label", (b.estado === "en-revision" ? "Ver " : "Continuar ") + b.nombre);
+    cuerpo.insertBefore(tr, vacioFiltro);
+    if (b.comentario) {
+      var trc = document.createElement("tr");
+      trc.className = "comentario";
+      trc.dataset.estado = b.estado;
+      trc.innerHTML = "<td colspan='8'><div class='comentario-caja' id='" + idNota + "'><div><div class='nota'>" +
+        "<svg width='20' height='20' viewBox='0 0 20 20' aria-hidden='true'><path d='M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V6A1.5 1.5 0 0 1 4 4.5Z' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linejoin='round'/></svg>" +
+        "<div><p class='nota-cabeza'>Revisión · " + b.comentario.fecha + " · sobre la " + SECCIONES[b.comentario.seccion].charAt(0).toLowerCase() + SECCIONES[b.comentario.seccion].slice(1) + "</p><p></p></div></div></div></div>" +
+        "<a class='continuar solo-movil' href='#'>Continuar" + flechaFila + "</a></td>";
+      trc.querySelector(".solo-movil").setAttribute("aria-label", "Continuar " + b.nombre);
+      trc.querySelector(".nota p:last-child").textContent = b.comentario.texto;
+      cuerpo.insertBefore(trc, vacioFiltro);
+      var ver = tr.querySelector(".ver-comentario"), caja = trc.querySelector(".comentario-caja");
+      // El comentario se despliega cuando las marcas terminan de trazarse
+      if (!reducido) { ver.setAttribute("aria-expanded", "false"); caja.classList.add("cerrado"); setTimeout(function () { ver.setAttribute("aria-expanded", "true"); caja.classList.remove("cerrado"); }, 950); }
+      ver.addEventListener("click", function () {
+        var abrir = ver.getAttribute("aria-expanded") !== "true";
+        ver.setAttribute("aria-expanded", String(abrir));
+        caja.classList.toggle("cerrado", !abrir);
       });
-      puestas.push(mejor);
-      r.setAttribute("x", mejor.x.toFixed(1)); r.setAttribute("y", mejor.y.toFixed(1)); r.setAttribute("width", w.toFixed(1));
-      r.setAttribute("height", h.toFixed(1));
-      t.setAttribute("x", (mejor.x + fs * .55).toFixed(1)); t.setAttribute("y", (mejor.y + h / 2).toFixed(1));
-    });
-  }
-
-
-  mostrarEspecialidad(0);
-  listaEsp.querySelector("a").classList.add("activa");
-  document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
-
-  /* ---------- Detalle de técnica: Cirugía general ----------
-     Clínicos e instrumental: fichas de IQ. Mesas: base de DataIQ, [número, celdas [[fila, columna]], nombre, dibujos].
-     Un dibujo con «~» es plano (tela, bandeja, caucho); los demás, acero. */
-  var TECNICAS = {
-    "tiroidectomia": {
-      nombre: "Tiroidectomía", especialidad: "Cirugía general",
-      clinicos: { anestesia: "General o local", ropa: "Paquete de ropa general", posicion: "Decúbito supino con hiperextensión de cuello", equipos: "Bisturí armónico o Ligasure, electrobisturí, neuroestimulador de nervio (opcional)" },
-      suturas: [["Fijación de colgajos", "Seda 2/0, aguja cortante de 3/8 de círculo de 26 mm"], ["Ligadura", "Seda suelta o sutupack 2/0 o 3/0 (opcional, según el tipo de energía)"], ["Músculo", "Vicryl 3/0, catgut crómico 2/0, aguja redonda de ½ círculo de 26 mm"], ["Fascia", "Poliglactina 910 2/0 o 3/0, aguja redonda de ½ círculo de 26 mm"], ["Tejido celular subcutáneo", "Poliglactina 3/0, catgut crómico 2/0 o 3/0, aguja SH redonda de ½ círculo de 26 mm"], ["Piel", "Sintética monofilamento no absorbible 4/0 o 3/0, aguja cortante de 3/8 de círculo de 24 mm"]],
-      insumosTitulo: "Equipo médico-quirúrgico",
-      insumos: "Guantes, gasas, frascos de patología, dren de Penrose (opcional), lápiz de electrobisturí, apósito, jeringas, tijeras de armónico Focus, solución salina, HB #15, disectores.",
-      instrumental: ["Mango de bisturí #3 o #7", "Tijeras de Mayo", "Tijeras de Metzenbaum", "Pinzas Mosquito curvas", "Pinzas Kelly", "Pinzas de Allis", "Pinza Rochester", "Pinza Kelly Adson", "Pinza Babcock", "Pinza Moninjan", "Separador de Farabeuf", "Separador de Senn Miller", "Separador Mayo Collins", "Portaagujas mediano", "Pinzas de disección Adson con y sin garra", "Cánula de Frazier 10/12 mm"],
-      mayo: { filas: 7, cols: 7, items: [[1, [[7, 5]], "Mango de bisturí N.° 3 y hoja #15", ["bisturi"]], [2, [[6, 5]], "Tijera de Metzenbaum", ["metzenbaum"]], [3, [[5, 5]], "Tijera de Mayo", ["mayo"]], [4, [[4, 1]], "Pinza de disección con y sin garra", ["diseccion"]], [5, [[4, 2]], "Separador de Farabeuf", ["farabeuf"]], [6, [[4, 4]], "Separador de Senn Miller", ["senn"]], [7, [[1, 3]], "Pinza de Allis", ["allis"]], [8, [[1, 6]], "Pinza Lahey", ["lahey"]], [9, [[2, 7]], "Pinza Rochester", ["rochester"]], [10, [[3, 7]], "Pinza Mosquito curva", ["mosquito"]]] },
-      reserva: { filas: 6, cols: 8, num: { 1: [18, 318], 2: [126, 426] }, items: [[1, [[4, 1]], "Paquete de ropa", ["~ropa"]], [2, [[4, 2], [5, 1]], "Pinza de campo", ["campo"]], [3, [[4, 4]], "Pinza cística y tijera de energía", ["cistica", "energia"]], [4, [[4, 5]], "Pinza Kelly Adson", ["kelly"]], [5, [[1, 3]], "Compresa con portaagujas y sutura", ["~compresaPorta", "portaagujas"]], [6, [[1, 7]], "Cánula de Frazier", ["frazier"]], [7, [[4, 8]], "Compresas y gasas", ["~compresas"]], [8, [[6, 8]], "Bandeja", ["~bandeja"]], [9, [[2, 6]], "Caucho de succión", ["~caucho"]]] }
-    },
-    "mastectomia": {
-      nombre: "Mastectomía", especialidad: "Cirugía general",
-      clinicos: { anestesia: "General", ropa: "Paquete de ropa general", posicion: "Decúbito supino", equipos: "Electrobisturí, bisturí armónico" },
-      suturas: [["Piel", "No absorbible sintético monofilamento 3/0, aguja cortante de 3/8 de círculo de 24 mm"], ["Tejido celular subcutáneo", "Catgut crómico 2/0 o 3/0 (absorbible orgánica monofilamento), aguja redonda de ½ círculo de 37 mm"], ["Dren", "No absorbible sintética monofilamento 0 o sutura natural no absorbible 3/0, aguja cortante de 3/8 de círculo de 24 mm"]],
-      insumosTitulo: "Equipo médico-quirúrgico",
-      insumos: "Suero fisiológico, guantes, gasas, apósitos, HB #20, #10 y #15, Exovac, agua estéril, dren de Penrose.",
-      instrumental: ["Mango de bisturí N.° 4 y N.° 3", "Tijeras de Metzenbaum", "Tijeras de Mayo", "Pinzas de Allis", "Pinzas de Babcock", "Separador Deaver ancho y angosto", "Pinzas Kelly", "Pinza Rochester", "Pinzas de disección con y sin garra", "Pinzas Císticas", "Pinzas Foerster", "Cánula de Yankauer"],
-      mayo: { filas: 5, cols: 4, items: [[1, [[1, 3]], "Pinza de Allis", ["allis"]], [2, [[2, 1]], "Pinza de disección con y sin garra", ["diseccion"]], [3, [[2, 2]], "Separador de Farabeuf", ["farabeuf"]], [4, [[2, 4]], "Pinza Rochester", ["rochester"]], [5, [[3, 2]], "Tijera de Mayo", ["mayo"]], [6, [[4, 2]], "Tijera de Metzenbaum", ["metzenbaum"]], [7, [[5, 2]], "Mango de bisturí N.° 3 y hoja #10-11", ["bisturi"]], [8, null, "Sin dato", null], [9, [[3, 4]], "Pinza Kelly", ["kelly"]]] },
-      reserva: null
-    },
-    "colecistectomia": {
-      nombre: "Colecistectomía", especialidad: "Cirugía general",
-      clinicos: { anestesia: "General", ropa: "Paquete de ropa general", posicion: "Decúbito dorsal", equipos: "Unidad electroquirúrgica" },
-      suturas: [["Vasos císticos", "Seda 0 o 2/0, sutupack"], ["Lecho hepático", "Elementos hemostáticos"], ["Peritoneo", "Catgut cromado 2/0, aguja redonda de ½ círculo de 37 mm"], ["Músculo", "Catgut cromado 2/0, aguja redonda de ½ círculo de 37 mm"], ["Fascia", "Poliglactina 910 1, aguja redonda de ½ círculo de 37 mm"], ["Tejido celular subcutáneo", "Catgut cromado 2/0, aguja redonda de ½ círculo de 37 mm"], ["Piel", "Sintética monofilamento 3/0, aguja cortante de 3/8 de círculo de 24 mm"]],
-      insumosTitulo: "Equipo médico-quirúrgico",
-      insumos: "HB #20 y #10, apósitos, guantes, jeringas de 10 cc, dren de Penrose, Gelfoam u otro elemento hemostático.",
-      instrumental: ["Bisturí #3 y #4", "Tijeras de Metzenbaum", "Tijeras de Mayo", "Pinzas Kelly", "Pinza Rochester", "Pinzas de disección con y sin garra", "Pinzas Babcock", "Pinzas Foerster", "Pinzas Randall", "Pinzas Moninjan", "Pinzas Císticas", "Pinzas Kelly Adson", "Separador de Doyen", "Separadores de Farabeuf", "Separador de Deaver", "Valva maleable", "Portaagujas"],
-      mayo: { filas: 7, cols: 6, items: [[1, [[7, 3]], "Mango de bisturí N.° 4 y hoja #20", ["bisturi"]], [2, [[6, 3]], "Mango de bisturí N.° 3 y hoja #10", ["bisturi"]], [3, [[5, 3]], "Tijera de Metzenbaum", ["metzenbaum"]], [4, [[4, 3]], "Tijera de Mayo", ["mayo"]], [5, [[1, 1]], "Pinza de Allis", ["allis"]], [6, [[4, 1]], "Pinza de disección con y sin garra", ["diseccion"]], [7, [[4, 2]], "Separador de Farabeuf", ["farabeuf"]], [8, [[1, 5]], "Pinza Moninjan", ["cistica"]], [9, [[2, 6]], "Pinza Rochester", ["rochester"]], [10, [[3, 4]], "Pinza Kelly", ["kelly"]]] },
-      reserva: null
-    },
-    "hemicolectomia-derecha": { nombre: "Hemicolectomía derecha", especialidad: "Cirugía general", plantilla: true, mayo: null, reserva: null },
-    "eventrorrafia": {
-      nombre: "Eventrorrafia", especialidad: "Cirugía general",
-      clinicos: { anestesia: "Peridural o raquídea", ropa: "Paquete de ropa general", posicion: "Decúbito dorsal", equipos: "Electrobisturí, rayos X" },
-      suturas: [["Colocación de malla", "Polipropileno"], ["Peritoneo", "Catgut crómico 2/0 o 0, aguja redonda de ½ círculo de 37 mm"], ["Músculo", "Catgut crómico 2/0, aguja redonda de ½ círculo de 37 mm"], ["Fascia", "Poliglactina 910 1, aguja redonda de ½ círculo de 37 mm"], ["Tejido celular subcutáneo", "Catgut crómico 2/0 o 3/0, aguja redonda de ½ círculo de 37 mm"], ["Piel", "Sintética monofilamento no absorbible 3/0 o 2/0, aguja cortante de 3/8 de círculo de 24 mm"]],
-      insumosTitulo: "Elementos o insumos médico-quirúrgicos",
-      insumos: "Suero fisiológico, torundas, disectores, gasas, apósitos, HB #20, #10 y #15, jeringa de 50 cc.",
-      instrumental: ["Mango de bisturí #3 y #4", "Tijeras de Mayo", "Tijeras de Metzenbaum", "Pinzas Kelly", "Separadores de Farabeuf", "Pinzas de Allis o de Babcock", "Clamps intestinales tipo Kocher", "Separador abdominal Universal con valva de Balfour", "Disección Adson Braun", "Pinzas Císticas", "Cánula de Yankauer", "Tijeras de Potts Smith (opcional)"],
-      mayo: { filas: 8, cols: 7, items: [[1, [[8, 3]], "Mango de bisturí N.° 4 y hoja #20", ["bisturi"]], [2, [[7, 3]], "Mango de bisturí N.° 7 y hoja #15", ["bisturi"]], [3, [[6, 3]], "Tijera de Metzenbaum", ["metzenbaum"]], [4, [[5, 3]], "Tijera de Mayo", ["mayo"]], [5, [[4, 1]], "Pinza de disección con y sin garra", ["diseccion"]], [6, [[4, 2]], "Separador de Farabeuf", ["farabeuf"]], [7, [[1, 2]], "Pinza de Allis", ["allis"]], [8, [[1, 4]], "Pinza de Babcock", ["allis"]], [9, [[1, 7]], "Pinza Rochester", ["rochester"]], [10, [[2, 5]], "Pinza Kelly Adson", ["kelly"]], [11, [[3, 6]], "Pinza Kelly", ["kelly"]]] },
-      reserva: { filas: 8, cols: 7, items: [[1, [[5, 1]], "Paquete de ropa", ["~ropa"]], [2, [[6, 2]], "Pinza de campo", ["campo"]], [3, [[7, 3]], "Pinza de disección con y sin garra", ["diseccion"]], [4, [[6, 5]], "Pinza de Foerster", ["allis"]], [5, [[6, 6]], "Valva maleable", ["farabeuf"]], [6, [[6, 7]], "Compresas y gasas", ["~compresas"]], [7, [[8, 7]], "Bandeja", ["~bandeja"]], [8, [[1, 4]], "Compresa con portaagujas y sutura", ["~compresaPorta", "portaagujas"]]] }
     }
-  };
-  function slug(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-"); }
-
-  // Dibujos propios de la reserva: acero donde es instrumental, plano donde es tela, bandeja o caucho
-  var acero = {
-    campo: function () { return argollas(50, true) + "<path class='acero' d='M-2.6 50 C-3.6 34 -7.4 21 -3.4 9 Q-0.6 2 3.4 3.6 Q0 6.4 -0.8 12.4 C-2.2 23 -0.8 35 0 50 Z'/><path class='acero' d='M2.6 50 C3.6 34 7.4 21 3.4 9 Q0.6 2 -3.4 3.6 Q0 6.4 0.8 12.4 C2.2 23 0.8 35 0 50 Z'/>"; },
-    kelly: function () { return argollas(44, true) + "<path class='acero' d='M-2.4 44 L-1.4 8 Q0 4 1.4 8 L2.4 44 Z'/>" + estrias(10, 40, -1.2, 2.4); },
-    cistica: function () { return argollas(46, true) + "<path class='acero' d='M-2.4 46 C-2.4 30 -1 18 4 8 Q6 6 5.4 9.2 C1.8 18 1.6 30 2.4 46 Z'/>"; },
-    energia: function () { return tijera(50, 12, 2.4) + "<rect class='caja' x='-1.2' y='96' width='2.4' height='9' rx='1'/>"; },
-    portaagujas: function () { return argollas(56, true) + "<path class='acero' d='M-3 56 L-2.4 14 Q0 9 2.4 14 L3 56 Z'/>" + estrias(16, 30, -1.6, 3.2); },
-    frazier: function () { return "<rect class='acero' x='-3.4' y='70' width='6.8' height='30' rx='1.6'/><circle class='caja' cx='0' cy='78' r='1.6'/><path class='acero' d='M-1.4 70 L-1.4 22 L-6.2 5 L-4 4 L1.4 20 L1.4 70 Z'/>"; }
-  };
-  var ESCALA = { bisturi: .84, metzenbaum: 1, mayo: .88, diseccion: .9, farabeuf: .9, senn: .72, allis: .92, lahey: .95, rochester: .95, mosquito: .74, kelly: .85, cistica: .85, campo: 1, energia: .85, portaagujas: .8, frazier: .9 };
-  function enAcero(nombre, cx, cy, ang, k, dx) {
-    var d = acero[nombre] || dibujos[nombre];
-    return "<g transform='translate(" + cx + " " + cy + ") rotate(" + ang + ") translate(" + (dx || 0) + " 0) scale(" + (k * 1.15) + " " + k + ") translate(0 -50)'>" + d() + "</g>";
-  }
-  var plano = {
-    ropa: function (x, y) { return "<g transform='translate(" + x + " " + y + ")'><rect class='tela-plana' x='-34' y='-26' width='68' height='52' rx='4'/><rect class='tela-plana' x='-30' y='-30' width='60' height='48' rx='4'/><path class='pliegue' d='M-30 -14 H30 M-30 2 H30 M0 -30 V18'/></g>"; },
-    compresas: function (x, y) { return "<g transform='translate(" + x + " " + y + ")'><rect class='tela-plana' x='-30' y='-24' width='50' height='42' rx='3' transform='rotate(-8)'/><path class='pliegue' d='M-26 -6 H16' transform='rotate(-8)'/><rect class='tela-plana' x='-12' y='-14' width='40' height='36' rx='2' transform='rotate(6)'/><path class='trama' d='M-6 -14 V22 M2 -14 V22 M10 -14 V22 M18 -14 V22 M-12 -6 H28 M-12 2 H28 M-12 10 H28' transform='rotate(6)'/></g>"; },
-    bandeja: function (x, y) { return "<g transform='translate(" + x + " " + y + ")'><rect class='bandeja-borde' x='-38' y='-28' width='76' height='56' rx='8'/><rect class='bandeja-fondo' x='-31' y='-21' width='62' height='42' rx='5'/></g>"; },
-    caucho: function (x, y) { var d = "M" + (x - 30) + " " + (y + 26) + " C" + (x - 46) + " " + (y - 8) + " " + (x - 6) + " " + (y - 36) + " " + (x + 14) + " " + (y - 18) + " C" + (x + 34) + " " + (y) + " " + (x + 6) + " " + (y + 28) + " " + (x - 10) + " " + (y + 10) + " C" + (x - 22) + " " + (y - 4) + " " + (x + 8) + " " + (y - 20) + " " + (x + 30) + " " + (y - 30); return "<path class='caucho' d='" + d + "'/><path class='caucho-luz' d='" + d + "'/>"; },
-    compresaPorta: function (x, y) { return "<g transform='translate(" + x + " " + y + ")'><rect class='tela-plana' x='-34' y='-30' width='68' height='60' rx='4'/><path class='pliegue' d='M-34 0 H34'/><path class='sutura-hilo' d='M14 -20 c10 4 10 16 0 20 c-8 3 -14 -2 -10 -8'/></g>"; }
-  };
-  // Una mesa cualquiera: rejilla, cada objeto en sus celdas y su número en la esquina libre
-  function dibujarMesa(svg, mesa) {
-    var F = mesa.filas, C = mesa.cols, num = mesa.num || {}, h = "<g class='rejilla-r' aria-hidden='true'>";
-    svg.setAttribute("viewBox", "0 0 " + C * 100 + " " + F * 100);
-    for (var c = 1; c < C; c++) h += "<path d='M" + c * 100 + " 0 V" + F * 100 + "'/>";
-    for (var f = 1; f < F; f++) h += "<path d='M0 " + f * 100 + " H" + C * 100 + "'/>";
-    h += "</g>";
-    mesa.items.forEach(function (o, i) {
-      if (!o[1]) return;
-      var cel = o[1], ds = o[3], x = (cel[0][1] - 1) * 100, y = (cel[0][0] - 1) * 100, forma = "";
-      var esPlana = ds[0].charAt(0) === "~" && ds.length === 1;
-      if (cel.length > 1) {
-        // Un objeto en dos celdas: uno solo, a lo largo de la diagonal que las une
-        var a = [(cel[0][1] - cel[1][1]) * 100, (cel[0][0] - cel[1][0]) * 100];
-        if (a[1] > 0) a = [-a[0], -a[1]];
-        var mx = ((cel[0][1] + cel[1][1]) / 2 - .5) * 100, my = ((cel[0][0] + cel[1][0]) / 2 - .5) * 100;
-        var largo = Math.hypot(a[0], a[1]), ang = Math.atan2(a[0], -a[1]) * 180 / Math.PI;
-        forma = enAcero(ds[0], mx, my, ang, largo * .85 / 100);
-        if (!num[o[0]]) num[o[0]] = [mx - a[1] / largo * 37, my + a[0] / largo * 37];
-      } else if (ds.length === 1 && !esPlana) {
-        forma = enAcero(ds[0], x + 54, y + 54, 40, 1.2 * (ESCALA[ds[0]] || .9));
-      } else if (esPlana) {
-        forma = plano[ds[0].slice(1)](x + 50, y + 50);
-      } else if (ds[0].charAt(0) === "~") {
-        forma = plano[ds[0].slice(1)](x + 50, y + 50) + enAcero(ds[1], x + 44, y + 56, 40, .74);
-      } else {
-        forma = enAcero(ds[0], x + 50, y + 50, 40, .82, -12) + enAcero(ds[1], x + 50, y + 50, 40, .82, 12);
-      }
-      var nx = num[o[0]] ? num[o[0]][0] : x + 82, ny = num[o[0]] ? num[o[0]][1] : y + 82;
-      h += "<g class='pieza" + (esPlana ? " plana" : "") + "' data-n='" + o[0] + "' style='--i:" + i + "' tabindex='0' role='button' aria-label='" + o[0] + ": " + o[2] + "'>";
-      cel.forEach(function (pc) { h += "<rect class='hit' x='" + (pc[1] - 1) * 100 + "' y='" + (pc[0] - 1) * 100 + "' width='100' height='100'/>"; });
-      h += "<g class='forma'>" + forma + "</g><g class='numero'><circle cx='" + nx.toFixed(1) + "' cy='" + ny.toFixed(1) + "' r='16'/><text x='" + nx.toFixed(1) + "' y='" + (ny + .5).toFixed(1) + "'>" + o[0] + "</text></g></g>";
-    });
-    svg.innerHTML = h;
-  }
-  // Leyenda y mesa enlazadas: señalar un número levanta su pieza, y al revés (delegado, sirve para cualquier técnica)
-  function prepararMesa(caja) {
-    var svg = caja.querySelector("svg"), ol = caja.querySelector(".leyenda-tec");
-    function marcar(n) {
-      svg.classList.toggle("marcando", n != null);
-      ol.querySelectorAll("li").forEach(function (li) { li.classList.toggle("activa", +li.dataset.n === n); });
-      svg.querySelectorAll(".pieza").forEach(function (g) { var si = +g.dataset.n === n; g.classList.toggle("activa", si); g.setAttribute("aria-pressed", String(si)); });
-    }
-    function señalado(e) { var t = e.target.closest("[data-n]"); if (t && caja.contains(t)) marcar(+t.dataset.n); }
-    caja.addEventListener("mouseover", señalado);
-    caja.addEventListener("focusin", señalado);
-    caja.addEventListener("mouseleave", function () { marcar(null); });
-    caja.addEventListener("focusout", function (e) { if (!caja.contains(e.relatedTarget)) marcar(null); });
-    return marcar;
-  }
-  var marcarMayo = prepararMesa(document.getElementById("caja-mayo"));
-  var marcarReserva = prepararMesa(document.getElementById("caja-reserva"));
-  function pintarMesa(cual, mesa) {
-    var caja = document.getElementById("caja-" + cual), vacia = document.getElementById("sin-" + cual);
-    caja.hidden = !mesa; vacia.hidden = !!mesa;
-    if (!mesa) return;
-    caja.style.setProperty("--aspecto", mesa.cols / mesa.filas);
-    dibujarMesa(caja.querySelector("svg"), mesa);
-    var ol = caja.querySelector(".leyenda-tec");
-    ol.innerHTML = "";
-    mesa.items.forEach(function (o) {
-      var li = document.createElement("li");
-      if (o[1]) { li.dataset.n = o[0]; li.tabIndex = 0; } else li.className = "hueco";
-      li.innerHTML = "<b></b><span></span>";
-      li.children[0].textContent = o[0]; li.children[1].textContent = o[2];
-      ol.appendChild(li);
-    });
-  }
-  function escalarNumeros() {
-    document.querySelectorAll(".tec-funda svg").forEach(function (svg) {
-      var w = svg.getBoundingClientRect().width, vb = svg.viewBox.baseVal.width;
-      if (w && vb) svg.style.setProperty("--num-escala", (11 / (16 * w / vb)).toFixed(3));
-    });
-  }
-  addEventListener("resize", escalarNumeros);
-  function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
-  // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
-  var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
-  function pintar(clave) {
-    var T = TECNICAS[clave];
-    document.getElementById("t-tecnica").textContent = T.nombre;
-    document.getElementById("tec-esp").textContent = T.especialidad;
-    document.getElementById("marca-plantilla").hidden = !T.plantilla;
-    document.title = T.nombre + " · IQ Platform";
-    // Una sola versión en curso por técnica: si ya hay una, el botón lleva a ella
-    var curso = EN_CURSO[clave], editar = document.getElementById("editar-tec");
-    editar.querySelector("span").textContent = curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
-    editar.querySelector(".ico-lapiz").style.display = curso === "en-revision" ? "none" : "";
-    editar.querySelector(".ico-reloj").style.display = curso === "en-revision" ? "" : "none";
-    // El editor de la demostración es el de Colecistectomía; las demás versiones en curso llevan a Mis borradores
-    editar.href = clave === "colecistectomia" ? "editor.html#paso-1" : curso ? "borradores.html" : "#";
-    var fichas = document.getElementById("fichas"), cl = T.clinicos;
-    var filas = [["Anestesia", cl && cl.anestesia], ["Ropa", cl && cl.ropa], ["Posición del paciente", cl && cl.posicion, 1], ["Equipos biomédicos", cl && cl.equipos, 1]];
-    fichas.innerHTML = "";
-    filas.forEach(function (f) {
-      var d = document.createElement("div");
-      if (f[2]) d.className = "ancha";
-      d.innerHTML = "<dt></dt><dd></dd>";
-      d.children[0].textContent = f[0];
-      if (f[1]) d.children[1].textContent = f[1]; else d.children[1].innerHTML = huesos(1);
-      fichas.appendChild(d);
-    });
-    var dlS = document.getElementById("suturas");
-    dlS.innerHTML = "";
-    (T.suturas || [["", ""], ["", ""], ["", ""], ["", ""]]).forEach(function (x) {
-      var d = document.createElement("div");
-      d.innerHTML = "<dt></dt><dd></dd>";
-      if (x[0]) { d.children[0].textContent = x[0]; d.children[1].textContent = x[1]; } else { d.children[0].innerHTML = huesos(1); d.children[1].innerHTML = huesos(1); }
-      dlS.appendChild(d);
-    });
-    document.getElementById("insumos-titulo").textContent = T.insumosTitulo || "Equipo médico-quirúrgico";
-    var ins = document.getElementById("insumos");
-    if (T.insumos) ins.textContent = T.insumos; else ins.innerHTML = huesos(2);
-    var lista = document.getElementById("lista-instrumental");
-    lista.innerHTML = "";
-    (T.instrumental || new Array(9).join(".").split(".")).forEach(function (t) {
-      var li = document.createElement("li");
-      if (t) li.textContent = t; else li.innerHTML = huesos(1);
-      lista.appendChild(li);
-    });
-    pintarMesa("mayo", T.mayo);
-    pintarMesa("reserva", T.reserva);
-    escalarNumeros();
-    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
-    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + " ";
-  }
-
-  // Columna de técnicas: las mismas del catálogo, con la actual marcada
-  var gruposLado = document.getElementById("lado-grupos"), itemsLado = [];
-  ESPECIALIDADES.forEach(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    h.textContent = e[0]; sec.appendChild(h); sec.appendChild(ul);
-    e[1].forEach(function (t) {
-      var li = document.createElement("li"), a = document.createElement("a");
-      a.href = TECNICAS[slug(t)] ? "#" + slug(t) : "#"; a.textContent = t;
-      li.appendChild(a); ul.appendChild(li);
-      itemsLado.push({ li: li, a: a, sec: sec, t: t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase() });
-    });
-    gruposLado.appendChild(sec);
-  });
-  document.getElementById("buscar-tec").addEventListener("input", function () {
-    var q = this.value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-    itemsLado.forEach(function (it) { it.li.hidden = q && it.t.indexOf(q) === -1; });
-    gruposLado.querySelectorAll("section").forEach(function (sec) { sec.hidden = !sec.querySelector("li:not([hidden])"); });
-  });
-  var lado = document.getElementById("lado"), abrirLado = document.getElementById("lado-abrir");
-  abrirLado.addEventListener("click", function () { var si = lado.classList.toggle("abierto"); abrirLado.setAttribute("aria-expanded", String(si)); });
-  // La técnica viene en el hash (#mastectomia); al elegir otra en la columna, se pinta sin salir de la página
-  var actual = TECNICAS[location.hash.slice(1)] ? location.hash.slice(1) : "tiroidectomia";
-  pintar(actual);
-  addEventListener("hashchange", function () {
-    var h = location.hash.slice(1);
-    if (!TECNICAS[h]) return;
-    pintar(h);
-    lado.classList.remove("abierto"); abrirLado.setAttribute("aria-expanded", "false");
-    scrollTo(0, 0);
   });
 
-  // Pestañas: una hoja a la vez; la raya se desliza bajo la elegida
-  var tabs = [].slice.call(document.querySelectorAll(".pestanas-tec [role=tab]")), raya = document.querySelector(".raya");
-  function moverRaya() {
-    var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0];
-    raya.style.width = t.offsetWidth + "px";
-    raya.style.transform = "translateX(" + t.offsetLeft + "px)";
-  }
-  function elegirTab(t) {
-    tabs.forEach(function (x) {
-      var si = x === t;
-      x.setAttribute("aria-selected", String(si));
-      x.tabIndex = si ? 0 : -1;
-      document.getElementById(x.getAttribute("aria-controls")).hidden = !si;
-    });
-    moverRaya();
-    var barraTabs = t.parentNode;
-    if (barraTabs.scrollWidth > barraTabs.clientWidth) barraTabs.scrollTo({ left: Math.max(0, t.offsetLeft - 24), behavior: reducido ? "auto" : "smooth" });
-    escalarNumeros();
-  }
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () { elegirTab(t); });
-    t.addEventListener("keydown", function (e) {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      var j = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
-      elegirTab(tabs[j]); tabs[j].focus();
-    });
+  // Filtros: la placa se desliza bajo el elegido y la tabla muestra solo ese estado
+  var filtros = document.getElementById("filtros"), placa = filtros.querySelector(".placa");
+  var botonesFiltro = [].slice.call(filtros.querySelectorAll("button"));
+  botonesFiltro.forEach(function (b) {
+    var n = b.dataset.filtro === "todas" ? BORRADORES.length : BORRADORES.filter(function (x) { return x.estado === b.dataset.filtro; }).length;
+    b.querySelector(".cifra").textContent = n;
   });
-  addEventListener("resize", moverRaya);
-  if (document.fonts) document.fonts.ready.then(moverRaya);
-  raya.style.transition = "none";
-  moverRaya();
-  requestAnimationFrame(function () { raya.style.transition = ""; });
+  function moverPlaca() {
+    var b = botonesFiltro.filter(function (x) { return x.getAttribute("aria-pressed") === "true"; })[0];
+    placa.style.width = b.offsetWidth + "px";
+    placa.style.transform = "translateX(" + b.offsetLeft + "px)";
+  }
+  function filtrar(valor) {
+    botonesFiltro.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.filtro === valor)); });
+    var hay = false;
+    cuerpo.querySelectorAll(".fila, .comentario").forEach(function (tr) {
+      var ve = valor === "todas" || tr.dataset.estado === valor;
+      tr.hidden = !ve;
+      if (ve) hay = true;
+    });
+    vacioFiltro.hidden = hay;
+    moverPlaca();
+  }
+  botonesFiltro.forEach(function (b) { b.addEventListener("click", function () { filtrar(b.dataset.filtro); }); });
+  placa.style.transition = "none";
+  moverPlaca();
+  requestAnimationFrame(function () { placa.style.transition = ""; });
+  if (document.fonts) document.fonts.ready.then(moverPlaca);
+  addEventListener("resize", moverPlaca);
+
+  // Editar una publicada: buscador sobre las técnicas del catálogo; las que ya están en curso no se pueden abrir dos veces
+  var abrirPub = document.getElementById("abrir-publicadas"), buscadorPub = document.getElementById("buscador-pub");
+  var buscarPub = document.getElementById("buscar-pub"), listaPub = document.getElementById("pub-lista");
+  var enCurso = BORRADORES.map(function (b) { return b.nombre; });
+  function pintarPublicadas() {
+    var q = buscarPub.value.trim().normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(), h = "";
+    ESPECIALIDADES.forEach(function (e) {
+      var tecs = e[1].filter(function (t) { return !q || t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().indexOf(q) !== -1; });
+      if (!tecs.length) return;
+      h += "<li class='pub-grupo'>" + e[0] + "</li>";
+      tecs.forEach(function (t) {
+        h += enCurso.indexOf(t) !== -1
+          ? "<li><span class='ocupada'>" + t + "<small>Ya está en curso</small></span></li>"
+          : "<li><a href='#'>" + t + flechaFila + "</a></li>";
+      });
+    });
+    listaPub.innerHTML = h || "<li class='pub-vacio'>Ninguna técnica publicada coincide.</li>";
+  }
+  function mostrarPub(si) {
+    buscadorPub.hidden = !si;
+    abrirPub.setAttribute("aria-expanded", String(si));
+    if (si) { buscarPub.value = ""; pintarPublicadas(); buscarPub.focus(); }
+  }
+  abrirPub.addEventListener("click", function (e) { e.stopPropagation(); mostrarPub(buscadorPub.hidden); });
+  buscarPub.addEventListener("input", pintarPublicadas);
+  document.addEventListener("click", function (e) { if (!buscadorPub.hidden && !buscadorPub.contains(e.target)) mostrarPub(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !buscadorPub.hidden) { mostrarPub(false); abrirPub.focus(); } });
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("tec-") === 0) { var partes = atajo.slice(4).split("~"); pintar(partes[0]); if (partes[1]) elegirTab(document.getElementById("tab-" + partes[1])); }
-  if (atajo.indexOf("ver-") === 0) elegirTab(document.getElementById("tab-" + atajo.slice(4)));
-  if (atajo.indexOf("mayo-") === 0) { elegirTab(document.getElementById("tab-mayo")); marcarMayo(+atajo.slice(5)); }
-  if (atajo.indexOf("reserva-") === 0) { elegirTab(document.getElementById("tab-reserva")); marcarReserva(+atajo.slice(8)); }
-  if (atajo === "lado-abierto") abrirLado.click();
+  if (atajo === "publicadas") mostrarPub(true);
+  if (atajo.indexOf("filtro-") === 0) filtrar(atajo.slice(7));
 })();
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tiroidectomía · IQ Platform</title>
+<title>Editar Colecistectomía · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -402,10 +402,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .burbuja { max-width: 90%; padding: 11px 14px; border-radius: 14px; font-size: 14.5px; line-height: 1.45; }
 .burbuja.yo { align-self: flex-end; background: var(--marca); color: #fff; border-bottom-right-radius: 4px; }
 .burbuja.iq { align-self: flex-start; background: var(--fondo); color: var(--tinta-2); border-bottom-left-radius: 4px; }
-.sugerencias { margin-top: auto; display: grid; gap: 8px; }
-.sugerencias p { font-size: 12.5px; font-weight: 650; color: var(--tinta-3); }
-.sugerencias div { display: flex; flex-wrap: wrap; gap: 6px; }
-.sugerencias span { padding: 5px 10px; border-radius: 99px; background: var(--fondo); font-size: 13px; color: var(--tinta-2); }
 .campo-chat { display: flex; align-items: center; justify-content: space-between; height: 42px; padding: 0 6px 0 14px; border-radius: 12px; border: 1px solid var(--filete); color: var(--tinta-3); font-size: 14px; }
 .campo-chat span:last-child { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--marca); }
 .vista-3d { position: relative; display: grid; place-items: center; perspective: 1400px; background: radial-gradient(90% 80% at 50% 45%, #ffffff, #e7eef0); overflow: hidden; }
@@ -816,6 +812,284 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 }
 .pie { --antes: var(--fondo); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ---------- Editor de técnica: un asistente de cinco pasos ---------- */
+.editor { padding: 36px var(--lado) 140px; }
+.ruta-ed { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.ruta-ed:hover { color: var(--marca); }
+.ed-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap; }
+.ed-cabeza h1 { display: flex; align-items: baseline; gap: 14px; font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.ed-meta { display: flex; align-items: center; gap: 12px; margin-top: 12px; color: var(--tinta-3); font-size: 17px; }
+.estado-v { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.estado-v.borrador { box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); }
+.ed-lado { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.guardado { display: inline-flex; align-items: center; gap: 8px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.guardado svg { color: var(--marca); }
+.guardado .girando { display: none; width: 14px; height: 14px; border: 2px solid var(--filete-2); border-top-color: var(--marca); border-radius: 50%; animation: girar-g .7s linear infinite; }
+.guardado.guardando .girando { display: inline-block; }
+.guardado.guardando svg { display: none; }
+@keyframes girar-g { to { transform: rotate(360deg); } }
+.ver-publicada { display: inline-flex; align-items: center; gap: 6px; color: var(--marca); font-size: 15px; font-weight: 650; }
+.ver-publicada:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Los pasos: número o marca, nombre y lo que falta; la raya se desliza bajo el abierto */
+.pasos-nav { position: relative; margin: 32px 0 28px; border-bottom: 1px solid var(--filete); }
+.pasos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.pasos button { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 12px; align-items: start; width: 100%; padding: 14px 16px 16px 0; border: 0; background: none; text-align: left; cursor: pointer; }
+.pasos li + li button { padding-left: 16px; border-left: 1px solid var(--filete); }
+.paso-nombre { color: var(--tinta-2); font-size: 15.5px; font-weight: 600; line-height: 1.3; transition: color .2s var(--cuarta); }
+.paso-nombre b { margin-right: 6px; color: var(--tinta-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+.paso-falta { grid-column: 2; margin-top: 2px; color: var(--tinta-3); font-size: 14px; line-height: 1.35; }
+.pasos button:hover .paso-nombre, .pasos button[aria-current="step"] .paso-nombre { color: var(--tinta); }
+.pasos button[aria-current="step"] .paso-nombre { font-weight: 650; }
+.pasos-nav .raya-paso { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
+.mk { display: inline-block; width: 22px; height: 22px; overflow: visible; }
+.mk .aro { fill: none; stroke-width: 1.8; }
+.mk.completa .aro { stroke: var(--marca); }
+.mk.completa .relleno circle { fill: var(--marca); }
+.mk.completa .relleno path { fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.mk.en-curso .aro { stroke: var(--marca); }
+.mk.en-curso .relleno { fill: var(--marca); }
+.mk.pendiente .aro { stroke: var(--filete-2); }
+.mk.bloqueado .aro { stroke: var(--filete-2); }
+.mk.bloqueado path { fill: none; stroke: var(--tinta-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.mk.listo .aro { stroke: var(--marca); }
+.mk.listo path { fill: none; stroke: var(--marca); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* La marca se traza cuando el paso cambia de estado */
+.mk.recien .aro { stroke-dasharray: 1; animation: trazar-mk .55s var(--expo) backwards; }
+.mk.recien .relleno { animation: mostrar-mk .3s var(--cuarta) .3s backwards; }
+@keyframes trazar-mk { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes mostrar-mk { from { opacity: 0; } to { opacity: 1; } }
+
+.paso-hoja { animation: aparecer .4s var(--expo); }
+.paso-hoja[hidden] { display: none; }
+.paso-titulo { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.paso-titulo h2 { font-size: 26px; line-height: 1.15; font-weight: 650; letter-spacing: -.03em; }
+.paso-titulo p { color: var(--tinta-3); font-size: 15.5px; }
+.tarjeta { padding: 24px; border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.tarjeta > h3 { margin: 0 0 16px; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+
+/* Paso 1: datos clínicos */
+.clinicos-ed { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px; align-items: start; }
+.campo-ed { display: grid; gap: 8px; }
+.campo-ed + .campo-ed { margin-top: 20px; }
+.campo-ed label, .etiqueta-ed { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--tinta-2); font-size: 14px; font-weight: 600; }
+.etiqueta-ed .opcional, .campo-ed .opcional { color: var(--tinta-3); font-weight: 500; }
+.falta { padding: 1px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 12.5px; font-weight: 600; line-height: 20px; }
+.campo-ed input, .campo-ed textarea { width: 100%; min-height: 48px; padding: 12px 14px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 16px; line-height: 1.5; transition: box-shadow .2s var(--cuarta); }
+.campo-ed textarea { min-height: 104px; resize: vertical; }
+.campo-ed textarea.alta { min-height: 156px; }
+.campo-ed input:hover, .campo-ed textarea:hover { box-shadow: inset 0 0 0 1px var(--tinta-3); }
+.campo-ed input:focus, .campo-ed textarea:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.campo-ed ::placeholder { color: var(--tinta-3); }
+.fichas-ed { display: flex; flex-wrap: wrap; gap: 8px; }
+.ficha-ed { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 6px 4px 12px; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete); font-size: 15px; line-height: 1.35; }
+.quitar { display: inline-grid; place-items: center; width: 28px; height: 28px; flex: none; border: 0; border-radius: 8px; background: none; color: var(--tinta-3); cursor: pointer; }
+.quitar:hover { background: var(--hover-neutro); color: var(--tinta); }
+.agregar { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 10px; background: none; outline: 1px dashed var(--filete-2); outline-offset: -1px; color: var(--marca); font-size: 15px; font-weight: 650; cursor: pointer; }
+.agregar:hover { background: var(--marca-claro); outline-color: transparent; }
+.suturas-ed { display: grid; gap: 0; border-top: 1px solid var(--filete); }
+.sutura-ed { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) 28px; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--filete); font-size: 15px; line-height: 1.4; }
+.sutura-ed b { color: var(--tinta-2); font-weight: 600; }
+.sutura-ed + .agregar, .suturas-ed + .agregar { margin-top: 12px; }
+
+/* Paso 2: instrumental */
+.buscar-ed { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-3); background: var(--superficie); }
+.buscar-ed:focus-within { box-shadow: inset 0 0 0 2px var(--marca); }
+.buscar-ed input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--tinta); font: inherit; font-size: 16px; }
+
+
+/* Selector de instrumental: catálogo completo con buscador; sirve en el paso 2 y, compacto, al agregar objetos a una mesa */
+.sel-inst { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px; align-items: start; }
+.sel-lista { max-height: 460px; margin-top: 12px; overflow-y: auto; border-top: 1px solid var(--filete); scrollbar-width: thin; }
+.sel-grupo { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; padding: 12px 6px 6px; background: var(--superficie); color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.sel-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 6px; border: 0; border-bottom: 1px solid var(--filete); background: none; color: var(--tinta); font-size: 15.5px; line-height: 1.35; text-align: left; cursor: pointer; transition: background .2s var(--cuarta); }
+.sel-item:hover { background: var(--hover-neutro); }
+.sel-item:focus-visible { outline-offset: -2.5px; }
+.sel-item mark { border-radius: 3px; background: var(--marca-claro); color: var(--marca-hondo); }
+.accion-sel { display: inline-flex; align-items: center; gap: 5px; flex: none; color: var(--marca); font-size: 13.5px; font-weight: 650; white-space: nowrap; }
+.sel-item[aria-pressed="true"] { background: color-mix(in oklab, var(--marca-claro) 45%, var(--superficie)); }
+.sel-item[aria-pressed="true"] .accion-sel { color: var(--marca-hondo); }
+.sel-item[aria-disabled="true"] { cursor: default; }
+.sel-sub { margin-top: 14px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.rapidos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.rapido { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s var(--cuarta), color .2s var(--cuarta); }
+.rapido:hover { background: var(--marca-claro); box-shadow: none; color: var(--marca-hondo); }
+.rapido[aria-pressed="true"] { background: var(--marca-claro); box-shadow: none; color: var(--marca-hondo); cursor: default; }
+.sel-vacio { padding: 16px 6px; color: var(--tinta-3); font-size: 15px; }
+.sel-elegidos h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: 18px; font-weight: 650; }
+.sel-elegidos ul { max-height: 520px; margin: 12px 0 0; padding: 0; overflow-y: auto; list-style: none; border-top: 1px solid var(--filete); scrollbar-width: thin; }
+.sel-elegidos li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 4px 0 4px 6px; border-bottom: 1px solid var(--filete); font-size: 15.5px; line-height: 1.35; }
+.sel-elegidos li.nueva { animation: aparecer .4s var(--expo); }
+.sel-inst.compacto { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.compacto .buscar-ed { height: 40px; }
+.compacto .sel-lista { max-height: 300px; }
+.compacto .sel-item { min-height: 36px; padding: 4px 6px; font-size: 14.5px; }
+.sel-mesa { margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .3s var(--expo); }
+.sel-mesa[hidden] { display: none; }
+.agregar[hidden] { display: none; }
+.sel-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.sel-cabeza p { font-size: 15.5px; font-weight: 650; }
+.listo { height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14px; font-weight: 650; cursor: pointer; }
+.listo:hover { background: var(--marca-claro-hover); }
+
+
+/* Paso 2: la lista de la técnica a la izquierda; sugeridos y catálogo a la derecha, todo a la vista con su propio desplazamiento */
+.inst-v2 { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 24px; height: clamp(460px, calc(100vh - var(--barra) - 180px), 760px); }
+.panel-el, .panel-cat { display: flex; flex-direction: column; min-height: 0; }
+.panel-el { order: 2; }
+.tarjeta-cabeza { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.tarjeta-cabeza h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.tarjeta-sub { margin: 2px 0 10px; color: var(--tinta-3); font-size: 14.5px; line-height: 1.45; }
+.elegidos-grupos { flex: 1; min-height: 0; margin: 12px -8px 0 0; padding-right: 8px; overflow-y: auto; scrollbar-width: thin; }
+.grupo-el + .grupo-el { margin-top: 16px; }
+.grupo-nombre { display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--filete); color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.grupo-el ul { margin: 0; padding: 0; list-style: none; }
+.grupo-el li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding-left: 4px; border-bottom: 1px solid var(--filete); border-radius: 6px; font-size: 15.5px; line-height: 1.35; }
+.grupo-el li.nueva { animation: resaltar 1.6s var(--cuarta); }
+@keyframes resaltar { from { background: var(--marca-claro); } to { background: transparent; } }
+.sugeridos { display: flex; flex-wrap: wrap; gap: 6px; }
+.sug-chip { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background .2s var(--cuarta); }
+.sug-chip:hover { background: var(--marca-claro-hover); }
+.uso-barra { display: inline-flex; gap: 2px; }
+.uso-barra i { width: 6px; height: 6px; border-radius: 50%; background: rgba(8, 70, 62, .22); }
+.uso-barra i.lleno { background: var(--marca); }
+.ver-mas { flex: none; padding: 4px 0; border: 0; background: none; color: var(--marca); font-size: 14.5px; font-weight: 650; cursor: pointer; }
+.ver-mas[hidden] { display: none; }
+.explorar { display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--filete); }
+.explorar .buscar-ed { flex: none; margin-top: 10px; height: 44px; }
+.chips-cat { display: flex; flex: none; gap: 6px; margin-top: 10px; padding-bottom: 2px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+.chip-cat { display: inline-flex; flex: none; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.chip-cat:hover { background: var(--hover-neutro); }
+.chip-cat .cifra { font-size: 13px; }
+.chip-cat[aria-pressed="true"] { background: var(--marca); box-shadow: none; color: #fff; }
+.chip-cat[aria-pressed="true"] .cifra { color: var(--marca-claro); }
+#lista-cat { flex: 1; min-height: 0; max-height: none; margin-top: 8px; }
+
+/* Pasos 3 y 4: armar la mesa */
+.mesa-ed { display: grid; grid-template-columns: minmax(280px, 480px) auto; justify-content: start; gap: 32px; align-items: start; }
+.objetos-ed h3 { margin: 0 0 4px; font-size: 18px; font-weight: 650; }
+.objetos-ed > p { color: var(--tinta-3); font-size: 15px; line-height: 1.5; }
+.objetos { margin: 14px 0 12px; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.objeto-ed { display: grid; grid-template-columns: 34px minmax(0, 1fr) 20px; gap: 12px; align-items: center; min-height: 52px; padding: 7px 6px; border-bottom: 1px solid var(--filete); border-radius: 0; cursor: grab; transition: background .2s var(--cuarta); touch-action: manipulation; }
+.objeto-ed:hover { background: var(--hover-neutro); }
+.objeto-ed.levantado { opacity: .45; }
+.objeto-ed.activa { background: var(--marca-claro); }
+.objeto-ed b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(6, 18, 23, .72); color: #fff; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.objeto-ed.sin-ubicar b { background: transparent; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); }
+.objeto-ed .ob-nombre { font-size: 15.5px; line-height: 1.3; }
+.objeto-ed .ob-lugar { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 13px; font-variant-numeric: tabular-nums; }
+.objeto-ed.sin-ubicar .ob-lugar { color: var(--tinta-2); font-weight: 600; }
+.objeto-ed .asa { color: var(--tinta-3); }
+.mesa-lado { display: grid; gap: 14px; }
+.mesa-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+.tamano { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; color: var(--tinta-2); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.paso-num { display: inline-flex; align-items: center; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); }
+.paso-num button { display: grid; place-items: center; width: 34px; height: 34px; border: 0; background: none; color: var(--tinta-2); cursor: pointer; border-radius: 10px; }
+.contador { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.paso-num button:hover { background: var(--hover-neutro); }
+.paso-num span { min-width: 22px; text-align: center; color: var(--tinta); }
+.ayuda-mesa { color: var(--tinta-3); font-size: 14px; }
+.con-dedo { display: none; }
+@media (hover: none), (max-width: 1100px) { .con-raton { display: none; } .con-dedo { display: inline; } }
+.funda-ed { position: relative; width: 100%; }
+.mesa-ed .mesa-lado { width: min(100%, max(320px, calc((100vh - var(--barra) - 250px) * var(--proporcion, 1)))); }
+.funda-ed .numero { transform-box: fill-box; transform-origin: center; transform: scale(var(--num-escala, .72)); }
+.mesa-ed .mesa-lado { position: sticky; top: calc(var(--barra) + 16px); }
+.mesa-ed .objetos-ed { position: sticky; top: calc(var(--barra) + 16px); max-height: calc(100vh - var(--barra) - 190px); overflow-y: auto; scrollbar-width: thin; }
+html { scroll-padding-bottom: 96px; }
+.celdas { position: absolute; z-index: 2; inset: 4.5%; display: grid; }
+.celda { position: relative; border: 0; background: transparent; cursor: pointer; border-radius: 6px; transition: background .2s var(--cuarta), box-shadow .2s var(--cuarta); }
+.celda:hover { background: rgba(13, 106, 94, .06); }
+.celda:focus-visible { outline: 2.5px solid var(--marca); outline-offset: -3px; }
+.celda.sobre { background: var(--marca-claro); box-shadow: inset 0 0 0 2px var(--marca); }
+.celda.elegida { box-shadow: inset 0 0 0 2px var(--marca); }
+.arrastrando .celda { box-shadow: inset 0 0 0 1px rgba(13, 106, 94, .18); }
+.tec-funda .pieza { cursor: inherit; }
+.tec-funda .pieza.asentar .forma { animation: asentar .55s var(--expo); }
+@keyframes asentar { from { transform: translateY(-18px) scale(1.06); filter: drop-shadow(0 18px 10px rgba(3, 20, 28, .4)); } to { transform: none; } }
+.tec-funda .pieza.activa .forma { transform: translate(-3px, -12px); filter: drop-shadow(0 18px 10px rgba(3, 20, 28, .45)); }
+/* Tocar una celda: qué va aquí */
+.que-va { position: absolute; z-index: 5; width: 300px; padding: 8px; border-radius: 14px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .3s var(--expo); }
+.que-va[hidden] { display: none; }
+.que-va p { padding: 6px 8px 8px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.que-va ul { max-height: 260px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.que-va button { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: center; width: 100%; padding: 7px 8px; border: 0; border-radius: 8px; background: none; font-size: 15px; line-height: 1.3; text-align: left; cursor: pointer; }
+.que-va button:hover, .que-va button:focus-visible { background: var(--hover-neutro); }
+.que-va button:focus-visible { outline-offset: -2.5px; }
+.que-va .qv-nombre { display: block; }
+.que-va small { display: block; margin-top: 1px; color: var(--tinta-3); font-size: 13px; }
+.que-va .aqui small { color: var(--marca-hondo); font-weight: 600; }
+.que-va button b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(6, 18, 23, .72); color: #fff; font-size: 12.5px; font-weight: 700; }
+.que-va button.aqui { background: var(--marca-claro); }
+.que-va .vaciar { display: block; margin-top: 6px; padding: 9px 8px; border-top: 1px solid var(--filete); border-radius: 0 0 8px 8px; color: var(--tinta-2); font-weight: 600; grid-template-columns: none; }
+/* Mesa que la técnica no lleva */
+.no-lleva { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); cursor: pointer; }
+.no-lleva input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--marca); flex: none; }
+.no-lleva strong { display: block; font-size: 16px; font-weight: 650; }
+.no-lleva span { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 15px; }
+.sin-reserva-ed { display: grid; place-items: center; min-height: 260px; margin-top: 16px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); font-size: 16px; text-align: center; }
+.sin-reserva-ed[hidden], .reserva-armar[hidden] { display: none; }
+.reserva-armar { margin-top: 20px; }
+
+/* Paso 5: revisar y enviar */
+.revisar { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px; align-items: start; }
+.resumen-ed { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.resumen-ed li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--filete); }
+.resumen-ed strong { display: block; font-size: 16.5px; font-weight: 650; }
+.resumen-ed span { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 15px; line-height: 1.45; }
+.ir-paso { padding: 6px 10px; border: 0; border-radius: 8px; background: none; color: var(--marca); font-size: 15px; font-weight: 650; cursor: pointer; white-space: nowrap; }
+.ir-paso:hover { background: var(--marca-claro); }
+.envio { display: grid; gap: 14px; }
+.motivo-bloqueo { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 14px 16px; border-radius: 12px; background: var(--fondo); color: var(--tinta); font-size: 15px; line-height: 1.5; }
+.motivo-bloqueo svg { margin-top: 1px; color: var(--tinta-2); }
+.motivo-bloqueo[hidden] { display: none; }
+.boton[disabled], .boton[aria-disabled="true"] { background: var(--filete); color: var(--tinta-3); box-shadow: none; cursor: not-allowed; transform: none; }
+.envio .boton { height: 48px; width: 100%; }
+.envio .aclara { color: var(--tinta-3); font-size: 14px; line-height: 1.5; }
+
+/* Barra fija: en qué paso va y cómo moverse */
+.ed-pie { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px var(--lado); background: color-mix(in oklab, var(--superficie) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -1px 0 var(--filete); }
+.ed-pie .cuenta-pasos { color: var(--tinta-3); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ed-pie .botones { display: flex; gap: 10px; }
+.ed-pie .boton[hidden] { display: none; }
+
+@media (max-width: 1100px) {
+  .clinicos-ed, .revisar, .sel-inst { grid-template-columns: minmax(0, 1fr); }
+  .mesa-ed { grid-template-columns: minmax(220px, 1fr) auto; gap: 20px; }
+  }
+@media (max-width: 760px) {
+  .mesa-ed { grid-template-columns: minmax(0, 1fr); }
+  .mesa-ed .mesa-lado { order: -1; }
+  .mesa-ed .objetos-ed { position: static; max-height: none; overflow: visible; }
+  .mesa-ed .mesa-lado { position: static; }
+  .mesa-ed .mesa-lado { width: 100%; }
+  .editor { padding-top: 24px; }
+  .ed-cabeza h1 { font-size: 30px; }
+  .ed-meta { font-size: 15.5px; }
+  .pasos-nav { margin: 24px calc(-1 * var(--lado)) 22px; }
+  .pasos { display: flex; padding: 0 var(--lado); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--lado); scrollbar-width: none; }
+  .raya-paso { display: none; }
+  .pasos button[aria-current="step"] { box-shadow: inset 0 -2px 0 var(--tinta); }
+  .pasos li { flex: none; width: 62vw; scroll-snap-align: start; }
+  .tarjeta { padding: 18px; }
+  .sutura-ed { grid-template-columns: minmax(0, 1fr) 28px; }
+  .sutura-ed span { grid-column: 1; }
+  .sutura-ed .quitar { grid-row: 1 / span 2; grid-column: 2; }
+  .que-va { width: auto; left: 0 !important; right: 0; }
+  .inst-v2 { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .elegidos-grupos { max-height: 340px; }
+  #lista-cat { max-height: 420px; }
+  .tamano .rotulo { flex-basis: 100%; }
+  .ed-pie .cuenta-pasos { display: none; }
+  .ed-pie .botones { width: 100%; }
+  .ed-pie .boton { flex: 1; }
+}
+
+.pub-vacio { padding: 12px 10px; color: var(--tinta-3); font-size: 15px; }
+.ficha-nueva { min-width: 0; width: 200px; height: 36px; padding: 0 12px; border: 0; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--marca); font: inherit; font-size: 15px; outline: 0; }
+.sutura-ed input { width: 100%; height: 40px; padding: 0 10px; border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--filete-2); font: inherit; font-size: 15px; }
+.sutura-ed input:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
 </style>
 </head>
 <body>
@@ -843,7 +1117,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
@@ -925,91 +1199,144 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   </div>
 </nav>
 
-<main>
-  <div class="app">
-    <nav class="lado" id="lado" aria-label="Técnicas">
-      <button type="button" class="lado-abrir" id="lado-abrir" aria-expanded="false" aria-controls="lado-cuerpo">Cirugía general · Tiroidectomía <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="lado-cuerpo" id="lado-cuerpo">
-        <div class="lado-buscar"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><label class="sr-only" for="buscar-tec">Buscar técnica</label><input type="search" id="buscar-tec" placeholder="Buscar técnica" autocomplete="off"></div>
-        <div id="lado-grupos"></div>
+<main class="editor" id="contenido">
+  <a class="ruta-ed" href="borradores.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Mis borradores</a>
+  <header class="ed-cabeza">
+    <div>
+      <h1><span id="ed-nombre">Colecistectomía</span> <span class="demo">demostración</span></h1>
+      <p class="ed-meta"><span id="ed-esp">Cirugía general · Versión 2</span><span class="estado-v borrador"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Borrador</span></p>
+    </div>
+    <div class="ed-lado">
+      <p class="guardado" id="guardado" role="status" aria-live="polite"><span class="girando" aria-hidden="true"></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="guardado-txt">Guardado hace un momento</span></p>
+      <a class="ver-publicada" href="tecnica.html#tec-colecistectomia">Ver la versión publicada<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </header>
+
+  <nav class="pasos-nav" aria-label="Pasos de la técnica">
+    <ol class="pasos" id="pasos"></ol>
+    <span class="raya-paso" aria-hidden="true"></span>
+  </nav>
+
+  <!-- Paso 1 -->
+  <section class="paso-hoja" id="hoja-paso-1" aria-labelledby="t-paso-1">
+    <div class="paso-titulo"><h2 id="t-paso-1">Datos clínicos</h2><p>Lo que se sabe del procedimiento antes de armar la mesa.</p></div>
+    <div class="clinicos-ed">
+      <div class="tarjeta">
+        <h3>Descripción</h3>
+        <div class="campo-ed"><label for="c-sirve">Para qué sirve <span class="falta" data-falta="c-sirve">Falta</span></label><textarea id="c-sirve" data-oblig placeholder="En qué consiste el procedimiento y qué busca resolver."></textarea></div>
+        <div class="campo-ed"><label for="c-indicaciones">Indicaciones <span class="falta" data-falta="c-indicaciones">Falta</span></label><textarea id="c-indicaciones" data-oblig placeholder="En qué casos se realiza."></textarea></div>
+        <div class="campo-ed"><label for="c-complicaciones">Complicaciones <span class="opcional">Opcional</span></label><textarea id="c-complicaciones" placeholder="Las más frecuentes y cómo se previenen."></textarea></div>
+        <div class="campo-ed"><label for="c-tecnica">Técnica quirúrgica <span class="opcional">Opcional</span></label><textarea id="c-tecnica" class="alta" placeholder="Los tiempos quirúrgicos, en orden."></textarea></div>
       </div>
-    </nav>
-    <article class="panel-tec" aria-labelledby="t-tecnica">
-      <header class="tec-cabeza">
-        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p></div>
-        <div class="tec-acciones">
-          <a class="editar-tec" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
-          <a class="boton suave" href="#">Ver en 3D <small>SIMIQ3D</small></a>
-          <a class="boton" href="#">Comprobar con la cámara <small>SIVRI</small></a>
-        </div>
-      </header>
-      <div class="pestanas-tec" role="tablist" aria-label="Contenido de la técnica">
-        <button type="button" role="tab" id="tab-clinicos" aria-controls="hoja-clinicos" aria-selected="true">Datos clínicos</button>
-        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental</button>
-        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo</button>
-        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva</button>
-        <span class="raya" aria-hidden="true"></span>
+      <div class="tarjeta">
+        <h3>Preparación</h3>
+        <div class="campo-ed"><label for="c-cups">Código CUPS <span class="opcional">Opcional</span></label><input id="c-cups" inputmode="numeric" placeholder="Código del procedimiento"></div>
+        <div class="campo-ed"><label for="c-anestesia">Anestesia</label><input id="c-anestesia" data-oblig></div>
+        <div class="campo-ed"><label for="c-ropa">Ropa</label><input id="c-ropa" data-oblig></div>
+        <div class="campo-ed"><label for="c-posicion">Posición del paciente</label><input id="c-posicion" data-oblig></div>
+        <div class="campo-ed"><p class="etiqueta-ed">Equipos biomédicos</p><div class="fichas-ed" id="c-equipos"></div></div>
+        <div class="campo-ed"><p class="etiqueta-ed">Suturas por plano</p><div class="suturas-ed" id="c-suturas"></div><button type="button" class="agregar" data-agregar="sutura"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar plano</button></div>
+        <div class="campo-ed"><p class="etiqueta-ed">Equipo médico-quirúrgico</p><div class="fichas-ed" id="c-dispositivos"></div></div>
       </div>
+    </div>
+  </section>
 
-      <section class="hoja" role="tabpanel" id="hoja-clinicos" aria-labelledby="tab-clinicos">
-        <div class="clinicos">
-          <div>
-            <div class="para-que">
-              <header><h2>Para qué sirve</h2><span class="demo">demostración</span></header>
-              <p>Descripción breve del procedimiento y de sus indicaciones: en qué casos se realiza y qué busca resolver.</p>
-            </div>
-            <dl class="fichas" id="fichas"></dl>
+  <!-- Paso 2 -->
+  <section class="paso-hoja" id="hoja-paso-2" aria-labelledby="t-paso-2" hidden>
+    <div class="paso-titulo"><h2 id="t-paso-2">Instrumental</h2><p id="inst-cuenta">19 en esta técnica.</p></div>
+    <div class="inst-v2">
+      <section class="tarjeta panel-el" aria-labelledby="t-elegidos">
+        <div class="tarjeta-cabeza"><h3 id="t-elegidos">En esta técnica</h3><span class="cifra" id="n-elegidos"></span></div>
+        <div class="elegidos-grupos" id="elegidos"></div>
+      </section>
+      <section class="tarjeta panel-cat" aria-label="Agregar instrumental">
+        <div class="tarjeta-cabeza"><h3 id="t-sugeridos">Sugeridos para Cirugía general</h3><button type="button" class="ver-mas" id="ver-mas" aria-expanded="false"></button></div>
+        <p class="tarjeta-sub">Lo que usan las otras técnicas de la especialidad y esta todavía no tiene.</p>
+        <div class="sugeridos" id="sugeridos" role="group" aria-labelledby="t-sugeridos"></div>
+        <div class="explorar">
+          <div class="tarjeta-cabeza"><h3 id="t-explorar">Explorar el catálogo</h3><span class="cifra" id="n-catalogo"></span></div>
+          <label class="buscar-ed"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="solo-lector">Buscar en el catálogo de instrumental</span><input type="search" id="buscar-cat" placeholder="Buscar por nombre" autocomplete="off"></label>
+          <div class="chips-cat" id="chips-cat" role="group" aria-label="Filtrar por tipo"></div>
+          <div class="sel-lista" id="lista-cat" role="group" aria-labelledby="t-explorar"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Paso 3 -->
+  <section class="paso-hoja" id="hoja-paso-3" aria-labelledby="t-paso-3" hidden>
+    <div class="paso-titulo"><h2 id="t-paso-3">Mesa de Mayo</h2><p><span class="con-raton">Arrastrar cada objeto a su celda, o tocar una celda y elegir qué va ahí.</span><span class="con-dedo">Tocar una celda y elegir qué va ahí, o elegir un objeto y luego su celda.</span></p></div>
+    <div class="mesa-ed" data-mesa="mayo">
+      <div class="objetos-ed">
+        <h3>Objetos de la mesa</h3>
+        <p>El número es el de la leyenda; cada mesa tiene su propia numeración.</p>
+        <ol class="objetos" data-objetos="mayo"></ol>
+        <button type="button" class="agregar" data-agregar="objeto" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar objeto</button>
+        <div class="sel-mesa" hidden><div class="sel-cabeza"><p>Agregar a la mesa</p><button type="button" class="listo">Listo</button></div><div class="sel-cuerpo"></div></div>
+      </div>
+      <div class="mesa-lado">
+        <div class="mesa-barra">
+          <div class="tamano"><span class="rotulo">Tamaño</span>
+            <span class="contador"><span class="paso-num"><button type="button" data-tam="filas" data-d="-1" aria-label="Quitar una fila"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span data-filas>7</span><button type="button" data-tam="filas" data-d="1" aria-label="Agregar una fila"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></span> filas</span>
+            <span class="contador"><span class="paso-num"><button type="button" data-tam="cols" data-d="-1" aria-label="Quitar una columna"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span data-cols>6</span><button type="button" data-tam="cols" data-d="1" aria-label="Agregar una columna"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></span> columnas</span>
           </div>
-          <div>
-            <h2>Suturas</h2>
-            <dl class="suturas" id="suturas"></dl>
-            <div class="insumos">
-              <h2 id="insumos-titulo">Equipo médico-quirúrgico</h2>
-              <p id="insumos"></p>
+          <p class="ayuda-mesa" data-ayuda>Todo está en su lugar.</p>
+        </div>
+        <div class="tec-funda funda-ed"><svg class="mesa" viewBox="0 0 600 700" role="img" aria-label="Mesa de Mayo de Colecistectomía"></svg><div class="celdas" role="grid" aria-label="Celdas de la mesa de Mayo"></div><div class="que-va" role="dialog" hidden></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paso 4 -->
+  <section class="paso-hoja" id="hoja-paso-4" aria-labelledby="t-paso-4" hidden>
+    <div class="paso-titulo"><h2 id="t-paso-4">Mesa de reserva</h2><p>Lo que se tiene a mano fuera de la mesa de Mayo.</p></div>
+    <label class="no-lleva"><input type="checkbox" id="no-lleva" checked><span><strong>Esta técnica no lleva mesa de reserva</strong><span id="no-lleva-ayuda">Desmarcar para armarla.</span></span></label>
+    <p class="sin-reserva-ed" id="sin-reserva-ed">Sin mesa de reserva en esta versión.</p>
+    <div class="reserva-armar" id="reserva-armar" hidden>
+      <div class="mesa-ed" data-mesa="reserva">
+        <div class="objetos-ed">
+          <h3>Objetos de la mesa</h3>
+          <p>Los objetos salen del instrumental de esta versión.</p>
+          <ol class="objetos" data-objetos="reserva"></ol>
+          <button type="button" class="agregar" data-agregar="objeto" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar objeto</button>
+          <div class="sel-mesa" hidden><div class="sel-cabeza"><p>Agregar a la mesa</p><button type="button" class="listo">Listo</button></div><div class="sel-cuerpo"></div></div>
+        </div>
+        <div class="mesa-lado">
+          <div class="mesa-barra">
+            <div class="tamano"><span class="rotulo">Tamaño</span>
+              <span class="contador"><span class="paso-num"><button type="button" data-tam="filas" data-d="-1" aria-label="Quitar una fila"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span data-filas>6</span><button type="button" data-tam="filas" data-d="1" aria-label="Agregar una fila"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></span> filas</span>
+              <span class="contador"><span class="paso-num"><button type="button" data-tam="cols" data-d="-1" aria-label="Quitar una columna"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span data-cols>8</span><button type="button" data-tam="cols" data-d="1" aria-label="Agregar una columna"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></span> columnas</span>
             </div>
+            <p class="ayuda-mesa" data-ayuda></p>
           </div>
+          <div class="tec-funda funda-ed"><svg class="mesa" viewBox="0 0 800 600" role="img" aria-label="Mesa de reserva de Colecistectomía"></svg><div class="celdas" role="grid" aria-label="Celdas de la mesa de reserva"></div><div class="que-va" role="dialog" hidden></div></div>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <section class="hoja" role="tabpanel" id="hoja-instrumental" aria-labelledby="tab-instrumental" hidden>
-        <ul class="instrumental" id="lista-instrumental"></ul>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-mayo" aria-labelledby="tab-mayo" hidden>
-        <p class="sin-mesa" id="sin-mayo" hidden>Sin mesa de Mayo.</p>
-        <div class="tec-mesa" id="caja-mayo">
-          <div class="tec-info"><h2>Mesa de Mayo</h2><p>Señala un número para ubicar su pieza.</p><ol class="leyenda-tec" id="leyenda-mayo"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div>
-        </div>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-reserva" aria-labelledby="tab-reserva" hidden>
-        <p class="sin-mesa" id="sin-reserva" hidden>Sin mesa de reserva.</p>
-        <div class="tec-mesa" id="caja-reserva">
-          <div class="tec-info"><h2>Mesa de reserva</h2><p>Señala un número para ubicar su objeto.</p><ol class="leyenda-tec" id="leyenda-reserva"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div>
-        </div>
-      </section>
-    </article>
-  </div>
+  <!-- Paso 5 -->
+  <section class="paso-hoja" id="hoja-paso-5" aria-labelledby="t-paso-5" hidden>
+    <div class="paso-titulo"><h2 id="t-paso-5">Revisar y enviar</h2><p>Un revisor distinto al autor la aprueba antes de publicarla.</p></div>
+    <div class="revisar">
+      <div class="tarjeta"><ol class="resumen-ed" id="resumen-ed"></ol></div>
+      <div class="tarjeta envio">
+        <div class="campo-ed"><label for="nota-revisor">Nota para el revisor <span class="opcional">Opcional</span></label><textarea id="nota-revisor" placeholder="Qué cambió frente a la versión publicada."></textarea></div>
+        <p class="motivo-bloqueo" id="motivo-bloqueo"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4.5" y="9" width="11" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 9V6.8a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span id="motivo-txt"></span></p>
+        <button type="button" class="boton" id="enviar">Enviar a revisión</button>
+        <p class="aclara">Mientras esté en revisión no se puede editar; si el revisor la devuelve, vuelve a Mis borradores con su comentario.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
-<footer class="pie ancho tramo">
-  <div class="pie-rejilla">
-    <div>
-      <a class="marca-iq" href="inicio.html">
-        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
-        IQ Platform
-      </a>
-      <p>Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.</p>
-    </div>
-    <div><p class="pie-titulo">Herramientas</p><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></div>
-    <div><p class="pie-titulo">Especialidades</p><ul id="pie-especialidades"></ul></div>
-    <div><p class="pie-titulo">¿Por qué IQ Platform?</p><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></div>
-    <div><p class="pie-titulo">Ayuda</p><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Para docentes</a></li><li><a href="#">Política de tratamiento de datos</a></li><li><a href="#">Términos de uso</a></li></ul></div>
+<div class="ed-pie">
+  <p class="cuenta-pasos" id="cuenta-pasos">Paso 1 de 5</p>
+  <div class="botones">
+    <button type="button" class="boton suave" id="anterior">Anterior</button>
+    <button type="button" class="boton" id="siguiente">Siguiente</button>
   </div>
-  <div class="pie-base"><span>© 2026 IQ Platform</span><span>IQ Platform es un nombre provisional.</span></div>
-</footer>
+</div>
 
 <script>
 (function () {
@@ -1078,7 +1405,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       a.href = "catalogo.html#esp-" + ESPECIALIDADES.indexOf(e);
       a.textContent = e[0];
       li.appendChild(a);
-      document.getElementById(id).appendChild(li);
+      var destino = document.getElementById(id); if (destino) destino.appendChild(li);
     });
   });
 
@@ -1304,171 +1631,489 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     });
     svg.innerHTML = h;
   }
-  // Leyenda y mesa enlazadas: señalar un número levanta su pieza, y al revés (delegado, sirve para cualquier técnica)
-  function prepararMesa(caja) {
-    var svg = caja.querySelector("svg"), ol = caja.querySelector(".leyenda-tec");
-    function marcar(n) {
-      svg.classList.toggle("marcando", n != null);
-      ol.querySelectorAll("li").forEach(function (li) { li.classList.toggle("activa", +li.dataset.n === n); });
-      svg.querySelectorAll(".pieza").forEach(function (g) { var si = +g.dataset.n === n; g.classList.toggle("activa", si); g.setAttribute("aria-pressed", String(si)); });
+
+  /* ---------- Editor de técnica (demostración: versión 2 de Colecistectomía, en borrador) ----------
+     Los datos son los mismos del detalle (fichas de IQ y base de DataIQ); lo que la fuente no trae queda vacío. */
+  plano.generico = function (x, y) { return "<g transform='translate(" + x + " " + y + ")'><rect x='-22' y='-30' width='44' height='60' rx='8' fill='#eef3f3' stroke='#c4d1d4' stroke-width='1.6' stroke-dasharray='5 4'/></g>"; };
+  function dibujoDe(nombre) {
+    var n = nombre.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    var tabla = [["paquete de ropa", "~ropa"], ["compresa", "~compresas"], ["bandeja", "~bandeja"], ["caucho", "~caucho"], ["metzenbaum", "metzenbaum"], ["tijera", "mayo"], ["bisturi", "bisturi"], ["diseccion", "diseccion"], ["farabeuf", "farabeuf"], ["allis", "allis"], ["rochester", "rochester"], ["kelly", "kelly"], ["mosquito", "mosquito"], ["cistic", "cistica"], ["moninjan", "cistica"], ["portaagujas", "portaagujas"], ["campo", "campo"]];
+    for (var i = 0; i < tabla.length; i++) if (n.indexOf(tabla[i][0]) !== -1) return tabla[i][1];
+    return "~generico";
+  }
+  var T = TECNICAS["colecistectomia"];
+  var MESAS = {
+    mayo: { filas: T.mayo.filas, cols: T.mayo.cols, items: T.mayo.items.map(function (o) { return [o[0], o[1].map(function (c) { return c.slice(); }), o[2], o[3].slice()]; }) },
+    reserva: { filas: 6, cols: 8, items: [] }
+  };
+  var NOMBRES_PASO = ["Datos clínicos", "Instrumental", "Mesa de Mayo", "Mesa de reserva", "Revisar y enviar"];
+  var noLleva = document.getElementById("no-lleva");
+
+  // Autoguardado: cada cambio pasa por «Guardando…» y queda «Guardado»
+  var guardado = document.getElementById("guardado"), guardadoTxt = document.getElementById("guardado-txt"), tGuardar;
+  function guardar() {
+    guardado.classList.add("guardando"); guardadoTxt.textContent = "Guardando…";
+    clearTimeout(tGuardar);
+    tGuardar = setTimeout(function () { guardado.classList.remove("guardando"); guardadoTxt.textContent = "Guardado hace un momento"; }, 800);
+    actualizar();
+  }
+
+  /* Paso 1: datos clínicos, con lo que la ficha de IQ ya trae */
+  document.getElementById("c-anestesia").value = T.clinicos.anestesia;
+  document.getElementById("c-ropa").value = T.clinicos.ropa;
+  document.getElementById("c-posicion").value = T.clinicos.posicion;
+  var xIcono = "<svg width='12' height='12' viewBox='0 0 12 12' aria-hidden='true'><path d='M3 3l6 6M9 3l-6 6' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'/></svg>";
+  var masIcono = "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M8 3v10M3 8h10' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'/></svg>";
+  function fichas(id, lista) {
+    var caja = document.getElementById(id);
+    lista.forEach(function (t) { caja.appendChild(ficha(t)); });
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "agregar"; b.innerHTML = masIcono + "Agregar";
+    b.addEventListener("click", function () {
+      var inp = document.createElement("input");
+      inp.className = "ficha-nueva"; inp.setAttribute("aria-label", "Nuevo elemento");
+      caja.insertBefore(inp, b); inp.focus();
+      function fijar() { var v = inp.value.trim(); if (v) { caja.insertBefore(ficha(v), inp); guardar(); } inp.remove(); }
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); fijar(); } if (e.key === "Escape") inp.remove(); });
+      inp.addEventListener("blur", fijar);
+    });
+    caja.appendChild(b);
+  }
+  function ficha(t) {
+    var s = document.createElement("span"), q = document.createElement("button");
+    s.className = "ficha-ed"; s.textContent = t;
+    q.type = "button"; q.className = "quitar"; q.innerHTML = xIcono; q.setAttribute("aria-label", "Quitar " + t);
+    q.addEventListener("click", function () { s.remove(); guardar(); });
+    s.appendChild(q);
+    return s;
+  }
+  fichas("c-equipos", T.clinicos.equipos.split(/,\s*/));
+  fichas("c-dispositivos", T.insumos.replace(/\.$/, "").split(/,\s*/));
+  var cajaSuturas = document.getElementById("c-suturas");
+  function filaSutura(plano_, sutura, nueva) {
+    var d = document.createElement("div"), q = document.createElement("button");
+    d.className = "sutura-ed";
+    if (nueva) {
+      d.innerHTML = "<input aria-label='Plano' placeholder='Plano'><input aria-label='Sutura' placeholder='Sutura y aguja'>";
+    } else {
+      d.innerHTML = "<b></b><span></span>";
+      d.querySelector("b").textContent = plano_; d.querySelector("span").textContent = sutura;
     }
-    function señalado(e) { var t = e.target.closest("[data-n]"); if (t && caja.contains(t)) marcar(+t.dataset.n); }
-    caja.addEventListener("mouseover", señalado);
-    caja.addEventListener("focusin", señalado);
-    caja.addEventListener("mouseleave", function () { marcar(null); });
-    caja.addEventListener("focusout", function (e) { if (!caja.contains(e.relatedTarget)) marcar(null); });
-    return marcar;
+    q.type = "button"; q.className = "quitar"; q.innerHTML = xIcono; q.setAttribute("aria-label", "Quitar " + (plano_ || "plano"));
+    q.addEventListener("click", function () { d.remove(); guardar(); });
+    d.appendChild(q);
+    cajaSuturas.appendChild(d);
+    if (nueva) d.querySelector("input").focus();
   }
-  var marcarMayo = prepararMesa(document.getElementById("caja-mayo"));
-  var marcarReserva = prepararMesa(document.getElementById("caja-reserva"));
-  function pintarMesa(cual, mesa) {
-    var caja = document.getElementById("caja-" + cual), vacia = document.getElementById("sin-" + cual);
-    caja.hidden = !mesa; vacia.hidden = !!mesa;
-    if (!mesa) return;
-    caja.style.setProperty("--aspecto", mesa.cols / mesa.filas);
-    dibujarMesa(caja.querySelector("svg"), mesa);
-    var ol = caja.querySelector(".leyenda-tec");
-    ol.innerHTML = "";
-    mesa.items.forEach(function (o) {
-      var li = document.createElement("li");
-      if (o[1]) { li.dataset.n = o[0]; li.tabIndex = 0; } else li.className = "hueco";
-      li.innerHTML = "<b></b><span></span>";
-      li.children[0].textContent = o[0]; li.children[1].textContent = o[2];
-      ol.appendChild(li);
+  T.suturas.forEach(function (s) { filaSutura(s[0], s[1]); });
+  document.querySelector("[data-agregar='sutura']").addEventListener("click", function () { filaSutura("", "", true); });
+  document.getElementById("hoja-paso-1").addEventListener("input", guardar);
+
+  /* Paso 2: instrumental. Catálogo real de DataIQ (nombres canónicos por categoría) */
+  var CATALOGO_INST = [["Accesorio especializado", ["Canastilla extractora de cálculos", "Clamp intestinal tipo Kocher", "Clamp laparoscópico", "Clipadora laparoscópica", "Dilatadores de Hegar", "Dilatadores uretrales", "Electrobisturí con gancho", "Espéculo de Graves", "Espéculo Vaginal", "Evacuador de Ellik", "Fibra del láser", "Guía Sensor/Cebra", "Histerómetro Sims", "Movilizador uterino (Sistema RUMI)", "Pieza de mano del Lithoclast", "Tenáculo de Schroeder", "Varilla del Lithoclast"]], ["Bisturí", ["Mango de bisturí N.° 3", "Mango de bisturí N.° 4", "Mango de bisturí N.° 7"]], ["Catéter/Sonda", ["Catéter Ureteral", "Sonda metálica"]], ["Cánula", ["Cánula de Frazier", "Cánula de succión-irrigación", "Cánula de Yankauer"]], ["Equipo endoscópico", ["Aguja de Veress", "Cable de fuente de luz", "Camisa del Cistoscopio", "Camisa del Nefroscopio", "Cistoscopio", "Cámara endoscópica", "Lente laparoscópica 0°/30°", "Manguera de insuflador", "Morcelador", "Nefroscopio", "Ureteroscopio"]], ["Insumo", ["Suero fisiológico"]], ["Pinza", ["Gancho de Hurd", "Pinza aplicadora de clips (Ligaclip/Hemolock)", "Pinza Bipolar laparoscópica", "Pinza Cística", "Pinza de Allis", "Pinza de Babcock", "Pinza de Babcock laparoscópica", "Pinza de Campo", "Pinza de Campo de Backhaus", "Pinza de cuerpo extraño", "Pinza de disección Adson Braun", "Pinza de disección Adson con garra", "Pinza de disección Adson sin garra", "Pinza de disección con garra", "Pinza de disección sin garra", "Pinza de Foerster", "Pinza Grasper laparoscópica", "Pinza Heaney", "Pinza Hook laparoscópica", "Pinza Kelly", "Pinza Kelly Adson", "Pinza Kocher", "Pinza Maryland", "Pinza Moninjan", "Pinza Mosquito curva", "Pinza Randall", "Pinza Rochester", "Pinza Uterina"]], ["Portaagujas", ["Portaagujas (sin especificar)", "Portaagujas de Mayo Hegar", "Portaagujas laparoscópico", "Portaagujas largo", "Portaagujas mediano"]], ["Recipiente", ["Platón grande", "Riñonera/Coca"]], ["Separador", ["Separador abdominal", "Separador abdominal Universal con Valva de Balfour", "Separador de Deaver (tamaño no especificado)", "Separador de Deaver ancho", "Separador de Deaver angosto", "Separador de Doyen", "Separador de Farabeuf", "Separador de Richardson", "Separador de Senn Miller", "Separador Mayo Collins", "Separador vesical", "Valva de Balfour (inferior)", "Valva de contrapeso de Auvard", "Valva maleable"]], ["Set/Equipo", ["Equipo de pequeña cirugía"]], ["Tijera", ["Tijera Armónico ACE 36", "Tijera de Mayo", "Tijera de Metzenbaum", "Tijera de Potts Smith", "Tijera laparoscópica"]], ["Trocar", ["Trocar 10-12mm", "Trocar 5mm"]], ["Sin clasificar", ["Bandeja", "Camisa del trocar 10mm", "Camisa del trocar 5mm", "Caucho de succión", "Cincel", "Cistoflo", "Compresa", "Cureta", "Elevador de periostio", "Equipo en Y TUR", "Fibra óptica", "Gasa", "Guantes", "Gubia de Letzel", "Guía hidrofílica", "Guía rígida", "Hoja de bisturí #10", "Hoja de bisturí #10-11", "Hoja de bisturí #11-15", "Hoja de bisturí #15", "Hoja de bisturí #20", "Instrumental", "Instrumental sobrante", "Lente de 30°", "Lente del Nefroscopio", "Litotriptor electrohidráulico", "Litotriptor neumático", "Litotriptor ultrasónico", "Mango de bisturí (sin especificar)", "Manipulador uterino de Cohen", "Martillo", "Obturador del Nefroscopio", "Paquete de ropa", "Pinza Bozeman", "Pinza erina de Schroeder", "Pinza Lahey", "Pinza reductora de Kern", "Puente con canal operador", "Punzón del trocar 10mm", "Punzón del trocar 5mm", "Raspa de Moore", "Separador de Bennet Blond", "Separador de Hibbs", "Separador de Hoffman", "Separador de Wolkman", "Sonda Foley", "Tijera de energía", "Torunda", "Óptica de 30°"]]];
+  // La ficha de IQ de Colecistectomía, pasada a sus nombres canónicos con los alias del catálogo
+  var SELECCION = ["Mango de bisturí N.° 3", "Mango de bisturí N.° 4", "Tijera de Metzenbaum", "Tijera de Mayo", "Pinza Kelly", "Pinza Rochester", "Pinza de disección con garra", "Pinza de disección sin garra", "Pinza de Babcock", "Pinza de Foerster", "Pinza Randall", "Pinza Moninjan", "Pinza Cística", "Pinza Kelly Adson", "Separador de Doyen", "Separador de Farabeuf", "Separador de Deaver (tamaño no especificado)", "Valva maleable", "Portaagujas (sin especificar)"];
+  // Lo más usado en las mesas de reserva cargadas, de más a menos técnicas
+  var RAPIDOS_RESERVA = ["Compresa", "Paquete de ropa", "Portaagujas (sin especificar)", "Pinza de Foerster", "Bandeja", "Gasa", "Pinza de Campo"];
+  function sinTilde(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+  var lupa = "<svg width='16' height='16' viewBox='0 0 20 20' aria-hidden='true'><circle cx='8.5' cy='8.5' r='6' fill='none' stroke='currentColor' stroke-width='1.8'/><path d='M13 13l4.5 4.5' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'/></svg>";
+  var visto = "<svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  // Un solo componente: buscador + catálogo completo por categoría; con quitar, suma la columna de lo elegido
+  function selectorInst(caja, o) {
+    caja.innerHTML = "<div class='sel-inst" + (o.compacto ? " compacto" : "") + "'><div class='sel-catalogo'>" +
+      "<label class='buscar-ed'>" + lupa + "<span class='solo-lector'>Buscar en el catálogo de instrumental</span><input type='search' placeholder='Buscar en el catálogo' autocomplete='off'></label>" +
+      (o.rapidos ? "<p class='sel-sub'>Más usados en mesas de reserva</p><div class='rapidos'></div>" : "") +
+      "<div class='sel-lista' role='group' aria-label='Catálogo de instrumental'></div></div>" +
+      (o.quitar ? "<div class='sel-elegidos'><h3>En esta técnica <span class='cifra'></span></h3><ul></ul></div>" : "") + "</div>";
+    var input = caja.querySelector("input"), lista = caja.querySelector(".sel-lista");
+    function conMarca(nombre, q) {
+      var frag = document.createDocumentFragment(), i = q ? sinTilde(nombre).indexOf(q) : -1;
+      if (i === -1) { frag.appendChild(document.createTextNode(nombre)); return frag; }
+      var m = document.createElement("mark"); m.textContent = nombre.slice(i, i + q.length);
+      frag.append(nombre.slice(0, i), m, nombre.slice(i + q.length));
+      return frag;
+    }
+    function pintar(nuevo) {
+      var q = sinTilde(input.value.trim()), ya = o.elegidos(), hay = false;
+      lista.innerHTML = "";
+      CATALOGO_INST.forEach(function (g) {
+        var tecs = g[1].filter(function (n) { return !q || sinTilde(n).indexOf(q) !== -1; });
+        if (!tecs.length) return;
+        hay = true;
+        var h = document.createElement("p"); h.className = "sel-grupo"; h.innerHTML = "<span></span><span class='cifra'>" + tecs.length + "</span>"; h.firstChild.textContent = g[0];
+        lista.appendChild(h);
+        tecs.forEach(function (n) {
+          var b = document.createElement("button"), esta = ya.indexOf(n) !== -1, nom = document.createElement("span");
+          b.type = "button"; b.className = "sel-item"; b.dataset.nombre = n; b.setAttribute("aria-pressed", String(esta));
+          if (esta && !o.quitar) b.setAttribute("aria-disabled", "true");
+          nom.appendChild(conMarca(n, q)); b.appendChild(nom);
+          b.insertAdjacentHTML("beforeend", "<span class='accion-sel'>" + (esta ? visto + (o.hecho || "En la técnica") : masIcono + "Agregar") + "</span>");
+          lista.appendChild(b);
+        });
+      });
+      if (!hay) lista.innerHTML = "<p class='sel-vacio'>Ningún instrumento del catálogo coincide.</p>";
+      if (o.rapidos) {
+        var r = caja.querySelector(".rapidos"); r.innerHTML = "";
+        o.rapidos.forEach(function (n) {
+          var b = document.createElement("button"), esta = ya.indexOf(n) !== -1;
+          b.type = "button"; b.className = "rapido"; b.dataset.nombre = n; b.setAttribute("aria-pressed", String(esta));
+          b.innerHTML = esta ? visto : masIcono; b.append(n);
+          r.appendChild(b);
+        });
+      }
+      if (o.quitar) {
+        var ul = caja.querySelector(".sel-elegidos ul"); ul.innerHTML = "";
+        caja.querySelector(".sel-elegidos .cifra").textContent = ya.length;
+        ya.forEach(function (n) {
+          var li = document.createElement("li"), x = document.createElement("button");
+          li.textContent = n; if (n === nuevo) li.className = "nueva";
+          x.type = "button"; x.className = "quitar"; x.innerHTML = xIcono; x.setAttribute("aria-label", "Quitar " + n); x.dataset.quitar = n;
+          li.appendChild(x); ul.appendChild(li);
+        });
+      }
+    }
+    input.addEventListener("input", function () { pintar(); });
+    caja.addEventListener("click", function (e) {
+      var x = e.target.closest("[data-quitar]");
+      if (x) { o.quitar(x.dataset.quitar); pintar(); return; }
+      var b = e.target.closest(".sel-item, .rapido"); if (!b) return;
+      var n = b.dataset.nombre, esta = o.elegidos().indexOf(n) !== -1;
+      if (esta && o.quitar) o.quitar(n); else if (!esta) o.agregar(n); else return;
+      pintar(n);
     });
+    pintar();
+    return { pintar: pintar, foco: function () { input.focus(); } };
   }
-  function escalarNumeros() {
-    document.querySelectorAll(".tec-funda svg").forEach(function (svg) {
-      var w = svg.getBoundingClientRect().width, vb = svg.viewBox.baseVal.width;
-      if (w && vb) svg.style.setProperty("--num-escala", (11 / (16 * w / vb)).toFixed(3));
-    });
+  // Sugeridos: instrumental que usan las otras técnicas de Cirugía general con datos (Eventrorrafia, Mastectomía, Tiroidectomía)
+  var SUGERIDOS = [["Pinza de Allis", 3], ["Bandeja", 2], ["Compresa", 2], ["Gasa", 2], ["Hoja de bisturí #15", 2], ["Paquete de ropa", 2], ["Pinza de Campo", 2], ["Cánula de Frazier", 1], ["Caucho de succión", 1], ["Hoja de bisturí #10-11", 1], ["Hoja de bisturí #20", 1], ["Mango de bisturí N.° 7", 1], ["Pinza Lahey", 1], ["Pinza Mosquito curva", 1], ["Separador de Senn Miller", 1], ["Tijera de energía", 1]];
+  var OTRAS = 3, verMas = false, filtroCat = "", cuantosVisibles = 8;
+  function categoriaDe(n) { for (var i = 0; i < CATALOGO_INST.length; i++) if (CATALOGO_INST[i][1].indexOf(n) !== -1) return CATALOGO_INST[i][0]; return "Sin clasificar"; }
+  function resaltar(nombre, q) {
+    var frag = document.createDocumentFragment(), i = q ? sinTilde(nombre).indexOf(q) : -1;
+    if (i === -1) { frag.appendChild(document.createTextNode(nombre)); return frag; }
+    var m = document.createElement("mark"); m.textContent = nombre.slice(i, i + q.length);
+    frag.append(nombre.slice(0, i), m, nombre.slice(i + q.length));
+    return frag;
   }
-  addEventListener("resize", escalarNumeros);
-  function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
-  // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
-  var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
-  function pintar(clave) {
-    var T = TECNICAS[clave];
-    document.getElementById("t-tecnica").textContent = T.nombre;
-    document.getElementById("tec-esp").textContent = T.especialidad;
-    document.getElementById("marca-plantilla").hidden = !T.plantilla;
-    document.title = T.nombre + " · IQ Platform";
-    // Una sola versión en curso por técnica: si ya hay una, el botón lleva a ella
-    var curso = EN_CURSO[clave], editar = document.getElementById("editar-tec");
-    editar.querySelector("span").textContent = curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
-    editar.querySelector(".ico-lapiz").style.display = curso === "en-revision" ? "none" : "";
-    editar.querySelector(".ico-reloj").style.display = curso === "en-revision" ? "" : "none";
-    // El editor de la demostración es el de Colecistectomía; las demás versiones en curso llevan a Mis borradores
-    editar.href = clave === "colecistectomia" ? "editor.html#paso-1" : curso ? "borradores.html" : "#";
-    var fichas = document.getElementById("fichas"), cl = T.clinicos;
-    var filas = [["Anestesia", cl && cl.anestesia], ["Ropa", cl && cl.ropa], ["Posición del paciente", cl && cl.posicion, 1], ["Equipos biomédicos", cl && cl.equipos, 1]];
-    fichas.innerHTML = "";
-    filas.forEach(function (f) {
-      var d = document.createElement("div");
-      if (f[2]) d.className = "ancha";
-      d.innerHTML = "<dt></dt><dd></dd>";
-      d.children[0].textContent = f[0];
-      if (f[1]) d.children[1].textContent = f[1]; else d.children[1].innerHTML = huesos(1);
-      fichas.appendChild(d);
+  function agregarInst(n) { if (SELECCION.indexOf(n) === -1) { SELECCION.push(n); guardar(); pintarPaso2(n); } }
+  function quitarInst(n) { var i = SELECCION.indexOf(n); if (i !== -1) { SELECCION.splice(i, 1); guardar(); pintarPaso2(); } }
+  var buscarCat = document.getElementById("buscar-cat");
+  function pintarPaso2(nuevo) {
+    // En esta técnica, agrupado por tipo
+    var cajaEl = document.getElementById("elegidos"); cajaEl.innerHTML = "";
+    document.getElementById("n-elegidos").textContent = SELECCION.length;
+    CATALOGO_INST.forEach(function (g) {
+      var del = SELECCION.filter(function (n) { return categoriaDe(n) === g[0]; });
+      if (!del.length) return;
+      var div = document.createElement("div"), ul = document.createElement("ul");
+      div.className = "grupo-el";
+      div.innerHTML = "<p class='grupo-nombre'><span></span><span class='cifra'>" + del.length + "</span></p>"; div.querySelector("span").textContent = g[0];
+      del.forEach(function (n) {
+        var li = document.createElement("li"), x = document.createElement("button");
+        li.textContent = n; if (n === nuevo) li.className = "nueva";
+        x.type = "button"; x.className = "quitar"; x.innerHTML = xIcono; x.setAttribute("aria-label", "Quitar " + n);
+        x.addEventListener("click", function () { quitarInst(n); });
+        li.appendChild(x); ul.appendChild(li);
+      });
+      div.appendChild(ul); cajaEl.appendChild(div);
     });
-    var dlS = document.getElementById("suturas");
-    dlS.innerHTML = "";
-    (T.suturas || [["", ""], ["", ""], ["", ""], ["", ""]]).forEach(function (x) {
-      var d = document.createElement("div");
-      d.innerHTML = "<dt></dt><dd></dd>";
-      if (x[0]) { d.children[0].textContent = x[0]; d.children[1].textContent = x[1]; } else { d.children[0].innerHTML = huesos(1); d.children[1].innerHTML = huesos(1); }
-      dlS.appendChild(d);
+    if (!SELECCION.length) cajaEl.innerHTML = "<p class='sel-vacio'>Todavía no hay instrumental. Los sugeridos y el catálogo están debajo.</p>";
+    // Sugeridos de la especialidad que aún no están
+    var pend = SUGERIDOS.filter(function (x) { return SELECCION.indexOf(x[0]) === -1; }), ulS = document.getElementById("sugeridos"), vm = document.getElementById("ver-mas");
+    ulS.innerHTML = "";
+    (verMas ? pend : pend.slice(0, cuantosVisibles)).forEach(function (x) {
+      var b = document.createElement("button"), barra = "";
+      for (var k = 0; k < OTRAS; k++) barra += "<i" + (k < x[1] ? " class='lleno'" : "") + "></i>";
+      b.type = "button"; b.className = "sug-chip";
+      b.innerHTML = masIcono + "<span></span><span class='uso-barra' aria-hidden='true'>" + barra + "</span>";
+      b.querySelector("span").textContent = x[0];
+      b.title = "Lo usan " + x[1] + " de " + OTRAS + " técnicas";
+      b.setAttribute("aria-label", "Agregar " + x[0] + ", lo usan " + x[1] + " de " + OTRAS + " técnicas");
+      b.addEventListener("click", function () { agregarInst(x[0]); });
+      ulS.appendChild(b);
     });
-    document.getElementById("insumos-titulo").textContent = T.insumosTitulo || "Equipo médico-quirúrgico";
-    var ins = document.getElementById("insumos");
-    if (T.insumos) ins.textContent = T.insumos; else ins.innerHTML = huesos(2);
-    var lista = document.getElementById("lista-instrumental");
+    if (!pend.length) ulS.innerHTML = "<p class='sel-vacio'>Ya tiene todo lo que usan las otras técnicas.</p>";
+    vm.hidden = pend.length <= cuantosVisibles;
+    vm.textContent = verMas ? "Ver menos" : "Ver " + (pend.length - cuantosVisibles) + " más";
+    vm.setAttribute("aria-expanded", String(verMas));
+    // Explorar el catálogo: filtro por tipo y búsqueda
+    var q = sinTilde(buscarCat.value.trim()), chips = document.getElementById("chips-cat"), lista = document.getElementById("lista-cat"), total = 0;
+    chips.innerHTML = "";
+    [["", CATALOGO_INST.reduce(function (t, g) { return t + g[1].length; }, 0)]].concat(CATALOGO_INST.map(function (g) { return [g[0], g[1].length]; })).forEach(function (c) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "chip-cat"; b.setAttribute("aria-pressed", String(c[0] === filtroCat));
+      b.innerHTML = "<span></span><span class='cifra'>" + c[1] + "</span>"; b.firstChild.textContent = c[0] || "Todos";
+      b.addEventListener("click", function () { filtroCat = c[0]; pintarPaso2(); });
+      chips.appendChild(b);
+    });
     lista.innerHTML = "";
-    (T.instrumental || new Array(9).join(".").split(".")).forEach(function (t) {
+    CATALOGO_INST.forEach(function (g) {
+      if (filtroCat && g[0] !== filtroCat) return;
+      var tecs = g[1].filter(function (n) { return !q || sinTilde(n).indexOf(q) !== -1; });
+      if (!tecs.length) return;
+      total += tecs.length;
+      var h = document.createElement("p"); h.className = "sel-grupo"; h.innerHTML = "<span></span><span class='cifra'>" + tecs.length + "</span>"; h.firstChild.textContent = g[0];
+      lista.appendChild(h);
+      tecs.forEach(function (n) {
+        var b = document.createElement("button"), esta = SELECCION.indexOf(n) !== -1, nom = document.createElement("span");
+        b.type = "button"; b.className = "sel-item"; b.setAttribute("aria-pressed", String(esta));
+        nom.appendChild(resaltar(n, q)); b.appendChild(nom);
+        b.insertAdjacentHTML("beforeend", "<span class='accion-sel'>" + (esta ? visto + "En la técnica" : masIcono + "Agregar") + "</span>");
+        b.addEventListener("click", function () { if (SELECCION.indexOf(n) !== -1) quitarInst(n); else agregarInst(n); });
+        lista.appendChild(b);
+      });
+    });
+    if (!total) lista.innerHTML = "<p class='sel-vacio'>Ningún instrumento coincide. Un revisor puede agregarlo al catálogo.</p>";
+    document.getElementById("n-catalogo").textContent = total;
+  }
+  buscarCat.addEventListener("input", function () { pintarPaso2(); });
+  document.getElementById("ver-mas").addEventListener("click", function () { verMas = !verMas; pintarPaso2(); });
+  pintarPaso2();
+
+  /* Pasos 3 y 4: armar la mesa arrastrando o tocando */
+  var flechaAsa = "<svg class='asa' width='14' height='14' viewBox='0 0 14 14' aria-hidden='true'><circle cx='5' cy='3' r='1.2' fill='currentColor'/><circle cx='9' cy='3' r='1.2' fill='currentColor'/><circle cx='5' cy='7' r='1.2' fill='currentColor'/><circle cx='9' cy='7' r='1.2' fill='currentColor'/><circle cx='5' cy='11' r='1.2' fill='currentColor'/><circle cx='9' cy='11' r='1.2' fill='currentColor'/></svg>";
+  var editores = {};
+  function prepararEditor(clave) {
+    var raiz = document.querySelector("[data-mesa='" + clave + "']"), M = MESAS[clave];
+    var svg = raiz.querySelector("svg.mesa"), celdas = raiz.querySelector(".celdas"), funda = raiz.querySelector(".funda-ed");
+    var queVa = raiz.querySelector(".que-va"), ol = raiz.querySelector("[data-objetos]"), ayuda = raiz.querySelector("[data-ayuda]");
+    var elegido = null;
+    function ocupante(f, c) { return M.items.filter(function (o) { return o[1] && o[1].some(function (x) { return x[0] === f && x[1] === c; }); })[0]; }
+    function item(n) { return M.items.filter(function (o) { return o[0] === n; })[0]; }
+    function pintar(asentar) {
+      funda.style.setProperty("--aspecto", M.cols + " / " + M.filas);
+      raiz.style.setProperty("--proporcion", (M.cols / M.filas).toFixed(4));
+      dibujarMesa(svg, M);
+      svg.querySelectorAll(".pieza").forEach(function (g) { g.removeAttribute("tabindex"); g.removeAttribute("role"); g.removeAttribute("aria-label"); g.style.animation = "none"; });
+      escalar();
+      if (asentar) { var g = svg.querySelector(".pieza[data-n='" + asentar + "']"); if (g) g.classList.add("asentar"); }
+      celdas.style.gridTemplateColumns = "repeat(" + M.cols + ", minmax(0, 1fr))";
+      celdas.style.gridTemplateRows = "repeat(" + M.filas + ", minmax(0, 1fr))";
+      celdas.innerHTML = "";
+      for (var f = 1; f <= M.filas; f++) for (var c = 1; c <= M.cols; c++) {
+        var b = document.createElement("button"), o = ocupante(f, c);
+        b.type = "button"; b.className = "celda"; b.dataset.f = f; b.dataset.c = c;
+        b.setAttribute("aria-label", "Fila " + f + ", columna " + c + ": " + (o ? o[0] + ", " + o[2] : "vacía"));
+        if (o) { b.draggable = true; b.dataset.n = o[0]; }
+        celdas.appendChild(b);
+      }
+      ol.innerHTML = "";
+      M.items.slice().sort(function (a, b) { return a[0] - b[0]; }).forEach(function (o) {
+        var li = document.createElement("li");
+        li.className = "objeto-ed" + (o[1] ? "" : " sin-ubicar") + (elegido === o[0] ? " activa" : "");
+        li.draggable = true; li.dataset.n = o[0]; li.tabIndex = 0;
+        li.innerHTML = "<b>" + o[0] + "</b><span><span class='ob-nombre'></span><span class='ob-lugar'>" + (o[1] ? "Fila " + o[1][0][0] + " · Columna " + o[1][0][1] : "Sin ubicar") + "</span></span>" + flechaAsa;
+        li.querySelector(".ob-nombre").textContent = o[2];
+        ol.appendChild(li);
+      });
+      var sin = M.items.filter(function (o) { return !o[1]; }).length;
+      ayuda.textContent = !M.items.length ? "Agregar el primer objeto." : sin ? (sin === 1 ? "Falta ubicar 1 objeto." : "Faltan por ubicar " + sin + " objetos.") : "Todo está en su lugar.";
+      raiz.querySelector("[data-filas]").textContent = M.filas;
+      raiz.querySelector("[data-cols]").textContent = M.cols;
+    }
+    // Los números miden lo mismo en pantalla a cualquier ancho
+    function escalar() { var w = svg.getBoundingClientRect().width; if (w) funda.style.setProperty("--num-escala", (12 / (16 * w / (M.cols * 100))).toFixed(3)); }
+    addEventListener("resize", escalar);
+    function poner(n, f, c) {
+      var o = item(n), otro = ocupante(f, c);
+      if (!o || otro === o) return;
+      if (otro) otro[1] = o[1] ? o[1].map(function (x) { return x.slice(); }) : null;
+      o[1] = [[f, c]];
+      elegido = null;
+      cerrarQueVa();
+      pintar(n); guardar();
+    }
+    function vaciar(f, c) { var o = ocupante(f, c); if (o) { o[1] = null; cerrarQueVa(); pintar(); guardar(); } }
+    // Arrastrar: desde la lista o desde una pieza ya puesta
+    raiz.addEventListener("dragstart", function (e) {
+      var fuente = e.target.closest("[data-n]"); if (!fuente) return;
+      e.dataTransfer.setData("text/plain", fuente.dataset.n); e.dataTransfer.effectAllowed = "move";
+      funda.classList.add("arrastrando");
+      if (fuente.classList.contains("objeto-ed")) fuente.classList.add("levantado");
+    });
+    raiz.addEventListener("dragend", function () { funda.classList.remove("arrastrando"); raiz.querySelectorAll(".levantado, .sobre").forEach(function (x) { x.classList.remove("levantado", "sobre"); }); });
+    celdas.addEventListener("dragover", function (e) { var b = e.target.closest(".celda"); if (!b) return; e.preventDefault(); celdas.querySelectorAll(".sobre").forEach(function (x) { if (x !== b) x.classList.remove("sobre"); }); b.classList.add("sobre"); });
+    celdas.addEventListener("dragleave", function (e) { var b = e.target.closest(".celda"); if (b) b.classList.remove("sobre"); });
+    celdas.addEventListener("drop", function (e) { var b = e.target.closest(".celda"); if (!b) return; e.preventDefault(); poner(+e.dataTransfer.getData("text/plain"), +b.dataset.f, +b.dataset.c); });
+    // Tocar: elegir un objeto de la lista y luego su celda, o tocar la celda y elegir qué va ahí
+    ol.addEventListener("click", function (e) {
+      var li = e.target.closest(".objeto-ed"); if (!li) return;
+      elegido = elegido === +li.dataset.n ? null : +li.dataset.n;
+      ol.querySelectorAll(".objeto-ed").forEach(function (x) { x.classList.toggle("activa", +x.dataset.n === elegido); });
+      svg.querySelectorAll(".pieza").forEach(function (g) { g.classList.toggle("activa", +g.dataset.n === elegido); });
+      ayuda.textContent = elegido ? "Tocar la celda donde va el " + elegido + "." : ayuda.textContent;
+    });
+    ol.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.closest(".objeto-ed")) { e.preventDefault(); e.target.click(); } });
+    ol.addEventListener("mouseover", function (e) { var li = e.target.closest(".objeto-ed"); svg.querySelectorAll(".pieza").forEach(function (g) { g.classList.toggle("activa", (li && +g.dataset.n === +li.dataset.n) || +g.dataset.n === elegido); }); });
+    ol.addEventListener("mouseleave", function () { svg.querySelectorAll(".pieza").forEach(function (g) { g.classList.toggle("activa", +g.dataset.n === elegido); }); });
+    celdas.addEventListener("click", function (e) {
+      var b = e.target.closest(".celda"); if (!b) return;
+      e.stopPropagation();
+      if (elegido) { poner(elegido, +b.dataset.f, +b.dataset.c); return; }
+      abrirQueVa(+b.dataset.f, +b.dataset.c, b);
+    });
+    function abrirQueVa(f, c, b) {
+      var o = ocupante(f, c), h = "<p>Fila " + f + " · Columna " + c + "</p><ul>";
+      if (!M.items.length) h += "<li class='pub-vacio'>Primero se agregan objetos a la mesa.</li>";
+      M.items.slice().sort(function (a, b2) { return (a[1] ? 1 : 0) - (b2[1] ? 1 : 0) || a[0] - b2[0]; }).forEach(function (x) { h += "<li><button type='button' data-poner='" + x[0] + "'" + (x === o ? " class='aqui'" : "") + "><b>" + x[0] + "</b><span><span class='qv-nombre'></span><small>" + (x === o ? "Está aquí" : x[1] ? "Fila " + x[1][0][0] + " · Columna " + x[1][0][1] : "Sin ubicar") + "</small></span></button></li>"; });
+      h += "</ul>" + (o ? "<button type='button' class='vaciar' data-vaciar>Vaciar celda</button>" : "");
+      queVa.innerHTML = h;
+      queVa.querySelectorAll("[data-poner]").forEach(function (x) { x.querySelector(".qv-nombre").textContent = item(+x.dataset.poner)[2]; });
+      queVa.setAttribute("aria-label", "Qué va en la fila " + f + ", columna " + c);
+      celdas.querySelectorAll(".elegida").forEach(function (x) { x.classList.remove("elegida"); });
+      b.classList.add("elegida");
+      queVa.hidden = false;
+      var izq = Math.min(b.offsetLeft + celdas.offsetLeft, funda.clientWidth - queVa.offsetWidth), arriba = b.offsetTop + celdas.offsetTop + b.offsetHeight + 6;
+      if (arriba + queVa.offsetHeight > funda.clientHeight + 120) arriba = Math.max(0, b.offsetTop + celdas.offsetTop - queVa.offsetHeight - 6);
+      queVa.style.left = Math.max(0, izq) + "px"; queVa.style.top = arriba + "px";
+      if (queVa.getBoundingClientRect().bottom > innerHeight - 90) queVa.style.top = Math.max(0, b.offsetTop + celdas.offsetTop - queVa.offsetHeight - 6) + "px";
+      queVa.scrollIntoView({ block: "nearest" });
+      queVa.onclick = function (ev) {
+        ev.stopPropagation();
+        var p = ev.target.closest("[data-poner]"); if (p) poner(+p.dataset.poner, f, c);
+        if (ev.target.closest("[data-vaciar]")) vaciar(f, c);
+      };
+      var primero = queVa.querySelector("button"); if (primero) primero.focus();
+    }
+    function cerrarQueVa() { queVa.hidden = true; celdas.querySelectorAll(".elegida").forEach(function (x) { x.classList.remove("elegida"); }); }
+    document.addEventListener("click", function (e) { if (!queVa.hidden && !queVa.contains(e.target)) cerrarQueVa(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !queVa.hidden) { cerrarQueVa(); } });
+    // Tamaño de la mesa: lo que queda fuera vuelve a «sin ubicar»
+    raiz.querySelectorAll("[data-tam]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.dataset.tam; M[k] = Math.max(2, Math.min(10, M[k] + +b.dataset.d));
+        M.items.forEach(function (o) { if (o[1] && o[1].some(function (x) { return x[0] > M.filas || x[1] > M.cols; })) o[1] = null; });
+        pintar(); guardar();
+      });
+    });
+    // Agregar un objeto: el mismo selector del instrumental, compacto; en la reserva, con los más usados a mano
+    var botonAgregar = raiz.querySelector("[data-agregar='objeto']"), panel = raiz.querySelector(".sel-mesa"), selMesa = null;
+    function mostrarPanel(si) {
+      panel.hidden = !si; botonAgregar.hidden = si; botonAgregar.setAttribute("aria-expanded", String(si));
+      if (si && !selMesa) selMesa = selectorInst(panel.querySelector(".sel-cuerpo"), {
+        compacto: true, hecho: "En la mesa", rapidos: clave === "reserva" ? RAPIDOS_RESERVA : null,
+        elegidos: function () { return M.items.map(function (o) { return o[2]; }); },
+        agregar: function (n) { var num = M.items.reduce(function (m, o) { return Math.max(m, o[0]); }, 0) + 1; M.items.push([num, null, n, [dibujoDe(n)]]); pintar(); guardar(); }
+      });
+      if (si) { selMesa.pintar(); selMesa.foco(); } else botonAgregar.focus();
+    }
+    botonAgregar.addEventListener("click", function (e) { e.stopPropagation(); mostrarPanel(true); });
+    panel.querySelector(".listo").addEventListener("click", function () { mostrarPanel(false); });
+    pintar();
+    return { pintar: pintar, abrirQueVa: function (f, c) { abrirQueVa(f, c, celdas.querySelector(".celda[data-f='" + f + "'][data-c='" + c + "']")); } };
+  }
+  editores.mayo = prepararEditor("mayo");
+  editores.reserva = prepararEditor("reserva");
+  noLleva.addEventListener("change", function () {
+    document.getElementById("no-lleva-ayuda").textContent = noLleva.checked ? "Desmarcar para armarla." : "Marcar si la técnica no la lleva.";
+    document.getElementById("sin-reserva-ed").hidden = !noLleva.checked;
+    document.getElementById("reserva-armar").hidden = noLleva.checked;
+    if (!noLleva.checked) editores.reserva.pintar();
+    guardar();
+  });
+
+  /* Estado de cada paso: lo que dice la marca y lo que falta */
+  function llenado(id) { return document.getElementById(id).value.trim() !== ""; }
+  function estados() {
+    var oblig = [["c-sirve", "Para qué sirve"], ["c-indicaciones", "Indicaciones"], ["c-anestesia", "Anestesia"], ["c-ropa", "Ropa"], ["c-posicion", "Posición del paciente"]];
+    var faltan = oblig.filter(function (x) { return !llenado(x[0]); }).map(function (x) { return x[1]; });
+    if (!cajaSuturas.children.length) faltan.push("Suturas");
+    var total = oblig.length + 1, hechos = total - faltan.length;
+    var e1 = { estado: !faltan.length ? "completa" : hechos ? "en-curso" : "pendiente", falta: faltan.length ? (faltan.length === 1 ? "Falta 1 campo" : "Faltan " + faltan.length + " campos") : "Completo", detalle: faltan };
+    var n = SELECCION.length;
+    var e2 = { estado: n ? "completa" : "pendiente", falta: n ? n + " instrumentos" : "Sin instrumental", detalle: n ? [] : ["el instrumental"] };
+    function mesa(M, reserva) {
+      if (reserva && noLleva.checked) return { estado: "completa", falta: "No lleva", detalle: [] };
+      var u = M.items.filter(function (o) { return o[1]; }).length, t = M.items.length;
+      if (!t) return { estado: "pendiente", falta: "Sin objetos", detalle: ["sus objetos"] };
+      return { estado: u === t ? "completa" : u ? "en-curso" : "pendiente", falta: u + " de " + t + " ubicados", detalle: u === t ? [] : [(t - u) + (t - u === 1 ? " objeto sin ubicar" : " objetos sin ubicar")] };
+    }
+    var lista = [e1, e2, mesa(MESAS.mayo), mesa(MESAS.reserva, true)];
+    var pendientes = lista.filter(function (x) { return x.estado !== "completa"; }).length;
+    lista.push({ estado: pendientes ? "bloqueado" : "listo", falta: pendientes ? (pendientes === 1 ? "Falta 1 paso" : "Faltan " + pendientes + " pasos") : "Lista para enviar", detalle: [] });
+    return lista;
+  }
+  function marcaPaso(tipo, recien) {
+    var aro = "<circle class='aro' cx='11' cy='11' r='9' pathLength='1'/>", dentro = "";
+    if (tipo === "completa") dentro = "<g class='relleno'><circle cx='11' cy='11' r='9'/><path d='M7 11.4l2.7 2.6L15 8.6'/></g>";
+    if (tipo === "en-curso") dentro = "<path class='relleno' d='M11 2a9 9 0 0 0 0 18Z'/>";
+    if (tipo === "bloqueado") dentro = "<path d='M8 10.5h6v4.5H8zM9.3 10.5V9a1.7 1.7 0 0 1 3.4 0v1.5'/>";
+    if (tipo === "listo") dentro = "<path d='M7 11h7.5M11.5 7.8L14.7 11l-3.2 3.2'/>";
+    return "<svg class='mk " + tipo + (recien ? " recien" : "") + "' viewBox='0 0 22 22' aria-hidden='true'>" + aro + dentro + "</svg>";
+  }
+  var pasosOl = document.getElementById("pasos"), previos = [], actual = 1;
+  var NOMBRE_ESTADO = { completa: "completo", "en-curso": "en curso", pendiente: "pendiente", bloqueado: "bloqueado", listo: "listo para enviar" };
+  function actualizar() {
+    var E = estados();
+    pasosOl.innerHTML = "";
+    E.forEach(function (e, i) {
+      var li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button"; b.dataset.paso = i + 1;
+      if (i + 1 === actual) b.setAttribute("aria-current", "step");
+      b.innerHTML = marcaPaso(e.estado, previos.length && previos[i] !== e.estado) + "<span class='paso-nombre'><b>" + (i + 1) + "</b>" + NOMBRES_PASO[i] + "</span><span class='paso-falta'>" + e.falta + "</span>";
+      b.setAttribute("aria-label", "Paso " + (i + 1) + ", " + NOMBRES_PASO[i] + ": " + NOMBRE_ESTADO[e.estado] + ". " + e.falta);
+      b.addEventListener("click", function () { irA(i + 1); });
+      li.appendChild(b); pasosOl.appendChild(li);
+    });
+    previos = E.map(function (e) { return e.estado; });
+    // En celular la tira de pasos se desplaza hasta el paso abierto
+    if (pasosOl.scrollWidth > pasosOl.clientWidth) pasosOl.scrollLeft = pasosOl.children[actual - 1].offsetLeft - 20;
+    document.querySelectorAll("[data-falta]").forEach(function (t) { t.hidden = llenado(t.dataset.falta); });
+    document.getElementById("inst-cuenta").textContent = SELECCION.length + " en esta técnica.";
+    // Paso 5: resumen y envío bloqueado hasta completar
+    var res = document.getElementById("resumen-ed"), faltaTxt = [];
+    res.innerHTML = "";
+    E.slice(0, 4).forEach(function (e, i) {
       var li = document.createElement("li");
-      if (t) li.textContent = t; else li.innerHTML = huesos(1);
-      lista.appendChild(li);
+      li.innerHTML = marcaPaso(e.estado) + "<div><strong>" + NOMBRES_PASO[i] + "</strong><span></span></div>" + (e.estado !== "completa" ? "<button type='button' class='ir-paso' data-ir='" + (i + 1) + "'>Completar</button>" : "");
+      li.querySelector("span").textContent = e.estado === "completa" ? (i === 0 ? "Todos los campos obligatorios." : e.falta + ".") : "Falta: " + e.detalle.join(", ") + ".";
+      if (e.estado !== "completa") faltaTxt.push(NOMBRES_PASO[i] + " (" + e.detalle.join(", ") + ")");
+      res.appendChild(li);
     });
-    pintarMesa("mayo", T.mayo);
-    pintarMesa("reserva", T.reserva);
-    escalarNumeros();
-    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
-    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + " ";
+    res.querySelectorAll("[data-ir]").forEach(function (b) { b.addEventListener("click", function () { irA(+b.dataset.ir); }); });
+    var enviar = document.getElementById("enviar"), bloqueo = document.getElementById("motivo-bloqueo");
+    enviar.disabled = faltaTxt.length > 0;
+    bloqueo.hidden = !faltaTxt.length;
+    document.getElementById("motivo-txt").textContent = "Para enviar falta completar " + faltaTxt.join("; ") + ".";
+    moverRayaPaso();
   }
-
-  // Columna de técnicas: las mismas del catálogo, con la actual marcada
-  var gruposLado = document.getElementById("lado-grupos"), itemsLado = [];
-  ESPECIALIDADES.forEach(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    h.textContent = e[0]; sec.appendChild(h); sec.appendChild(ul);
-    e[1].forEach(function (t) {
-      var li = document.createElement("li"), a = document.createElement("a");
-      a.href = TECNICAS[slug(t)] ? "#" + slug(t) : "#"; a.textContent = t;
-      li.appendChild(a); ul.appendChild(li);
-      itemsLado.push({ li: li, a: a, sec: sec, t: t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase() });
-    });
-    gruposLado.appendChild(sec);
-  });
-  document.getElementById("buscar-tec").addEventListener("input", function () {
-    var q = this.value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-    itemsLado.forEach(function (it) { it.li.hidden = q && it.t.indexOf(q) === -1; });
-    gruposLado.querySelectorAll("section").forEach(function (sec) { sec.hidden = !sec.querySelector("li:not([hidden])"); });
-  });
-  var lado = document.getElementById("lado"), abrirLado = document.getElementById("lado-abrir");
-  abrirLado.addEventListener("click", function () { var si = lado.classList.toggle("abierto"); abrirLado.setAttribute("aria-expanded", String(si)); });
-  // La técnica viene en el hash (#mastectomia); al elegir otra en la columna, se pinta sin salir de la página
-  var actual = TECNICAS[location.hash.slice(1)] ? location.hash.slice(1) : "tiroidectomia";
-  pintar(actual);
-  addEventListener("hashchange", function () {
-    var h = location.hash.slice(1);
-    if (!TECNICAS[h]) return;
-    pintar(h);
-    lado.classList.remove("abierto"); abrirLado.setAttribute("aria-expanded", "false");
-    scrollTo(0, 0);
-  });
-
-  // Pestañas: una hoja a la vez; la raya se desliza bajo la elegida
-  var tabs = [].slice.call(document.querySelectorAll(".pestanas-tec [role=tab]")), raya = document.querySelector(".raya");
-  function moverRaya() {
-    var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0];
-    raya.style.width = t.offsetWidth + "px";
-    raya.style.transform = "translateX(" + t.offsetLeft + "px)";
+  function moverRayaPaso() {
+    var b = pasosOl.querySelector("[aria-current='step']"), raya = document.querySelector(".raya-paso");
+    if (!b) return;
+    raya.style.width = b.offsetWidth + "px";
+    raya.style.transform = "translateX(" + b.parentNode.offsetLeft + "px)";
   }
-  function elegirTab(t) {
-    tabs.forEach(function (x) {
-      var si = x === t;
-      x.setAttribute("aria-selected", String(si));
-      x.tabIndex = si ? 0 : -1;
-      document.getElementById(x.getAttribute("aria-controls")).hidden = !si;
-    });
-    moverRaya();
-    var barraTabs = t.parentNode;
-    if (barraTabs.scrollWidth > barraTabs.clientWidth) barraTabs.scrollTo({ left: Math.max(0, t.offsetLeft - 24), behavior: reducido ? "auto" : "smooth" });
-    escalarNumeros();
+  var anterior = document.getElementById("anterior"), siguiente = document.getElementById("siguiente");
+  function irA(n) {
+    actual = Math.max(1, Math.min(5, n));
+    for (var i = 1; i <= 5; i++) document.getElementById("hoja-paso-" + i).hidden = i !== actual;
+    anterior.hidden = actual === 1;
+    siguiente.hidden = actual === 5;
+    siguiente.innerHTML = actual < 5 ? "Siguiente: " + NOMBRES_PASO[actual] + " <svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>" : "";
+    document.getElementById("cuenta-pasos").textContent = "Paso " + actual + " de 5 · " + NOMBRES_PASO[actual - 1];
+    history.replaceState(null, "", "#paso-" + actual);
+    actualizar();
+    if (actual === 3) editores.mayo.pintar();
+    if (actual === 4 && !noLleva.checked) editores.reserva.pintar();
+    var nav = document.querySelector(".pasos-nav");
+    if (nav.getBoundingClientRect().top < 0) scrollTo({ top: nav.offsetTop - 90, behavior: reducido ? "auto" : "smooth" });
   }
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () { elegirTab(t); });
-    t.addEventListener("keydown", function (e) {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      var j = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
-      elegirTab(tabs[j]); tabs[j].focus();
-    });
-  });
-  addEventListener("resize", moverRaya);
-  if (document.fonts) document.fonts.ready.then(moverRaya);
-  raya.style.transition = "none";
-  moverRaya();
-  requestAnimationFrame(function () { raya.style.transition = ""; });
+  anterior.addEventListener("click", function () { irA(actual - 1); });
+  siguiente.addEventListener("click", function () { irA(actual + 1); });
+  document.getElementById("enviar").addEventListener("click", function () { if (!this.disabled) location.href = "borradores.html"; });
+  addEventListener("resize", moverRayaPaso);
+  if (document.fonts) document.fonts.ready.then(moverRayaPaso);
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("tec-") === 0) { var partes = atajo.slice(4).split("~"); pintar(partes[0]); if (partes[1]) elegirTab(document.getElementById("tab-" + partes[1])); }
-  if (atajo.indexOf("ver-") === 0) elegirTab(document.getElementById("tab-" + atajo.slice(4)));
-  if (atajo.indexOf("mayo-") === 0) { elegirTab(document.getElementById("tab-mayo")); marcarMayo(+atajo.slice(5)); }
-  if (atajo.indexOf("reserva-") === 0) { elegirTab(document.getElementById("tab-reserva")); marcarReserva(+atajo.slice(8)); }
-  if (atajo === "lado-abierto") abrirLado.click();
+  var partes = atajo.split("~");
+  irA(partes[0].indexOf("paso-") === 0 ? +partes[0].slice(5) : 1);
+  if (partes[1] === "tocar") editores.mayo.abrirQueVa(2, 2);
+  if (partes[1] === "agregar") { noLleva.checked = false; noLleva.dispatchEvent(new Event("change")); document.querySelector("#hoja-paso-4 [data-agregar='objeto']").click(); }
+  if (partes[1] === "armar") { noLleva.checked = false; noLleva.dispatchEvent(new Event("change")); }
+  if (partes[1] === "sin-ubicar") { MESAS.mayo.items[9][1] = null; editores.mayo.pintar(); actualizar(); }
 })();
 </script>
 </body>
