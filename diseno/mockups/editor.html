@@ -901,7 +901,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 /* Selector de instrumental: catálogo completo con buscador; sirve en el paso 2 y, compacto, al agregar objetos a una mesa */
 .sel-inst { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px; align-items: start; }
-.sel-lista { max-height: 460px; margin-top: 12px; overflow-y: auto; border-top: 1px solid var(--filete); scrollbar-width: thin; }
+.sel-lista { max-height: 460px; margin-top: 12px; overflow-y: auto; border-top: 1px solid var(--filete); scrollbar-width: thin; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent); padding-bottom: 20px; }
 .sel-grupo { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; padding: 12px 6px 6px; background: var(--superficie); color: var(--tinta-3); font-size: 13px; font-weight: 650; }
 .sel-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 6px; border: 0; border-bottom: 1px solid var(--filete); background: none; color: var(--tinta); font-size: 15.5px; line-height: 1.35; text-align: left; cursor: pointer; transition: background .2s var(--cuarta); }
 .sel-item:hover { background: var(--hover-neutro); }
@@ -941,9 +941,9 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .tarjeta-cabeza { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .tarjeta-cabeza h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
 .tarjeta-sub { margin: 2px 0 10px; color: var(--tinta-3); font-size: 14.5px; line-height: 1.45; }
-.elegidos-grupos { flex: 1; min-height: 0; margin: 12px -8px 0 0; padding-right: 8px; overflow-y: auto; scrollbar-width: thin; }
+.elegidos-grupos { flex: 1; min-height: 0; margin: 12px -8px 0 0; padding-right: 8px; overflow-y: auto; scrollbar-width: thin; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent); padding-bottom: 40px; }
 .grupo-el + .grupo-el { margin-top: 16px; }
-.grupo-nombre { display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--filete); color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.grupo-nombre { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; padding: 6px 0; background: var(--superficie); border-bottom: 1px solid var(--filete); color: var(--tinta-3); font-size: 13px; font-weight: 650; }
 .grupo-el ul { margin: 0; padding: 0; list-style: none; }
 .grupo-el li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding-left: 4px; border-bottom: 1px solid var(--filete); border-radius: 6px; font-size: 15.5px; line-height: 1.35; }
 .grupo-el li.nueva { animation: resaltar 1.6s var(--cuarta); }
@@ -961,6 +961,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .chips-cat { display: flex; flex: none; gap: 6px; margin-top: 10px; padding-bottom: 2px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
 .chip-cat { display: inline-flex; flex: none; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .chip-cat:hover { background: var(--hover-neutro); }
+.chip-cat.vacio { color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--filete); }
 .chip-cat .cifra { font-size: 13px; }
 .chip-cat[aria-pressed="true"] { background: var(--marca); box-shadow: none; color: #fff; }
 .chip-cat[aria-pressed="true"] .cifra { color: var(--marca-claro); }
@@ -996,7 +997,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .mesa-ed .mesa-lado { width: min(100%, max(320px, calc((100vh - var(--barra) - 250px) * var(--proporcion, 1)))); }
 .funda-ed .numero { transform-box: fill-box; transform-origin: center; transform: scale(var(--num-escala, .72)); }
 .mesa-ed .mesa-lado { position: sticky; top: calc(var(--barra) + 16px); }
-.mesa-ed .objetos-ed { position: sticky; top: calc(var(--barra) + 16px); max-height: calc(100vh - var(--barra) - 190px); overflow-y: auto; scrollbar-width: thin; }
+.mesa-ed .objetos-ed { position: sticky; top: calc(var(--barra) + 16px); max-height: calc(100vh - var(--barra) - 190px); overflow-y: auto; scrollbar-width: thin; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent); padding-bottom: 20px; }
 html { scroll-padding-bottom: 96px; }
 .celdas { position: absolute; z-index: 2; inset: 4.5%; display: grid; }
 .celda { position: relative; border: 0; background: transparent; cursor: pointer; border-radius: 6px; transition: background .2s var(--cuarta), box-shadow .2s var(--cuarta); }
@@ -1061,7 +1062,7 @@ html { scroll-padding-bottom: 96px; }
 @media (max-width: 760px) {
   .mesa-ed { grid-template-columns: minmax(0, 1fr); }
   .mesa-ed .mesa-lado { order: -1; }
-  .mesa-ed .objetos-ed { position: static; max-height: none; overflow: visible; }
+  .mesa-ed .objetos-ed { position: static; max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-bottom: 0; }
   .mesa-ed .mesa-lado { position: static; }
   .mesa-ed .mesa-lado { width: 100%; }
   .editor { padding-top: 24px; }
@@ -1078,8 +1079,8 @@ html { scroll-padding-bottom: 96px; }
   .sutura-ed .quitar { grid-row: 1 / span 2; grid-column: 2; }
   .que-va { width: auto; left: 0 !important; right: 0; }
   .inst-v2 { grid-template-columns: minmax(0, 1fr); height: auto; }
-  .elegidos-grupos { max-height: 340px; }
-  #lista-cat { max-height: 420px; }
+  .elegidos-grupos { max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-bottom: 0; }
+  #lista-cat { max-height: 420px; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent); padding-bottom: 40px; }
   .tamano .rotulo { flex-basis: 100%; }
   .ed-pie .cuenta-pasos { display: none; }
   .ed-pie .botones { width: 100%; }
@@ -1296,7 +1297,7 @@ html { scroll-padding-bottom: 96px; }
       <div class="mesa-ed" data-mesa="reserva">
         <div class="objetos-ed">
           <h3>Objetos de la mesa</h3>
-          <p>Los objetos salen del instrumental de esta versión.</p>
+          <p>Lo que se agrega aquí entra también al instrumental de la técnica.</p>
           <ol class="objetos" data-objetos="reserva"></ol>
           <button type="button" class="agregar" data-agregar="objeto" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar objeto</button>
           <div class="sel-mesa" hidden><div class="sel-cabeza"><p>Agregar a la mesa</p><button type="button" class="listo">Listo</button></div><div class="sel-cuerpo"></div></div>
@@ -1810,7 +1811,7 @@ html { scroll-padding-bottom: 96px; }
       div.innerHTML = "<p class='grupo-nombre'><span></span><span class='cifra'>" + del.length + "</span></p>"; div.querySelector("span").textContent = g[0];
       del.forEach(function (n) {
         var li = document.createElement("li"), x = document.createElement("button");
-        li.textContent = n; if (n === nuevo) li.className = "nueva";
+        li.textContent = n; if (n === nuevo) { li.className = "nueva"; requestAnimationFrame(function () { var c = cajaEl.getBoundingClientRect(), r = li.getBoundingClientRect(); cajaEl.scrollTop += r.top - c.top - (c.height - r.height) / 2; }); }
         x.type = "button"; x.className = "quitar"; x.innerHTML = xIcono; x.setAttribute("aria-label", "Quitar " + n);
         x.addEventListener("click", function () { quitarInst(n); });
         li.appendChild(x); ul.appendChild(li);
@@ -1839,9 +1840,13 @@ html { scroll-padding-bottom: 96px; }
     // Explorar el catálogo: filtro por tipo y búsqueda
     var q = sinTilde(buscarCat.value.trim()), chips = document.getElementById("chips-cat"), lista = document.getElementById("lista-cat"), total = 0;
     chips.innerHTML = "";
-    [["", CATALOGO_INST.reduce(function (t, g) { return t + g[1].length; }, 0)]].concat(CATALOGO_INST.map(function (g) { return [g[0], g[1].length]; })).forEach(function (c) {
+    var cuenta = function (g) { return g[1].filter(function (n) { return !q || sinTilde(n).indexOf(q) !== -1; }).length; };
+    // Durante una búsqueda, los tipos sin resultados pasan al final de la fila
+    var tipos = CATALOGO_INST.map(function (g) { return [g[0], cuenta(g)]; });
+    if (q) tipos.sort(function (a, b) { return (b[1] ? 1 : 0) - (a[1] ? 1 : 0); });
+    [["", CATALOGO_INST.reduce(function (t, g) { return t + cuenta(g); }, 0)]].concat(tipos).forEach(function (c) {
       var b = document.createElement("button");
-      b.type = "button"; b.className = "chip-cat"; b.setAttribute("aria-pressed", String(c[0] === filtroCat));
+      b.type = "button"; b.className = "chip-cat" + (c[1] ? "" : " vacio"); b.setAttribute("aria-pressed", String(c[0] === filtroCat));
       b.innerHTML = "<span></span><span class='cifra'>" + c[1] + "</span>"; b.firstChild.textContent = c[0] || "Todos";
       b.addEventListener("click", function () { filtroCat = c[0]; pintarPaso2(); });
       chips.appendChild(b);
@@ -1993,7 +1998,7 @@ html { scroll-padding-bottom: 96px; }
       if (si && !selMesa) selMesa = selectorInst(panel.querySelector(".sel-cuerpo"), {
         compacto: true, hecho: "En la mesa", rapidos: clave === "reserva" ? RAPIDOS_RESERVA : null,
         elegidos: function () { return M.items.map(function (o) { return o[2]; }); },
-        agregar: function (n) { var num = M.items.reduce(function (m, o) { return Math.max(m, o[0]); }, 0) + 1; M.items.push([num, null, n, [dibujoDe(n)]]); pintar(); guardar(); }
+        agregar: function (n) { if (SELECCION.indexOf(n) === -1) { SELECCION.push(n); pintarPaso2(); } var num = M.items.reduce(function (m, o) { return Math.max(m, o[0]); }, 0) + 1; M.items.push([num, null, n, [dibujoDe(n)]]); pintar(); guardar(); }
       });
       if (si) { selMesa.pintar(); selMesa.foco(); } else botonAgregar.focus();
     }

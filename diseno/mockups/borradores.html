@@ -702,7 +702,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .leyenda-marcas { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding: 0; list-style: none; color: var(--tinta-3); font-size: 14px; }
 .leyenda-marcas li { display: inline-flex; align-items: center; gap: 8px; }
 .leyenda-marcas .mk { width: 16px; height: 16px; }
-.leyenda-marcas .mk * { animation: none; stroke-dashoffset: 0; opacity: 1; }
 .leyenda-marcas .raya-sin { width: 14px; height: 2px; border-radius: 2px; background: var(--tinta-3); }
 
 .tabla-caja { overflow-x: auto; border: 1px solid var(--filete); border-radius: 16px; background: var(--superficie); scrollbar-width: thin; }
@@ -726,8 +725,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .estado-v.en-revision { background: var(--marca-claro); color: var(--marca-hondo); }
 /* Marcas de sección: se trazan al cargar, una columna tras otra */
 .mk { display: inline-block; width: 22px; height: 22px; vertical-align: middle; overflow: visible; }
-.mk .aro { fill: none; stroke-width: 1.8; stroke-dasharray: 1; stroke-dashoffset: 1; animation: trazar .55s var(--expo) forwards; animation-delay: calc(.12s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
-.mk .relleno { opacity: 0; animation: mostrar .3s var(--cuarta) forwards; animation-delay: calc(.4s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
+.mk .aro { fill: none; stroke-width: 1.8; stroke-dasharray: 1; animation: trazar-mk .55s var(--expo) backwards; animation-delay: calc(.12s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
+@keyframes trazar-mk { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes mostrar-mk { from { opacity: 0; } to { opacity: 1; } }
+.mk .relleno { animation: mostrar-mk .3s var(--cuarta) backwards; animation-delay: calc(.4s + var(--c, 0) * 90ms + var(--f, 0) * 45ms); }
+.leyenda-marcas .mk .aro, .leyenda-marcas .mk .relleno { animation: none; }
 .mk.completa .aro { stroke: var(--marca); }
 .mk.completa .relleno circle { fill: var(--marca); }
 .mk.completa .relleno path { fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
