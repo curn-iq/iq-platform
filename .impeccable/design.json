@@ -1,0 +1,945 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T20:21:14+00:00",
+  "title": "Design System: IQ Platform",
+  "extensions": {
+    "colorMeta": {
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Blanco clínico",
+        "canonical": "#f3f6f6",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 197.1)",
+          "oklch(26.4% 0.003 197.1)",
+          "oklch(37.9% 0.003 197.1)",
+          "oklch(49.3% 0.003 197.1)",
+          "oklch(60.7% 0.003 197.1)",
+          "oklch(72.1% 0.003 197.1)",
+          "oklch(83.6% 0.003 197.1)",
+          "oklch(95.0% 0.003 197.1)"
+        ]
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(26.4% 0.000 89.9)",
+          "oklch(37.9% 0.000 89.9)",
+          "oklch(49.3% 0.000 89.9)",
+          "oklch(60.7% 0.000 89.9)",
+          "oklch(72.1% 0.000 89.9)",
+          "oklch(83.6% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "hover-neutro": {
+        "role": "neutral",
+        "displayName": "Hover neutro",
+        "canonical": "#e6eded",
+        "tonalRamp": [
+          "oklch(15.0% 0.007 197.0)",
+          "oklch(26.4% 0.007 197.0)",
+          "oklch(37.9% 0.007 197.0)",
+          "oklch(49.3% 0.007 197.0)",
+          "oklch(60.7% 0.007 197.0)",
+          "oklch(72.1% 0.007 197.0)",
+          "oklch(83.6% 0.007 197.0)",
+          "oklch(95.0% 0.007 197.0)"
+        ]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "#dbe4e6",
+        "tonalRamp": [
+          "oklch(15.0% 0.010 212.5)",
+          "oklch(26.4% 0.010 212.5)",
+          "oklch(37.9% 0.010 212.5)",
+          "oklch(49.3% 0.010 212.5)",
+          "oklch(60.7% 0.010 212.5)",
+          "oklch(72.1% 0.010 212.5)",
+          "oklch(83.6% 0.010 212.5)",
+          "oklch(95.0% 0.010 212.5)"
+        ]
+      },
+      "filete-2": {
+        "role": "neutral",
+        "displayName": "Filete fuerte",
+        "canonical": "#c4d1d4",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 213.1)",
+          "oklch(26.4% 0.015 213.1)",
+          "oklch(37.9% 0.015 213.1)",
+          "oklch(49.3% 0.015 213.1)",
+          "oklch(60.7% 0.015 213.1)",
+          "oklch(72.1% 0.015 213.1)",
+          "oklch(83.6% 0.015 213.1)",
+          "oklch(95.0% 0.015 213.1)"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta petróleo",
+        "canonical": "#0a1b22",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 226.9)",
+          "oklch(26.4% 0.027 226.9)",
+          "oklch(37.9% 0.027 226.9)",
+          "oklch(49.3% 0.027 226.9)",
+          "oklch(60.7% 0.027 226.9)",
+          "oklch(72.1% 0.027 226.9)",
+          "oklch(83.6% 0.027 226.9)",
+          "oklch(95.0% 0.027 226.9)"
+        ]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Tinta media",
+        "canonical": "#364b53",
+        "tonalRamp": [
+          "oklch(15.0% 0.029 223.4)",
+          "oklch(26.4% 0.029 223.4)",
+          "oklch(37.9% 0.029 223.4)",
+          "oklch(49.3% 0.029 223.4)",
+          "oklch(60.7% 0.029 223.4)",
+          "oklch(72.1% 0.029 223.4)",
+          "oklch(83.6% 0.029 223.4)",
+          "oklch(95.0% 0.029 223.4)"
+        ]
+      },
+      "tinta-3": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#566a72",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 224.1)",
+          "oklch(26.4% 0.027 224.1)",
+          "oklch(37.9% 0.027 224.1)",
+          "oklch(49.3% 0.027 224.1)",
+          "oklch(60.7% 0.027 224.1)",
+          "oklch(72.1% 0.027 224.1)",
+          "oklch(83.6% 0.027 224.1)",
+          "oklch(95.0% 0.027 224.1)"
+        ]
+      },
+      "marca": {
+        "role": "primary",
+        "displayName": "Verde quirúrgico",
+        "canonical": "#0d6a5e",
+        "tonalRamp": [
+          "oklch(15.0% 0.082 181.2)",
+          "oklch(26.4% 0.082 181.2)",
+          "oklch(37.9% 0.082 181.2)",
+          "oklch(49.3% 0.082 181.2)",
+          "oklch(60.7% 0.082 181.2)",
+          "oklch(72.1% 0.082 181.2)",
+          "oklch(83.6% 0.082 181.2)",
+          "oklch(95.0% 0.082 181.2)"
+        ]
+      },
+      "marca-hondo": {
+        "role": "primary",
+        "displayName": "Verde quirúrgico hondo",
+        "canonical": "#08463e",
+        "tonalRamp": [
+          "oklch(15.0% 0.060 181.6)",
+          "oklch(26.4% 0.060 181.6)",
+          "oklch(37.9% 0.060 181.6)",
+          "oklch(49.3% 0.060 181.6)",
+          "oklch(60.7% 0.060 181.6)",
+          "oklch(72.1% 0.060 181.6)",
+          "oklch(83.6% 0.060 181.6)",
+          "oklch(95.0% 0.060 181.6)"
+        ]
+      },
+      "marca-claro": {
+        "role": "primary",
+        "displayName": "Verde de agua clara",
+        "canonical": "#ddefeb",
+        "tonalRamp": [
+          "oklch(15.0% 0.020 181.1)",
+          "oklch(26.4% 0.020 181.1)",
+          "oklch(37.9% 0.020 181.1)",
+          "oklch(49.3% 0.020 181.1)",
+          "oklch(60.7% 0.020 181.1)",
+          "oklch(72.1% 0.020 181.1)",
+          "oklch(83.6% 0.020 181.1)",
+          "oklch(95.0% 0.020 181.1)"
+        ]
+      },
+      "marca-claro-hover": {
+        "role": "primary",
+        "displayName": "Verde de agua, hover",
+        "canonical": "#cfe7e1",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 179.0)",
+          "oklch(26.4% 0.027 179.0)",
+          "oklch(37.9% 0.027 179.0)",
+          "oklch(49.3% 0.027 179.0)",
+          "oklch(60.7% 0.027 179.0)",
+          "oklch(72.1% 0.027 179.0)",
+          "oklch(83.6% 0.027 179.0)",
+          "oklch(95.0% 0.027 179.0)"
+        ]
+      },
+      "niebla-marca": {
+        "role": "neutral",
+        "displayName": "Niebla de marca (reservada)",
+        "canonical": "#b8dcd4",
+        "tonalRamp": [
+          "oklch(15.0% 0.039 180.4)",
+          "oklch(26.4% 0.039 180.4)",
+          "oklch(37.9% 0.039 180.4)",
+          "oklch(49.3% 0.039 180.4)",
+          "oklch(60.7% 0.039 180.4)",
+          "oklch(72.1% 0.039 180.4)",
+          "oklch(83.6% 0.039 180.4)",
+          "oklch(95.0% 0.039 180.4)"
+        ]
+      },
+      "pano": {
+        "role": "primary",
+        "displayName": "Verde paño",
+        "canonical": "#1d7564",
+        "tonalRamp": [
+          "oklch(15.0% 0.085 176.6)",
+          "oklch(26.4% 0.085 176.6)",
+          "oklch(37.9% 0.085 176.6)",
+          "oklch(49.3% 0.085 176.6)",
+          "oklch(60.7% 0.085 176.6)",
+          "oklch(72.1% 0.085 176.6)",
+          "oklch(83.6% 0.085 176.6)",
+          "oklch(95.0% 0.085 176.6)"
+        ]
+      },
+      "niebla-pano": {
+        "role": "neutral",
+        "displayName": "Niebla de paño (reservada)",
+        "canonical": "#e6f3f0",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 180.7)",
+          "oklch(26.4% 0.014 180.7)",
+          "oklch(37.9% 0.014 180.7)",
+          "oklch(49.3% 0.014 180.7)",
+          "oklch(60.7% 0.014 180.7)",
+          "oklch(72.1% 0.014 180.7)",
+          "oklch(83.6% 0.014 180.7)",
+          "oklch(95.0% 0.014 180.7)"
+        ]
+      },
+      "brillo-pano": {
+        "role": "primary",
+        "displayName": "Brillo del paño",
+        "canonical": "rgba(255, 255, 255, .12)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(26.4% 0.000 89.9)",
+          "oklch(37.9% 0.000 89.9)",
+          "oklch(49.3% 0.000 89.9)",
+          "oklch(60.7% 0.000 89.9)",
+          "oklch(72.1% 0.000 89.9)",
+          "oklch(83.6% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "sombra-pano": {
+        "role": "primary",
+        "displayName": "Sombra del paño",
+        "canonical": "rgba(0, 0, 0, .14)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 0.0)",
+          "oklch(26.4% 0.000 0.0)",
+          "oklch(37.9% 0.000 0.0)",
+          "oklch(49.3% 0.000 0.0)",
+          "oklch(60.7% 0.000 0.0)",
+          "oklch(72.1% 0.000 0.0)",
+          "oklch(83.6% 0.000 0.0)",
+          "oklch(95.0% 0.000 0.0)"
+        ]
+      },
+      "menta": {
+        "role": "secondary",
+        "displayName": "Menta de detección",
+        "canonical": "#38e2b3",
+        "tonalRamp": [
+          "oklch(15.0% 0.120 169.3)",
+          "oklch(26.4% 0.120 169.3)",
+          "oklch(37.9% 0.120 169.3)",
+          "oklch(49.3% 0.120 169.3)",
+          "oklch(60.7% 0.120 169.3)",
+          "oklch(72.1% 0.120 169.3)",
+          "oklch(83.6% 0.120 169.3)",
+          "oklch(95.0% 0.120 169.3)"
+        ]
+      },
+      "alerta-noche": {
+        "role": "secondary",
+        "displayName": "Rojo de alerta",
+        "canonical": "#ff6b6b",
+        "tonalRamp": [
+          "oklch(15.0% 0.120 22.8)",
+          "oklch(26.4% 0.120 22.8)",
+          "oklch(37.9% 0.120 22.8)",
+          "oklch(49.3% 0.120 22.8)",
+          "oklch(60.7% 0.120 22.8)",
+          "oklch(72.1% 0.120 22.8)",
+          "oklch(83.6% 0.120 22.8)",
+          "oklch(95.0% 0.120 22.8)"
+        ]
+      },
+      "noche": {
+        "role": "neutral",
+        "displayName": "Noche",
+        "canonical": "#061217",
+        "tonalRamp": [
+          "oklch(15.0% 0.021 225.8)",
+          "oklch(26.4% 0.021 225.8)",
+          "oklch(37.9% 0.021 225.8)",
+          "oklch(49.3% 0.021 225.8)",
+          "oklch(60.7% 0.021 225.8)",
+          "oklch(72.1% 0.021 225.8)",
+          "oklch(83.6% 0.021 225.8)",
+          "oklch(95.0% 0.021 225.8)"
+        ]
+      },
+      "noche-2": {
+        "role": "neutral",
+        "displayName": "Noche 2",
+        "canonical": "#0c1e24",
+        "tonalRamp": [
+          "oklch(15.0% 0.026 221.8)",
+          "oklch(26.4% 0.026 221.8)",
+          "oklch(37.9% 0.026 221.8)",
+          "oklch(49.3% 0.026 221.8)",
+          "oklch(60.7% 0.026 221.8)",
+          "oklch(72.1% 0.026 221.8)",
+          "oklch(83.6% 0.026 221.8)",
+          "oklch(95.0% 0.026 221.8)"
+        ]
+      },
+      "filete-noche": {
+        "role": "neutral",
+        "displayName": "Filete noche",
+        "canonical": "#1d353d",
+        "tonalRamp": [
+          "oklch(15.0% 0.033 221.3)",
+          "oklch(26.4% 0.033 221.3)",
+          "oklch(37.9% 0.033 221.3)",
+          "oklch(49.3% 0.033 221.3)",
+          "oklch(60.7% 0.033 221.3)",
+          "oklch(72.1% 0.033 221.3)",
+          "oklch(83.6% 0.033 221.3)",
+          "oklch(95.0% 0.033 221.3)"
+        ]
+      },
+      "niebla-noche": {
+        "role": "neutral",
+        "displayName": "Niebla",
+        "canonical": "#a9bec5",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 219.8)",
+          "oklch(26.4% 0.025 219.8)",
+          "oklch(37.9% 0.025 219.8)",
+          "oklch(49.3% 0.025 219.8)",
+          "oklch(60.7% 0.025 219.8)",
+          "oklch(72.1% 0.025 219.8)",
+          "oklch(83.6% 0.025 219.8)",
+          "oklch(95.0% 0.025 219.8)"
+        ]
+      },
+      "acero-brillo": {
+        "role": "tertiary",
+        "displayName": "Acero, brillo",
+        "canonical": "#fbfdfd",
+        "tonalRamp": [
+          "oklch(15.0% 0.002 197.1)",
+          "oklch(26.4% 0.002 197.1)",
+          "oklch(37.9% 0.002 197.1)",
+          "oklch(49.3% 0.002 197.1)",
+          "oklch(60.7% 0.002 197.1)",
+          "oklch(72.1% 0.002 197.1)",
+          "oklch(83.6% 0.002 197.1)",
+          "oklch(95.0% 0.002 197.1)"
+        ]
+      },
+      "acero": {
+        "role": "tertiary",
+        "displayName": "Acero satinado",
+        "canonical": "#b3bec4",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 231.3)",
+          "oklch(26.4% 0.015 231.3)",
+          "oklch(37.9% 0.015 231.3)",
+          "oklch(49.3% 0.015 231.3)",
+          "oklch(60.7% 0.015 231.3)",
+          "oklch(72.1% 0.015 231.3)",
+          "oklch(83.6% 0.015 231.3)",
+          "oklch(95.0% 0.015 231.3)"
+        ]
+      },
+      "acero-caja": {
+        "role": "tertiary",
+        "displayName": "Acero de caja",
+        "canonical": "#9eaab0",
+        "tonalRamp": [
+          "oklch(15.0% 0.016 229.1)",
+          "oklch(26.4% 0.016 229.1)",
+          "oklch(37.9% 0.016 229.1)",
+          "oklch(49.3% 0.016 229.1)",
+          "oklch(60.7% 0.016 229.1)",
+          "oklch(72.1% 0.016 229.1)",
+          "oklch(83.6% 0.016 229.1)",
+          "oklch(95.0% 0.016 229.1)"
+        ]
+      },
+      "acero-sombra": {
+        "role": "tertiary",
+        "displayName": "Acero, sombra",
+        "canonical": "#8b979d",
+        "tonalRamp": [
+          "oklch(15.0% 0.016 229.1)",
+          "oklch(26.4% 0.016 229.1)",
+          "oklch(37.9% 0.016 229.1)",
+          "oklch(49.3% 0.016 229.1)",
+          "oklch(60.7% 0.016 229.1)",
+          "oklch(72.1% 0.016 229.1)",
+          "oklch(83.6% 0.016 229.1)",
+          "oklch(95.0% 0.016 229.1)"
+        ]
+      },
+      "acero-raya": {
+        "role": "tertiary",
+        "displayName": "Acero de raya",
+        "canonical": "#66737a",
+        "tonalRamp": [
+          "oklch(15.0% 0.019 231.2)",
+          "oklch(26.4% 0.019 231.2)",
+          "oklch(37.9% 0.019 231.2)",
+          "oklch(49.3% 0.019 231.2)",
+          "oklch(60.7% 0.019 231.2)",
+          "oklch(72.1% 0.019 231.2)",
+          "oklch(83.6% 0.019 231.2)",
+          "oklch(95.0% 0.019 231.2)"
+        ]
+      },
+      "acero-linea": {
+        "role": "tertiary",
+        "displayName": "Acero de línea",
+        "canonical": "#4f5c63",
+        "tonalRamp": [
+          "oklch(15.0% 0.020 231.3)",
+          "oklch(26.4% 0.020 231.3)",
+          "oklch(37.9% 0.020 231.3)",
+          "oklch(49.3% 0.020 231.3)",
+          "oklch(60.7% 0.020 231.3)",
+          "oklch(72.1% 0.020 231.3)",
+          "oklch(83.6% 0.020 231.3)",
+          "oklch(95.0% 0.020 231.3)"
+        ]
+      },
+      "acero-filo": {
+        "role": "tertiary",
+        "displayName": "Acero, filo",
+        "canonical": "#3f4b52",
+        "tonalRamp": [
+          "oklch(15.0% 0.019 233.5)",
+          "oklch(26.4% 0.019 233.5)",
+          "oklch(37.9% 0.019 233.5)",
+          "oklch(49.3% 0.019 233.5)",
+          "oklch(60.7% 0.019 233.5)",
+          "oklch(72.1% 0.019 233.5)",
+          "oklch(83.6% 0.019 233.5)",
+          "oklch(95.0% 0.019 233.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Sin uso en el inicio desde que se quitó la banda de cierre; queda para portadas de otras pantallas."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titular de portada, tres líneas que suben desde su máscara al cargar."
+      },
+      "headline-section": {
+        "displayName": "Headline de sección",
+        "purpose": "Títulos de sección terminados en punto y titular «Técnicas» del catálogo."
+      },
+      "headline-product": {
+        "displayName": "Headline de producto",
+        "purpose": "Nombres de herramienta en el carril."
+      },
+      "headline-panel": {
+        "displayName": "Headline de panel",
+        "purpose": "Nombre de cada desplegable de la barra y nombre de la técnica en el detalle."
+      },
+      "numero-riel": {
+        "displayName": "Número del riel",
+        "purpose": "Número de la pieza elegida en el riel; marca, rojo en vista de cámara."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Frase del desplegable ¿Por qué IQ Platform? y título del estado vacío del catálogo."
+      },
+      "title-ventana": {
+        "displayName": "Title de ventana",
+        "purpose": "Título de la técnica en la maqueta de DataIQ, perfiles, grupos de preguntas y encabezados fijos del catálogo."
+      },
+      "lema": {
+        "displayName": "Lema",
+        "purpose": "Lo que resuelve cada herramienta, máx. 26ch."
+      },
+      "title-columna": {
+        "displayName": "Title de columna",
+        "purpose": "Especialidades del catálogo del inicio, opciones de los desplegables y título de cada mesa en el detalle."
+      },
+      "title-menu": {
+        "displayName": "Title de menú",
+        "purpose": "Grupos plegables del menú de celular y títulos de bloque de Datos clínicos."
+      },
+      "pregunta": {
+        "displayName": "Pregunta",
+        "purpose": "Pregunta de cada fila de preguntas frecuentes."
+      },
+      "body-large": {
+        "displayName": "Body large",
+        "purpose": "Entradilla (34ch) y texto de sección (46ch)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto base, filas del catálogo, aviso de cuenta y conclusiones; 15-16px en listas, fichas, leyenda y respuestas."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Navegación, botones, selector, pestañas y filtro."
+      },
+      "label-ventana": {
+        "displayName": "Label de ventana",
+        "purpose": "Encabezados de grupo dentro de las maquetas de producto (interfaz a escala reducida)."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Martian Mono: la marca «demostración»."
+      },
+      "data-detection": {
+        "displayName": "Data, detección",
+        "purpose": "Martian Mono 600: etiquetas de detección, confianzas y «Va aquí»."
+      }
+    },
+    "shadows": [
+      {
+        "name": "boton",
+        "value": "inset 0 1px 0 rgba(255,255,255,.14), 0 1px 2px rgba(10,27,34,.25)",
+        "purpose": "Botón primario en reposo."
+      },
+      {
+        "name": "boton-hover",
+        "value": "inset 0 1px 0 rgba(255,255,255,.14), 0 8px 16px -10px rgba(10,27,34,.5)",
+        "purpose": "Botón primario al pasar, con translateY(-1px)."
+      },
+      {
+        "name": "escenario",
+        "value": "0 1px 2px rgba(10,27,34,.05), 0 16px 32px -24px rgba(10,27,34,.3)",
+        "purpose": "Contenedor del héroe."
+      },
+      {
+        "name": "desplegable",
+        "value": "0 24px 40px -32px rgba(10,27,34,.4)",
+        "purpose": "Los cuatro paneles desplegables de la barra."
+      },
+      {
+        "name": "buscador",
+        "value": "inset 0 0 0 1px var(--filete-2), 0 10px 24px -18px rgba(10,27,34,.35)",
+        "purpose": "Buscador del catálogo; al enfocar, inset 0 0 0 2px var(--marca)."
+      },
+      {
+        "name": "funda",
+        "value": "0 1px 2px rgba(0,0,0,.25), 0 28px 50px -22px rgba(10,27,34,.55)",
+        "purpose": "El objeto paño."
+      },
+      {
+        "name": "pieza",
+        "value": "drop-shadow(0 2px 1.4px rgba(3,20,28,.6)) drop-shadow(0 6px 8px rgba(3,20,28,.22))",
+        "purpose": "Cada pieza de acero sobre la funda (filter)."
+      },
+      {
+        "name": "pieza-marcada",
+        "value": "drop-shadow(0 12px 8px rgba(3,20,28,.4))",
+        "purpose": "Pieza marcada o al pasar, con translate(-2px,-6px)."
+      },
+      {
+        "name": "pieza-diagrama",
+        "value": "drop-shadow(0 1px 1px rgba(3,20,28,.22)) drop-shadow(0 4px 6px rgba(3,20,28,.08))",
+        "purpose": "Instrumental en el diagrama sereno del detalle."
+      },
+      {
+        "name": "pieza-diagrama-senalada",
+        "value": "drop-shadow(0 18px 10px rgba(3,20,28,.45))",
+        "purpose": "Pieza señalada desde la leyenda, con translate(-3px,-12px)."
+      },
+      {
+        "name": "panel-flotante",
+        "value": "0 12px 30px -16px rgba(10,27,34,.45)",
+        "purpose": "Leyenda «Ver las 10 piezas»."
+      },
+      {
+        "name": "filete-interior",
+        "value": "inset 0 0 0 1px var(--filete)",
+        "purpose": "Borde de paneles, tarjetas y diagrama en lugar de elevarlos."
+      }
+    ],
+    "motion": [
+      {
+        "name": "expo",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Entradas, desplazamientos, flechas, placa, raya e inclinación de la funda."
+      },
+      {
+        "name": "cuarta",
+        "value": "cubic-bezier(.25, 1, .5, 1)",
+        "purpose": "Color y opacidad."
+      },
+      {
+        "name": "vaiven",
+        "value": "cubic-bezier(.87, 0, .13, 1)",
+        "purpose": "Barrido de la cámara y giro 3D de la maqueta."
+      },
+      {
+        "name": "ciclo-vistas",
+        "value": "5500ms",
+        "purpose": "Cambio automático Referencia/3D/Cámara; pausa al pasar el puntero, se detiene al interactuar."
+      },
+      {
+        "name": "coreografia-carga",
+        "value": "titular 1s expo (70ms entre líneas); entradilla .3s, acciones .4s, escenario .15s; piezas desde .6s + 70ms cada una",
+        "purpose": "Única coreografía de carga."
+      },
+      {
+        "name": "barrido",
+        "value": "1.1s vaiven",
+        "purpose": "Escaneo de la cámara."
+      },
+      {
+        "name": "desplegable",
+        "value": "bajar .4s expo (opacidad y translateY(-8px))",
+        "purpose": "Entrada de los paneles de la barra y del menú de celular; uno abierto a la vez."
+      },
+      {
+        "name": "placa-filtro",
+        "value": "transform y height .45s expo",
+        "purpose": "La placa marca-claro se desliza tras la especialidad elegida."
+      },
+      {
+        "name": "raya-pestanas",
+        "value": "transform y width .45s expo",
+        "purpose": "Raya de 2px bajo la pestaña elegida del detalle."
+      },
+      {
+        "name": "flip-lista",
+        "value": "520ms expo al moverse; 420ms expo (opacidad y translateY(10px)) al entrar",
+        "purpose": "Reordenamiento de la lista del catálogo al buscar o filtrar."
+      },
+      {
+        "name": "colocar-diagrama",
+        "value": ".35s expo, 25ms entre piezas",
+        "purpose": "Entrada rápida del instrumental en el diagrama del detalle."
+      },
+      {
+        "name": "pregunta",
+        "value": "rotate(45deg) .35s expo; grupo rotate(180deg) .4s expo",
+        "purpose": "El + de la pregunta abierta y la flecha del grupo."
+      },
+      {
+        "name": "aviso",
+        "value": "aparecer .5s expo",
+        "purpose": "Aviso de cuenta al tocar una técnica."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "duraciones a .01ms, sin ciclo automático ni carril fijo",
+        "purpose": "prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "barra-compacta",
+        "value": "960px"
+      },
+      {
+        "name": "tableta",
+        "value": "1100px"
+      },
+      {
+        "name": "celular",
+        "value": "760px"
+      }
+    ],
+    "materials": [
+      {
+        "name": "acero",
+        "value": "linearGradient #e4eaed 0, #fbfdfd .32, #b3bec4 .56, #8b979d .74, #d3dbdf 1; stroke #3f4b52 .6",
+        "purpose": "Instrumental dibujado en SVG."
+      },
+      {
+        "name": "hoja",
+        "value": "linearGradient #f4f7f8 0, #ffffff .5, #aab5bb 1; stroke #4f5c63 .55",
+        "purpose": "Hojas de bisturí y tijeras."
+      },
+      {
+        "name": "caja",
+        "value": "fill #9eaab0 (acero-caja); stroke #4f5c63 (acero-linea) .55",
+        "purpose": "Cajas y cierres del instrumental."
+      },
+      {
+        "name": "raya",
+        "value": "stroke #66737a (acero-raya) .5, linecap round",
+        "purpose": "Estrías y ranuras del instrumental."
+      },
+      {
+        "name": "tela",
+        "value": "--tela: feTurbulence fractalNoise .32 + feDiffuseLighting, soft-light sobre --pano",
+        "purpose": "Solo la funda de Mayo y sus miniaturas; nunca superficies de página."
+      },
+      {
+        "name": "velo-pano",
+        "value": "linear-gradient(150deg, rgba(255,255,255,.12), transparent 40%, rgba(0,0,0,.14)) en soft-light; canto #0e463c a translateZ(-16px)",
+        "purpose": "Luz y canto de la funda; solo el objeto."
+      },
+      {
+        "name": "plano-reserva",
+        "value": "fill #eef3f3 (tela) o #dde4e7 (bandeja); stroke #8b979d 1.2-1.4",
+        "purpose": "Objetos que no son instrumental en el diagrama de la mesa de reserva; sin tela."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal (Crear cuenta, Crear cuenta gratis): verde lleno con flecha que avanza; el grande mide 56px.",
+      "html": "<div class=\"ds-fila\"><a class=\"ds-boton\" href=\"#\">Crear cuenta</a><a class=\"ds-boton ds-grande\" href=\"#\">Crear cuenta gratis <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 18px;border:0;border-radius:10px;background:var(--marca);color:#fff;font:inherit;font-size:15.5px;font-weight:650;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(10,27,34,.25);transition:background .2s var(--cuarta),transform .35s var(--expo),box-shadow .35s var(--expo)} .ds-boton svg{transition:transform .35s var(--expo)} .ds-boton:hover{background:var(--marca-hondo);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px -10px rgba(10,27,34,.5)} .ds-boton:hover svg{transform:translateX(3px)} .ds-boton:focus-visible,.ds-fantasma:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-fila{display:flex;gap:16px;align-items:center;flex-wrap:wrap} .ds-grande{height:56px;padding:0 26px;font-size:17px;border-radius:12px}"
+    },
+    {
+      "name": "Botones con etiqueta de módulo",
+      "kind": "button",
+      "refersTo": "button-soft",
+      "description": "Acciones del detalle de técnica: suave (Ver en 3D) y primario (Comprobar con la cámara), cada uno con el nombre de su módulo en 13px.",
+      "html": "<div class=\"ds-fila\"><a class=\"ds-boton ds-suave\" href=\"#\">Ver en 3D <small>SIMIQ3D</small></a><a class=\"ds-boton\" href=\"#\">Comprobar con la cámara <small>SIVRI</small></a></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 18px;border:0;border-radius:10px;background:var(--marca);color:#fff;font:inherit;font-size:15.5px;font-weight:650;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(10,27,34,.25);transition:background .2s var(--cuarta),transform .35s var(--expo),box-shadow .35s var(--expo)} .ds-boton svg{transition:transform .35s var(--expo)} .ds-boton:hover{background:var(--marca-hondo);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px -10px rgba(10,27,34,.5)} .ds-boton:hover svg{transform:translateX(3px)} .ds-boton:focus-visible,.ds-fantasma:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-fila{display:flex;gap:10px;flex-wrap:wrap} .ds-suave{background:var(--marca-claro);color:var(--marca-hondo);box-shadow:none} .ds-suave:hover{background:var(--marca-claro-hover);box-shadow:none} .ds-boton small{font-size:13px;font-weight:500;color:var(--marca-claro-hover)} .ds-suave small{color:var(--marca-hondo);font-weight:450}"
+    },
+    {
+      "name": "Enlace con flecha",
+      "kind": "custom",
+      "refersTo": "link-arrow",
+      "description": "Acción secundaria (Ver todas las técnicas, Conocer DataIQ); menta sobre capítulos oscuros.",
+      "html": "<a class=\"ds-enlace\" href=\"#\">Ver todas las técnicas <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-enlace{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:650;color:var(--marca);text-decoration:none} .ds-enlace svg{transition:transform .35s var(--expo)} .ds-enlace:hover svg{transform:translateX(3px)} .ds-enlace:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px;border-radius:6px}"
+    },
+    {
+      "name": "Barra de navegación",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Marca, cuatro categorías con desplegable y la sección actual en marca-hondo; a la derecha Ingresar y Crear cuenta.",
+      "html": "<header class=\"ds-barra\"><span class=\"ds-marca\"><svg width=\"30\" height=\"30\" viewBox=\"0 0 30 30\" aria-hidden=\"true\"><rect width=\"30\" height=\"30\" rx=\"8\" fill=\"#0d6a5e\"/><path d=\"M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12\" stroke=\"#fff\" stroke-opacity=\".35\" stroke-width=\"1.2\"/><circle cx=\"15\" cy=\"15\" r=\"3.2\" fill=\"#fff\"/></svg>IQ Platform</span><nav class=\"ds-nav\"><button aria-expanded=\"true\">Herramientas <svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2.5 4.5L6 8l3.5-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-expanded=\"false\" aria-current=\"page\">Especialidades <svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2.5 4.5L6 8l3.5-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-expanded=\"false\">¿Por qué IQ Platform? <svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2.5 4.5L6 8l3.5-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-expanded=\"false\">Ayuda <svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2.5 4.5L6 8l3.5-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></nav><div class=\"ds-der\"><a class=\"ds-fantasma\" href=\"#\">Ingresar</a><a class=\"ds-boton\" href=\"#\">Crear cuenta</a></div></header>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 18px;border:0;border-radius:10px;background:var(--marca);color:#fff;font:inherit;font-size:15.5px;font-weight:650;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(10,27,34,.25);transition:background .2s var(--cuarta),transform .35s var(--expo),box-shadow .35s var(--expo)} .ds-boton svg{transition:transform .35s var(--expo)} .ds-boton:hover{background:var(--marca-hondo);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px -10px rgba(10,27,34,.5)} .ds-boton:hover svg{transform:translateX(3px)} .ds-boton:focus-visible,.ds-fantasma:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-fantasma{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:8px;color:var(--tinta-2);font-size:15.5px;font-weight:600;text-decoration:none;transition:background .2s var(--cuarta),color .2s var(--cuarta)} .ds-fantasma:hover{background:var(--hover-neutro);color:var(--tinta)} .ds-barra{display:flex;align-items:center;gap:44px;height:72px;padding:0 32px;background:var(--fondo);border-bottom:1px solid var(--filete)} .ds-marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.02em;white-space:nowrap} .ds-nav{display:flex;gap:2px} .ds-nav button{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--tinta-2);font:inherit;font-size:15.5px;font-weight:550;white-space:nowrap;cursor:pointer;transition:background .2s var(--cuarta),color .2s var(--cuarta)} .ds-nav svg{transition:transform .35s var(--expo)} .ds-nav button:hover,.ds-nav button[aria-expanded=\"true\"]{background:var(--hover-neutro);color:var(--tinta)} .ds-nav button[aria-expanded=\"true\"] svg{transform:rotate(180deg)} .ds-nav button[aria-current=\"page\"]{color:var(--marca-hondo);font-weight:650} .ds-nav button:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-der{margin-left:auto;display:flex;gap:8px;align-items:center}"
+    },
+    {
+      "name": "Buscador",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Campo del catálogo: 60px en superficie con filete filete-2; foco con filete de 2px en marca.",
+      "html": "<label class=\"ds-buscar\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><circle cx=\"8.5\" cy=\"8.5\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M13 13l4.5 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"Buscar técnica o especialidad\"></label>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-buscar{position:relative;display:block;max-width:560px} .ds-buscar svg{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--tinta-3);pointer-events:none} .ds-buscar input{width:100%;box-sizing:border-box;height:60px;padding:0 20px 0 54px;border:0;border-radius:14px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete-2),0 10px 24px -18px rgba(10,27,34,.35);font:inherit;font-size:17px;color:var(--tinta);transition:box-shadow .3s var(--cuarta)} .ds-buscar input::placeholder{color:var(--tinta-3)} .ds-buscar input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--marca),0 10px 24px -18px rgba(10,27,34,.35)}"
+    },
+    {
+      "name": "Filtro con placa deslizante",
+      "kind": "chip",
+      "refersTo": "filter-option",
+      "description": "Especialidades del catálogo: la elegida se marca con una placa marca-claro que se desliza tras ella (.45s expo), nunca con un filete lateral de color.",
+      "html": "<nav class=\"ds-filtro\"><span class=\"ds-placa\"></span><button aria-pressed=\"false\">Todas <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-pressed=\"true\">Cirugía general <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-pressed=\"false\">Urología <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button aria-pressed=\"false\">Ginecología <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></nav>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-filtro{position:relative;display:grid;gap:2px;max-width:320px} .ds-placa{position:absolute;left:0;right:0;top:0;height:46px;border-radius:10px;background:var(--marca-claro);transform:translateY(48px);transition:transform .45s var(--expo);pointer-events:none} .ds-filtro:has(button:nth-of-type(1):hover) .ds-placa{transform:translateY(0)} .ds-filtro:has(button:nth-of-type(3):hover) .ds-placa{transform:translateY(96px)} .ds-filtro:has(button:nth-of-type(4):hover) .ds-placa{transform:translateY(144px)} .ds-filtro button{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:10px 14px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:16px;font-weight:550;color:var(--tinta-2);text-align:left;cursor:pointer} .ds-filtro button:hover{color:var(--marca-hondo)} .ds-filtro button[aria-pressed=\"true\"]{color:var(--marca-hondo);font-weight:650} .ds-filtro button svg{opacity:0;transform:translateX(-4px);transition:opacity .2s var(--cuarta),transform .35s var(--expo)} .ds-filtro button[aria-pressed=\"true\"] svg{opacity:1;transform:none} .ds-filtro button:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Fila de técnica y aviso de cuenta",
+      "kind": "custom",
+      "refersTo": "aviso-cuenta",
+      "description": "Fila de 17px del catálogo que al señalar pasa a marca, se corre 10px y muestra su flecha; al tocarla, el aviso marca-claro con Crear cuenta gratis y «Ya tengo cuenta».",
+      "html": "<div class=\"ds-lista\"><button class=\"ds-tec\">Mastectomía <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button class=\"ds-tec\" aria-expanded=\"true\">Tiroidectomía <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><div class=\"ds-aviso\"><p>Para ver <b>Tiroidectomía</b> por dentro, con su mesa y su instrumental, se crea una cuenta gratuita.</p><div class=\"ds-acc\"><a class=\"ds-boton\" href=\"#\">Crear cuenta gratis</a><a class=\"ds-fantasma\" href=\"#\">Ya tengo cuenta</a></div></div><button class=\"ds-tec\">Colecistectomía <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4L12.5 8l-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 18px;border:0;border-radius:10px;background:var(--marca);color:#fff;font:inherit;font-size:15.5px;font-weight:650;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(10,27,34,.25);transition:background .2s var(--cuarta),transform .35s var(--expo),box-shadow .35s var(--expo)} .ds-boton svg{transition:transform .35s var(--expo)} .ds-boton:hover{background:var(--marca-hondo);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px -10px rgba(10,27,34,.5)} .ds-boton:hover svg{transform:translateX(3px)} .ds-boton:focus-visible,.ds-fantasma:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-fantasma{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:8px;color:var(--tinta-2);font-size:15.5px;font-weight:600;text-decoration:none;transition:background .2s var(--cuarta),color .2s var(--cuarta)} .ds-fantasma:hover{background:var(--hover-neutro);color:var(--tinta)} .ds-lista{max-width:640px;border-bottom:1px solid var(--filete)} .ds-tec{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 4px;border:0;border-top:1px solid var(--filete);background:transparent;font:inherit;font-size:17px;font-weight:500;letter-spacing:-.01em;color:var(--tinta);text-align:left;cursor:pointer;transition:color .2s var(--cuarta),padding .35s var(--expo)} .ds-tec svg{color:var(--marca);opacity:0;transform:translateX(-6px);transition:opacity .2s var(--cuarta),transform .35s var(--expo)} .ds-tec:hover,.ds-tec[aria-expanded=\"true\"]{color:var(--marca);padding-left:10px} .ds-tec:hover svg,.ds-tec[aria-expanded=\"true\"] svg{opacity:1;transform:none} .ds-tec:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-aviso{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin:0 0 16px;padding:20px 24px;border-radius:16px;background:var(--marca-claro)} .ds-aviso p{margin:0;color:var(--marca-hondo);font-size:17px} .ds-aviso b{font-weight:700} .ds-acc{display:flex;gap:8px;flex-wrap:wrap} .ds-aviso .ds-fantasma{color:var(--marca-hondo)} .ds-aviso .ds-fantasma:hover{background:rgba(8,70,62,.08);color:var(--marca-hondo)}"
+    },
+    {
+      "name": "Pestañas con raya",
+      "kind": "nav",
+      "refersTo": "tecnica-tab",
+      "description": "Pestañas del detalle de técnica sobre un filete; una raya de 2px en tinta se desliza bajo la elegida (.45s expo).",
+      "html": "<div class=\"ds-pest\" role=\"tablist\"><button role=\"tab\" aria-selected=\"false\">Datos clínicos</button><button role=\"tab\" aria-selected=\"false\">Instrumental</button><button role=\"tab\" aria-selected=\"true\">Mesa de Mayo</button><button role=\"tab\" aria-selected=\"false\">Mesa de reserva</button><span class=\"ds-raya\"></span></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-pest{position:relative;display:flex;gap:28px;border-bottom:1px solid var(--filete)} .ds-pest button{padding:10px 0 12px;border:0;background:transparent;font:inherit;font-size:16px;font-weight:550;color:var(--tinta-3);white-space:nowrap;cursor:pointer;transition:color .2s var(--cuarta)} .ds-pest button:hover{color:var(--tinta)} .ds-pest button[aria-selected=\"true\"]{color:var(--tinta);font-weight:650} .ds-pest button:focus-visible{outline:2.5px solid var(--marca);outline-offset:-3px;border-radius:6px} .ds-raya{position:absolute;left:0;bottom:-1px;height:2px;width:104px;background:var(--tinta);transform:translateX(238px);transition:transform .45s var(--expo),width .45s var(--expo);pointer-events:none} .ds-pest:has(button:nth-child(1):hover) .ds-raya{transform:translateX(0);width:104px} .ds-pest:has(button:nth-child(2):hover) .ds-raya{transform:translateX(132px);width:80px} .ds-pest:has(button:nth-child(4):hover) .ds-raya{transform:translateX(370px);width:122px}"
+    },
+    {
+      "name": "Diagrama de mesa con leyenda enlazada",
+      "kind": "custom",
+      "refersTo": "mesa-diagrama",
+      "description": "Mesa del detalle: superficie con filete, rejilla fina, sin paño; señalar una fila de la leyenda levanta su pieza y atenúa el dibujo de las demás, nunca sus números. «Sin dato» como hueco.",
+      "html": "<div class=\"ds-mesa\"><div class=\"ds-diag\"><svg viewBox=\"0 0 200 200\" aria-hidden=\"true\"><path d=\"M50 0V200M100 0V200M150 0V200M0 50H200M0 100H200M0 150H200\" stroke=\"#dbe4e6\" stroke-width=\"1\"/><g class=\"ds-p ds-p1\"><rect class=\"ds-f\" x=\"18\" y=\"10\" width=\"14\" height=\"34\" rx=\"6\" fill=\"#b3bec4\" stroke=\"#3f4b52\" stroke-width=\".6\"/><circle cx=\"41\" cy=\"9\" r=\"7\" fill=\"rgba(6,18,23,.72)\"/><text x=\"41\" y=\"9\" fill=\"#fff\" font-size=\"9\" font-weight=\"700\" text-anchor=\"middle\" dominant-baseline=\"central\">1</text></g><g class=\"ds-p ds-p2\"><rect class=\"ds-f\" x=\"68\" y=\"58\" width=\"14\" height=\"34\" rx=\"6\" fill=\"#b3bec4\" stroke=\"#3f4b52\" stroke-width=\".6\"/><circle cx=\"91\" cy=\"59\" r=\"7\" fill=\"rgba(6,18,23,.72)\"/><text x=\"91\" y=\"59\" fill=\"#fff\" font-size=\"9\" font-weight=\"700\" text-anchor=\"middle\" dominant-baseline=\"central\">2</text></g></svg></div><ol class=\"ds-ley\"><li class=\"ds-l1\"><b>1</b>Pinza de Allis</li><li class=\"ds-l2\"><b>2</b>Pinza de disección con y sin garra</li><li class=\"ds-hueco\"><b>3</b>Sin dato</li></ol></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-mesa{display:grid;grid-template-columns:220px minmax(200px,1fr);gap:36px;align-items:start} .ds-diag{aspect-ratio:1;padding:4.5%;border-radius:14px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete)} .ds-diag svg{display:block;width:100%;height:100%;overflow:visible} .ds-f{filter:drop-shadow(0 1px 1px rgba(3,20,28,.22)) drop-shadow(0 4px 6px rgba(3,20,28,.08));transition:transform .45s var(--expo),filter .45s var(--expo),opacity .3s var(--cuarta);transform-box:fill-box} .ds-mesa:has(.ds-l1:hover) .ds-p1 .ds-f,.ds-mesa:has(.ds-l2:hover) .ds-p2 .ds-f{transform:translate(-3px,-12px);filter:drop-shadow(0 18px 10px rgba(3,20,28,.45))} .ds-mesa:has(.ds-l1:hover) .ds-p2 .ds-f,.ds-mesa:has(.ds-l2:hover) .ds-p1 .ds-f{opacity:.38} .ds-ley{list-style:none;margin:0;padding:0;border-top:1px solid var(--filete)} .ds-ley li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:center;min-height:44px;padding:8px 6px;border-bottom:1px solid var(--filete);font-size:16px;color:var(--tinta-2);cursor:pointer;transition:color .2s var(--cuarta),background .2s var(--cuarta)} .ds-ley b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(6,18,23,.72);color:#fff;font-size:14px;font-weight:700;transition:background .2s var(--cuarta)} .ds-ley li:not(.ds-hueco):hover{color:var(--tinta);background:var(--marca-claro)} .ds-ley li:not(.ds-hueco):hover b{background:var(--marca)} .ds-ley .ds-hueco{cursor:default;color:var(--tinta-3)} .ds-ley .ds-hueco b{background:transparent;box-shadow:inset 0 0 0 1.5px var(--filete-2);color:var(--tinta-3)}"
+    },
+    {
+      "name": "Sin mesa y plantilla",
+      "kind": "card",
+      "refersTo": "sin-mesa",
+      "description": "Lo que la fuente no trae se marca, nunca se rellena: recuadro «Sin mesa de …» con filete filete-2 y plantilla con barras filete y la marca «demostración».",
+      "html": "<div class=\"ds-col\"><p class=\"ds-sin\">Sin mesa de reserva.</p><div class=\"ds-plant\"><h3>Hemicolectomía derecha <span class=\"ds-demo\">demostración</span></h3><span class=\"ds-hueso\" style=\"width:72%\"></span><span class=\"ds-hueso\" style=\"width:58%\"></span><span class=\"ds-hueso\" style=\"width:86%\"></span></div></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-col{display:grid;gap:28px;max-width:520px} .ds-sin{display:grid;place-items:center;min-height:220px;margin:0;border-radius:14px;box-shadow:inset 0 0 0 1.5px var(--filete-2);color:var(--tinta-3);font-size:16px} .ds-plant h3{margin:0 0 12px;font-size:40px;line-height:1;font-weight:650;letter-spacing:-.04em} .ds-demo{margin-left:12px;font-family:'Martian Mono',ui-monospace,monospace;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--tinta-3);vertical-align:middle} .ds-hueso{display:block;height:12px;margin:5px 0;border-radius:8px;background:var(--filete)}"
+    },
+    {
+      "name": "Preguntas por secciones",
+      "kind": "custom",
+      "refersTo": "faq-group",
+      "description": "Secciones expandibles (Cuenta abierta); cada pregunta con un + en marca que gira 45° al abrir.",
+      "html": "<div class=\"ds-faq\"><details class=\"ds-grupo\" open><summary>Cuenta <svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><path d=\"M5.5 8.5L11 14l5.5-5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></summary><div class=\"ds-preg\"><details open><summary>¿Cuánto cuesta? <svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M10 4v12M4 10h12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></summary><p>Nada. La cuenta es gratuita.</p></details><details><summary>¿Qué puedo ver sin cuenta? <svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M10 4v12M4 10h12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></summary><p>El catálogo de técnicas. Para abrir una técnica y usar SIMIQ3D y SIVRI se crea una cuenta.</p></details></div></details><details class=\"ds-grupo\"><summary>Técnicas <svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><path d=\"M5.5 8.5L11 14l5.5-5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></summary></details></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-faq{max-width:640px;border-top:1px solid var(--tinta)} .ds-grupo{border-bottom:1px solid var(--filete-2)} .ds-faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:24px;cursor:pointer} .ds-faq summary::-webkit-details-marker{display:none} .ds-faq summary:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px;border-radius:6px} .ds-grupo>summary{padding:22px 0;font-size:24px;font-weight:650;letter-spacing:-.03em} .ds-grupo>summary svg{flex:none;color:var(--marca);transition:transform .4s var(--expo)} .ds-grupo[open]>summary svg{transform:rotate(180deg)} .ds-preg{margin-bottom:20px;padding-left:24px} .ds-preg details+details{border-top:1px solid var(--filete)} .ds-preg summary{padding:14px 0;font-size:17px;font-weight:600;letter-spacing:-.01em} .ds-preg summary svg{flex:none;color:var(--marca);transition:transform .35s var(--expo)} .ds-preg details[open] summary svg{transform:rotate(45deg)} .ds-preg p{margin:0;max-width:56ch;padding:0 40px 16px 0;color:var(--tinta-2);font-size:16px;line-height:1.55}"
+    },
+    {
+      "name": "Perfil en fila",
+      "kind": "custom",
+      "refersTo": "perfil-row",
+      "description": "Estudiantes y Docentes como filas de lista con pictograma de 120px; al pasar, las hojas se abren y el sello gira.",
+      "html": "<div class=\"ds-perfiles\"><article class=\"ds-perfil\"><svg class=\"ds-picto\" viewBox=\"0 0 120 120\" aria-hidden=\"true\"><rect width=\"120\" height=\"120\" rx=\"24\" fill=\"#ddefeb\"/><g class=\"ds-atras\"><rect x=\"26\" y=\"30\" width=\"50\" height=\"62\" rx=\"7\" fill=\"#fff\" stroke=\"#0d6a5e\" stroke-width=\"2\" transform=\"rotate(-9 51 61)\"/></g><g class=\"ds-frente\"><g transform=\"rotate(5 64 57)\"><rect x=\"39\" y=\"26\" width=\"50\" height=\"62\" rx=\"7\" fill=\"#fff\" stroke=\"#0a1b22\" stroke-width=\"2\"/><path d=\"M48 40 H72 M48 49 H80 M48 58 H66\" stroke=\"#0a1b22\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></g></g><g class=\"ds-sello\"><circle cx=\"86\" cy=\"86\" r=\"17\" fill=\"#0d6a5e\"/><path d=\"M93 82.5 A8 8 0 1 0 93.6 89\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></g></svg><div><h3>Estudiantes</h3><p>Repasar cada técnica las veces que haga falta, al propio ritmo.</p></div></article></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-perfiles{max-width:640px} .ds-perfil{display:grid;grid-template-columns:120px minmax(0,1fr);gap:28px;align-items:center;padding-block:24px;border-top:1px solid var(--filete);border-bottom:1px solid var(--filete)} .ds-perfil h3{margin:0;font-size:24px;font-weight:650;letter-spacing:-.03em} .ds-perfil p{margin:8px 0 0;color:var(--tinta-2);font-size:16px;line-height:1.5} .ds-picto{width:120px;height:120px} .ds-atras,.ds-frente,.ds-sello{transform-box:fill-box;transform-origin:center;transition:transform .6s var(--expo)} .ds-perfil:hover .ds-atras{transform:rotate(-8deg) translateX(-4px)} .ds-perfil:hover .ds-frente{transform:rotate(6deg) translateX(4px)} .ds-perfil:hover .ds-sello{transform:scale(1.12) rotate(-8deg)}"
+    },
+    {
+      "name": "Selector de vista",
+      "kind": "chip",
+      "refersTo": "view-selector-tab",
+      "description": "Referencia · 3D · Cámara del escenario; cambia sola cada 5.5 s con trazo de progreso.",
+      "html": "<div class=\"ds-selector\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\"><b>Referencia</b><span>DataIQ</span><i class=\"ds-avance\"></i></button><button role=\"tab\" aria-selected=\"false\"><b>3D</b><span>SIMIQ3D</span></button><button role=\"tab\" aria-selected=\"false\"><b>Cámara</b><span>SIVRI</span></button></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-selector{display:flex;gap:6px;padding:5px;width:max-content;border-radius:14px;background:rgba(10,27,34,.05)} .ds-selector button{position:relative;overflow:hidden;display:inline-flex;align-items:baseline;gap:9px;height:46px;padding:12px 18px 0;border:0;border-radius:10px;background:transparent;color:var(--tinta-3);font:inherit;cursor:pointer;transition:background .3s var(--cuarta),color .3s var(--cuarta)} .ds-selector b{font-size:16px;font-weight:650} .ds-selector span{font-size:13px;font-weight:500;opacity:.75} .ds-selector button:hover{color:var(--tinta)} .ds-selector button[aria-selected=true]{background:#fff;color:var(--tinta);box-shadow:0 1px 2px rgba(10,27,34,.1)} .ds-selector button:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px} .ds-avance{position:absolute;left:12px;right:12px;bottom:5px;height:2px;border-radius:2px;background:rgba(10,27,34,.1)} .ds-avance::after{content:'';position:absolute;inset:0;width:40%;background:currentColor;opacity:.45}"
+    },
+    {
+      "name": "Etiqueta de detección",
+      "kind": "chip",
+      "refersTo": "detection-label",
+      "description": "Cámara: caja menta con nombre y confianza; rojo solo para fuera de lugar.",
+      "html": "<div class=\"ds-cam\"><span class=\"ds-det\">Allis 0,97</span><span class=\"ds-det ds-error\">Senn Miller</span><span class=\"ds-demo\">SIVRI · demostración</span></div>",
+      "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-cam{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:20px;background:var(--noche);border-radius:16px} .ds-det{font-family:'Martian Mono',ui-monospace,monospace;font-size:14px;font-weight:600;padding:4px 8px;background:var(--menta);color:var(--noche)} .ds-error{background:var(--alerta-noche)} .ds-demo{font-family:'Martian Mono',ui-monospace,monospace;font-size:12.5px;color:var(--niebla-noche)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Campo estéril",
+    "overview": "El sistema es el campo quirúrgico visto con ojos de producto de tecnología médica: blanco clínico frío como fondo, tinta azul petróleo casi negra, el verde quirúrgico del paño como único color de marca y el acero del instrumental como material. Todo es limpio, preciso y plano; la profundidad la ponen los objetos (la funda, las piezas de acero), no la interfaz. El registro es profesional, moderno, tecnológico y clínico, y a la vez de casa de estudio: la página acompaña a quien aprende una técnica de principio a fin. Una versión anterior de tela y oficio artesanal fue rechazada por el usuario; nada rústico vuelve.\n\nLa composición es ancha y horizontal, a pantalla completa: rejilla de 12 columnas con medianil de 24 px y márgenes laterales fluidos, nunca una columna centrada con vacíos a los lados. El recorrido del inicio es un camino de aprendizaje: la mesa en la portada, las tres herramientas de lado a lado (DataIQ, SIMIQ3D, SIVRI), el catálogo por especialidad, la investigación, los perfiles, las preguntas frecuentes y el pie oscuro. Las páginas de trabajo (catálogo y detalle de técnica) usan el mismo mundo con una columna fija a la izquierda y el contenido a la derecha. Las secciones alternan `fondo` y `superficie` y se separan por espacio y tipografía, no por color. La tipografía es una sola familia, Host Grotesk, grande y apretada en titulares; Martian Mono aparece solo cuando el dato es de la máquina.\n\nEl objeto firma es la mesa de Mayo real (Tiroidectomía), dibujada por código: la funda verde con el instrumental de acero en sus posiciones reales. La misma mesa se muestra como referencia, inclinada en 3D y escaneada por la cámara. En el detalle de técnica la mesa deja de ser objeto y pasa a diagrama sereno. Los datos reales se muestran como tales (técnicas del catálogo, estudios citados con autor y año); lo que es ilustrativo se marca «demostración».",
+    "keyCharacteristics": [
+      "Blanco clínico frío, tinta petróleo y verde de paño como única marca.",
+      "Acero satinado dibujado en SVG para el instrumental; ningún raster.",
+      "Menta exclusiva de las detecciones de cámara; rojo exclusivo de «fuera de lugar».",
+      "Fondos neutros que alternan `fondo` y `superficie` con un fundido casi imperceptible; el verde de marca se reserva para acciones, enlaces y la espiral, y lo oscuro para la vista Cámara y el pie.",
+      "Host Grotesk en todo; Martian Mono solo para datos de máquina.",
+      "Composiciones anchas y horizontales a pantalla completa; listas paralelas en columnas separadas por filete.",
+      "Sombras neutras, sin brillos; filetes finos de 1 px como estructura.",
+      "La mesa es objeto en el inicio (paño, tela, 3D) y diagrama sereno en el detalle (superficie, rejilla fina, sin paño)."
+    ],
+    "rules": [
+      {
+        "name": "The Dos Acentos Cautivos Rule",
+        "body": "La menta y el rojo viven solo dentro de la cámara (vista Cámara, ventana de SIVRI) y en enlaces sobre capítulos oscuros, en el caso de la menta. Fuera de ahí no existen: ni estados genéricos de éxito o error, ni decoración.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paño Es Objeto Rule",
+        "body": "La textura no tejida `--tela` y el velo `brillo-pano`/`sombra-pano` se aplican solo a la funda de Mayo y sus miniaturas. Ninguna superficie de página, tarjeta o banda lleva textura.",
+        "section": "colors"
+      },
+      {
+        "name": "The Una Sola Marca Rule",
+        "body": "El verde es el único color de marca. No se agregan segundos acentos decorativos; `hover-neutro` y `marca-claro-hover` son pasos de estado, no colores nuevos.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fondos Neutros Rule",
+        "body": "Las secciones del inicio alternan `fondo` y `superficie` (Portada `fondo`, Tres formas `superficie`, Especialidades `fondo`, Investigación `superficie`, Para quien estudia y enseña `fondo`, Preguntas `superficie`) y terminan en el pie `noche`. No hay banda de cierre: se probó una con solo texto y el usuario la quitó; la acción de crear cuenta vive en la barra, siempre visible, y en la portada. Se separan por espacio y tipografía, no por color: regla 60-30-10 (60 % neutro, 30 % superficies y tonos de apoyo, 10 % verde de marca). Un color distinto por sección, con el mismo peso, se ve desordenado e infantil; se probó una paleta pastel por sección y el usuario la rechazó. El cambio de una sección a otra es un fundido que ocurre solo dentro de los rellenos de ambas (nunca debajo del contenido): media curva suave a cada lado del límite, que se encuentran en la mezcla de los dos colores, interpolada en OKLab, en una capa detrás del contenido.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinte De Su Fondo Rule",
+        "body": "El texto secundario sobre un fondo oscuro o de color toma un tinte claro de ese mismo fondo: `niebla-noche` sobre `noche`, `niebla-marca` sobre `marca-hondo`, `niebla-pano` sobre `pano`. Nunca un gris neutro ni blanco con opacidad para texto.",
+        "section": "colors"
+      },
+      {
+        "name": "The -0.04em Rule",
+        "body": "Los titulares de 38px o más van a 650 con -0.04em; nunca más apretado. Los de 24-30px van a -0.03em, los de 17-20px a -0.01/-0.02em.",
+        "section": "typography"
+      },
+      {
+        "name": "The Voz De La Máquina Rule",
+        "body": "Martian Mono solo para lo que dice la máquina: etiquetas de detección con su confianza, «Va aquí» y la marca «demostración». Nunca en titulares, botones, citas ni cuerpo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Un Solo Gigante Rule",
+        "body": "En cada pantalla hay a lo sumo un momento tipográfico extremo; en el inicio es el titular de la portada y ningún otro texto compite con él.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paso Callado Rule",
+        "body": "El número de paso va en línea antes del nombre, al mismo tamaño y en `filete-2`, nunca encima como rótulo. Es decorativo (`aria-hidden`) y solo se usa cuando el orden también se dice en texto. Hoy ninguna pantalla numera pasos: el carril y su recorrido nombran las herramientas.",
+        "section": "typography"
+      },
+      {
+        "name": "The Titular Lateral Rule",
+        "body": "Cuando el titular va al costado del contenido, ocupa las columnas 1-5, la 6 queda libre como respiro y el contenido va en 7-12 (la espiral, por ser figura, puede empezar en la 6). La misma línea vertical se repite en toda la página, como en las páginas de producto de Apple.",
+        "section": "layout"
+      },
+      {
+        "name": "The Sin Columna Central Rule",
+        "body": "Nada se centra en una columna angosta con vacíos a los lados. El ancho de la ventana es el lienzo.",
+        "section": "layout"
+      },
+      {
+        "name": "The Columnas Iguales Solo Para Pares Rule",
+        "body": "Los repartos iguales son solo para listas del mismo tipo (especialidades, instrumental, columnas del pie), reguladas por filetes. Las composiciones de cabecera y contenido llevan pesos desiguales.",
+        "section": "layout"
+      },
+      {
+        "name": "The Sombra Neutra Rule",
+        "body": "Toda sombra es tinta neutra difusa. Sin sombras de color, sin brillos (`glow`), sin sombras duras desplazadas. El barrido de la cámara es un instrumento de escaneo, no un brillo decorativo.",
+        "section": "elevation"
+      },
+      {
+        "name": "The El Objeto Pesa Rule",
+        "body": "La elevación fuerte es de los objetos dibujados (funda, piezas, riel) y de lo que se superpone (desplegables, leyenda). Las tarjetas de interfaz se bordean con filete (`inset 0 0 0 1px`), no se levantan.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** usar la rejilla de 12 columnas con medianil de 24px y margen `lado`, a pantalla completa.",
+      "**Do** dar pesos desiguales a cabecera y contenido (6/3/3, 6 + 5, 4/5/3, 4 + 7); columnas iguales solo para listas paralelas reguladas por filete.",
+      "**Do** dibujar el instrumental en SVG con el degradado de acero y contorno `acero-filo`, en sus posiciones reales de la mesa.",
+      "**Do** usar solo datos reales (la mesa de Mayo de Tiroidectomía, técnicas del catálogo, estudios con autor y año) y marcar todo lo ilustrativo con «demostración» en Martian Mono.",
+      "**Do** ordenar listas con filetes de 1px, sin íconos.",
+      "**Do** alternar `fondo` y `superficie` entre secciones, con fundido solo en los rellenos; oscuro solo en la vista Cámara y el pie.",
+      "**Do** alinear el contenido de las secciones con titular lateral en la columna 7.",
+      "**Do** prometer en el aviso de cuenta solo lo que la técnica tiene: si su mesa aún no está en el catálogo, el aviso dice «con su instrumental», sin explicar por qué.",
+      "**Do** dar al texto secundario sobre fondos de color el tinte de su fondo (`niebla-noche`, `niebla-marca`, `niebla-pano`).",
+      "**Do** mantener titulares a 650 y -0.04em, nunca más apretados.",
+      "**Do** convertir en celular las filas de columnas paralelas en carriles horizontales con `scroll-snap`.",
+      "**Do** probar en 1100px y 760px y respetar `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** dar a cada sección un color distinto; los fondos son neutros.",
+      "**Don't** hablar del funcionamiento interno (versiones, revisión, roles, licencia, despliegue) ni mostrar cifras del catálogo.",
+      "**Don't** poner créditos ni el nombre de la institución fuera de «Quiénes somos».",
+      "**Don't** mostrar estados de disponibilidad («Disponible», «Próximamente») en los mockups.",
+      "**Don't** usar kickers ni eyebrows sobre los títulos; el número de paso va en línea, no encima.",
+      "**Don't** armar filas de tarjetas con ícono en recuadro.",
+      "**Don't** usar sombras de color, brillos ni sombras duras desplazadas.",
+      "**Don't** aplicar `--tela` ni ninguna textura a superficies de página; solo a la funda.",
+      "**Don't** usar menta o rojo fuera de la cámara (la menta, salvo enlaces sobre oscuro).",
+      "**Don't** usar entradas genéricas de aparecer al hacer scroll; la carga tiene una sola coreografía.",
+      "**Don't** volver a texturas artesanales o rústicas."
+    ]
+  }
+}

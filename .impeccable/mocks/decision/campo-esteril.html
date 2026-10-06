@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista previa: Campo estéril</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&display=swap">
+<style>
+:root {
+  --pano: #16475a;
+  --pano-claro: #1f5a6f;
+  --pano-hondo: #0f3443;
+  --costura: rgba(244, 247, 246, .22);
+  --blanco: #f4f7f6;
+  --niebla: #c6d6dc;
+  --acero: #b8c4c9;
+  --yodo: #e3954a;
+  --texto-oscuro: #0f2a35;
+  --lado: clamp(16px, 4vw, 64px);
+  --letra: "Hanken Grotesk", system-ui, sans-serif;
+  /* Tela no tejida: grano fino dibujado, no una imagen */
+  --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--blanco); font-family: var(--letra); font-size: 16px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--pano);
+  background-image:
+    var(--grano),
+    linear-gradient(104deg, transparent 0 38%, rgba(255, 255, 255, .035) 44%, rgba(0, 0, 0, .10) 49%, transparent 56%),
+    linear-gradient(76deg, transparent 0 70%, rgba(0, 0, 0, .08) 76%, rgba(255, 255, 255, .03) 80%, transparent 86%);
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+/* Barra sobre el paño */
+.barra { position: relative; z-index: 5; height: 72px; display: flex; align-items: center; gap: 40px; padding-inline: var(--lado); border-bottom: 1px dashed var(--costura); }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
+.nav { display: flex; gap: 6px; }
+.nav a, .nav button { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 0; border-radius: 6px; background: transparent; color: var(--niebla); font-weight: 600; cursor: pointer; }
+.nav a:hover, .nav button:hover, .menu-abierto .nav button { color: var(--blanco); background: rgba(255, 255, 255, .07); }
+.menu-abierto .nav svg { transform: rotate(180deg); }
+.derecha { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+.derecha a:first-child { color: var(--niebla); font-weight: 600; }
+.boton { display: inline-flex; align-items: center; height: 42px; padding: 0 20px; border-radius: 6px; background: var(--blanco); color: var(--texto-oscuro); font-weight: 700; }
+.boton:hover { background: #fff; box-shadow: 0 8px 18px -8px rgba(0, 0, 0, .5); }
+.boton.grande { height: 54px; padding: 0 26px; font-size: 17px; }
+.boton.borde { background: transparent; color: var(--blanco); box-shadow: inset 0 0 0 1.5px rgba(244, 247, 246, .55); }
+.boton.borde:hover { background: rgba(255, 255, 255, .07); }
+
+/* Desplegable: un pliegue del paño que baja */
+.desplegable { display: none; position: absolute; top: 72px; left: 0; right: 0; z-index: 4; padding: 32px var(--lado) 40px; background-color: var(--pano-claro); background-image: var(--grano); border-bottom: 1px dashed var(--costura); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .6); }
+.menu-abierto .desplegable { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, .8fr); gap: 0; }
+.producto-menu { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; padding: 8px 28px 8px 0; }
+.producto-menu + .producto-menu { padding-left: 28px; border-left: 1px dashed var(--costura); }
+.producto-menu .icono { width: 56px; height: 56px; border-radius: 10px; display: grid; place-items: center; background: rgba(15, 52, 67, .7); }
+.producto-menu strong { font-size: 19px; }
+.producto-menu span { color: var(--niebla); font-size: 15px; }
+.pronto { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 99px; background: rgba(227, 149, 74, .18); color: #f2c08f; font-size: 12px; font-weight: 700; vertical-align: 2px; }
+.lateral-menu { padding: 8px 0 8px 28px; border-left: 1px dashed var(--costura); display: grid; align-content: start; gap: 10px; }
+.lateral-menu p { margin: 0; color: var(--niebla); font-size: 15px; }
+.lateral-menu a { font-weight: 700; color: #f2c08f; }
+
+/* Portada: el titular sobre el paño y la ventana del campo */
+.portada { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 64px; align-items: center; padding: 80px var(--lado) 104px; }
+h1 { margin: 0; font-size: clamp(44px, 5.4vw, 80px); line-height: 1; font-weight: 800; letter-spacing: -0.035em; text-wrap: balance; }
+.sub { margin: 26px 0 0; max-width: 44ch; color: var(--niebla); font-size: 19px; line-height: 1.55; }
+.acciones { display: flex; gap: 14px; margin-top: 38px; flex-wrap: wrap; }
+
+.fenestracion { position: relative; padding: 18px; }
+.fenestracion::before { content: ""; position: absolute; inset: 0; border: 1.5px dashed var(--costura); border-radius: 28px; }
+.ventana {
+  position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 5 / 4;
+  background-color: #c3cdd2;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .18) 0 1px, transparent 1px 3px),
+    linear-gradient(135deg, #dfe6e9 0%, #b8c4c9 55%, #cfd8dc 100%);
+  box-shadow: inset 0 10px 22px rgba(4, 22, 30, .55), inset 0 0 0 1px rgba(4, 22, 30, .4);
+}
+.etiqueta { position: absolute; left: 22px; top: 20px; padding: 6px 12px; border-radius: 4px; background: var(--blanco); color: var(--texto-oscuro); font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .35); }
+.etiqueta span { font-weight: 500; color: #3d5560; }
+.bandeja { position: absolute; top: 70px; bottom: 7%; left: 50%; transform: translateX(-50%); aspect-ratio: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(7, 1fr); }
+.bandeja i { margin: 16%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: var(--pano); color: var(--blanco); font-style: normal; font-weight: 800; font-size: 14px; box-shadow: 0 3px 6px -2px rgba(4, 22, 30, .6); }
+.bandeja i.sel { background: var(--yodo); color: var(--texto-oscuro); }
+.nota { position: absolute; right: 22px; bottom: 20px; padding: 8px 12px; border-radius: 6px; background: var(--pano-hondo); color: var(--blanco); font-size: 14px; }
+.nota b { color: #f2c08f; }
+
+/* Productos: zonas del campo separadas por costuras */
+.productos { padding: 88px var(--lado) 48px; border-top: 1px dashed var(--costura); background: linear-gradient(180deg, rgba(15, 52, 67, .45), rgba(15, 52, 67, 0) 60%); }
+.productos h2 { margin: 0; font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; }
+.productos > p { margin: 14px 0 44px; color: var(--niebla); font-size: 18px; max-width: 56ch; }
+.zonas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.zona { padding: 4px 32px 0 0; }
+.zona + .zona { padding-left: 32px; border-left: 1px dashed var(--costura); }
+.zona strong { display: block; font-size: 24px; }
+.zona p { margin: 8px 0 0; color: var(--niebla); max-width: 34ch; }
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="marca" href="#">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1.5" y="1.5" width="25" height="25" rx="6" fill="none" stroke="#f4f7f6" stroke-width="2" stroke-dasharray="3 2.4"/><rect x="8" y="8" width="12" height="12" rx="3" fill="#f4f7f6"/></svg>
+    IQ Platform
+  </a>
+  <nav class="nav" aria-label="Principal">
+    <button type="button" aria-expanded="false" id="productos">Productos
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <a href="#">Para instituciones</a>
+    <a href="#">Quiénes somos</a>
+  </nav>
+  <div class="derecha">
+    <a href="#">Ingresar</a>
+    <a class="boton" href="#">Crear cuenta</a>
+  </div>
+</header>
+
+<div class="desplegable" role="region" aria-label="Productos">
+  <a class="producto-menu" href="#">
+    <span class="icono"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#f4f7f6" stroke-width="2"/><circle cx="10" cy="10" r="2.4" fill="#f4f7f6"/><circle cx="18" cy="14" r="2.4" fill="#f4f7f6"/><circle cx="11" cy="19" r="2.4" fill="#e3954a"/></svg></span>
+    <div><strong>DataIQ</strong><br><span>Cada técnica, con su instrumental y su mesa.</span></div>
+  </a>
+  <a class="producto-menu" href="#">
+    <span class="icono"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3l10 5.5v11L14 25 4 19.5v-11z M4 8.5l10 5.5 10-5.5 M14 14v11" fill="none" stroke="#f4f7f6" stroke-width="2" stroke-linejoin="round"/></svg></span>
+    <div><strong>SIMIQ3D</strong><span class="pronto">Próximamente</span><br><span>La mesa de cada técnica, en 3D.</span></div>
+  </a>
+  <a class="producto-menu" href="#">
+    <span class="icono"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="7" width="22" height="16" rx="3" fill="none" stroke="#f4f7f6" stroke-width="2"/><circle cx="14" cy="15" r="4.5" fill="none" stroke="#f4f7f6" stroke-width="2"/><path d="M9 7l2-3h6l2 3" fill="none" stroke="#f4f7f6" stroke-width="2" stroke-linejoin="round"/></svg></span>
+    <div><strong>SIVRI</strong><span class="pronto">Próximamente</span><br><span>La cámara revisa la mesa armada.</span></div>
+  </a>
+  <div class="lateral-menu">
+    <p>¿Una institución quiere usar IQ Platform con sus propias técnicas?</p>
+    <a href="#">Para instituciones →</a>
+  </div>
+</div>
+
+<main>
+  <section class="portada">
+    <div>
+      <h1>La mesa de cada técnica, lista para practicar.</h1>
+      <p class="sub">Consultar la técnica, verla en 3D y validar la mesa armada con cámara: tres herramientas para estudiar instrumentación quirúrgica fuera del laboratorio.</p>
+      <div class="acciones">
+        <a class="boton grande" href="#">Crear cuenta gratis</a>
+        <a class="boton grande borde" href="#">Conocer los productos</a>
+      </div>
+    </div>
+    <div class="fenestracion">
+      <div class="ventana" aria-label="Mesa de Mayo de Tiroidectomía vista por la ventana del paño">
+        <span class="etiqueta">Tiroidectomía <span>· Mesa de Mayo</span></span>
+        <div class="bandeja" id="bandeja"></div>
+        <span class="nota"><b>7</b> · Pinza de Allis</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="productos">
+    <h2>Productos</h2>
+    <p>Tres herramientas que comparten el mismo contenido, para cada momento del estudio.</p>
+    <div class="zonas">
+      <div class="zona"><strong>DataIQ</strong><p>Consultar cada técnica: datos clínicos, instrumental y mesa.</p></div>
+      <div class="zona"><strong>SIMIQ3D</strong><p>Pedir una técnica y recorrer su mesa en 3D.</p></div>
+      <div class="zona"><strong>SIVRI</strong><p>Armar la mesa real y que la cámara la revise.</p></div>
+    </div>
+  </section>
+</main>
+<script>
+  [[1,7,5],[2,6,5],[3,5,5],[4,4,1],[5,4,2],[6,4,4],[7,1,3],[8,1,6],[9,2,7],[10,3,7]].forEach(function (o) {
+    var i = document.createElement("i");
+    i.textContent = o[0]; i.style.gridRow = o[1]; i.style.gridColumn = o[2];
+    if (o[0] === 7) i.className = "sel";
+    document.getElementById("bandeja").appendChild(i);
+  });
+  if (location.hash === "#menu") document.body.classList.add("menu-abierto");
+  document.getElementById("productos").addEventListener("click", function () { document.body.classList.toggle("menu-abierto"); });
+</script>
+</body>
+</html>
