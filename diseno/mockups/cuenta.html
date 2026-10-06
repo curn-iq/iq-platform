@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ingresar · IQ Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  /* Clínica: blanco frío, tinta petróleo, filetes finos */
+  --fondo: #f3f6f6;
+  --superficie: #ffffff;
+  --filete: #dbe4e6;
+  --filete-2: #c4d1d4;
+  --tinta: #0a1b22;
+  --tinta-2: #364b53;
+  --tinta-3: #566a72;
+  /* Marca: el verde quirúrgico del paño */
+  --marca: #0d6a5e;
+  --marca-hondo: #08463e;
+  --marca-claro: #ddefeb;
+  --marca-claro-hover: #cfe7e1;
+  --hover-neutro: #e6eded;
+  --pano: #1d7564;
+  /* Cámara: menta para detecciones, rojo solo para "fuera de lugar" */
+  --menta: #38e2b3;
+  --alerta-noche: #ff6b6b;
+  /* Noche: la vista de cámara y el pie */
+  --noche: #061217;
+  --noche-2: #0c1e24;
+  --filete-noche: #1d353d;
+  --niebla-noche: #a9bec5;
+  --letra: "Host Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --datos: "Martian Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --lado: clamp(20px, 4.4vw, 64px);
+  --barra: 72px;
+  --expo: cubic-bezier(.16, 1, .3, 1);
+  --cuarta: cubic-bezier(.25, 1, .5, 1);
+  --vaiven: cubic-bezier(.87, 0, .13, 1);
+  /* Tela no tejida de la funda: solo en el objeto, nunca en la página */
+  --tela: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.32' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeDiffuseLighting surfaceScale='1.6' lighting-color='%23a2a2a2'%3E%3CfeDistantLight azimuth='235' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23f)'/%3E%3C/svg%3E");
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: var(--barra); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--letra);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--marca);
+  scrollbar-color: var(--filete-2) var(--fondo);
+}
+::selection { background: var(--marca); color: #fff; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; line-height: 1.4; }
+:focus-visible { outline: 2.5px solid var(--marca); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+.ancho { padding-inline: var(--lado); }
+.demo { font-family: var(--datos); font-size: 12.5px; line-height: 1.4; color: var(--tinta-3); }
+
+/* ---------- Barra ---------- */
+.barra {
+  position: sticky; top: 0; z-index: 50;
+  height: var(--barra);
+  display: flex; align-items: center; gap: 44px;
+  padding-inline: var(--lado);
+  background: var(--fondo);
+  border-bottom: 1px solid var(--filete);
+}
+.marca-iq { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
+.nav { display: flex; gap: 2px; }
+.nav > a, .nav > button {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  height: 40px; padding: 0 14px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--tinta-2); font-size: 15.5px; font-weight: 550; cursor: pointer;
+  transition: background .2s var(--cuarta), color .2s var(--cuarta);
+}
+.nav > a:hover, .nav > button:hover, .nav > button[aria-expanded="true"] { background: var(--hover-neutro); color: var(--tinta); }
+.nav svg { transition: transform .35s var(--expo); }
+.nav button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.derecha { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.ingresar { height: 40px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; color: var(--tinta-2); font-size: 15.5px; font-weight: 600; }
+.ingresar:hover { background: var(--hover-neutro); color: var(--tinta); }
+.boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 42px; padding: 0 18px; border: 0; border-radius: 10px;
+  background: var(--marca); color: #fff; font-size: 15.5px; font-weight: 650; white-space: nowrap; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 1px 2px rgba(10, 27, 34, .25);
+  transition: background .2s var(--cuarta), transform .35s var(--expo), box-shadow .35s var(--expo);
+}
+.boton:hover { background: var(--marca-hondo); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 8px 16px -10px rgba(10, 27, 34, .5); }
+.boton svg { transition: transform .35s var(--expo); }
+.boton:hover svg { transform: translateX(3px); }
+.boton.grande { height: 56px; padding: 0 26px; font-size: 17px; border-radius: 12px; }
+.enlace { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; color: var(--marca); }
+.enlace svg { transition: transform .35s var(--expo); }
+.enlace:hover svg { transform: translate(3px, 0); }
+.menu-movil { display: none; }
+
+/* Barra: cada botón solo abre su panel; las opciones de adentro son las que llevan a otra página */
+.panel-nav {
+  position: fixed; top: var(--barra); left: 0; right: 0; z-index: 45;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start;
+  padding: 40px var(--lado) 44px;
+  background: var(--fondo);
+  border-bottom: 1px solid var(--filete);
+  box-shadow: 0 24px 40px -32px rgba(10, 27, 34, .4);
+  animation: bajar .4s var(--expo);
+}
+.panel-nav[hidden] { display: none; }
+@keyframes bajar { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.panel-cabeza { grid-column: 1 / 4; display: grid; gap: 12px; }
+.panel-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.panel-linea { color: var(--tinta-3); font-size: 16px; line-height: 1.5; max-width: 26ch; }
+.panel-cabeza .enlace { justify-self: start; margin-top: 6px; }
+.panel-lista { grid-column: 4 / 9; list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.panel-lista a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 4px; border-bottom: 1px solid var(--filete); transition: padding .35s var(--expo); }
+.panel-lista strong { display: block; font-size: 20px; font-weight: 650; letter-spacing: -.02em; transition: color .2s var(--cuarta); }
+.panel-lista a span span { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 15px; }
+.panel-lista svg { color: var(--marca); opacity: 0; transform: translateX(-6px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
+.panel-lista a:hover, .panel-lista a:focus-visible, .panel-lista a.activa { padding-left: 12px; }
+.panel-lista a:hover svg, .panel-lista a:focus-visible svg, .panel-lista a.activa svg { opacity: 1; transform: none; }
+.panel-lista a.activa strong { color: var(--marca); }
+.panel-vista { grid-column: 9 / 13; }
+.vista-pie { margin-top: 12px; color: var(--tinta-3); font-size: 14px; }
+/* Vista previa de Herramientas: la misma mesa cambia según la herramienta señalada */
+/* Vistas previas de las otras categorías */
+.vista-herramienta .vh { display: none; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; align-items: start; }
+.vista-herramienta[data-vista="referencia"] .vh[data-de="referencia"], .vista-herramienta[data-vista="3d"] .vh[data-de="3d"], .vista-herramienta[data-vista="camara"] .vh[data-de="camara"] { display: grid; animation: aparecer .35s var(--expo); }
+.vh > svg { width: 96px; height: 96px; }
+.vh-nombre { margin-bottom: 6px; font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.vh ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.vh li { padding: 9px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 15px; line-height: 1.4; }
+.vista-titulo { padding-bottom: 8px; color: var(--tinta-3); font-size: 14px; font-weight: 650; }
+.vista-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--filete); }
+.vista-lista li { padding: 10px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 15.5px; }
+.vista-frase { padding: 28px; border-radius: 16px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 26px; line-height: 1.12; font-weight: 650; letter-spacing: -.03em; }
+.vista-frase em { font-style: normal; color: var(--marca); }
+/* Menú completo en celular */
+.panel-movil { position: fixed; top: var(--barra); left: 0; right: 0; bottom: 0; z-index: 45; overflow-y: auto; padding: 8px var(--lado) 32px; background: var(--superficie); animation: bajar .4s var(--expo); }
+.panel-movil[hidden] { display: none; }
+.panel-movil details { border-bottom: 1px solid var(--filete); }
+.panel-movil summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 16px 0; font-size: 18px; font-weight: 650; cursor: pointer; }
+.panel-movil summary::-webkit-details-marker { display: none; }
+.panel-movil summary svg { transition: transform .3s var(--expo); }
+.panel-movil details[open] summary svg { transform: rotate(180deg); }
+.panel-movil details ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 2px; }
+.panel-movil details li a { display: block; padding: 8px 0; color: var(--tinta-2); font-size: 16px; }
+.panel-movil .acciones-movil { display: grid; gap: 10px; margin-top: 24px; }
+.panel-movil .acciones-movil .ingresar { justify-content: center; height: 48px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--filete); }
+
+/* ---------- Portada: titular a la izquierda, la mesa a la derecha ---------- */
+.portada {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center;
+  min-height: calc(100svh - var(--barra));
+  padding-block: 28px;
+}
+.cabeza { grid-column: 1 / 6; display: grid; gap: 28px; align-content: center; padding-right: 8px; }
+h1 { font-size: clamp(46px, 5.6vw, 100px); line-height: .96; font-weight: 650; letter-spacing: -0.04em; }
+h1 .l { display: block; overflow: hidden; padding: .06em 0 .04em; margin-top: -.06em; }
+h1 .l > span { display: inline-block; animation: subir 1s var(--expo) backwards; }
+h1 .l:nth-child(2) > span { animation-delay: .07s; }
+h1 .l:nth-child(3) > span { animation-delay: .14s; }
+@keyframes subir { from { transform: translateY(105%); } to { transform: none; } }
+.lede { color: var(--tinta-2); font-size: 18px; line-height: 1.55; max-width: 34ch; animation: aparecer .9s var(--expo) .3s backwards; }
+.acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; animation: aparecer .9s var(--expo) .4s backwards; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* Escenario: la misma mesa en tres vistas */
+.escenario {
+  grid-column: 6 / 13;
+  position: relative; isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(120px, 10vw, 150px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px 22px;
+  height: clamp(620px, calc(100svh - var(--barra) - 56px), 880px);
+  padding: 18px 20px 16px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef3f4 100%);
+  box-shadow: 0 1px 2px rgba(10, 27, 34, .05), 0 16px 32px -24px rgba(10, 27, 34, .3);
+  animation: aparecer 1s var(--expo) .15s backwards;
+  overflow: hidden;
+}
+.escenario::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(120% 90% at 40% 40%, var(--noche-2), var(--noche) 70%); opacity: 0; transition: opacity .7s var(--cuarta); }
+.escenario[data-vista="camara"]::before { opacity: 1; }
+
+.selector { grid-column: 1 / -1; display: flex; gap: 6px; padding: 5px; width: max-content; max-width: 100%; border-radius: 14px; background: rgba(10, 27, 34, .05); transition: background .6s var(--cuarta); }
+.escenario[data-vista="camara"] .selector { background: rgba(255, 255, 255, .07); }
+.selector button {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: baseline; gap: 9px;
+  height: 46px; padding: 12px 18px 0; border: 0; border-radius: 10px;
+  background: transparent; color: var(--tinta-3); cursor: pointer;
+  transition: background .3s var(--cuarta), color .3s var(--cuarta);
+}
+.selector button b { font-size: 16px; font-weight: 650; }
+.selector button span { font-size: 13px; font-weight: 500; opacity: .75; }
+.selector button:hover { color: var(--tinta); }
+.selector button[aria-selected="true"] { background: #fff; color: var(--tinta); box-shadow: 0 1px 2px rgba(10, 27, 34, .1); }
+.escenario[data-vista="camara"] .selector button { color: var(--niebla-noche); }
+.escenario[data-vista="camara"] .selector button[aria-selected="true"] { background: var(--noche-2); color: #fff; box-shadow: inset 0 0 0 1px var(--filete-noche); }
+.selector .avance { position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; background: rgba(10, 27, 34, .1); overflow: hidden; opacity: 0; }
+.selector .avance::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: .45; transform: scaleX(0); transform-origin: left; }
+.selector button.corriendo .avance { opacity: 1; }
+.selector button.corriendo .avance::after { animation: avanzar var(--ciclo, 5.5s) linear forwards; }
+.escenario[data-vista="camara"] .selector .avance { background: rgba(255, 255, 255, .14); }
+@keyframes avanzar { to { transform: scaleX(1); } }
+
+.escena { grid-column: 1; grid-row: 2; position: relative; display: grid; place-items: center; min-height: 0; perspective: 1800px; perspective-origin: 50% 25%; container-type: size; }
+.funda {
+  position: relative;
+  width: min(100cqw, 100cqh); aspect-ratio: 1;
+  border-radius: 12px;
+  background-color: var(--pano);
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, .12), transparent 40%, rgba(0, 0, 0, .14)), var(--tela);
+  background-blend-mode: soft-light, soft-light;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 28px 50px -22px rgba(10, 27, 34, .55);
+  transform-style: preserve-3d;
+  transition: transform 1.2s var(--expo), filter .7s var(--cuarta), box-shadow 1.2s var(--expo);
+}
+.funda::after { content: ""; position: absolute; inset: 12px; border-radius: 6px; border: 1.5px solid rgba(255, 255, 255, .2); pointer-events: none; }
+.funda::before { content: ""; position: absolute; inset: 0; border-radius: 12px; background: #0e463c; transform: translateZ(-16px); pointer-events: none; }
+.escenario[data-vista="3d"] .funda { transform: rotateX(44deg) rotateZ(-28deg) scale(.74); box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 26px 50px 50px -20px rgba(10, 27, 34, .4); }
+.escenario[data-vista="3d"] .mesa .pieza .forma { transform: scale(1.3); }
+.escenario[data-vista="3d"] .numero { transform: scale(1.55); }
+.numero { transform-box: fill-box; transform-origin: center; transition: opacity .4s var(--cuarta), transform .9s var(--expo); }
+.escenario[data-vista="camara"] .funda { filter: saturate(.55) brightness(.86) contrast(1.08); transform: scale(.95); }
+.mesa { position: relative; z-index: 1; display: block; width: 100%; height: 100%; overflow: visible; }
+.rejilla path { stroke: rgba(255, 255, 255, .2); stroke-width: 1.2; transition: opacity .6s var(--cuarta); }
+.escenario[data-vista="camara"] .rejilla path { opacity: 0; }
+
+.pieza { cursor: pointer; }
+.pieza .hit { fill: transparent; }
+.pieza:focus { outline: none; }
+.pieza:focus-visible .hit { stroke: #fff; stroke-width: 3; stroke-dasharray: 7 6; }
+.pieza .forma { filter: drop-shadow(0 2px 1.4px rgba(3, 20, 28, .6)) drop-shadow(0 6px 8px rgba(3, 20, 28, .22)); transition: transform .45s var(--expo), filter .45s var(--expo); transform-box: fill-box; transform-origin: center; }
+.mesa .pieza:hover .forma, .mesa .pieza[aria-pressed="true"] .forma { transform: translate(-2px, -6px); filter: drop-shadow(0 12px 8px rgba(3, 20, 28, .4)); }
+.mesa .pieza { animation: colocar .7s var(--expo) backwards; animation-delay: calc(.6s + var(--i) * 70ms); }
+@keyframes colocar { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: none; } }
+.numero circle { fill: rgba(6, 18, 23, .72); transition: fill .25s var(--cuarta); }
+.numero text { fill: #fff; font-family: var(--letra); font-size: 17px; font-weight: 700; text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+.pieza[aria-pressed="true"] .numero circle { fill: #fff; }
+.pieza[aria-pressed="true"] .numero text { fill: var(--marca-hondo); }
+.escenario[data-vista="camara"] .numero { opacity: 0; }
+/* En la demostración de la cámara, una pieza quedó una celda a la derecha */
+.escenario[data-vista="camara"] .mesa .pieza[data-n="6"] .forma { transform: translate(100px, 0); transition: none; }
+.acero { fill: url(#acero); stroke: #3f4b52; stroke-width: .6; stroke-linejoin: round; }
+.hoja { fill: url(#hoja); stroke: #4f5c63; stroke-width: .55; }
+.caja { fill: #9eaab0; stroke: #4f5c63; stroke-width: .55; }
+.raya { fill: none; stroke: #66737a; stroke-width: .5; stroke-linecap: round; }
+.punta { fill: none; stroke: url(#acero); stroke-width: 1.7; stroke-linecap: round; }
+
+/* Detecciones de la cámara */
+.det rect.caja-det { fill: rgba(56, 226, 179, .06); stroke: var(--menta); stroke-width: 2.2; }
+.det.error rect.caja-det { fill: rgba(255, 107, 107, .1); stroke: var(--alerta-noche); }
+.det .etq rect { fill: var(--menta); }
+.det.error .etq rect { fill: var(--alerta-noche); }
+.det .etq text { fill: var(--noche); font-family: var(--datos); font-size: 14px; font-weight: 600; dominant-baseline: central; }
+.destino { fill: none; stroke: var(--alerta-noche); stroke-width: 2; stroke-dasharray: 8 7; }
+.destino-etq { fill: var(--alerta-noche); font-family: var(--datos); font-size: 14px; font-weight: 600; dominant-baseline: central; }
+.mesa .detecciones { opacity: 0; transition: opacity .3s var(--cuarta); pointer-events: none; }
+.escenario[data-vista="camara"] .mesa .detecciones { opacity: 1; }
+.mesa .det rect.caja-det { stroke-dasharray: var(--per) var(--per); stroke-dashoffset: var(--per); }
+.mesa .det .etq, .mesa .destino, .mesa .destino-etq { opacity: 0; }
+.escenario.escaneado .mesa .det rect.caja-det { animation: trazar .6s var(--expo) forwards; animation-delay: calc(var(--i) * 60ms); }
+.escenario.escaneado .mesa .det .etq { animation: mostrar .35s var(--cuarta) forwards; animation-delay: calc(.25s + var(--i) * 60ms); }
+.escenario.escaneado .mesa .destino { animation: mostrar .4s var(--cuarta) 1s forwards; }
+.escenario.escaneado .mesa .destino-etq { animation: mostrar .4s var(--cuarta) 1.1s forwards; }
+@keyframes trazar { to { stroke-dashoffset: 0; } }
+@keyframes mostrar { to { opacity: 1; } }
+
+/* Visor de cámara */
+.visor { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s var(--cuarta); }
+.escenario[data-vista="camara"] .visor { opacity: 1; }
+.visor i { position: absolute; width: 30px; height: 30px; border: 2px solid rgba(255, 255, 255, .7); }
+.visor i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
+.visor i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-radius: 0 8px 0 0; }
+.visor i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 8px; }
+.visor i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; border-radius: 0 0 8px 0; }
+.barrido { position: absolute; left: 3%; right: 3%; top: 0; height: 72px; margin-top: -72px; background: linear-gradient(rgba(56, 226, 179, 0), rgba(56, 226, 179, .16)); border-bottom: 2px solid var(--menta); opacity: 0; }
+.escenario.escaneando .barrido { animation: barrer 1.1s var(--vaiven) forwards; }
+@keyframes barrer { 0% { top: 0; opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+/* Las diez piezas, sobre la mesa */
+.lista-piezas {
+  position: absolute; inset: 0; z-index: 4;
+  display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px;
+  padding: 18px 20px; border-radius: 14px;
+  background: var(--superficie);
+  box-shadow: 0 12px 30px -16px rgba(10, 27, 34, .45);
+  animation: aparecer .4s var(--expo);
+}
+.lista-piezas[hidden] { display: none; }
+.lista-cabeza { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.lista-cabeza p { font-weight: 650; }
+.cerrar { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 9px; background: var(--fondo); cursor: pointer; }
+.leyenda { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; overflow: auto; align-content: start; }
+.leyenda li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 0 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer; transition: background .2s var(--cuarta); }
+.leyenda li:hover, .leyenda li.activa { background: rgba(13, 106, 94, .08); }
+.leyenda b { font-variant-numeric: tabular-nums; color: var(--marca); font-weight: 700; }
+.leyenda span { font-size: 15px; font-weight: 600; line-height: 1.35; }
+.leyenda small { grid-column: 2; color: var(--tinta-3); font-size: 13px; font-style: italic; line-height: 1.4; }
+
+/* Riel: la pieza elegida en acero, a gran escala */
+.riel { grid-column: 2; grid-row: 2 / 4; position: relative; min-height: 0; }
+.vista-riel { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 10px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .45s var(--cuarta), transform .6s var(--expo), visibility 0s .45s; }
+.escenario[data-vista="referencia"] .riel-referencia, .escenario[data-vista="3d"] .riel-3d, .escenario[data-vista="camara"] .riel-camara { opacity: 1; visibility: visible; transform: none; transition: opacity .45s var(--cuarta) .15s, transform .6s var(--expo) .15s, visibility 0s; }
+.macro { flex: 1 1 auto; min-height: 0; display: grid; place-items: center; padding: 8px 4px 14px; border-bottom: 1px solid var(--filete); }
+.riel-camara .macro { border-bottom-color: var(--filete-noche); }
+.macro svg { width: 100%; height: 100%; max-height: 360px; overflow: visible; filter: drop-shadow(0 10px 10px rgba(3, 20, 28, .28)); }
+.macro svg.entra { animation: brillo .7s var(--expo); }
+@keyframes brillo { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+.macro-num { font-size: 30px; line-height: 1; font-weight: 650; letter-spacing: -.03em; color: var(--marca); font-variant-numeric: tabular-nums; }
+.macro-nombre { font-size: 16px; line-height: 1.3; font-weight: 650; letter-spacing: -.01em; }
+.macro-fuente { color: var(--tinta-3); font-size: 13px; font-style: italic; line-height: 1.4; }
+.ver-todas { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14px; font-weight: 650; cursor: pointer; }
+.ver-todas:hover { background: var(--marca-claro-hover); }
+.riel-camara .macro-num { color: var(--alerta-noche); }
+.riel-camara .macro-nombre { color: #fff; }
+.riel-camara .macro-fuente { color: var(--niebla-noche); font-style: normal; }
+.riel-3d .controles { display: grid; gap: 8px; }
+.riel-3d .controles span { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 1px var(--filete); font-size: 14px; font-weight: 600; color: var(--tinta-2); }
+.riel-3d p { color: var(--tinta-2); font-size: 14px; line-height: 1.5; }
+
+/* Línea de estado bajo la mesa */
+.estado { grid-column: 1; grid-row: 3; position: relative; min-height: 26px; font-size: 15px; color: var(--tinta-2); }
+.estado > span { position: absolute; inset: 0 auto auto 0; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; opacity: 0; transition: opacity .4s var(--cuarta); }
+.escenario[data-vista="referencia"] .estado-referencia, .escenario[data-vista="3d"] .estado-3d, .escenario[data-vista="camara"] .estado-camara { opacity: 1; position: relative; }
+.estado b { font-weight: 650; color: var(--tinta); }
+.estado-camara { color: var(--niebla-noche); }
+.estado-camara .bien { color: var(--menta); }
+.estado-camara .mal { color: var(--alerta-noche); }
+.escenario[data-vista="camara"] .estado .demo { color: var(--niebla-noche); }
+
+/* ---------- Secciones ---------- */
+.seccion { --fa: clamp(72px, 10vh, 112px); --fb: var(--fa); padding-block: var(--fa) var(--fb); }
+.titulo-seccion { font-size: clamp(38px, 4.2vw, 68px); line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
+.texto-seccion { color: var(--tinta-2); font-size: 18px; line-height: 1.6; max-width: 46ch; }
+
+/* Productos: se recorren de lado a lado */
+.productos { position: relative; }
+.productos .fijo { position: sticky; top: var(--barra); height: calc(100svh - var(--barra)); display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); overflow: hidden; padding-block: 48px 32px; }
+.productos-cabeza { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; }
+.productos-cabeza .titulo-seccion { grid-column: 1 / 7; }
+.productos-cabeza .texto-seccion { grid-column: 7 / 10; }
+.recorrido { grid-column: 10 / 13; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.recorrido div { display: grid; gap: 8px; font-size: 14px; font-weight: 600; color: var(--tinta-3); transition: color .3s var(--cuarta); }
+.recorrido i { display: block; height: 3px; border-radius: 3px; background: var(--filete); overflow: hidden; }
+.recorrido i::after { content: ""; display: block; height: 100%; background: var(--marca); transform: scaleX(var(--p, 0)); transform-origin: left; }
+.recorrido div.actual { color: var(--tinta); }
+.carril { display: flex; gap: 48px; margin-top: 36px; padding-inline: var(--lado); will-change: transform; min-height: 0; }
+.carril::after { content: ""; flex: none; width: calc(var(--lado) - 48px); }
+.producto { flex: none; width: min(1180px, calc(100vw - 2 * var(--lado) - 96px)); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; padding: 8px 0; min-height: 0; }
+.producto + .producto { padding-left: 48px; border-left: 1px solid var(--filete); }
+.producto-texto { display: flex; flex-direction: column; gap: 18px; min-height: 0; }
+.producto-nombre { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.producto-nombre h3 { font-size: clamp(40px, 3.6vw, 60px); line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.producto-lema { font-size: clamp(19px, 1.5vw, 23px); line-height: 1.35; font-weight: 550; letter-spacing: -.015em; max-width: 26ch; }
+.capacidades { list-style: none; margin: 6px 0 0; padding: 0; border-bottom: 1px solid var(--filete); }
+.capacidades li { padding: 13px 0; border-top: 1px solid var(--filete); color: var(--tinta-2); font-size: 16px; line-height: 1.5; }
+.producto .enlace { margin-top: 6px; }
+.producto-visual { min-height: 0; display: grid; }
+
+/* Ventanas de producto (maquetas) */
+.ventana { min-height: 0; display: grid; grid-template-rows: 44px minmax(0, 1fr); border-radius: 16px; overflow: hidden; border: 1px solid var(--filete); background: var(--fondo); }
+.ventana-barra { display: flex; align-items: center; gap: 14px; padding: 0 14px; border-bottom: 1px solid var(--filete); background: #fff; font-size: 14px; font-weight: 650; }
+.ventana-barra .puntos { display: flex; gap: 6px; }
+.ventana-barra .puntos i { width: 9px; height: 9px; border-radius: 50%; background: var(--filete-2); }
+.ventana-barra .demo { margin-left: auto; }
+.busca { flex: 1; max-width: 320px; height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 8px; background: var(--fondo); color: var(--tinta-3); font-weight: 500; font-size: 13px; }
+.dq { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 0; }
+.dq-lista { padding: 14px 10px; border-right: 1px solid var(--filete); background: #fff; font-size: 13.5px; overflow: hidden; }
+.dq-lista .grupo { margin: 12px 8px 4px; font-size: 11.5px; font-weight: 650; color: var(--tinta-3); }
+.dq-lista .grupo:first-child { margin-top: 0; }
+.dq-lista div { padding: 5px 8px; border-radius: 6px; color: var(--tinta-2); }
+.dq-lista div.sel { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
+.dq-detalle { padding: 20px 22px; display: grid; grid-template-rows: auto auto minmax(0, 1fr); min-height: 0; }
+.dq-titulo { font-size: 24px; letter-spacing: -.03em; font-weight: 650; }
+.dq-detalle .esp { color: var(--tinta-3); font-size: 13.5px; }
+.pestanas { display: flex; gap: 18px; margin: 14px 0 16px; border-bottom: 1px solid var(--filete); font-size: 13.5px; color: var(--tinta-3); overflow: hidden; }
+.pestanas span { padding-bottom: 9px; white-space: nowrap; }
+.pestanas .sel { color: var(--tinta); font-weight: 650; box-shadow: inset 0 -2px var(--marca); }
+.dq-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; min-height: 0; align-items: start; }
+.mini-funda { border-radius: 10px; background-color: var(--pano); background-image: var(--tela); background-blend-mode: soft-light; aspect-ratio: 1; box-shadow: 0 10px 22px -12px rgba(10, 27, 34, .5); }
+.mini-funda svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.dq-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13.5px; }
+.dq-items li { display: grid; grid-template-columns: 22px 1fr; color: var(--tinta-2); }
+.dq-items b { color: var(--marca); font-variant-numeric: tabular-nums; }
+
+.s3 { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); min-height: 0; }
+.chat { padding: 18px; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--filete); background: #fff; min-height: 0; }
+.burbuja { max-width: 90%; padding: 11px 14px; border-radius: 14px; font-size: 14.5px; line-height: 1.45; }
+.burbuja.yo { align-self: flex-end; background: var(--marca); color: #fff; border-bottom-right-radius: 4px; }
+.burbuja.iq { align-self: flex-start; background: var(--fondo); color: var(--tinta-2); border-bottom-left-radius: 4px; }
+.sugerencias { margin-top: auto; display: grid; gap: 8px; }
+.sugerencias p { font-size: 12.5px; font-weight: 650; color: var(--tinta-3); }
+.sugerencias div { display: flex; flex-wrap: wrap; gap: 6px; }
+.sugerencias span { padding: 5px 10px; border-radius: 99px; background: var(--fondo); font-size: 13px; color: var(--tinta-2); }
+.campo-chat { display: flex; align-items: center; justify-content: space-between; height: 42px; padding: 0 6px 0 14px; border-radius: 12px; border: 1px solid var(--filete); color: var(--tinta-3); font-size: 14px; }
+.campo-chat span:last-child { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--marca); }
+.vista-3d { position: relative; display: grid; place-items: center; perspective: 1400px; background: radial-gradient(90% 80% at 50% 45%, #ffffff, #e7eef0); overflow: hidden; }
+.vista-3d .mini-funda { width: 64%; transform-style: preserve-3d; animation: girar 9s var(--vaiven) infinite alternate; }
+@keyframes girar { from { transform: rotateX(46deg) rotateZ(-36deg); } to { transform: rotateX(40deg) rotateZ(-14deg); } }
+.globo { position: absolute; right: 8%; top: 12%; padding: 10px 14px; border-radius: 12px; background: #fff; box-shadow: 0 6px 14px -8px rgba(10, 27, 34, .35), inset 0 0 0 1px var(--filete); font-size: 14px; line-height: 1.4; }
+.globo strong { display: block; font-size: 15px; }
+.globo span { color: var(--marca); font-weight: 650; font-size: 13px; }
+
+.camara-app { min-height: 0; display: grid; grid-template-rows: 44px minmax(0, 1fr) 56px; border-radius: 16px; overflow: hidden; background: var(--noche-2); border: 1px solid var(--filete-noche); }
+.camara-app .ventana-barra { background: var(--noche); border-color: var(--filete-noche); color: #fff; }
+.camara-app .demo { color: var(--niebla-noche); }
+.vivo { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--niebla-noche); font-weight: 550; }
+.vivo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--menta); }
+.encuadre { position: relative; display: grid; place-items: center; padding: 18px; background: radial-gradient(80% 70% at 50% 45%, #10272e, var(--noche)); min-height: 0; container-type: size; }
+.encuadre .mini-funda { width: min(100cqw, 100cqh); filter: saturate(.55) brightness(.86); }
+.pie-camara { display: flex; align-items: center; gap: 18px; padding: 0 16px; border-top: 1px solid var(--filete-noche); font-size: 14px; color: var(--niebla-noche); }
+.pie-camara b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.pie-camara .ok b { color: var(--menta); }
+.pie-camara .no b { color: var(--alerta-noche); }
+.pie-camara .boton { margin-left: auto; height: 34px; padding: 0 14px; font-size: 14px; border-radius: 9px; background: var(--menta); color: var(--noche); box-shadow: none; }
+
+/* Para quien estudia y para quien enseña: dos perfiles pequeños, cada uno con su ilustración */
+.quien { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; align-items: start; }
+.quien > header { grid-column: 1 / 6; display: grid; gap: 22px; }
+.perfiles { grid-column: 7 / 13; display: grid; }
+.perfil-chico { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 28px; align-items: center; padding-block: 24px; border-top: 1px solid var(--filete); }
+.perfil-chico:last-child { border-bottom: 1px solid var(--filete); }
+.perfil-chico h3 { font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
+.perfil-chico p { margin-top: 8px; color: var(--tinta-2); font-size: 16px; line-height: 1.5; }
+.pictograma { width: 120px; height: 120px; }
+.pictograma .tarjeta, .pictograma .sello { transform-box: fill-box; transform-origin: center; transition: transform .6s var(--expo); }
+.perfil-chico:hover .tarjeta.atras { transform: rotate(-8deg) translateX(-4px); }
+.perfil-chico:hover .tarjeta.frente { transform: rotate(6deg) translateX(4px); }
+.perfil-chico:hover .sello { transform: scale(1.12) rotate(-8deg); }
+
+/* Técnicas por especialidad: el catálogo, a lo ancho */
+.catalogo-cabeza, .inv-cabeza { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; }
+.catalogo-cabeza .titulo-seccion, .inv-cabeza .titulo-seccion { grid-column: 1 / 7; }
+.catalogo-cabeza .texto-seccion, .inv-cabeza .texto-seccion { grid-column: 8 / 13; }
+.catalogo-cabeza .enlace { grid-column: 10 / 13; justify-self: end; padding-bottom: 6px; }
+.especialidades { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 48px; border-top: 2px solid var(--tinta); }
+.especialidad { padding: 22px 22px 8px 0; }
+.especialidad + .especialidad { padding-left: 22px; border-left: 1px solid var(--filete); }
+.especialidad h3 { margin-bottom: 14px; font-size: 20px; font-weight: 650; letter-spacing: -.02em; }
+.especialidad ul { list-style: none; margin: 0; padding: 0; }
+.especialidad button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border: 0; border-top: 1px solid var(--filete); background: transparent; color: var(--tinta-2); font-size: 15.5px; text-align: left; cursor: pointer; transition: color .2s var(--cuarta); }
+.especialidad button svg { flex: none; opacity: 0; transform: translateX(-4px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
+.especialidad button:hover, .especialidad button[aria-pressed="true"] { color: var(--marca); }
+.especialidad button:hover svg, .especialidad button[aria-pressed="true"] svg { opacity: 1; transform: none; }
+/* Tramos de color: cada sección tiene el suyo. El cambio al vecino ocurre dentro de los
+   rellenos (--fa arriba, --fb abajo), nunca debajo del contenido: media curva suave a cada
+   lado del límite, que se encuentran en la mezcla de ambos colores. Mezcla en OKLab. */
+:where(.tramo) { --fa: 0px; --fb: 0px; --antes: var(--color); --despues: var(--color); }
+.tramo {
+  --arriba: color-mix(in oklab, var(--antes), var(--color));
+  --abajo: color-mix(in oklab, var(--color), var(--despues));
+  position: relative; isolation: isolate; background-color: var(--color);
+}
+/* El fundido va en una capa detrás del contenido; el fondo de la sección es su color sólido */
+.tramo::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(in oklab,
+    var(--arriba) 0,
+    color-mix(in oklab, var(--color) 44%, var(--arriba)) calc(var(--fa) * .25),
+    color-mix(in oklab, var(--color) 75%, var(--arriba)) calc(var(--fa) * .5),
+    color-mix(in oklab, var(--color) 94%, var(--arriba)) calc(var(--fa) * .75),
+    var(--color) var(--fa),
+    var(--color) calc(100% - var(--fb)),
+    color-mix(in oklab, var(--abajo) 6%, var(--color)) calc(100% - var(--fb) * .75),
+    color-mix(in oklab, var(--abajo) 25%, var(--color)) calc(100% - var(--fb) * .5),
+    color-mix(in oklab, var(--abajo) 56%, var(--color)) calc(100% - var(--fb) * .25),
+    var(--abajo) 100%);
+}
+#inicio { --color: var(--fondo); --despues: var(--superficie); --fb: 96px; }
+#camino { --antes: var(--fondo); --color: var(--superficie); --despues: var(--fondo); --fa: 96px; --fb: 96px; }
+#especialidades { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
+#investigacion { --antes: var(--fondo); --color: var(--superficie); --despues: var(--fondo); }
+#quien { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
+#preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
+.pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
+.aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
+.aviso-cuenta[hidden] { display: none; }
+.aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
+.aviso-cuenta b { font-weight: 700; }
+.aviso-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.aviso-acciones .ingresar { color: var(--marca-hondo); }
+.aviso-acciones .ingresar:hover { background: rgba(8, 70, 62, .08); color: var(--marca-hondo); }
+
+/* Lo que dice la investigación: capítulo oscuro */
+.investigacion { overflow: clip; }
+.inv { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; align-items: center; }
+.inv-texto { position: relative; z-index: 1; grid-column: 1 / 6; display: grid; gap: 28px; justify-items: start; }
+.conclusiones { list-style: none; margin: 0; padding: 0; width: 100%; border-top: 1px solid var(--filete); }
+.conclusiones li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 17px; line-height: 1.45; }
+.conclusiones b { color: var(--tinta); font-weight: 600; }
+/* La espiral vive suelta en la sección, sin marco, y sale por el borde derecho */
+.espiral { grid-column: 6 / 13; margin: 0 calc(-1 * var(--lado)) 0 0; pointer-events: none; }
+.logros-lista { display: none; list-style: none; margin: 4px 0 0; padding: 0; gap: 10px; justify-items: start; }
+.logros-lista li { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px 0 8px; border-radius: 20px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); color: var(--tinta); font-size: 15px; font-weight: 600; opacity: .3; transition: opacity .5s var(--cuarta); }
+.logros-lista li.visible { opacity: 1; }
+.logros-lista .ficha { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; }
+.logros-lista li.final { background: var(--marca); box-shadow: none; color: #fff; }
+.logros-lista li.final .ficha { background: #fff; color: var(--marca); }
+.espiral > svg { display: block; width: 100%; height: auto; overflow: hidden; transition: opacity .6s var(--cuarta); }
+.espiral.apagando > svg { opacity: 0; }
+.guia { fill: none; stroke: var(--filete-2); stroke-width: 1.4; }
+.guia.atras { stroke-dasharray: 2 6; }
+.luz { fill: none; stroke: var(--marca); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.luz.atras { opacity: .3; stroke-width: 1.8; }
+.cola { fill: none; stroke: var(--marca); stroke-width: 7; stroke-linecap: round; opacity: .16; }
+.espiral.completo .luz.delante { filter: drop-shadow(0 2px 6px rgba(10, 27, 34, .16)); }
+.pulso { fill: var(--marca-hondo); }
+.pulso-halo { fill: none; stroke: var(--marca); stroke-width: 1.5; opacity: .35; }
+.motas { opacity: .45; }
+.motas circle { fill: var(--marca); }
+.estacion .nodo { fill: var(--superficie); stroke: var(--filete-2); stroke-width: 1.8; transition: fill .35s var(--cuarta), stroke .35s var(--cuarta); }
+.estacion .anillo { fill: none; stroke: var(--marca); stroke-width: 1.6; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.estacion.encendida .nodo { fill: var(--marca); stroke: var(--marca); }
+.estacion.encendida .anillo { animation: anillo 1.1s var(--expo); }
+@keyframes anillo { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(3.6); } }
+.nivel { fill: none; stroke: var(--marca); stroke-width: 1.6; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.nivel.destello { animation: nivel 1.2s var(--expo); }
+@keyframes nivel { from { opacity: .8; transform: scale(1); } to { opacity: 0; transform: scale(1.14); } }
+.haz { fill: none; stroke: url(#haz); stroke-width: 3; stroke-linecap: round; }
+/* Logros: aparecen al cerrar cada vuelta */
+.logro { opacity: 0; transform: translateX(-14px); transition: opacity .5s var(--cuarta), transform .7s var(--expo); }
+.logro.visible { opacity: 1; transform: none; }
+.logro-fondo { fill: var(--superficie); stroke: var(--filete); stroke-width: 1.2; filter: drop-shadow(0 6px 10px rgba(10, 27, 34, .08)); }
+.logro .ficha { fill: var(--marca); }
+.logro .visto { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.logro text { font-family: var(--letra); font-size: 17px; font-weight: 600; fill: var(--tinta); dominant-baseline: middle; }
+.logro.final .logro-fondo { fill: var(--marca); stroke: var(--marca); }
+.logro.final .ficha { fill: #fff; }
+.logro.final .visto { stroke: var(--marca); }
+.logro.final text { fill: #fff; }
+
+/* Preguntas frecuentes: compactas, una pestaña por grupo y dos columnas */
+.seccion.compacta { --fa: clamp(64px, 9vh, 104px); --fb: var(--fa); }
+.preguntas { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 32px; align-items: start; }
+.preguntas > header { grid-column: 1 / 6; display: grid; gap: 22px; justify-items: start; }
+.grupos-preguntas { grid-column: 7 / 13; border-top: 1px solid var(--tinta); }
+.grupo-p { border-bottom: 1px solid var(--filete-2); }
+.grupo-p > summary, .lista-preguntas summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 24px; cursor: pointer; }
+.grupo-p > summary::-webkit-details-marker, .lista-preguntas summary::-webkit-details-marker { display: none; }
+.grupo-p > summary { padding: 22px 0; font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
+.grupo-p > summary svg { flex: none; color: var(--marca); transition: transform .4s var(--expo); }
+.grupo-p[open] > summary svg { transform: rotate(180deg); }
+.lista-preguntas { margin-bottom: 20px; padding-left: 24px; border-left: 1px solid var(--filete); animation: aparecer .4s var(--expo); }
+.lista-preguntas details + details { border-top: 1px solid var(--filete); }
+.lista-preguntas summary { padding: 14px 0; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.lista-preguntas summary svg { flex: none; color: var(--marca); transition: transform .35s var(--expo); }
+.lista-preguntas details[open] summary svg { transform: rotate(45deg); }
+.lista-preguntas details p { max-width: 56ch; padding: 0 40px 16px 0; color: var(--tinta-2); font-size: 16px; line-height: 1.55; }
+
+/* Cierre: el campo, plano */
+
+/* Pie */
+.pie { color: var(--niebla-noche); padding-block: 120px 40px; }
+.pie-rejilla { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr)); gap: 40px; }
+.pie .marca-iq { color: #fff; }
+.pie-rejilla > div:first-child p { margin-top: 14px; max-width: 34ch; font-size: 15px; line-height: 1.55; }
+.pie-titulo { color: #fff; font-size: 15px; font-weight: 650; margin-bottom: 14px; }
+.pie ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15px; }
+.pie a:hover { color: #fff; }
+.pie-base { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--filete-noche); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- Tableta ---------- */
+@media (max-width: 1100px) {
+  .barra { gap: 20px; }
+  .nav > a, .nav > button { padding: 0 9px; }
+  .portada { min-height: 0; row-gap: 40px; padding-block: 48px 40px; }
+  .cabeza { grid-column: 1 / -1; }
+  .lede { max-width: 52ch; }
+  .escenario { grid-column: 1 / -1; height: auto; grid-template-rows: auto auto auto; }
+  .escena { aspect-ratio: 1; container-type: inline-size; }
+  .funda { width: 100%; }
+  .productos-cabeza .titulo-seccion { grid-column: 1 / -1; }
+  .productos-cabeza .texto-seccion { grid-column: 1 / 8; margin-top: 18px; }
+  .recorrido { grid-column: 8 / 13; }
+  .producto { grid-template-columns: minmax(0, 1fr); width: min(760px, 84vw); }
+  .producto-visual { min-height: 340px; }
+  .quien > header, .perfiles { grid-column: 1 / -1; }
+  .grupos-preguntas { grid-column: 1 / -1; }
+  .catalogo-cabeza .titulo-seccion, .catalogo-cabeza .texto-seccion, .inv-cabeza .titulo-seccion, .inv-cabeza .texto-seccion, .preguntas > header { grid-column: 1 / -1; }
+  .catalogo-cabeza .texto-seccion, .inv-cabeza .texto-seccion { margin-top: 18px; }
+  .catalogo-cabeza .enlace { grid-column: 1 / -1; justify-self: start; margin-top: 18px; }
+  .especialidades { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .inv-texto { grid-column: 1 / -1; }
+  .espiral { grid-column: 1 / -1; justify-self: center; width: min(100%, 820px); margin: 0; }
+  .especialidad:nth-child(4) { padding-left: 0; border-left: 0; }
+  .pie-rejilla { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pie-rejilla > div:first-child { grid-column: 1 / -1; }
+}
+/* ---------- Barra compacta: por debajo de 960px los menús pasan al panel ---------- */
+@media (max-width: 960px) {
+  .nav, .derecha .boton, .panel-nav { display: none !important; }
+  .menu-movil { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+  .menu-movil[aria-expanded="true"] { background: var(--hover-neutro); }
+}
+/* ---------- Celular ---------- */
+@media (max-width: 760px) {
+  .ilustracion { display: none; }
+  :root { --barra: 64px; }
+  .barra { gap: 12px; }
+  .portada { padding-block: 36px 32px; }
+  .acciones .boton { width: 100%; }
+  .escenario { padding: 12px; border-radius: 20px; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; gap: 12px; }
+  .selector { width: 100%; }
+  .selector button { flex: 1; flex-direction: column; align-items: center; gap: 0; height: 54px; padding: 8px 6px 0; }
+  .escenario[data-vista="3d"] .funda { transform: rotateX(40deg) rotateZ(-24deg) scale(.78); }
+  .estado { grid-row: 3; }
+  .riel { grid-column: 1; grid-row: 4; }
+  .vista-riel { position: static; display: none; }
+  .escenario[data-vista="referencia"] .riel-referencia, .escenario[data-vista="3d"] .riel-3d, .escenario[data-vista="camara"] .riel-camara { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 4px 14px; align-items: center; }
+  .vista-riel .macro { grid-row: span 4; height: 150px; padding: 8px 4px; }
+  .riel-3d .controles { grid-template-columns: repeat(3, auto); grid-column: 1 / -1; }
+  .riel-3d p { grid-column: 1 / -1; }
+  .leyenda { grid-template-columns: 1fr; }
+  .det .etq text, .destino-etq { font-size: 26px; }
+  .productos .fijo { position: static; height: auto; padding-block: 72px 24px; }
+  .recorrido { display: none; }
+  .productos-cabeza .texto-seccion { grid-column: 1 / -1; }
+  .carril { gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--lado); padding-bottom: 12px; transform: none !important; scrollbar-width: none; }
+  .carril::after { width: 1px; }
+  .producto, .producto + .producto { width: 82vw; scroll-snap-align: start; padding: 8px 0; border-left: 0; gap: 24px; }
+  .producto-visual { min-height: 320px; }
+  .dq { grid-template-columns: minmax(0, 1fr); }
+  .dq-lista { display: none; }
+  .s3 { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 220px; }
+  .chat { border-right: 0; border-bottom: 1px solid var(--filete); }
+  .especialidades { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .especialidad, .especialidad + .especialidad, .especialidad:nth-child(4) { flex: none; width: 74vw; scroll-snap-align: start; padding: 22px 0 8px; border-left: 0; }
+  .lista-preguntas details p { padding-right: 0; }
+  .lista-preguntas { padding-left: 16px; }
+  .perfil-chico { grid-template-columns: 96px minmax(0, 1fr); gap: 18px; }
+  .pictograma { width: 96px; height: 96px; }
+  .panel-nav { display: none !important; }
+  .espiral { width: 100%; }
+  .espiral .logros { display: none; }
+  .logros-lista { display: grid; }
+  .pie-rejilla { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------- Ingresar / Crear cuenta: la técnica que se quería abrir a la izquierda, el formulario a la derecha ---------- */
+.puerta { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); min-height: calc(100svh - var(--barra)); }
+.puerta-izq { grid-column: 1 / 7; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 22px; padding: clamp(48px, 9vh, 96px) clamp(28px, 4vw, 72px) clamp(40px, 7vh, 80px) var(--lado); }
+.puerta-der { grid-column: 7 / 13; display: grid; align-content: start; justify-items: center; padding: clamp(48px, 9vh, 96px) var(--lado) clamp(40px, 7vh, 80px); background: var(--superficie); border-left: 1px solid var(--filete); }
+.ruta { display: flex; align-items: center; gap: 8px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.ruta svg { color: var(--filete-2); }
+.puerta-izq .pt-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.puerta-izq .especialidad-tec { margin-top: 10px; color: var(--tinta-3); font-size: 17px; }
+.vista-bloqueada { min-width: 0; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); padding: 0 22px 22px; }
+.pestanas-falsas { display: flex; gap: 24px; border-bottom: 1px solid var(--filete); overflow: hidden; }
+.pestanas-falsas span { padding: 14px 0 12px; color: var(--tinta-3); font-size: 15px; font-weight: 550; white-space: nowrap; opacity: .6; }
+.pestanas-falsas span:first-child { color: var(--tinta); font-weight: 650; opacity: 1; box-shadow: inset 0 -2px var(--tinta); }
+.cuerpo-bloqueado { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; min-height: 230px; padding-top: 20px; }
+.cuerpo-bloqueado .hueso { display: block; height: 12px; margin: 6px 0; border-radius: 8px; background: var(--filete); }
+.candado { position: absolute; inset: 0; display: grid; place-content: end center; justify-items: center; gap: 10px; padding-bottom: 4px; text-align: center; background: linear-gradient(rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, .97) 52%); }
+.candado span:first-child { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+.candado p { max-width: 30ch; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
+.promesa-movil { display: none; align-items: center; gap: 10px; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
+.promesa-movil span:first-child { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+/* Ingreso directo: un saludo según la hora, sin técnica de por medio */
+.saludo { display: grid; gap: 28px; }
+.saludo-texto { display: grid; gap: 16px; animation: aparecer .5s var(--expo); }
+.saludo-texto[hidden] { display: none; }
+.ilustracion { margin: 12px 0 0; width: min(100%, 560px); }
+.ilustracion svg { display: block; width: 100%; height: auto; }
+/* Crear cuenta en el ingreso directo: el formulario pasa a la izquierda y el saludo a la derecha */
+.puerta.invertida .puerta-izq { grid-column: 7 / 13; grid-row: 1; padding: clamp(48px, 9vh, 96px) var(--lado) clamp(40px, 7vh, 80px) clamp(28px, 4vw, 72px); }
+.puerta.invertida .puerta-der { grid-column: 1 / 7; grid-row: 1; border-left: 0; border-right: 1px solid var(--filete); }
+.saludo[hidden], .puerta-izq .ruta[hidden], .vista-bloqueada[hidden], .promesa-movil[hidden] { display: none; }
+.saludo .saludo-titulo { font-size: clamp(46px, 5.6vw, 100px); line-height: .98; font-weight: 650; letter-spacing: -.04em; }
+.chips-esp { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips-esp span { padding: 6px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; }
+/* Formulario */
+.formulario { width: min(100%, 420px); display: grid; gap: 20px; }
+.formulario h1 { font-size: 26px; line-height: 1.15; font-weight: 650; letter-spacing: -.03em; }
+.pestanas-cuenta { position: relative; display: flex; gap: 28px; border-bottom: 1px solid var(--filete); }
+.pestanas-cuenta button { padding: 10px 0 12px; border: 0; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-3); cursor: pointer; transition: color .2s var(--cuarta); }
+.pestanas-cuenta button:hover { color: var(--tinta); }
+.pestanas-cuenta button[aria-selected="true"] { color: var(--tinta); font-weight: 650; }
+.pestanas-cuenta button:focus-visible { outline-offset: -3px; }
+.raya { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
+.google { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; height: 48px; border: 0; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); font-size: 16px; font-weight: 600; color: var(--tinta); cursor: pointer; transition: background .2s var(--cuarta); }
+.google:hover { background: var(--fondo); }
+.nota-google { margin-top: -10px; color: var(--tinta-3); font-size: 14px; text-align: center; }
+.separador { display: flex; align-items: center; gap: 14px; color: var(--tinta-3); font-size: 14px; }
+.separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--filete); }
+.campo { display: grid; gap: 6px; }
+.campo label, .campo .etiqueta { font-size: 14px; font-weight: 600; color: var(--tinta-2); }
+.campo input { width: 100%; height: 48px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); font: inherit; font-size: 16px; color: var(--tinta); }
+.campo input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca); }
+.clave { position: relative; }
+.clave input { padding-right: 84px; }
+.clave button { position: absolute; right: 6px; top: 6px; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; font-size: 14px; font-weight: 600; color: var(--marca); cursor: pointer; }
+.clave button:hover { background: var(--marca-claro); }
+.fila-olvido { display: flex; justify-content: flex-end; margin-top: -8px; }
+.fila-olvido a { font-size: 14px; }
+.fila-olvido a, .acepto a { color: var(--marca); font-weight: 600; }
+.campo input::placeholder { color: var(--tinta-3); opacity: 1; }
+.fila-olvido a:hover, .acepto a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.acepto { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; font-size: 15px; line-height: 1.5; color: var(--tinta-2); cursor: pointer; }
+.acepto input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--marca); cursor: pointer; }
+.error-politica { display: flex; align-items: flex-start; gap: 10px; margin-top: -6px; color: var(--tinta); font-size: 14.5px; font-weight: 600; line-height: 1.45; }
+.error-politica[hidden] { display: none; }
+.error-politica svg { flex: none; margin-top: 1px; }
+.acepto.con-error input { outline: 2px solid var(--tinta); outline-offset: 2px; }
+.formulario .boton { width: 100%; justify-content: center; height: 50px; }
+.hoja-cuenta[hidden] { display: none; }
+.hoja-cuenta { display: grid; gap: 18px; animation: aparecer .35s var(--expo); }
+.pie { --antes: var(--superficie); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 1100px) {
+  .puerta-izq { grid-column: 1 / 6; }
+  .puerta-der { grid-column: 6 / 13; }
+  .puerta.invertida .puerta-izq { grid-column: 8 / 13; }
+  .puerta.invertida .puerta-der { grid-column: 1 / 8; }
+  .cuerpo-bloqueado { grid-template-columns: 1fr; }
+  .pestanas-falsas { -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); }
+}
+@media (max-width: 760px) {
+  .puerta { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .puerta-izq, .puerta-der, .puerta.invertida .puerta-izq, .puerta.invertida .puerta-der { grid-column: 1 / -1; grid-row: auto; }
+  .puerta.invertida .puerta-der { border-right: 0; }
+  .puerta-izq, .puerta.invertida .puerta-izq { gap: 14px; padding: 28px var(--lado) 20px; }
+  .vista-bloqueada, .chips-esp { display: none; }
+  .promesa-movil { display: flex; }
+  .puerta-der { padding: 28px var(--lado) 44px; border-left: 0; border-top: 1px solid var(--filete); }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="acero" gradientUnits="userSpaceOnUse" x1="-8" y1="0" x2="8" y2="0">
+      <stop offset="0" stop-color="#e4eaed"/>
+      <stop offset=".32" stop-color="#fbfdfd"/>
+      <stop offset=".56" stop-color="#b3bec4"/>
+      <stop offset=".74" stop-color="#8b979d"/>
+      <stop offset="1" stop-color="#d3dbdf"/>
+    </linearGradient>
+    <linearGradient id="hoja" gradientUnits="userSpaceOnUse" x1="-3" y1="0" x2="5" y2="0">
+      <stop offset="0" stop-color="#f4f7f8"/>
+      <stop offset=".5" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#aab5bb"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="barra">
+  <a class="marca-iq" href="inicio.html" aria-label="IQ Platform, inicio">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
+    IQ Platform
+  </a>
+  <nav class="nav" aria-label="Principal">
+    <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </nav>
+  <div class="derecha">
+    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
+    <a class="boton" href="cuenta.html#crear">Crear cuenta</a>
+    <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="panel-nav" id="panel-herramientas" role="region" aria-label="Herramientas" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Herramientas</p><p class="panel-linea">Tres formas de recorrer cada técnica.</p></div>
+  <ul class="panel-lista" data-vista-de="vista-herramientas">
+    <li><a href="#" data-vista="referencia"><span><strong>DataIQ</strong><span>Cada técnica, con su instrumental y su mesa</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#" data-vista="3d"><span><strong>SIMIQ3D</strong><span>La mesa en 3D, a una pregunta de distancia</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#" data-vista="camara"><span><strong>SIVRI</strong><span>La cámara revisa la mesa armada</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista">
+    <div class="vista-herramienta" id="vista-herramientas" data-vista="referencia">
+      <div class="vh" data-de="referencia">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><rect x="30" y="24" width="60" height="72" rx="7" fill="#fff" stroke="#0a1b22" stroke-width="2"/><path d="M40 40 H66" stroke="#0a1b22" stroke-width="4" stroke-linecap="round"/><circle cx="42" cy="56" r="3" fill="#0d6a5e"/><circle cx="42" cy="68" r="3" fill="#0d6a5e"/><circle cx="42" cy="80" r="3" fill="#0d6a5e"/><path d="M51 56 H78 M51 68 H74 M51 80 H70" stroke="#566a72" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <div><p class="vh-nombre">DataIQ</p><ul><li>Buscar por nombre o especialidad</li><li>Mesa de Mayo y de reserva, pieza por pieza</li><li>Datos clínicos, suturas y equipos</li></ul></div>
+      </div>
+      <div class="vh" data-de="3d">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><path d="M60 26 L90 43 L60 60 L30 43 Z" fill="#fff" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M30 43 V78 L60 95 V60 Z" fill="#fff" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M90 43 V78 L60 95 V60 Z" fill="#0d6a5e" stroke="#0a1b22" stroke-width="2" stroke-linejoin="round"/><path d="M96 30 a10 10 0 0 1 4 14" fill="none" stroke="#0d6a5e" stroke-width="2.4" stroke-linecap="round"/><path d="M101 46 l-1 -5 -4 3" fill="none" stroke="#0d6a5e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><p class="vh-nombre">SIMIQ3D</p><ul><li>Pedir cualquier técnica conversando</li><li>Girar y recorrer la mesa</li><li>Tocar una pieza para ver qué es</li></ul></div>
+      </div>
+      <div class="vh" data-de="camara">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#ddefeb"/><path d="M28 42 V32 a4 4 0 0 1 4 -4 H42 M78 28 H88 a4 4 0 0 1 4 4 V42 M92 78 V88 a4 4 0 0 1 -4 4 H78 M42 92 H32 a4 4 0 0 1 -4 -4 V78" fill="none" stroke="#0a1b22" stroke-width="3" stroke-linecap="round"/><rect x="42" y="46" width="36" height="28" rx="5" fill="#fff" stroke="#0a1b22" stroke-width="2"/><circle cx="76" cy="74" r="12" fill="#0d6a5e"/><path d="M70.5 74 L74.5 78 L81.5 70.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><p class="vh-nombre">SIVRI</p><ul><li>Reconoce el instrumental en tiempo real</li><li>Lo compara con la técnica elegida</li><li>Señala qué hay que mover</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-nav" id="panel-especialidades" role="region" aria-label="Especialidades" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Especialidades</p><p class="panel-linea">Cada técnica, con su instrumental y su mesa.</p><a class="enlace" href="catalogo.html">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+  <ul class="panel-lista" id="panel-lista-esp"></ul>
+  <div class="panel-vista"><p class="vista-titulo" id="vista-esp-titulo"></p><ul class="vista-lista" id="vista-esp"></ul></div>
+</div>
+
+<div class="panel-nav" id="panel-porque" role="region" aria-label="Por qué IQ Platform" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">¿Por qué IQ Platform?</p><p class="panel-linea">Qué hay detrás de cada herramienta.</p></div>
+  <ul class="panel-lista">
+    <li><a href="#"><span><strong>Cómo funciona</strong><span>Las tres herramientas, juntas</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>La investigación</strong><span>Por qué practicar así</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Quiénes somos</strong><span>El equipo detrás</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista"><p class="vista-frase">Con respuesta inmediata, <em>se aprende antes.</em></p></div>
+</div>
+
+<div class="panel-nav" id="panel-ayuda" role="region" aria-label="Ayuda" hidden>
+  <div class="panel-cabeza"><p class="panel-nombre">Ayuda</p><p class="panel-linea">Respuestas cortas para empezar.</p></div>
+  <ul class="panel-lista">
+    <li><a href="#"><span><strong>Preguntas frecuentes</strong><span>Cuenta, técnicas y herramientas</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Guía para estudiantes</strong><span>Por dónde empezar</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+    <li><a href="#"><span><strong>Para docentes</strong><span>Acompañar la práctica</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+  </ul>
+  <div class="panel-vista"><p class="vista-titulo">Lo más preguntado</p><ul class="vista-lista"><li>¿Cuánto cuesta?</li><li>¿Sirve si estudio en otra universidad?</li><li>¿Por cuál herramienta empiezo?</li></ul></div>
+</div>
+
+<nav class="panel-movil" id="panel-movil" aria-label="Menú" hidden>
+  <details><summary>Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></details>
+  <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"><li><a href="catalogo.html">Ver todas las técnicas</a></li></ul></details>
+  <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
+  <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
+  <div class="acciones-movil">
+    <a class="boton grande" href="cuenta.html#crear">Crear cuenta gratis</a>
+    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
+  </div>
+</nav>
+
+<main>
+  <div class="puerta">
+    <section class="puerta-izq" id="puerta-izq" aria-labelledby="pt-nombre">
+      <nav class="ruta" aria-label="Ruta"><a href="catalogo.html">Técnicas</a><span id="pt-ruta-sep"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="pt-ruta-esp">Cirugía general</span></nav>
+      <div id="pt-cabeza"><p class="pt-nombre" id="pt-nombre">Tiroidectomía</p><p class="especialidad-tec" id="pt-esp">Cirugía general</p></div>
+      <div class="vista-bloqueada" id="pt-bloqueada">
+        <div class="pestanas-falsas" aria-hidden="true"><span>Datos clínicos</span><span>Instrumental</span><span>Mesa de Mayo</span><span>Mesa de reserva</span></div>
+        <div class="cuerpo-bloqueado" aria-hidden="true"><div><span class='hueso' style='width:82%'></span><span class='hueso' style='width:64%'></span><span class='hueso' style='width:90%'></span><span class='hueso' style='width:58%'></span></div><div><span class='hueso' style='width:74%'></span><span class='hueso' style='width:86%'></span><span class='hueso' style='width:60%'></span><span class='hueso' style='width:70%'></span></div>
+          <div class="candado"><span><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><p id="pt-candado">Con una cuenta gratuita se abre por dentro: datos clínicos, instrumental y sus mesas.</p></div>
+        </div>
+      </div>
+      <p class="promesa-movil"><span><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span id="pt-promesa">Con una cuenta gratuita se abre por dentro.</span></p>
+      <div class="saludo" id="saludo" hidden>
+        <div class="saludo-texto" id="saludo-ingresar"><p class="saludo-titulo" id="saludo-hora">Buenas tardes.</p>
+          <!-- Ilustración: una instrumentadora prepara la mesa de Mayo bajo la lámpara -->
+          <figure class="ilustracion"><svg viewBox="40 0 500 430" aria-hidden="true" focusable="false">
+            <path d="M72 262C58 160 150 78 272 76C404 74 508 136 502 246C496 350 404 402 282 398C160 394 86 356 72 262Z" fill="#e3efec"/>
+            <path d="M118 330H460M140 290H440" stroke="#d3e5e0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M392 0V44H318V62" fill="none" stroke="#9eaab0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M252 104Q318 46 384 104Z" fill="#c4d1d4"/>
+            <ellipse cx="318" cy="104" rx="66" ry="9" fill="#ffffff"/>
+            <path d="M258 108H378L438 262H210Z" fill="#ffffff" opacity=".45"/>
+            <circle cx="122" cy="132" r="30" fill="#0d6a5e"/>
+            <path d="M108 133L118 143L137 122" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="300" cy="404" rx="200" ry="8" fill="#d3e0de"/>
+            <rect x="424" y="258" width="9" height="138" fill="#9eaab0"/>
+            <rect x="356" y="392" width="118" height="9" rx="4.5" fill="#8b979d"/>
+            <circle cx="366" cy="404" r="6" fill="#2f3b40"/>
+            <circle cx="464" cy="404" r="6" fill="#2f3b40"/>
+            <path d="M286 252H458V262H286Z" fill="#17655a"/>
+            <path d="M286 252L302 230H472L458 252Z" fill="#1d7564"/>
+            <path d="M458 252L472 230V240L458 262Z" fill="#145a4e"/>
+            <g fill="none" stroke="#e6edef" stroke-width="3" stroke-linecap="round">
+              <path d="M318 247L340 234"/>
+              <path d="M352 248L376 234M360 249L380 236"/>
+              <circle cx="349" cy="250" r="3"/><circle cx="357" cy="251" r="3"/>
+              <path d="M396 248L420 234M402 249L422 237"/>
+              <path d="M436 247L452 237"/>
+            </g>
+            <path d="M162 328H182L180 394H164Z" fill="#08463e"/>
+            <path d="M188 328H208L206 394H190Z" fill="#08463e"/>
+            <path d="M158 392H184V404H156Q156 396 158 392Z" fill="#2f3b40"/>
+            <path d="M186 392H212Q216 396 216 404H186Z" fill="#2f3b40"/>
+            <path d="M160 192Q148 238 154 274" fill="none" stroke="#0b5c52" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="155" cy="280" r="8" fill="#e9e1cb"/>
+            <path d="M154 192Q158 176 174 174H194Q210 176 214 192L222 336H146Z" fill="#0d6a5e"/>
+            <path d="M200 178Q210 180 213 192L221 336H204Z" fill="#0b5c52" opacity=".55"/>
+            <path d="M184 196V330" stroke="#0b5c52" stroke-width="2"/>
+            <rect x="177" y="156" width="13" height="20" fill="#b07a5a"/>
+            <path d="M172 174L184 186L196 174Z" fill="#ddefeb"/>
+            <circle cx="184" cy="138" r="22" fill="#b07a5a"/>
+            <path d="M160 140Q158 110 184 110Q211 110 208 136Q198 126 184 126Q170 126 160 140Z" fill="#2f8f7b"/>
+            <path d="M160 140Q154 146 158 152Q164 146 164 138Z" fill="#2f8f7b"/>
+            <path d="M186 138H206Q208 154 198 160L186 158Z" fill="#eef6f4"/>
+            <path d="M208 194Q228 228 240 244L276 240" fill="none" stroke="#0d6a5e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M208 194Q228 228 240 244" fill="none" stroke="#0b5c52" stroke-width="2" opacity=".5"/>
+            <circle cx="282" cy="239" r="8" fill="#e9e1cb"/>
+            <path d="M286 238L306 226" stroke="#e6edef" stroke-width="3" stroke-linecap="round"/>
+          </svg></figure>
+        </div>
+        <div class="saludo-texto" id="saludo-crear" hidden><p class="saludo-titulo" id="saludo-crear-t">Mucho gusto.</p>
+          <!-- Ilustración: una estudiante aprende con la app, frente a la mesa en cuadrícula -->
+          <figure class="ilustracion"><svg aria-hidden="true" focusable="false" viewBox="40 0 500 430">
+            <path d="M78 246C70 150 160 74 284 74C410 74 506 140 500 250C494 352 400 400 278 398C156 396 86 342 78 246Z" fill="#e3efec"/>
+            <path d="M118 330H460M140 290H440" stroke="#d3e5e0" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="300" cy="404" rx="200" ry="8" fill="#d3e0de"/>
+            <circle cx="486" cy="78" r="22" fill="none" stroke="#d3e0de" stroke-width="7"/>
+            <path d="M486 56A22 22 0 1 1 464 78" fill="none" stroke="#0d6a5e" stroke-width="7" stroke-linecap="round"/>
+            <rect x="94" y="102" width="252" height="200" rx="12" fill="#d3e0de"/>
+            <rect x="86" y="94" width="252" height="200" rx="12" fill="#ffffff"/>
+            <path d="M86 106Q86 94 98 94H326Q338 94 338 106V118H86Z" fill="#f3f6f6"/>
+            <circle cx="101" cy="106" r="3.5" fill="#c4d1d4"/><circle cx="113" cy="106" r="3.5" fill="#c4d1d4"/><circle cx="125" cy="106" r="3.5" fill="#c4d1d4"/>
+            <rect x="102" y="132" width="144" height="144" rx="5" fill="#1d7564"/>
+            <path d="M138 132V276M174 132V276M210 132V276M102 168H246M102 204H246M102 240H246" stroke="#ffffff" stroke-opacity=".16" stroke-width="1.2"/>
+            <g fill="none" stroke="#e6edef" stroke-width="2.6" stroke-linecap="round">
+              <path d="M112 160L130 142"/>
+              <path d="M146 196L166 176M152 198L168 182"/><circle cx="144" cy="198" r="2.6"/><circle cx="151" cy="200" r="2.6"/>
+              <path d="M218 158L238 140"/>
+              <path d="M110 268L130 248M116 270L132 254"/>
+              <path d="M220 232L238 212"/>
+              <path d="M184 266L202 246"/>
+            </g>
+            <rect x="176" y="170" width="32" height="32" rx="3" fill="#ddefeb"/>
+            <rect x="176" y="170" width="32" height="32" rx="3" fill="none" stroke="#0d6a5e" stroke-width="1.6" stroke-dasharray="4 3"/>
+            <rect x="258" y="134" width="64" height="7" rx="3.5" fill="#c4d1d4"/>
+            <rect x="258" y="150" width="48" height="7" rx="3.5" fill="#dbe4e6"/>
+            <rect x="258" y="174" width="66" height="74" rx="7" fill="#ddefeb"/>
+            <g fill="none" stroke="#0d6a5e" stroke-width="2.6" stroke-linecap="round">
+              <path d="M280 236L304 190M288 238L306 196"/><circle cx="277" cy="240" r="4"/><circle cx="288" cy="242" r="4"/>
+            </g>
+            <rect x="258" y="262" width="66" height="7" rx="3.5" fill="#dbe4e6"/>
+            <rect x="258" y="262" width="42" height="7" rx="3.5" fill="#0d6a5e"/>
+            <rect x="462" y="388" width="58" height="12" rx="2" fill="#0d6a5e"/>
+            <rect x="468" y="376" width="48" height="12" rx="2" fill="#c4d1d4"/>
+            <rect x="460" y="364" width="54" height="12" rx="2" fill="#ddefeb"/>
+            <path d="M394 318H414L412 394H396Z" fill="#0b5c52"/>
+            <path d="M418 318H438L436 394H420Z" fill="#0b5c52"/>
+            <path d="M368 404Q368 396 372 392H398V404Z" fill="#2f3b40"/>
+            <path d="M416 392H440V404H414Q414 396 416 392Z" fill="#2f3b40"/>
+            <path d="M442 192L448 222" stroke="#0b5c52" stroke-width="16" stroke-linecap="round"/>
+            <path d="M448 222L447 278" stroke="#d9a07f" stroke-width="11" stroke-linecap="round"/>
+            <path d="M384 190Q388 176 404 174H424Q440 176 444 190L450 322H378Z" fill="#0d6a5e"/>
+            <path d="M432 178Q442 180 444 190L450 322H434Z" fill="#0b5c52" opacity=".55"/>
+            <path d="M390 262H408" stroke="#0b5c52" stroke-width="2" stroke-linecap="round"/>
+            <rect x="430" y="246" width="30" height="40" rx="4" fill="#2f3b40" transform="rotate(-8 445 266)"/>
+            <rect x="434" y="251" width="22" height="30" rx="2" fill="#ddefeb" transform="rotate(-8 445 266)"/>
+            <circle cx="448" cy="284" r="6.5" fill="#d9a07f"/>
+            <rect x="406" y="156" width="13" height="20" fill="#d9a07f"/>
+            <path d="M402 174L412 188L424 174Z" fill="#d9a07f"/>
+            <circle cx="412" cy="138" r="22" fill="#d9a07f"/>
+            <path d="M392 134Q390 110 414 110Q438 110 436 138Q434 150 428 158Q428 140 418 130Q406 126 392 134Z" fill="#2f2e41"/>
+            <path d="M432 120Q454 122 452 148Q450 166 438 174Q446 150 434 136Z" fill="#2f2e41"/>
+            <path d="M388 194L378 214" stroke="#0d6a5e" stroke-width="16" stroke-linecap="round"/>
+            <path d="M378 214L366 234L342 210" fill="none" stroke="#d9a07f" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="338" cy="206" r="6.5" fill="#d9a07f"/>
+          </svg></figure>
+        </div>
+      </div>
+    </section>
+    <section class="puerta-der" aria-labelledby="t-cuenta">
+      <div class="formulario">
+        <h1 id="t-cuenta">Ingresar a IQ Platform</h1>
+        <div class="pestanas-cuenta" role="tablist" aria-label="Cuenta">
+          <button type="button" role="tab" id="tab-ingresar" aria-controls="hoja-ingresar" aria-selected="true">Ingresar</button>
+          <button type="button" role="tab" id="tab-crear" aria-controls="hoja-crear" aria-selected="false" tabindex="-1">Crear cuenta</button>
+          <span class="raya" aria-hidden="true"></span>
+        </div>
+        <button type="button" class="google" data-entrar><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>Continuar con Google</button>
+        <p class="nota-google">Admite cuentas personales e institucionales.</p>
+        <p class="separador">o con correo y contraseña</p>
+
+        <form class="hoja-cuenta" role="tabpanel" id="hoja-ingresar" aria-labelledby="tab-ingresar" data-entrar>
+          <div class="campo"><label for="i-correo">Correo</label><input type="email" id="i-correo" autocomplete="email" placeholder="nombre@correo.com"></div>
+          <div class="campo"><label for="i-clave">Contraseña</label><div class="clave"><input type="password" id="i-clave" autocomplete="current-password"><button type="button" data-ver="i-clave">Mostrar</button></div></div>
+          <div class="fila-olvido"><a href="#">¿Olvidaste tu contraseña?</a></div>
+          <button type="submit" class="boton">Ingresar</button>
+        </form>
+
+        <form class="hoja-cuenta" role="tabpanel" id="hoja-crear" aria-labelledby="tab-crear" data-entrar hidden>
+          <div class="campo"><label for="c-nombre">Nombre</label><input type="text" id="c-nombre" autocomplete="name"></div>
+          <div class="campo"><label for="c-correo">Correo</label><input type="email" id="c-correo" autocomplete="email" placeholder="nombre@correo.com"></div>
+          <div class="campo"><label for="c-clave">Contraseña</label><div class="clave"><input type="password" id="c-clave" autocomplete="new-password"><button type="button" data-ver="c-clave">Mostrar</button></div></div>
+          <label class="acepto" id="c-acepto-fila"><input type="checkbox" id="c-acepto" aria-describedby="c-error"><span>Acepto la <a href="#">política de tratamiento de datos personales</a>.</span></label>
+          <p class="error-politica" id="c-error" role="alert" hidden><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 5.8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="1.2" fill="currentColor"/></svg><span>Para crear la cuenta hay que aceptar la política de tratamiento de datos.</span></p>
+          <button type="submit" class="boton">Crear cuenta gratis</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="pie ancho tramo">
+  <div class="pie-rejilla">
+    <div>
+      <a class="marca-iq" href="inicio.html">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
+        IQ Platform
+      </a>
+      <p>Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.</p>
+    </div>
+    <div><p class="pie-titulo">Herramientas</p><ul><li><a href="#">DataIQ</a></li><li><a href="#">SIMIQ3D</a></li><li><a href="#">SIVRI</a></li></ul></div>
+    <div><p class="pie-titulo">Especialidades</p><ul id="pie-especialidades"></ul></div>
+    <div><p class="pie-titulo">¿Por qué IQ Platform?</p><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></div>
+    <div><p class="pie-titulo">Ayuda</p><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Para docentes</a></li><li><a href="#">Política de tratamiento de datos</a></li><li><a href="#">Términos de uso</a></li></ul></div>
+  </div>
+  <div class="pie-base"><span>© 2026 IQ Platform</span><span>IQ Platform es un nombre provisional.</span></div>
+</footer>
+
+<script>
+(function () {
+  var reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Menús de la barra: uno abierto a la vez ---------- */
+  var paneles = document.querySelectorAll(".panel-nav, .panel-movil");
+  var abridores = document.querySelectorAll("[data-menu]");
+  var abierto = null;
+  function abrirMenu(id) {
+    abierto = id && abierto !== id ? id : null;
+    paneles.forEach(function (p) { p.hidden = p.id !== abierto; });
+    abridores.forEach(function (b) { b.setAttribute("aria-expanded", String(b.dataset.menu === abierto)); });
+  }
+  // Mientras no existan las otras páginas, los enlaces no llevan a ningún lado
+  document.addEventListener("click", function (e) { var a = e.target.closest("a[href='#']"); if (a) e.preventDefault(); });
+  // Al señalar una opción, su vista previa cambia
+  function senalar(a) {
+    var lista = a.closest(".panel-lista");
+    lista.querySelectorAll("a").forEach(function (x) { x.classList.toggle("activa", x === a); });
+    if (a.dataset.vista) document.getElementById(lista.dataset.vistaDe).dataset.vista = a.dataset.vista;
+    if (a.dataset.esp) mostrarEspecialidad(+a.dataset.esp);
+  }
+  document.addEventListener("mouseover", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
+  document.addEventListener("focusin", function (e) { var a = e.target.closest(".panel-lista a"); if (a) senalar(a); });
+  // Un clic abre el desplegable; otro clic con el desplegable abierto lleva a la página de la sección
+  abridores.forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); if (abierto === b.dataset.menu && b.dataset.destino) { location.href = b.dataset.destino; return; } abrirMenu(b.dataset.menu); }); });
+  paneles.forEach(function (p) { p.addEventListener("click", function (e) { if (e.target.closest("a")) abrirMenu(null); }); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && abierto) { var b = document.querySelector("[data-menu='" + abierto + "']"); abrirMenu(null); if (b) b.focus(); }
+  });
+  document.addEventListener("click", function (e) { if (abierto && !document.getElementById(abierto).contains(e.target)) abrirMenu(null); });
+
+  /* ---------- Catálogo real: técnicas por especialidad ---------- */
+  var ESPECIALIDADES = [
+    ["Cirugía general", ["Mastectomía", "Tiroidectomía", "Colecistectomía", "Hemicolectomía derecha", "Eventrorrafia"]],
+    ["Urología", ["Cistolitotomía endoscópica", "Ureterolitotomía endoscópica", "Prostatectomía"]],
+    ["Cirugía laparoscópica", ["Hemicolectomía laparoscópica", "Histerectomía laparoscópica", "Prostatectomía laparoscópica", "Nefrectomía laparoscópica"]],
+    ["Ginecología", ["Cesárea", "Ooforectomía con salpingectomía", "Histerectomía vaginal", "Colporrafia anterior y posterior"]],
+    ["Ortopedia", ["Reemplazo total de cadera", "Reemplazo total de rodilla"]]
+  ];
+  // Técnicas cuya mesa aún no está en el catálogo: su aviso no la promete
+  var SIN_MESA = ["Nefrectomía laparoscópica"];
+  var listaEsp = document.getElementById("panel-lista-esp");
+  function mostrarEspecialidad(i) {
+    var e = ESPECIALIDADES[i], ul = document.getElementById("vista-esp");
+    document.getElementById("vista-esp-titulo").textContent = e[0];
+    ul.innerHTML = "";
+    e[1].forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  }
+  var flecha = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  // Menú Especialidades, menú de celular y pie
+  ESPECIALIDADES.forEach(function (e, i) {
+    var li0 = document.createElement("li"), fl = document.createElement("a");
+    fl.href = "catalogo.html#esp-" + ESPECIALIDADES.indexOf(e);
+    fl.dataset.esp = i;
+    fl.innerHTML = "<span><strong></strong><span></span></span>" + flecha;
+    fl.querySelector("strong").textContent = e[0];
+    fl.querySelector("strong + span").textContent = e[1].slice(0, 2).join(", ") + (e[1].length > 2 ? "…" : "");
+    li0.appendChild(fl);
+    listaEsp.appendChild(li0);
+    ["movil-especialidades", "pie-especialidades"].forEach(function (id) {
+      var li = document.createElement("li"), a = document.createElement("a");
+      a.href = "catalogo.html#esp-" + ESPECIALIDADES.indexOf(e);
+      a.textContent = e[0];
+      li.appendChild(a);
+      document.getElementById(id).appendChild(li);
+    });
+  });
+
+
+
+  mostrarEspecialidad(0);
+  listaEsp.querySelector("a").classList.add("activa");
+  document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
+
+  /* ---------- Ingresar / Crear cuenta ---------- */
+  function slugDe(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-"); }
+  var CON_DETALLE = ["mastectomia", "tiroidectomia", "colecistectomia", "hemicolectomia-derecha", "eventrorrafia"];
+  // El hash dice qué pestaña abrir y qué técnica se quería ver: #crear~tiroidectomia
+  var partes = decodeURIComponent(location.hash.slice(1)).split("~"), modo = partes[0] === "crear" ? "crear" : "ingresar", clave = partes[1] || "";
+  var tecnica = null, especialidad = null;
+  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { if (slugDe(t) === clave) { tecnica = t; especialidad = e[0]; } }); });
+  if (tecnica) {
+    if (SIN_MESA.indexOf(tecnica) !== -1) {
+      // Sin mesa en el catálogo: la vista no la muestra ni la promete
+      document.querySelectorAll(".pestanas-falsas span").forEach(function (sp) { if (/Mesa/.test(sp.textContent)) sp.remove(); });
+      document.getElementById("pt-candado").textContent = "Con una cuenta gratuita se abre por dentro: datos clínicos e instrumental.";
+    }
+    document.getElementById("pt-nombre").textContent = tecnica;
+    document.getElementById("pt-esp").textContent = especialidad;
+    document.getElementById("pt-ruta-esp").textContent = especialidad;
+  } else {
+    // Ingreso directo: nada bloqueado; un saludo según la hora
+    ["pt-bloqueada", "pt-cabeza"].forEach(function (id) { document.getElementById(id).hidden = true; });
+    document.querySelector(".puerta-izq .ruta").hidden = true;
+    document.querySelector(".promesa-movil").hidden = true;
+    var hora = new Date().getHours();
+    document.getElementById("saludo-hora").textContent = hora < 12 ? "Buenos días." : hora < 19 ? "Buenas tardes." : "Buenas noches.";
+    document.getElementById("saludo").hidden = false;
+    document.getElementById("puerta-izq").setAttribute("aria-labelledby", "saludo-hora");
+  }
+  var directo = !tecnica;
+  var destino = tecnica ? (CON_DETALLE.indexOf(clave) !== -1 ? "tecnica.html#" + clave : "catalogo.html") : "catalogo.html";
+  // Mockup: entrar o registrarse lleva a donde se iba, sin autenticación real
+  document.querySelectorAll("[data-entrar]").forEach(function (el) {
+    el.addEventListener(el.tagName === "FORM" ? "submit" : "click", function (e) {
+      e.preventDefault();
+      // La autorización de datos (Decreto 1377) es lo único que no se puede saltar al crear la cuenta
+      var enCrear = document.getElementById("tab-crear").getAttribute("aria-selected") === "true";
+      if ((el.id === "hoja-crear" || (el.classList.contains("google") && enCrear)) && !acepto.checked) { marcarError(); acepto.focus(); return; }
+      location.href = destino;
+    });
+  });
+  var acepto = document.getElementById("c-acepto"), error = document.getElementById("c-error"), filaAcepto = document.getElementById("c-acepto-fila");
+  function marcarError() { error.hidden = false; filaAcepto.classList.add("con-error"); acepto.setAttribute("aria-invalid", "true"); }
+  acepto.addEventListener("change", function () { if (acepto.checked) { error.hidden = true; filaAcepto.classList.remove("con-error"); acepto.removeAttribute("aria-invalid"); } });
+  // «Ingresar» y «Crear cuenta» de la barra, en esta misma página: cambian de pestaña sin perder la técnica
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest('a[href^="cuenta.html#"]');
+    if (!a) return;
+    e.preventDefault(); abrirMenu(null);
+    elegir(document.getElementById(a.getAttribute("href").indexOf("#crear") !== -1 ? "tab-crear" : "tab-ingresar"));
+    scrollTo(0, 0);
+  });
+  document.querySelectorAll("[data-ver]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var inp = document.getElementById(b.dataset.ver), ver = inp.type === "password";
+      inp.type = ver ? "text" : "password"; b.textContent = ver ? "Ocultar" : "Mostrar";
+    });
+  });
+  // Pestañas: la raya se desliza bajo la elegida y el título acompaña
+  var tabs = [].slice.call(document.querySelectorAll(".pestanas-cuenta [role=tab]")), raya = document.querySelector(".pestanas-cuenta .raya");
+  function moverRaya() { var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0]; raya.style.width = t.offsetWidth + "px"; raya.style.transform = "translateX(" + t.offsetLeft + "px)"; }
+  function elegir(t) {
+    tabs.forEach(function (x) { var si = x === t; x.setAttribute("aria-selected", String(si)); x.tabIndex = si ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !si; });
+    document.getElementById("t-cuenta").textContent = t.id === "tab-crear" ? "Crear una cuenta gratis" : "Ingresar a IQ Platform";
+    var crear = t.id === "tab-crear";
+    if (directo) {
+      document.getElementById("saludo-ingresar").hidden = crear;
+      document.getElementById("saludo-crear").hidden = !crear;
+      document.getElementById("puerta-izq").setAttribute("aria-labelledby", crear ? "saludo-crear-t" : "saludo-hora");
+      var puerta = document.querySelector(".puerta"), paneles = [document.getElementById("puerta-izq"), document.querySelector(".puerta-der")];
+      var antes = paneles.map(function (el) { return el.getBoundingClientRect().left; });
+      puerta.classList.toggle("invertida", crear);
+      if (animarCambio && !reducido) paneles.forEach(function (el, k) {
+        var dx = antes[k] - el.getBoundingClientRect().left;
+        if (Math.abs(dx) > 1) el.animate([{ transform: "translateX(" + dx + "px)" }, { transform: "none" }], { duration: 700, easing: "cubic-bezier(.16,1,.3,1)" });
+      });
+    }
+    document.title = (t.id === "tab-crear" ? "Crear cuenta" : "Ingresar") + " · IQ Platform";
+    moverRaya();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { elegir(t); });
+    t.addEventListener("keydown", function (e) { if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return; var j = (i + 1) % 2; elegir(tabs[j]); tabs[j].focus(); });
+  });
+  addEventListener("resize", moverRaya);
+  if (document.fonts) document.fonts.ready.then(moverRaya);
+  raya.style.transition = "none";
+  var animarCambio = false;
+  elegir(document.getElementById("tab-" + modo));
+  animarCambio = true;
+  requestAnimationFrame(function () { raya.style.transition = ""; });
+  if (modo === "crear") document.getElementById("c-acepto").checked = false;
+  if (location.hash.indexOf("error") !== -1) marcarError();
+  var atajo = location.hash.replace("#", "");
+  if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
+})();
+</script>
+</body>
+</html>
