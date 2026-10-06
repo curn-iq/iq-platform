@@ -487,13 +487,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 #quien { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
 #preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
 .pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
-.aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
-.aviso-cuenta[hidden] { display: none; }
-.aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
-.aviso-cuenta b { font-weight: 700; }
-.aviso-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.aviso-acciones .ingresar { color: var(--marca-hondo); }
-.aviso-acciones .ingresar:hover { background: rgba(8, 70, 62, .08); color: var(--marca-hondo); }
 
 /* Lo que dice la investigación: capítulo oscuro */
 .investigacion { overflow: clip; }
@@ -933,10 +926,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       <a class="enlace" href="catalogo.html">Ver todas las técnicas <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4L12.5 8l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
     <div class="especialidades" id="cat-especialidades"></div>
-    <div class="aviso-cuenta" id="aviso-cuenta" hidden aria-live="polite">
-      <p id="aviso-cuenta-texto"></p>
-      <div class="aviso-acciones"><a class="boton" id="aviso-crear" href="cuenta.html#crear">Crear cuenta gratis</a><a class="ingresar" id="aviso-ingresar" href="#">Ya tengo cuenta</a></div>
-    </div>
   </section>
 
   <!-- Lo que dice la investigación -->
@@ -1105,8 +1094,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     ["Ginecología", ["Cesárea", "Ooforectomía con salpingectomía", "Histerectomía vaginal", "Colporrafia anterior y posterior"]],
     ["Ortopedia", ["Reemplazo total de cadera", "Reemplazo total de rodilla"]]
   ];
-  // Técnicas cuya mesa aún no está en el catálogo: su aviso no la promete
-  var SIN_MESA = ["Nefrectomía laparoscópica"];
   // Técnicas con su página en el mockup (Cirugía general)
   function slugDe(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
   function rutaTecnica(t) { return "cuenta.html#ingresar~" + slugDe(t); }
@@ -1118,8 +1105,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     ul.innerHTML = "";
     e[1].forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
   }
-  var aviso = document.getElementById("aviso-cuenta");
-  var avisoTexto = document.getElementById("aviso-cuenta-texto");
   var flecha = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>";
   ESPECIALIDADES.forEach(function (e) {
     var col = document.createElement("div");
@@ -1140,14 +1125,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       b.setAttribute("aria-pressed", "false");
       b.innerHTML = "<span></span>" + flecha;
       b.firstChild.textContent = t;
-      b.addEventListener("click", function () {
-        catalogo.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        avisoTexto.innerHTML = "Para ver <b></b> por dentro, " + (SIN_MESA.indexOf(t) === -1 ? "con su mesa y su instrumental" : "con su instrumental") + ", se crea una cuenta gratuita.";
-        avisoTexto.querySelector("b").textContent = t;
-        document.getElementById("aviso-ingresar").href = rutaTecnica(t);
-        document.getElementById("aviso-crear").href = "cuenta.html#crear~" + slugDe(t);
-        aviso.hidden = false;
-      });
+      // Abre el detalle: los datos clínicos son libres; el resto pide cuenta allí mismo
+      b.addEventListener("click", function () { location.href = "tecnica.html#v-" + slugDe(t); });
       li.appendChild(b);
       col.children[1].appendChild(li);
     });

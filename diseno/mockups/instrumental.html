@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tiroidectomía · IQ Platform</title>
+<title>Instrumental · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -672,43 +672,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 /* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
 .editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
 .editar-tec:hover { background: var(--hover-neutro); }
-.como-usuario .editar-tec, .como-usuario .cuenta-titulo, .como-usuario .cuenta-lista { display: none !important; }
-.editar-tec.inerte { color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--filete); cursor: default; }
-.editar-tec.inerte:hover { background: none; }
-.editar-tec.inerte svg { display: none !important; }
-.recien-publicada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; color: var(--marca-hondo); font-size: 15px; font-weight: 600; animation: lavar 1.2s var(--expo) both; }
-.recien-publicada[hidden] { display: none; }
-/* Más acciones (revisor y admin): archivar, con confirmación en el mismo panel */
-.mas-tec { position: relative; }
-.mas-tec[hidden] { display: none; }
-.mas-boton { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 10px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); cursor: pointer; }
-.mas-boton:hover, .mas-boton[aria-expanded="true"] { background: var(--hover-neutro); color: var(--tinta); }
-.mas-panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: 320px; padding: 8px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .3s var(--expo); }
-.mas-panel[hidden], #mas-menu[hidden], .mas-confirmar[hidden] { display: none; }
-.mas-item { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: none; color: var(--tinta); font-size: 15.5px; font-weight: 550; text-align: left; cursor: pointer; }
-.mas-item svg { flex: none; margin-top: 2px; color: var(--tinta-2); }
-.mas-item:hover { background: var(--hover-neutro); }
-.mas-item[aria-disabled="true"] { color: var(--tinta-3); cursor: default; }
-.mas-item[aria-disabled="true"]:hover { background: none; }
-.mas-item[aria-disabled="true"] svg { color: var(--tinta-3); }
-.mas-item small[hidden] { display: none; }
-.mas-item small { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 13.5px; font-weight: 500; }
-.mas-confirmar { padding: 8px; }
-.tec-cabeza .mas-confirmar p { margin: 0; color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
-.mas-confirmar p b { color: var(--tinta); font-weight: 650; }
-@media (max-width: 760px) { .tec-acciones .editar-tec { flex: 1 1 calc(100% - 52px); } .mas-tec { flex: none; } .mas-panel { width: calc(100vw - 2 * var(--lado)); } }
-.mas-confirmar .botones { display: flex; gap: 8px; margin-top: 12px; }
-.mas-confirmar .boton { height: 40px; padding: 0 16px; font-size: 15px; }
-.tec-archivada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2) !important; font-size: 15px !important; font-weight: 600; }
-.tec-archivada[hidden] { display: none; }
-.tec-archivada:focus { outline: none; }
-.tec-archivada svg { flex: none; align-self: flex-start; margin-top: 2px; }
-.tec-archivada.solo-ahora { animation: lavar-archivada 1.2s var(--expo) both; }
-@keyframes lavar-archivada { 0%, 30% { background: var(--marca-claro); } 100% { background: var(--fondo); } }
-.recien-publicada svg { flex: none; align-self: flex-start; margin-top: 3px; color: var(--marca); }
-.recien-publicada path { stroke-dasharray: 1; animation: trazar-pub .5s .15s var(--expo) both; }
-@keyframes lavar { 0%, 30% { background: var(--marca-claro); } 100% { background: transparent; } }
-@keyframes trazar-pub { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @media (max-width: 960px) { .cuenta-txt, .cuenta .flecha { display: none; } .cuenta { padding: 0 6px; } }
 @media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
 .panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
@@ -759,8 +722,6 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 .lado a { display: block; padding: 8px 10px; border-radius: 8px; font-size: 15.5px; line-height: 1.35; color: var(--tinta-2); transition: background .2s var(--cuarta), color .2s var(--cuarta); }
 .lado a:hover { background: var(--fondo); color: var(--tinta); }
 .lado a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
-.lado a.archivada { color: var(--tinta-3); }
-.lado a.archivada::after { content: "Archivada"; margin-left: 8px; padding: 0 7px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-3); font-size: 12px; font-weight: 600; }
 .lado-abrir { display: none; }
 /* Panel de la técnica */
 .panel-tec { min-width: 0; padding: 28px clamp(24px, 3vw, 48px) 40px; }
@@ -881,6 +842,137 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 }
 .pie { --antes: var(--fondo); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ---------- Catálogo de instrumental: cada pieza se explica por dónde va ---------- */
+.lado .cifra-lado { float: right; margin-left: 8px; color: var(--tinta-3); font-size: 13px; font-variant-numeric: tabular-nums; }
+.lado a[aria-current="page"] .cifra-lado { color: var(--marca-hondo); }
+.lado a mark { border-radius: 3px; background: var(--marca-claro); color: var(--marca-hondo); }
+.lado h2 .cifra-lado { font-weight: 550; }
+.nuevo-inst { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 40px; margin: -6px 0 6px; border: 0; border-radius: 10px; background: none; outline: 1px dashed var(--filete-2); outline-offset: -1px; color: var(--marca); font-size: 15px; font-weight: 650; cursor: pointer; }
+.nuevo-inst:hover { background: var(--marca-claro); outline-color: transparent; }
+.sin-res { padding: 10px; color: var(--tinta-3); font-size: 14.5px; }
+.entrada { min-width: 0; padding: 30px clamp(24px, 3vw, 56px) 64px; }
+.ruta-inst { display: flex; align-items: center; gap: 6px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.ruta-inst svg { opacity: .7; }
+.entrada-cabeza { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 32px; align-items: start; margin-top: 10px; }
+.entrada-cabeza h1 { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; font-size: 40px; line-height: 1.05; font-weight: 650; letter-spacing: -.04em; }
+.uso-resumen { margin-top: 10px; color: var(--tinta-2); font-size: 16.5px; font-variant-numeric: tabular-nums; }
+.uso-resumen b { color: var(--tinta); font-weight: 650; }
+.editar-entrada { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 14px; border: 0; border-radius: 10px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.editar-entrada:hover { background: var(--hover-neutro); color: var(--tinta); }
+.entrada-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 32px; margin-top: 26px; }
+.dibujo-inst { grid-column: 2; grid-row: 1 / span 2; align-self: start; display: grid; place-items: center; height: 210px; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.dibujo-inst[hidden] { display: none; }
+.dibujo-inst svg { width: 70px; height: 190px; overflow: visible; filter: drop-shadow(0 2px 2px rgba(3, 20, 28, .25)) drop-shadow(0 8px 10px rgba(3, 20, 28, .08)); }
+.bloque-inst h2 { margin: 0 0 8px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.bloque-inst + .bloque-inst { margin-top: 22px; }
+.descripcion-inst { max-width: 68ch; font-size: 17px; line-height: 1.6; }
+.sin-desc { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; max-width: 68ch; padding: 14px 16px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-2); font-size: 15.5px; line-height: 1.5; }
+.sin-desc button { padding: 0; border: 0; background: none; color: var(--marca); font-size: 15.5px; font-weight: 650; cursor: pointer; }
+.sin-desc button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.alias { display: flex; flex-wrap: wrap; gap: 6px; }
+.alias span { display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14.5px; font-weight: 550; }
+.nada { color: var(--tinta-3); font-size: 15.5px; }
+
+/* Dónde va: mesas en miniatura con la celda encendida */
+.donde { margin-top: 36px; }
+.donde-cabeza { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--filete); }
+.donde-cabeza h2 { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -.02em; }
+.donde-cabeza p { color: var(--tinta-3); font-size: 14.5px; }
+.esp-grupo { margin-top: 22px; }
+.esp-grupo h3 { margin: 0 0 12px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+@keyframes encender { from { background: var(--marca-claro); transform: scale(.6); } }
+.sin-mesas { margin-top: 16px; padding: 18px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-2); font-size: 15.5px; line-height: 1.5; }
+
+/* Editar en su lugar */
+.campo-inst { display: grid; gap: 6px; max-width: 68ch; }
+.campo-inst + .campo-inst { margin-top: 16px; }
+.campo-inst label, .campo-inst .etq { color: var(--tinta-2); font-size: 14px; font-weight: 600; }
+.campo-inst input, .campo-inst select, .campo-inst textarea { width: 100%; min-height: 46px; padding: 11px 14px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 16px; line-height: 1.5; }
+.campo-inst textarea { min-height: 110px; resize: vertical; }
+.campo-inst input:focus, .campo-inst select:focus, .campo-inst textarea:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.campo-inst .ayuda { color: var(--tinta-3); font-size: 13.5px; }
+.alias-ed { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.alias-ed span { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 4px 0 12px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 14.5px; }
+.alias-ed button { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 50%; background: none; color: var(--marca-hondo); cursor: pointer; }
+.alias-ed button:hover { background: var(--marca-claro-hover); }
+.alias-ed input { width: 200px; min-height: 32px; padding: 0 12px; border-radius: 999px; font-size: 14.5px; }
+.guardar-barra { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 28px calc(-1 * clamp(24px, 3vw, 56px)) 0; padding: 14px clamp(24px, 3vw, 56px); background: color-mix(in oklab, var(--superficie) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -1px 0 var(--filete); }
+.impacto { display: flex; align-items: center; gap: 10px; color: var(--tinta-2); font-size: 15px; line-height: 1.4; }
+.impacto svg { flex: none; color: var(--marca); }
+.impacto b { color: var(--tinta); font-weight: 650; }
+.guardar-barra .botones { display: flex; gap: 8px; }
+.boton-texto { height: 42px; padding: 0 14px; border: 0; border-radius: 10px; background: none; color: var(--tinta-2); font-size: 15px; font-weight: 600; cursor: pointer; }
+.boton-texto:hover { background: var(--hover-neutro); }
+.aviso-ok { position: fixed; left: 50%; bottom: 28px; z-index: 60; padding: 12px 18px; border-radius: 12px; background: var(--tinta); color: #fff; font-size: 15.5px; font-weight: 600; transform: translateX(-50%); animation: aparecer .4s var(--expo); }
+.aviso-ok[hidden] { display: none; }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 1100px) {
+  .entrada-cuerpo { grid-template-columns: minmax(0, 1fr); }
+  .dibujo-inst { display: none; }
+}
+@media (max-width: 760px) {
+  .entrada { padding: 22px var(--lado) 56px; }
+  .entrada-cabeza { grid-template-columns: minmax(0, 1fr); }
+  .entrada-cabeza h1 { font-size: 30px; }
+    .guardar-barra { margin-inline: calc(-1 * var(--lado)); padding-inline: var(--lado); }
+}
+
+/* Ajustes tras la revisión: editar en su lugar, filas en vez de tarjetas, una escala de miniatura */
+.leyenda-cifras { margin: 0 10px 4px; color: var(--tinta-3); font-size: 12.5px; line-height: 1.4; }
+.por-alias { display: block; margin-top: 1px; color: var(--tinta-3); font-size: 13px; }
+.usos-lista { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.uso-fila { display: grid; grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); gap: 24px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--filete); }
+.uso-fila > a, .uso-fila > .uso-dato { display: block; border-radius: 8px; }
+.uso-fila > a:hover strong { color: var(--marca); }
+.uso-dato strong { display: block; font-size: 15.5px; font-weight: 650; line-height: 1.3; transition: color .2s var(--cuarta); }
+.uso-dato > span { display: block; color: var(--tinta-3); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.mini-marco { display: block; max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); padding: 12px 24px 12px 12px; margin: -12px 0 -12px -12px; }
+.rejilla-mini { --celda: 14px; display: inline-grid; gap: 2px; padding: 4px; border-radius: 6px; background: var(--fondo); align-content: start; }
+.rejilla-mini i { width: var(--celda); height: var(--celda); border-radius: 2px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.rejilla-mini i.on { position: relative; background: var(--marca); box-shadow: none; animation: encender .4s var(--expo) backwards; animation-delay: calc(var(--k, 0) * 70ms); }
+.rejilla-mini i.on b { position: absolute; left: 50%; top: 50%; z-index: 1; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 0 2px var(--superficie); color: #fff; font-size: 11.5px; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; transform: translate(-50%, -50%); }
+.entrada.editando .donde-atenuado { opacity: .5; pointer-events: none; }
+.h1-ed { width: 100%; max-width: 760px; padding: 2px 10px; margin-left: -10px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 40px; line-height: 1.1; font-weight: 650; letter-spacing: -.04em; }
+.h1-ed:focus, .desc-ed:focus, .select-casa select:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.desc-ed { width: 100%; max-width: 68ch; min-height: 110px; padding: 12px 14px; border: 0; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 17px; line-height: 1.6; resize: vertical; }
+.ayuda { margin-top: 6px; color: var(--tinta-3); font-size: 13.5px; }
+.select-casa { position: relative; display: inline-flex; }
+.select-casa select { appearance: none; -webkit-appearance: none; height: 34px; padding: 0 34px 0 12px; border: 0; border-radius: 9px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.select-casa::after { content: ""; position: absolute; right: 12px; top: 50%; width: 12px; height: 12px; margin-top: -6px; pointer-events: none; background: currentColor; color: var(--tinta-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.duplicado { margin-top: 8px; color: var(--tinta); font-size: 14.5px; font-weight: 600; }
+.duplicado a { color: var(--marca); }
+.duplicado[hidden] { display: none; }
+.impacto p { margin: 0; }
+.guardar-barra .boton[disabled] { background: var(--filete); color: var(--tinta-2); box-shadow: none; cursor: not-allowed; }
+@media (max-width: 760px) {
+  .uso-fila { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .rejilla-mini { --celda: 10px; }
+  .h1-ed { font-size: 30px; }
+}
+
+/* Segunda ronda: la celda numerada se ve, el buscador queda a la vista, la barra de guardar no se rompe */
+.rejilla-mini { --celda: 22px; }
+.rejilla-mini i.on b { position: static; width: 100%; height: 100%; box-shadow: none; transform: none; font-size: 11px; }
+.rejilla-mini i.on:has(b) { border-radius: 50%; }
+.lado-buscar, .nuevo-inst { position: sticky; z-index: 2; }
+.lado-buscar { top: -20px; margin: -20px -16px 0; padding: 20px 16px 10px; background: var(--superficie); }
+.nuevo-inst { top: 52px; margin: 0 0 6px; box-shadow: 0 6px 6px -6px var(--superficie); background: var(--superficie); }
+.guardar-barra { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; background: var(--superficie); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.guardar-barra .botones { flex-wrap: nowrap; }
+@media (max-width: 760px) {
+  .rejilla-mini { --celda: 18px; }
+  .rejilla-mini i.on b { font-size: 11.5px; }
+  .guardar-barra { grid-template-columns: minmax(0, 1fr); }
+}
+.lado .lado-buscar svg { left: 29px; top: calc(50% + 5px); }
+
+/* «Dónde va» en dos columnas; una mesa ancha ocupa la fila entera */
+.usos-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+.uso-fila { grid-template-columns: minmax(150px, 210px) minmax(0, 1fr); gap: 20px; }
+.uso-fila.ancha { grid-column: 1 / -1; grid-template-columns: minmax(150px, 210px) minmax(0, 1fr); }
+@media (max-width: 1100px) { .usos-lista { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body>
@@ -908,14 +1000,14 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
     <a class="ingresar solo-visitante" id="barra-ingresar" href="cuenta.html#ingresar">Ingresar</a>
     <a class="boton solo-visitante" id="barra-crear" href="cuenta.html#crear">Crear cuenta</a>
-    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">DO</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">LP</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -923,9 +1015,9 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 </header>
 
 <div class="panel-cuenta" id="panel-cuenta" role="region" aria-label="Mi cuenta" hidden>
-  <div class="quien-soy"><span class="avatar" aria-hidden="true">DO</span><div><p class="quien-nombre">Daniela Ortiz</p><p class="quien-correo">daniela.ortiz@correo.com</p><span class="rol">Colaborador</span></div></div>
+  <div class="quien-soy"><span class="avatar" aria-hidden="true">LP</span><div><p class="quien-nombre">Laura Pérez</p><p class="quien-correo">laura.perez@correo.com</p><span class="rol">Revisor</span></div></div>
   <p class="cuenta-titulo">Gestión de DataIQ</p>
-  <ul class="cuenta-lista"><li><a href="borradores.html">Mis borradores<span class="cifra">4</span></a></li></ul>
+  <ul class="cuenta-lista"><li><a href="borradores.html?como=revisor">Mis borradores<span class="cifra">1</span></a></li><li><a href="revision.html">Por revisar<span class="cifra">2</span></a></li><li><a href="instrumental.html" aria-current="page">Instrumental<span class="cifra">143</span></a></li></ul>
   <a class="salir" href="inicio.html">Cerrar sesión<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </div>
 
@@ -990,88 +1082,30 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
   </div>
   <div class="acciones-movil solo-sesion">
-    <p class="quien-movil">Daniela Ortiz · Colaborador</p>
-    <a class="ingresar" href="borradores.html">Mis borradores</a>
+    <p class="quien-movil">Laura Pérez · Revisor</p>
+    <a class="ingresar" href="borradores.html?como=revisor">Mis borradores</a>
+    <a class="ingresar" href="revision.html">Por revisar</a>
+    <a class="ingresar" href="instrumental.html" aria-current="page">Instrumental</a>
     <a class="ingresar" href="inicio.html">Cerrar sesión</a>
   </div>
 </nav>
 
 <main>
   <div class="app">
-    <nav class="lado" id="lado" aria-label="Técnicas">
-      <button type="button" class="lado-abrir" id="lado-abrir" aria-expanded="false" aria-controls="lado-cuerpo">Cirugía general · Tiroidectomía <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <nav class="lado" id="lado" aria-label="Catálogo de instrumental">
+      <button type="button" class="lado-abrir" id="lado-abrir" aria-expanded="false" aria-controls="lado-cuerpo">Instrumental <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="lado-cuerpo" id="lado-cuerpo">
-        <div class="lado-buscar"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><label class="sr-only" for="buscar-tec">Buscar técnica</label><input type="search" id="buscar-tec" placeholder="Buscar técnica" autocomplete="off"></div>
-        <div id="lado-grupos"></div>
+        <div class="lado-buscar"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><label class="solo-lector" for="buscar-inst">Buscar por nombre o alias</label><input type="search" id="buscar-inst" placeholder="Nombre o alias" autocomplete="off"></div>
+        <button type="button" class="nuevo-inst" id="nuevo-inst"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Nuevo instrumento</button>
+        <p class="leyenda-cifras">Cifra junto a cada instrumento: técnicas en que va</p>
+        <div id="indice"></div>
       </div>
     </nav>
-    <article class="panel-tec" aria-labelledby="t-tecnica">
-      <header class="tec-cabeza">
-        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p><p class="recien-publicada" id="recien-publicada" role="status" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.9 2.8 6.1-6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>Versión 2 publicada hace un momento. La versión 1 quedó en el historial.</p><p class="tec-archivada" id="tec-archivada" role="status" tabindex="-1" hidden><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Técnica archivada. Ya no se ve en el catálogo ni en los módulos; sus versiones quedan en el historial.</p></div>
-        <div class="tec-acciones">
-          <a class="editar-tec solo-sesion" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
-          <div class="mas-tec" id="mas-tec" hidden>
-            <button type="button" class="mas-boton" id="mas-boton" aria-expanded="false" aria-controls="mas-panel" aria-label="Más acciones"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="4" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="14" cy="9" r="1.6" fill="currentColor"/></svg></button>
-            <div class="mas-panel" id="mas-panel" hidden>
-              <div id="mas-menu"><button type="button" class="mas-item" id="archivar"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Archivar técnica<small id="archivar-nota" hidden>No se puede mientras tenga una versión en curso.</small></span></button></div>
-              <div class="mas-confirmar" id="archivar-confirmar" hidden><p>Archivar <b id="arch-nombre"></b>. Deja de verse en el catálogo, en SIVRI y en SIMIQ3D; sus versiones se conservan en el historial.</p><div class="botones"><button type="button" class="boton" id="si-archivar">Archivar</button><button type="button" class="boton suave" id="no-archivar">Cancelar</button></div></div>
-            </div>
-          </div>
-          <a class="boton suave" id="ir-3d" href="#">Ver en 3D <small>SIMIQ3D</small></a>
-          <a class="boton" id="ir-camara" href="#">Comprobar con la cámara <small>SIVRI</small></a>
-        </div>
-      </header>
-      <div class="pestanas-tec" role="tablist" aria-label="Contenido de la técnica">
-        <button type="button" role="tab" id="tab-clinicos" aria-controls="hoja-clinicos" aria-selected="true">Datos clínicos</button>
-        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <span class="raya" aria-hidden="true"></span>
-      </div>
 
-      <section class="hoja" role="tabpanel" id="hoja-clinicos" aria-labelledby="tab-clinicos">
-        <div class="clinicos">
-          <div>
-            <div class="para-que">
-              <header><h2>Para qué sirve</h2><span class="demo">demostración</span></header>
-              <p>Descripción breve del procedimiento y de sus indicaciones: en qué casos se realiza y qué busca resolver.</p>
-            </div>
-            <dl class="fichas" id="fichas"></dl>
-          </div>
-          <div>
-            <h2>Suturas</h2>
-            <dl class="suturas" id="suturas"></dl>
-            <div class="insumos">
-              <h2 id="insumos-titulo">Equipo médico-quirúrgico</h2>
-              <p id="insumos"></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-instrumental" aria-labelledby="tab-instrumental" hidden>
-        <ul class="instrumental" id="lista-instrumental"></ul>
-        <div class="puerta-tec en-linea solo-visitante" data-que="instrumental"></div>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-mayo" aria-labelledby="tab-mayo" hidden>
-        <p class="sin-mesa" id="sin-mayo" hidden>Sin mesa de Mayo.</p>
-        <div class="tec-mesa" id="caja-mayo">
-          <div class="tec-info"><h2>Mesa de Mayo</h2><p>Señala un número para ubicar su pieza.</p><ol class="leyenda-tec" id="leyenda-mayo"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="mayo"></div>
-        </div>
-      </section>
-
-      <section class="hoja" role="tabpanel" id="hoja-reserva" aria-labelledby="tab-reserva" hidden>
-        <p class="sin-mesa" id="sin-reserva" hidden>Sin mesa de reserva.</p>
-        <div class="tec-mesa" id="caja-reserva">
-          <div class="tec-info"><h2>Mesa de reserva</h2><p>Señala un número para ubicar su objeto.</p><ol class="leyenda-tec" id="leyenda-reserva"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="reserva"></div>
-        </div>
-      </section>
-    </article>
+    <article class="entrada" id="entrada" aria-live="polite"></article>
   </div>
 </main>
+<p class="aviso-ok" id="aviso-ok" role="status" hidden></p>
 
 <footer class="pie ancho tramo">
   <div class="pie-rejilla">
@@ -1096,16 +1130,6 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
   var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
     admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
-  // ?como=usuario: cuenta sin gestión (ve instrumental y mesas, no edita)
-  if (COMO === "usuario") {
-    document.querySelectorAll(".avatar").forEach(function (x) { x.textContent = "VR"; });
-    document.querySelector(".quien-nombre").textContent = "Valentina Ruiz";
-    document.querySelector(".quien-correo").textContent = "valentina.ruiz@correo.com";
-    document.querySelector(".quien-soy .rol").textContent = "Usuario";
-    document.body.classList.add("como-usuario");
-    var qmU = document.querySelector(".quien-movil"); qmU.textContent = "Valentina Ruiz · Usuario";
-    qmU.parentNode.querySelectorAll("a[href^='borradores.html']").forEach(function (x) { x.remove(); });
-  }
   var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
   if (PUBLICA) {
     document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
@@ -1416,236 +1440,188 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     });
     svg.innerHTML = h;
   }
-  // Leyenda y mesa enlazadas: señalar un número levanta su pieza, y al revés (delegado, sirve para cualquier técnica)
-  function prepararMesa(caja) {
-    var svg = caja.querySelector("svg.mesa"), ol = caja.querySelector(".leyenda-tec");
-    function marcar(n) {
-      svg.classList.toggle("marcando", n != null);
-      ol.querySelectorAll("li").forEach(function (li) { li.classList.toggle("activa", +li.dataset.n === n); });
-      svg.querySelectorAll(".pieza").forEach(function (g) { var si = +g.dataset.n === n; g.classList.toggle("activa", si); g.setAttribute("aria-pressed", String(si)); });
+
+  /* ---------- Catálogo de instrumental (datos reales de DataIQ) ----------
+     [nombre, categoría, descripción, alias] · usos: [instrumento, técnica, mesa, número, celdas] · dimensiones de cada mesa */
+  var CATALOGO = [["Canastilla extractora de cálculos","Accesorio especializado","",[]],["Clamp intestinal tipo Kocher","Accesorio especializado","",["Clamps intestinales tipo Kocher"]],["Clamp laparoscópico","Accesorio especializado","",["Clanes laparoscópicos"]],["Clipadora laparoscópica","Accesorio especializado","",["Clipadora"]],["Dilatadores de Hegar","Accesorio especializado","",[]],["Dilatadores uretrales","Accesorio especializado","",[]],["Electrobisturí con gancho","Accesorio especializado","",[]],["Espéculo de Graves","Accesorio especializado","",[]],["Espéculo Vaginal","Accesorio especializado","",[]],["Evacuador de Ellik","Accesorio especializado","",[]],["Fibra del láser","Accesorio especializado","",[]],["Guía Sensor/Cebra","Accesorio especializado","",["Guía de Sensor o Cebra"]],["Histerómetro Sims","Accesorio especializado","",[]],["Movilizador uterino (Sistema RUMI)","Accesorio especializado","",[]],["Pieza de mano del Lithoclast","Accesorio especializado","",["Pieza de mano del Lithoclast con cable","Pieza de mano del Lithoclast con varilla"]],["Tenáculo de Schroeder","Accesorio especializado","",["Tenáculo uterino de Schroeder"]],["Varilla del Lithoclast","Accesorio especializado","",[]],["Mango de bisturí N.° 3","Bisturí","",["Bisturí #3","Mango de bisturí #3","Mango de Bisturí #3","Mango de Bisturí N°3"]],["Mango de bisturí N.° 4","Bisturí","",["Bisturí #4","Mango de Bisturí #4","Mango de Bisturí N°4"]],["Mango de bisturí N.° 7","Bisturí","",["Bisturí #7","Mango de Bisturí #7"]],["Cánula de Frazier","Cánula","",["Cánula de Frazier 10/12mm"]],["Cánula de succión-irrigación","Cánula","",["Cánula de succión y irrigación","Cánula succión-irrigación","Cánula Succión-Irrigación"]],["Cánula de Yankauer","Cánula","",["Cánula de succión de Yankauer"]],["Catéter Ureteral","Catéter/Sonda","",["Catéteres Ureterales #10","Catéteres Ureterales #6","Catéteres Ureterales #8"]],["Sonda metálica","Catéter/Sonda","",[]],["Aguja de Veress","Equipo endoscópico","",[]],["Cable de fuente de luz","Equipo endoscópico","",["Cable de fibra óptica","Cable de luz"]],["Cámara endoscópica","Equipo endoscópico","",["Cámara"]],["Camisa del Cistoscopio","Equipo endoscópico","",[]],["Camisa del Nefroscopio","Equipo endoscópico","",["Camisa del nefroscopio"]],["Cistoscopio","Equipo endoscópico","",[]],["Lente laparoscópica 0°/30°","Equipo endoscópico","",["Lente de 0° o 30°","Lente de 30°"]],["Manguera de insuflador","Equipo endoscópico","",[]],["Morcelador","Equipo endoscópico","",[]],["Nefroscopio","Equipo endoscópico","",[]],["Ureteroscopio","Equipo endoscópico","",[]],["Suero fisiológico","Insumo","",[]],["Gancho de Hurd","Pinza","",[]],["Pinza aplicadora de clips (Ligaclip/Hemolock)","Pinza","",["Pinza clipadora de Hemolock","Pinza laparoscópica para Hemo-Lock","Pinza Ligaclip","Pinza Liga Clip de Hemolock","Pinza Liga Clips"]],["Pinza Bipolar laparoscópica","Pinza","",["Pinza Bipolar Laparoscópica"]],["Pinza Cística","Pinza","",["Pinzas Císticas"]],["Pinza de Allis","Pinza","",["Pinza Allis","Pinzas Allis","Pinzas de Allis"]],["Pinza de Babcock","Pinza","",["Pinza Babcock","Pinzas Babcock","Pinzas de Babcock"]],["Pinza de Babcock laparoscópica","Pinza","",["Pinza Babcock laparoscópica"]],["Pinza de Campo","Pinza","",["Pinzas de campo","Pinzas de Campo"]],["Pinza de Campo de Backhaus","Pinza","",["Pinzas de Campo de Backhaus"]],["Pinza de cuerpo extraño","Pinza","",[]],["Pinza de disección Adson Braun","Pinza","",[]],["Pinza de disección Adson con garra","Pinza","",["Pinzas de disección Adson con garra"]],["Pinza de disección Adson sin garra","Pinza","",["Pinzas de disección Adson sin garra"]],["Pinza de disección con garra","Pinza","",["Pinzas de disección con garra","Pinzas de disección con garras"]],["Pinza de disección sin garra","Pinza","",["Pinzas de disección sin garra","Pinzas de disección sin garras"]],["Pinza de Foerster","Pinza","",["Pinza Foerster","Pinzas Foerster"]],["Pinza Grasper laparoscópica","Pinza","",["Pinza Grasper","Pinza Grasper atraumática"]],["Pinza Heaney","Pinza","",["Pinzas Heaney"]],["Pinza Hook laparoscópica","Pinza","",["Gancho / Hook","Pinza Hook"]],["Pinza Kelly","Pinza","",["Pinza de Kelly","Pinzas de Kelly","Pinzas Kelly"]],["Pinza Kelly Adson","Pinza","",["Pinzas Kelly Adson"]],["Pinza Kocher","Pinza","",["Pinzas Kocher"]],["Pinza Maryland","Pinza","",[]],["Pinza Moninjan","Pinza","",["Pinzas Moninjan"]],["Pinza Mosquito curva","Pinza","",["Pinza Mosquito","Pinzas Mosquitos curvas"]],["Pinza Randall","Pinza","",["Pinzas Randall"]],["Pinza Rochester","Pinza","",["Pinzas Rochester"]],["Pinza Uterina","Pinza","",["Pinzas Uterinas"]],["Portaagujas de Mayo Hegar","Portaagujas","",["Portaagujas de Mayo Hegar mediano","Portaagujas medianos (Mayo Hegar)"]],["Portaagujas laparoscópico","Portaagujas","",["Portaagujas de laparoscopia","Portaagujas laparoscópicos","Portaagujas Laparoscópicos"]],["Portaagujas largo","Portaagujas","",["Portaagujas largos"]],["Portaagujas mediano","Portaagujas","",["Portaagujas medianos"]],["Portaagujas (sin especificar)","Portaagujas","",["Portaagujas"]],["Platón grande","Recipiente","",[]],["Riñonera/Coca","Recipiente","",[]],["Separador abdominal","Separador","",[]],["Separador abdominal Universal con Valva de Balfour","Separador","",[]],["Separador de Deaver ancho","Separador","",["Separador Deaver ancho"]],["Separador de Deaver angosto","Separador","",["Separador Deaver angosto"]],["Separador de Deaver (tamaño no especificado)","Separador","",["Separador de Deaver"]],["Separador de Doyen","Separador","",[]],["Separador de Farabeuf","Separador","",["Separadores de Farabeuf"]],["Separador de Richardson","Separador","",["Separador de Richardson o Deaver delgado"]],["Separador de Senn Miller","Separador","",[]],["Separador Mayo Collins","Separador","",[]],["Separador vesical","Separador","",[]],["Valva de Balfour (inferior)","Separador","",["Valva inferior de Balfour"]],["Valva de contrapeso de Auvard","Separador","",[]],["Valva maleable","Separador","",[]],["Equipo de pequeña cirugía","Set/Equipo","",[]],["Bandeja","Sin clasificar","",[]],["Camisa del trocar 10mm","Sin clasificar","",[]],["Camisa del trocar 5mm","Sin clasificar","",[]],["Caucho de succión","Sin clasificar","",[]],["Cincel","Sin clasificar","",[]],["Cistoflo","Sin clasificar","",[]],["Compresa","Sin clasificar","",[]],["Cureta","Sin clasificar","",[]],["Elevador de periostio","Sin clasificar","",[]],["Equipo en Y TUR","Sin clasificar","",[]],["Fibra óptica","Sin clasificar","",[]],["Gasa","Sin clasificar","",[]],["Guantes","Sin clasificar","",[]],["Gubia de Letzel","Sin clasificar","",[]],["Guía hidrofílica","Sin clasificar","",[]],["Guía rígida","Sin clasificar","",[]],["Hoja de bisturí #10","Sin clasificar","",[]],["Hoja de bisturí #10-11","Sin clasificar","",[]],["Hoja de bisturí #11-15","Sin clasificar","",[]],["Hoja de bisturí #15","Sin clasificar","",[]],["Hoja de bisturí #20","Sin clasificar","",[]],["Instrumental","Sin clasificar","",[]],["Instrumental sobrante","Sin clasificar","",[]],["Lente de 30°","Sin clasificar","",[]],["Lente del Nefroscopio","Sin clasificar","",[]],["Litotriptor electrohidráulico","Sin clasificar","",[]],["Litotriptor neumático","Sin clasificar","",[]],["Litotriptor ultrasónico","Sin clasificar","",[]],["Mango de bisturí (sin especificar)","Sin clasificar","",[]],["Manipulador uterino de Cohen","Sin clasificar","",[]],["Martillo","Sin clasificar","",[]],["Obturador del Nefroscopio","Sin clasificar","",[]],["Óptica de 30°","Sin clasificar","",[]],["Paquete de ropa","Sin clasificar","",[]],["Pinza Bozeman","Sin clasificar","",[]],["Pinza erina de Schroeder","Sin clasificar","",[]],["Pinza Lahey","Sin clasificar","",[]],["Pinza reductora de Kern","Sin clasificar","",[]],["Puente con canal operador","Sin clasificar","",[]],["Punzón del trocar 10mm","Sin clasificar","",[]],["Punzón del trocar 5mm","Sin clasificar","",[]],["Raspa de Moore","Sin clasificar","",[]],["Separador de Bennet Blond","Sin clasificar","",[]],["Separador de Hibbs","Sin clasificar","",[]],["Separador de Hoffman","Sin clasificar","",[]],["Separador de Wolkman","Sin clasificar","",[]],["Sonda Foley","Sin clasificar","",[]],["Tijera de energía","Sin clasificar","",[]],["Torunda","Sin clasificar","",[]],["Tijera Armónico ACE 36","Tijera","",[]],["Tijera de Mayo","Tijera","",["Tijeras de Mayo","Tijeras Mayo"]],["Tijera de Metzenbaum","Tijera","",["Tijeras de Metzenbaum"]],["Tijera de Potts Smith","Tijera","",["Tijeras de Potts Smith (opcional)"]],["Tijera laparoscópica","Tijera","",["Tijera de laparoscopia"]],["Trocar 10-12mm","Trocar","",["Trocar 10/12mm","Trocar 10mm"]],["Trocar 5mm","Trocar","",[]]];
+  var USOS = [["Pinza de Allis","Mastectomía","Mesa de Mayo",1,[[1,3]]],["Pinza de disección con garra","Mastectomía","Mesa de Mayo",2,[[2,1]]],["Pinza de disección sin garra","Mastectomía","Mesa de Mayo",2,[[2,1]]],["Separador de Farabeuf","Mastectomía","Mesa de Mayo",3,[[2,2]]],["Pinza Rochester","Mastectomía","Mesa de Mayo",4,[[2,4]]],["Tijera de Mayo","Mastectomía","Mesa de Mayo",5,[[3,2]]],["Tijera de Metzenbaum","Mastectomía","Mesa de Mayo",6,[[4,2]]],["Mango de bisturí N.° 3","Mastectomía","Mesa de Mayo",7,[[5,2]]],["Hoja de bisturí #10-11","Mastectomía","Mesa de Mayo",7,[[5,2]]],["Pinza Kelly","Mastectomía","Mesa de Mayo",9,[[3,4]]],["Mango de bisturí N.° 3","Tiroidectomía","Mesa de Mayo",1,[[7,5]]],["Hoja de bisturí #15","Tiroidectomía","Mesa de Mayo",1,[[7,5]]],["Tijera de Metzenbaum","Tiroidectomía","Mesa de Mayo",2,[[6,5]]],["Tijera de Mayo","Tiroidectomía","Mesa de Mayo",3,[[5,5]]],["Pinza de disección con garra","Tiroidectomía","Mesa de Mayo",4,[[4,1]]],["Pinza de disección sin garra","Tiroidectomía","Mesa de Mayo",4,[[4,1]]],["Separador de Farabeuf","Tiroidectomía","Mesa de Mayo",5,[[4,2]]],["Separador de Senn Miller","Tiroidectomía","Mesa de Mayo",6,[[4,4]]],["Pinza de Allis","Tiroidectomía","Mesa de Mayo",7,[[1,3]]],["Pinza Lahey","Tiroidectomía","Mesa de Mayo",8,[[1,6]]],["Pinza Rochester","Tiroidectomía","Mesa de Mayo",9,[[2,7]]],["Pinza Mosquito curva","Tiroidectomía","Mesa de Mayo",10,[[3,7]]],["Paquete de ropa","Tiroidectomía","Mesa de reserva",1,[[4,1]]],["Pinza de Campo","Tiroidectomía","Mesa de reserva",2,[[4,2],[5,1]]],["Pinza Cística","Tiroidectomía","Mesa de reserva",3,[[4,4]]],["Tijera de energía","Tiroidectomía","Mesa de reserva",3,[[4,4]]],["Pinza Kelly Adson","Tiroidectomía","Mesa de reserva",4,[[4,5]]],["Compresa","Tiroidectomía","Mesa de reserva",5,[[1,3]]],["Portaagujas (sin especificar)","Tiroidectomía","Mesa de reserva",5,[[1,3]]],["Cánula de Frazier","Tiroidectomía","Mesa de reserva",6,[[1,7]]],["Compresa","Tiroidectomía","Mesa de reserva",7,[[4,8]]],["Gasa","Tiroidectomía","Mesa de reserva",7,[[4,8]]],["Bandeja","Tiroidectomía","Mesa de reserva",8,[[6,8]]],["Caucho de succión","Tiroidectomía","Mesa de reserva",9,[[2,6]]],["Mango de bisturí N.° 4","Colecistectomía","Mesa de Mayo",1,[[7,3]]],["Hoja de bisturí #20","Colecistectomía","Mesa de Mayo",1,[[7,3]]],["Mango de bisturí N.° 3","Colecistectomía","Mesa de Mayo",2,[[6,3]]],["Hoja de bisturí #10","Colecistectomía","Mesa de Mayo",2,[[6,3]]],["Tijera de Metzenbaum","Colecistectomía","Mesa de Mayo",3,[[5,3]]],["Tijera de Mayo","Colecistectomía","Mesa de Mayo",4,[[4,3]]],["Pinza de Allis","Colecistectomía","Mesa de Mayo",5,[[1,1]]],["Pinza de disección con garra","Colecistectomía","Mesa de Mayo",6,[[4,1]]],["Pinza de disección sin garra","Colecistectomía","Mesa de Mayo",6,[[4,1]]],["Separador de Farabeuf","Colecistectomía","Mesa de Mayo",7,[[4,2]]],["Pinza Moninjan","Colecistectomía","Mesa de Mayo",8,[[1,5]]],["Pinza Rochester","Colecistectomía","Mesa de Mayo",9,[[2,6]]],["Pinza Kelly","Colecistectomía","Mesa de Mayo",10,[[3,4]]],["Mango de bisturí N.° 4","Eventrorrafia","Mesa de Mayo",1,[[8,3]]],["Hoja de bisturí #20","Eventrorrafia","Mesa de Mayo",1,[[8,3]]],["Mango de bisturí N.° 7","Eventrorrafia","Mesa de Mayo",2,[[7,3]]],["Hoja de bisturí #15","Eventrorrafia","Mesa de Mayo",2,[[7,3]]],["Tijera de Metzenbaum","Eventrorrafia","Mesa de Mayo",3,[[6,3]]],["Tijera de Mayo","Eventrorrafia","Mesa de Mayo",4,[[5,3]]],["Pinza de disección con garra","Eventrorrafia","Mesa de Mayo",5,[[4,1]]],["Pinza de disección sin garra","Eventrorrafia","Mesa de Mayo",5,[[4,1]]],["Separador de Farabeuf","Eventrorrafia","Mesa de Mayo",6,[[4,2]]],["Pinza de Allis","Eventrorrafia","Mesa de Mayo",7,[[1,2]]],["Pinza de Babcock","Eventrorrafia","Mesa de Mayo",8,[[1,4]]],["Pinza Rochester","Eventrorrafia","Mesa de Mayo",9,[[1,7]]],["Pinza Kelly Adson","Eventrorrafia","Mesa de Mayo",10,[[2,5]]],["Pinza Kelly","Eventrorrafia","Mesa de Mayo",11,[[3,6]]],["Paquete de ropa","Eventrorrafia","Mesa de reserva",1,[[5,1]]],["Pinza de Campo","Eventrorrafia","Mesa de reserva",2,[[6,2]]],["Pinza de disección con garra","Eventrorrafia","Mesa de reserva",3,[[7,3]]],["Pinza de disección sin garra","Eventrorrafia","Mesa de reserva",3,[[7,3]]],["Pinza de Foerster","Eventrorrafia","Mesa de reserva",4,[[6,5]]],["Valva maleable","Eventrorrafia","Mesa de reserva",5,[[6,6]]],["Gasa","Eventrorrafia","Mesa de reserva",6,[[6,7]]],["Compresa","Eventrorrafia","Mesa de reserva",6,[[6,7]]],["Bandeja","Eventrorrafia","Mesa de reserva",7,[[8,7]]],["Compresa","Eventrorrafia","Mesa de reserva",8,[[1,4]]],["Portaagujas (sin especificar)","Eventrorrafia","Mesa de reserva",8,[[1,4]]],["Cistoscopio","Cistolitotomía endoscópica","Mesa de reserva",1,[[1,1]]],["Lente de 30°","Cistolitotomía endoscópica","Mesa de reserva",1,[[1,1]]],["Lente del Nefroscopio","Cistolitotomía endoscópica","Mesa de reserva",2,[[3,1]]],["Camisa del Nefroscopio","Cistolitotomía endoscópica","Mesa de reserva",2,[[3,1]]],["Obturador del Nefroscopio","Cistolitotomía endoscópica","Mesa de reserva",2,[[3,1]]],["Equipo en Y TUR","Cistolitotomía endoscópica","Mesa de reserva",5,[[3,3]]],["Cable de fuente de luz","Cistolitotomía endoscópica","Mesa de reserva",5,[[3,3]]],["Sonda Foley","Cistolitotomía endoscópica","Mesa de reserva",6,[[3,5]]],["Cistoflo","Cistolitotomía endoscópica","Mesa de reserva",6,[[3,5]]],["Paquete de ropa","Cistolitotomía endoscópica","Mesa de reserva",7,[[5,6]]],["Guantes","Cistolitotomía endoscópica","Mesa de reserva",7,[[5,6]]],["Equipo de pequeña cirugía","Cistolitotomía endoscópica","Mesa de reserva",8,[[5,7]]],["Dilatadores uretrales","Cistolitotomía endoscópica","Mesa de reserva",8,[[5,7]]],["Mango de bisturí N.° 3","Prostatectomía laparoscópica","Mesa de Mayo",1,[[9,2]]],["Hoja de bisturí #15","Prostatectomía laparoscópica","Mesa de Mayo",1,[[9,2]]],["Tijera de Metzenbaum","Prostatectomía laparoscópica","Mesa de Mayo",2,[[8,2]]],["Tijera de Mayo","Prostatectomía laparoscópica","Mesa de Mayo",3,[[7,2]]],["Pinza de disección con garra","Prostatectomía laparoscópica","Mesa de Mayo",4,[[6,1]]],["Pinza de disección sin garra","Prostatectomía laparoscópica","Mesa de Mayo",4,[[6,1]]],["Separador de Senn Miller","Prostatectomía laparoscópica","Mesa de Mayo",5,[[6,2]]],["Separador de Farabeuf","Prostatectomía laparoscópica","Mesa de Mayo",5,[[6,2]]],["Punzón del trocar 5mm","Prostatectomía laparoscópica","Mesa de Mayo",6,[[5,2]]],["Camisa del trocar 5mm","Prostatectomía laparoscópica","Mesa de Mayo",7,[[4,4]]],["Punzón del trocar 10mm","Prostatectomía laparoscópica","Mesa de Mayo",8,[[3,5]]],["Camisa del trocar 10mm","Prostatectomía laparoscópica","Mesa de Mayo",9,[[2,6]]],["Pinza de Allis","Prostatectomía laparoscópica","Mesa de Mayo",10,[[1,1]]],["Pinza Kelly","Prostatectomía laparoscópica","Mesa de Mayo",11,[[1,7]]],["Pinza Rochester","Prostatectomía laparoscópica","Mesa de Mayo",12,[[1,3]]],["Cistoscopio","Ureterolitotomía endoscópica","Mesa de Mayo",1,[[5,1]]],["Óptica de 30°","Ureterolitotomía endoscópica","Mesa de Mayo",2,[[4,2]]],["Puente con canal operador","Ureterolitotomía endoscópica","Mesa de Mayo",3,[[3,4]]],["Ureteroscopio","Ureterolitotomía endoscópica","Mesa de Mayo",4,[[2,1]]],["Fibra óptica","Ureterolitotomía endoscópica","Mesa de Mayo",5,[[4,6]]],["Litotriptor neumático","Ureterolitotomía endoscópica","Mesa de Mayo",6,[[1,1]]],["Litotriptor ultrasónico","Ureterolitotomía endoscópica","Mesa de Mayo",7,[[1,5]]],["Litotriptor electrohidráulico","Ureterolitotomía endoscópica","Mesa de Mayo",8,[[1,7]]],["Suero fisiológico","Ureterolitotomía endoscópica","Mesa de Mayo",9,[[6,7]]],["Guía hidrofílica","Ureterolitotomía endoscópica","Mesa de Mayo",10,[[6,3]]],["Guía rígida","Ureterolitotomía endoscópica","Mesa de Mayo",10,[[6,3]]],["Mango de bisturí N.° 4","Prostatectomía","Mesa de Mayo",1,[[6,2]]],["Mango de bisturí N.° 7","Prostatectomía","Mesa de Mayo",1,[[6,2]]],["Hoja de bisturí #20","Prostatectomía","Mesa de Mayo",1,[[6,2]]],["Hoja de bisturí #15","Prostatectomía","Mesa de Mayo",1,[[6,2]]],["Tijera de Metzenbaum","Prostatectomía","Mesa de Mayo",2,[[5,2]]],["Tijera de Mayo","Prostatectomía","Mesa de Mayo",3,[[4,2]]],["Pinza Kelly","Prostatectomía","Mesa de Mayo",4,[[4,1]]],["Pinza Rochester","Prostatectomía","Mesa de Mayo",5,[[3,1]]],["Pinza Kelly Adson","Prostatectomía","Mesa de Mayo",6,[[2,1]]],["Pinza de disección con garra","Prostatectomía","Mesa de Mayo",7,[[3,5]]],["Pinza de disección sin garra","Prostatectomía","Mesa de Mayo",7,[[3,5]]],["Separador de Farabeuf","Prostatectomía","Mesa de Mayo",8,[[3,4]]],["Pinza de Allis","Prostatectomía","Mesa de Mayo",9,[[1,3]]],["Mango de bisturí N.° 4","Cesárea","Mesa de Mayo",1,[[7,3]]],["Tijera de Metzenbaum","Cesárea","Mesa de Mayo",2,[[6,3]]],["Tijera de Mayo","Cesárea","Mesa de Mayo",3,[[5,3]]],["Pinza Kelly","Cesárea","Mesa de Mayo",4,[[4,5]]],["Pinza Rochester","Cesárea","Mesa de Mayo",5,[[3,5]]],["Pinza Heaney","Cesárea","Mesa de Mayo",6,[[2,5]]],["Separador de Farabeuf","Cesárea","Mesa de Mayo",7,[[3,3]]],["Pinza de disección con garra","Cesárea","Mesa de Mayo",8,[[3,1]]],["Pinza de disección sin garra","Cesárea","Mesa de Mayo",8,[[3,1]]],["Pinza de Allis","Cesárea","Mesa de Mayo",9,[[1,4]]],["Pinza Kocher","Cesárea","Mesa de Mayo",10,[[1,2]]],["Mango de bisturí N.° 3","Histerectomía laparoscópica","Mesa de reserva",1,[[4,1]]],["Hoja de bisturí #11-15","Histerectomía laparoscópica","Mesa de reserva",1,[[4,1]]],["Tijera de Metzenbaum","Histerectomía laparoscópica","Mesa de reserva",2,[[4,2]]],["Tijera de Mayo","Histerectomía laparoscópica","Mesa de reserva",3,[[4,3]]],["Pinza Kelly","Histerectomía laparoscópica","Mesa de reserva",4,[[4,4]]],["Aguja de Veress","Histerectomía laparoscópica","Mesa de reserva",5,[[4,5]]],["Trocar 10-12mm","Histerectomía laparoscópica","Mesa de reserva",6,[[4,6]]],["Trocar 5mm","Histerectomía laparoscópica","Mesa de reserva",7,[[4,7]]],["Espéculo Vaginal","Histerectomía laparoscópica","Mesa de reserva",8,[[4,9]]],["Pinza Bozeman","Histerectomía laparoscópica","Mesa de reserva",9,[[4,10]]],["Pinza erina de Schroeder","Histerectomía laparoscópica","Mesa de reserva",10,[[4,11]]],["Pinza de Foerster","Histerectomía laparoscópica","Mesa de reserva",11,[[4,12]]],["Manipulador uterino de Cohen","Histerectomía laparoscópica","Mesa de reserva",12,[[4,13]]],["Pinza Maryland","Histerectomía laparoscópica","Mesa de reserva",13,[[4,14]]],["Pinza Grasper laparoscópica","Histerectomía laparoscópica","Mesa de reserva",14,[[4,15]]],["Tijera laparoscópica","Histerectomía laparoscópica","Mesa de reserva",15,[[4,16]]],["Cánula de succión-irrigación","Histerectomía laparoscópica","Mesa de reserva",16,[[4,17]]],["Instrumental","Histerectomía laparoscópica","Mesa de reserva",17,[[4,18]]],["Paquete de ropa","Histerectomía laparoscópica","Mesa de reserva",18,[[4,19]]],["Paquete de ropa","Histerectomía laparoscópica","Mesa de reserva",19,[[2,20]]],["Compresa","Histerectomía laparoscópica","Mesa de reserva",20,[[1,8]]],["Portaagujas (sin especificar)","Histerectomía laparoscópica","Mesa de reserva",20,[[1,8]]],["Separador de Senn Miller","Histerectomía laparoscópica","Mesa de reserva",21,[[2,5]]],["Pinza de Allis","Histerectomía laparoscópica","Mesa de reserva",22,[[1,7]]],["Pinza de disección con garra","Histerectomía laparoscópica","Mesa de reserva",23,[[1,2]]],["Pinza de disección sin garra","Histerectomía laparoscópica","Mesa de reserva",23,[[1,2]]],["Mango de bisturí (sin especificar)","Histerectomía vaginal","Mesa de Mayo",1,[[3,1]]],["Tijera de Metzenbaum","Histerectomía vaginal","Mesa de Mayo",2,[[3,2]]],["Tijera de Mayo","Histerectomía vaginal","Mesa de Mayo",3,[[3,3]]],["Pinza Kelly","Histerectomía vaginal","Mesa de Mayo",4,[[1,4]]],["Pinza Heaney","Histerectomía vaginal","Mesa de Mayo",5,[[1,6]]],["Separador de Farabeuf","Histerectomía vaginal","Mesa de Mayo",6,[[3,5]]],["Pinza de disección con garra","Histerectomía vaginal","Mesa de Mayo",7,[[4,5]]],["Pinza de disección sin garra","Histerectomía vaginal","Mesa de Mayo",7,[[4,5]]],["Pinza de Allis","Histerectomía vaginal","Mesa de Mayo",8,[[4,7]]],["Compresa","Histerectomía vaginal","Mesa de reserva",9,[[1,2]]],["Portaagujas (sin especificar)","Histerectomía vaginal","Mesa de reserva",9,[[1,2]]],["Valva de contrapeso de Auvard","Histerectomía vaginal","Mesa de reserva",10,[[4,1]]],["Pinza de Foerster","Histerectomía vaginal","Mesa de reserva",11,[[4,3]]],["Torunda","Histerectomía vaginal","Mesa de reserva",11,[[4,3]]],["Riñonera/Coca","Histerectomía vaginal","Mesa de reserva",12,[[2,4]]],["Instrumental sobrante","Histerectomía vaginal","Mesa de reserva",13,[[3,5]]],["Compresa","Histerectomía vaginal","Mesa de reserva",13,[[3,5]]],["Mango de bisturí (sin especificar)","Colporrafia anterior y posterior","Mesa de Mayo",1,[[3,1]]],["Tijera de Metzenbaum","Colporrafia anterior y posterior","Mesa de Mayo",2,[[3,2]]],["Tijera de Mayo","Colporrafia anterior y posterior","Mesa de Mayo",3,[[3,3]]],["Pinza Kelly","Colporrafia anterior y posterior","Mesa de Mayo",4,[[1,4]]],["Pinza Heaney","Colporrafia anterior y posterior","Mesa de Mayo",5,[[1,6]]],["Separador de Farabeuf","Colporrafia anterior y posterior","Mesa de Mayo",6,[[3,5]]],["Pinza de disección con garra","Colporrafia anterior y posterior","Mesa de Mayo",7,[[4,5]]],["Pinza de disección sin garra","Colporrafia anterior y posterior","Mesa de Mayo",7,[[4,5]]],["Pinza de Allis","Colporrafia anterior y posterior","Mesa de Mayo",8,[[4,7]]],["Compresa","Colporrafia anterior y posterior","Mesa de reserva",9,[[1,2]]],["Portaagujas (sin especificar)","Colporrafia anterior y posterior","Mesa de reserva",9,[[1,2]]],["Valva de contrapeso de Auvard","Colporrafia anterior y posterior","Mesa de reserva",10,[[4,1]]],["Pinza de Foerster","Colporrafia anterior y posterior","Mesa de reserva",11,[[4,3]]],["Torunda","Colporrafia anterior y posterior","Mesa de reserva",11,[[4,3]]],["Riñonera/Coca","Colporrafia anterior y posterior","Mesa de reserva",12,[[2,4]]],["Instrumental sobrante","Colporrafia anterior y posterior","Mesa de reserva",13,[[3,5]]],["Compresa","Colporrafia anterior y posterior","Mesa de reserva",13,[[3,5]]],["Mango de bisturí N.° 3","Reemplazo total de cadera","Mesa de Mayo",1,[[8,2]]],["Mango de bisturí N.° 7","Reemplazo total de cadera","Mesa de Mayo",1,[[8,2]]],["Tijera de Metzenbaum","Reemplazo total de cadera","Mesa de Mayo",2,[[7,2]]],["Tijera de Mayo","Reemplazo total de cadera","Mesa de Mayo",3,[[6,2]]],["Separador de Farabeuf","Reemplazo total de cadera","Mesa de Mayo",4,[[5,2]]],["Elevador de periostio","Reemplazo total de cadera","Mesa de Mayo",5,[[4,2]]],["Cureta","Reemplazo total de cadera","Mesa de Mayo",6,[[3,2]]],["Separador de Wolkman","Reemplazo total de cadera","Mesa de Mayo",7,[[2,2]]],["Pinza de disección con garra","Reemplazo total de cadera","Mesa de Mayo",8,[[4,3]]],["Pinza Kelly","Reemplazo total de cadera","Mesa de Mayo",9,[[1,4]]],["Pinza de Allis","Reemplazo total de cadera","Mesa de Mayo",10,[[1,2]]],["Pinza Kocher","Reemplazo total de cadera","Mesa de Mayo",11,[[1,1]]],["Separador de Bennet Blond","Reemplazo total de cadera","Mesa de reserva",12,[[3,1]]],["Separador de Hoffman","Reemplazo total de cadera","Mesa de reserva",13,[[3,2]]],["Separador de Hibbs","Reemplazo total de cadera","Mesa de reserva",14,[[3,3]]],["Martillo","Reemplazo total de cadera","Mesa de reserva",15,[[3,4]]],["Cincel","Reemplazo total de cadera","Mesa de reserva",15,[[3,4]]],["Gubia de Letzel","Reemplazo total de cadera","Mesa de reserva",16,[[4,5]]],["Raspa de Moore","Reemplazo total de cadera","Mesa de reserva",17,[[3,6]]],["Pinza reductora de Kern","Reemplazo total de cadera","Mesa de reserva",18,[[3,7]]],["Mango de bisturí N.° 3","Reemplazo total de rodilla","Mesa de Mayo",1,[[8,2]]],["Mango de bisturí N.° 7","Reemplazo total de rodilla","Mesa de Mayo",1,[[8,2]]],["Tijera de Metzenbaum","Reemplazo total de rodilla","Mesa de Mayo",2,[[7,2]]],["Tijera de Mayo","Reemplazo total de rodilla","Mesa de Mayo",3,[[6,2]]],["Separador de Farabeuf","Reemplazo total de rodilla","Mesa de Mayo",4,[[5,2]]],["Elevador de periostio","Reemplazo total de rodilla","Mesa de Mayo",5,[[4,2]]],["Cureta","Reemplazo total de rodilla","Mesa de Mayo",6,[[3,2]]],["Separador de Wolkman","Reemplazo total de rodilla","Mesa de Mayo",7,[[2,2]]],["Pinza de disección con garra","Reemplazo total de rodilla","Mesa de Mayo",8,[[4,3]]],["Pinza Kelly","Reemplazo total de rodilla","Mesa de Mayo",9,[[1,4]]],["Pinza de Allis","Reemplazo total de rodilla","Mesa de Mayo",10,[[1,2]]],["Pinza Kocher","Reemplazo total de rodilla","Mesa de Mayo",11,[[1,1]]],["Separador de Bennet Blond","Reemplazo total de rodilla","Mesa de reserva",12,[[3,1]]],["Separador de Hoffman","Reemplazo total de rodilla","Mesa de reserva",13,[[3,2]]],["Separador de Hibbs","Reemplazo total de rodilla","Mesa de reserva",14,[[3,3]]],["Martillo","Reemplazo total de rodilla","Mesa de reserva",15,[[3,4]]],["Cincel","Reemplazo total de rodilla","Mesa de reserva",15,[[3,4]]],["Gubia de Letzel","Reemplazo total de rodilla","Mesa de reserva",16,[[4,5]]],["Raspa de Moore","Reemplazo total de rodilla","Mesa de reserva",17,[[3,6]]],["Pinza reductora de Kern","Reemplazo total de rodilla","Mesa de reserva",18,[[3,7]]],["Mango de bisturí N.° 4","Ooforectomía con salpingectomía","Mesa de Mayo",1,[[7,2]]],["Tijera de Metzenbaum","Ooforectomía con salpingectomía","Mesa de Mayo",2,[[6,2]]],["Tijera de Mayo","Ooforectomía con salpingectomía","Mesa de Mayo",3,[[5,2]]],["Pinza Kelly","Ooforectomía con salpingectomía","Mesa de Mayo",4,[[4,1]]],["Pinza Rochester","Ooforectomía con salpingectomía","Mesa de Mayo",5,[[3,1]]],["Pinza Heaney","Ooforectomía con salpingectomía","Mesa de Mayo",6,[[2,1]]],["Separador de Farabeuf","Ooforectomía con salpingectomía","Mesa de Mayo",7,[[3,2]]],["Pinza de disección con garra","Ooforectomía con salpingectomía","Mesa de Mayo",8,[[3,3]]],["Pinza de disección sin garra","Ooforectomía con salpingectomía","Mesa de Mayo",8,[[3,3]]],["Pinza de Allis","Ooforectomía con salpingectomía","Mesa de Mayo",9,[[1,3]]],["Pinza Kocher","Ooforectomía con salpingectomía","Mesa de Mayo",10,[[1,1]]]];
+  var DIMS = {"Reemplazo total de rodilla|Mesa de reserva":[4,7],"Histerectomía vaginal|Mesa de Mayo":[4,7],"Ooforectomía con salpingectomía|Mesa de Mayo":[7,3],"Tiroidectomía|Mesa de Mayo":[7,7],"Eventrorrafia|Mesa de reserva":[8,7],"Histerectomía laparoscópica|Mesa de reserva":[4,20],"Colecistectomía|Mesa de Mayo":[7,6],"Prostatectomía laparoscópica|Mesa de Mayo":[9,7],"Reemplazo total de cadera|Mesa de Mayo":[8,4],"Prostatectomía|Mesa de Mayo":[6,5],"Reemplazo total de cadera|Mesa de reserva":[4,7],"Mastectomía|Mesa de Mayo":[5,4],"Tiroidectomía|Mesa de reserva":[6,8],"Cesárea|Mesa de Mayo":[7,5],"Histerectomía vaginal|Mesa de reserva":[4,5],"Eventrorrafia|Mesa de Mayo":[8,7],"Ureterolitotomía endoscópica|Mesa de Mayo":[6,7],"Reemplazo total de rodilla|Mesa de Mayo":[8,4],"Cistolitotomía endoscópica|Mesa de reserva":[5,7],"Colporrafia anterior y posterior|Mesa de Mayo":[4,7],"Colporrafia anterior y posterior|Mesa de reserva":[4,5]};
+
+  function sinTilde(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  function slug(t) { return sinTilde(t).replace(/\s+/g, "-"); }
+  var ESP_DE = {};
+  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { ESP_DE[t] = e[0]; }); });
+  // Las mesas del detalle traen su tamaño exacto; las demás, el de sus posiciones
+  Object.keys(TECNICAS).forEach(function (k) { var T = TECNICAS[k]; if (T.mayo) DIMS[T.nombre + "|Mesa de Mayo"] = [T.mayo.filas, T.mayo.cols]; if (T.reserva) DIMS[T.nombre + "|Mesa de reserva"] = [T.reserva.filas, T.reserva.cols]; });
+  function usosDe(n) { return USOS.filter(function (u) { return u[0] === n; }); }
+  function tecnicasDe(n) { var v = []; usosDe(n).forEach(function (u) { if (v.indexOf(u[1]) === -1) v.push(u[1]); }); return v; }
+  var CATEGORIAS = []; CATALOGO.forEach(function (x) { if (CATEGORIAS.indexOf(x[1]) === -1) CATEGORIAS.push(x[1]); });
+  CATEGORIAS.sort(function (a, b) { return a === "Sin clasificar" ? 1 : b === "Sin clasificar" ? -1 : a.localeCompare(b); });
+  var lapiz = "<svg width='15' height='15' viewBox='0 0 16 16' aria-hidden='true'><path d='M10.5 2.5l3 3-8 8H2.5v-3z' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linejoin='round'/></svg>";
+  var xIcono = "<svg width='11' height='11' viewBox='0 0 12 12' aria-hidden='true'><path d='M3 3l6 6M9 3l-6 6' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'/></svg>";
+  function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+  function dibujoDe(nombre) {
+    var n = sinTilde(nombre), tabla = [["metzenbaum", "metzenbaum"], ["tijera de mayo", "mayo"], ["mango de bisturi", "bisturi"], ["diseccion", "diseccion"], ["farabeuf", "farabeuf"], ["senn", "senn"], ["allis", "allis"], ["lahey", "lahey"], ["rochester", "rochester"], ["mosquito", "mosquito"], ["kelly", "kelly"], ["cistica", "cistica"], ["portaagujas", "portaagujas"], ["pinza de campo", "campo"], ["tijera de energia", "energia"], ["frazier", "frazier"]];
+    for (var i = 0; i < tabla.length; i++) if (n.indexOf(tabla[i][0]) !== -1 && (acero[tabla[i][1]] || dibujos[tabla[i][1]])) return tabla[i][1];
+    return null;
+  }
+
+  /* Índice por categoría, con búsqueda por nombre o alias */
+  var lado = document.getElementById("lado"), indice = document.getElementById("indice"), buscar = document.getElementById("buscar-inst"), elegido = null;
+  function pintarIndice() {
+    var q = sinTilde(buscar.value.trim()), h = "", hay = false;
+    CATEGORIAS.forEach(function (c) {
+      var xs = CATALOGO.filter(function (x) { return x[1] === c && (!q || sinTilde(x[0]).indexOf(q) !== -1 || x[3].some(function (a) { return sinTilde(a).indexOf(q) !== -1; })); });
+      if (!xs.length) return;
+      hay = true;
+      h += "<section><h2>" + esc(c) + "<span class='cifra-lado' title='Instrumentos'>" + xs.length + "</span></h2><ul>";
+      xs.forEach(function (x) {
+        var nom = esc(x[0]), i = q ? sinTilde(x[0]).indexOf(q) : -1;
+        if (i !== -1) nom = esc(x[0].slice(0, i)) + "<mark>" + esc(x[0].slice(i, i + q.length)) + "</mark>" + esc(x[0].slice(i + q.length));
+        var porAlias = q && i === -1 ? x[3].filter(function (a) { return sinTilde(a).indexOf(q) !== -1; })[0] : null;
+        h += "<li><a href='#inst-" + slug(x[0]) + "'" + (x[0] === elegido ? " aria-current='page'" : "") + ">" + nom + "<span class='cifra-lado' title='Técnicas en que va'>" + (tecnicasDe(x[0]).length || "") + "</span>" + (porAlias ? "<small class='por-alias'>también «" + esc(porAlias) + "»</small>" : "") + "</a></li>";
+      });
+      h += "</ul></section>";
+    });
+    indice.innerHTML = hay ? h : "<p class='sin-res'>Ningún instrumento con ese nombre o alias.</p>";
+    var actual = indice.querySelector("a[aria-current]");
+    if (actual && !q) { var cl = lado.getBoundingClientRect(), r = actual.getBoundingClientRect(); if (r.top < cl.top + 120 || r.bottom > cl.bottom) lado.scrollTop += r.top - cl.top - cl.height / 3; }
+  }
+  buscar.addEventListener("input", pintarIndice);
+
+  /* La entrada: ruta, nombre, descripción, alias y dónde va. Editar vuelve editable cada bloque en su sitio */
+  var entrada = document.getElementById("entrada");
+  var flechaRuta = "<svg width='12' height='12' viewBox='0 0 12 12' aria-hidden='true'><path d='M4.5 2.5L8 6l-3.5 3.5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  function miniMesa(u, k) {
+    var dim = DIMS[u[1] + "|" + u[2]] || [Math.max.apply(null, u[4].map(function (c) { return c[0]; })), Math.max.apply(null, u[4].map(function (c) { return c[1]; }))];
+    var primera = u[4].slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })[0];
+    var h = "<span class='rejilla-mini' style='grid-template-columns:repeat(" + dim[1] + ",var(--celda))' aria-hidden='true'>";
+    for (var f = 1; f <= dim[0]; f++) for (var c = 1; c <= dim[1]; c++) {
+      var on = u[4].some(function (x) { return x[0] === f && x[1] === c; }), esPrimera = primera && primera[0] === f && primera[1] === c;
+      h += on ? "<i class='on' style='--k:" + k + "'>" + (esPrimera && u[3] ? "<b>" + u[3] + "</b>" : "") + "</i>" : "<i></i>";
     }
-    function señalado(e) { var t = e.target.closest("[data-n]"); if (t && caja.contains(t)) marcar(+t.dataset.n); }
-    caja.addEventListener("mouseover", señalado);
-    caja.addEventListener("focusin", señalado);
-    caja.addEventListener("mouseleave", function () { marcar(null); });
-    caja.addEventListener("focusout", function (e) { if (!caja.contains(e.relatedTarget)) marcar(null); });
-    return marcar;
+    return "<span class='mini-marco'>" + h + "</span></span>";
   }
-  var marcarMayo = prepararMesa(document.getElementById("caja-mayo"));
-  var marcarReserva = prepararMesa(document.getElementById("caja-reserva"));
-  function pintarMesa(cual, mesa) {
-    var caja = document.getElementById("caja-" + cual), vacia = document.getElementById("sin-" + cual);
-    // Sin sesión no se revela si la técnica tiene o no esta mesa: se muestra una cuadrícula y la puerta
-    var visitante = document.body.classList.contains("sin-sesion");
-    if (!mesa && visitante) mesa = cual === "mayo" ? { filas: 7, cols: 7, items: [] } : { filas: 6, cols: 8, items: [] };
-    caja.hidden = !mesa; vacia.hidden = !!mesa;
-    if (!mesa) return;
-    // Sin sesión se ven las dos primeras filas; el resto se desvanece bajo la puerta
-    // Mismo tamaño de celda en toda técnica: la mesa mide según sus columnas
-    var funda = caja.querySelector(".tec-funda");
-    funda.style.setProperty("--aspecto-vista", (mesa.cols / Math.min(2.6, mesa.filas)).toFixed(3));
-    funda.style.setProperty("--cols-vista", mesa.cols);
-    caja.style.setProperty("--aspecto", mesa.cols / mesa.filas);
-    dibujarMesa(caja.querySelector("svg.mesa"), mesa);
-    var ol = caja.querySelector(".leyenda-tec");
-    ol.innerHTML = "";
-    mesa.items.forEach(function (o) {
-      var li = document.createElement("li");
-      if (o[1]) { li.dataset.n = o[0]; li.tabIndex = 0; } else li.className = "hueco";
-      li.innerHTML = "<b></b><span></span>";
-      li.children[0].textContent = o[0]; li.children[1].textContent = o[2];
-      ol.appendChild(li);
+  function dondeVa(us) {
+    var h = "<section class='donde' aria-labelledby='t-donde'><div class='donde-cabeza'><h2 id='t-donde'>Dónde va</h2><p>Cada técnica publicada, con la celda que ocupa en su mesa</p></div>";
+    if (!us.length) return h + "<p class='sin-mesas'>Todavía no está en ninguna mesa cargada. Puede estar en el listado de instrumental de alguna técnica.</p></section>";
+    var porEsp = {}; us.forEach(function (u) { var e = ESP_DE[u[1]] || "Otras"; (porEsp[e] = porEsp[e] || []).push(u); });
+    var k = 0;
+    ESPECIALIDADES.map(function (e) { return e[0]; }).forEach(function (e) {
+      if (!porEsp[e]) return;
+      h += "<div class='esp-grupo'><h3>" + esc(e) + "</h3><ul class='usos-lista'>";
+      porEsp[e].sort(function (a, b) { return a[1].localeCompare(b[1]) || a[2].localeCompare(b[2]); }).forEach(function (u) {
+        var conDetalle = TECNICAS[slug(u[1])] && !TECNICAS[slug(u[1])].plantilla, dato = "<span class='uso-dato'><strong>" + esc(u[1]) + "</strong><span>" + esc(u[2]) + (u[3] ? " · n.° " + u[3] : "") + "</span></span>";
+        var dimU = DIMS[u[1] + "|" + u[2]], ancha = dimU && dimU[1] > 10;
+        h += "<li class='uso-fila" + (ancha ? " ancha" : "") + "'>" + (conDetalle ? "<a href='tecnica.html#" + slug(u[1]) + "'>" + dato + "</a>" : dato) + miniMesa(u, k++) + "</li>";
+      });
+      h += "</ul></div>";
+    });
+    return h + "</section>";
+  }
+  function verEntrada(n, modo) {
+    // modo: undefined (leer), "editar", "descripcion" (solo la descripción) o "nuevo"
+    var nuevo = modo === "nuevo", x = nuevo ? null : CATALOGO.filter(function (y) { return y[0] === n; })[0];
+    if (!nuevo && !x) return;
+    var dato = x || ["", "", "", []], editando = !!modo, soloDesc = modo === "descripcion";
+    if (!nuevo) elegido = dato[0];
+    // Al crear uno nuevo, el índice no deja marcado el anterior
+    if (nuevo) { var antes = elegido; elegido = null; pintarIndice(); elegido = antes; } else pintarIndice();
+    var us = nuevo ? [] : usosDe(dato[0]), tecs = nuevo ? [] : tecnicasDe(dato[0]), dib = nuevo ? null : dibujoDe(dato[0]), alias = dato[3].slice();
+    var opciones = (nuevo ? "<option value='' disabled selected>Elegir categoría</option>" : "") + CATEGORIAS.map(function (c) { return "<option" + (c === dato[1] ? " selected" : "") + ">" + esc(c) + "</option>"; }).join("");
+    var editaTodo = editando && !soloDesc;
+    var h = "<form id='form-inst' novalidate>" +
+      "<nav class='ruta-inst' aria-label='Ruta'>Instrumental " + flechaRuta + " " + (editaTodo ? "<label class='solo-lector' for='f-cat'>Categoría</label><span class='select-casa'><select id='f-cat' required>" + opciones + "</select></span>" : esc(dato[1])) + (editaTodo && !nuevo ? " " + flechaRuta + " " + esc(dato[0]) : "") + "</nav>" +
+      "<header class='entrada-cabeza'><div>" + (editaTodo ? "<label class='solo-lector' for='f-nombre'>Nombre canónico</label><input class='h1-ed' id='f-nombre' required placeholder='Nombre canónico' value='" + esc(dato[0]).replace(/'/g, "&#39;") + "' autocomplete='off'><p class='duplicado' id='duplicado' hidden></p>" : "<h1>" + esc(dato[0]) + "</h1>") +
+      "<p class='uso-resumen'>" + (nuevo ? "Instrumento nuevo. Los instrumentos no se borran: se corrigen." : tecs.length ? "En <b>" + tecs.length + (tecs.length === 1 ? " técnica" : " técnicas") + "</b> · " + us.length + (us.length === 1 ? " mesa" : " mesas") : "Todavía no está en ninguna mesa") + "</p></div>" +
+      (editando ? "" : "<button type='button' class='editar-entrada' id='editar'>" + lapiz + "Editar esta entrada</button>") + "</header>" +
+      "<div class='entrada-cuerpo'><div>" +
+      "<section class='bloque-inst'><h2>" + (editando ? "<label for='f-desc'>Descripción</label>" : "Descripción") + "</h2>" +
+      (editando ? "<textarea class='desc-ed' id='f-desc' placeholder='Qué es y para qué se usa, en una o dos frases, con una fuente citable.'>" + esc(dato[2]) + "</textarea><p class='ayuda'>Es la que se muestra al tocar la pieza en 3D.</p>"
+        : dato[2] ? "<p class='descripcion-inst'>" + esc(dato[2]) + "</p>" : "<p class='sin-desc'>Sin descripción todavía. Es la que se muestra al tocar la pieza en 3D. <button type='button' id='escribir'>Escribir descripción</button></p>") + "</section>" +
+      "<section class='bloque-inst'><h2>También se escribe así</h2>" + (editaTodo ? "<div class='alias-ed' id='f-alias'></div><p class='ayuda'>Como aparece en las fichas; así se reconoce al cargar técnicas.</p><p class='duplicado' id='alias-dup' hidden></p>"
+        : alias.length ? "<p class='alias'>" + alias.map(function (a) { return "<span>" + esc(a) + "</span>"; }).join("") + "</p>" : "<p class='nada'>Sin otros nombres en las fichas.</p>") + "</section>" +
+      "</div><div class='dibujo-inst'" + (dib ? "" : " hidden") + " aria-hidden='true'>" + (dib ? "<svg viewBox='-20 -6 40 114'><g transform='scale(1.15 1)'>" + (acero[dib] || dibujos[dib])() + "</g></svg>" : "") + "</div></div>" +
+      "<div class='" + (editando ? "donde-atenuado" : "") + "'>" + dondeVa(us) + "</div>";
+    if (editando) h += "<div class='guardar-barra'><div class='impacto'><svg width='18' height='18' viewBox='0 0 20 20' aria-hidden='true'><circle cx='10' cy='10' r='8' fill='none' stroke='currentColor' stroke-width='1.7'/><path d='M10 6v5M10 13.6v.4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'/></svg><p>" +
+      (tecs.length ? "Este cambio se verá en <b>" + tecs.length + (tecs.length === 1 ? " técnica publicada" : " técnicas publicadas") + "</b>: " + esc(tecs.join(", ")) + "." : nuevo ? "Queda en el catálogo para usarlo en las técnicas." : "Todavía no está en ninguna técnica publicada.") +
+      "</p></div><div class='botones'><button type='button' class='boton-texto' id='cancelar'>Cancelar</button><button type='submit' class='boton' id='guardar'>Guardar</button></div></div>";
+    entrada.innerHTML = h + "</form>";
+    entrada.classList.toggle("editando", editando);
+    document.title = (nuevo ? "Nuevo instrumento" : dato[0]) + " · Instrumental · IQ Platform";
+    if (!editando) {
+      document.getElementById("editar").addEventListener("click", function () { verEntrada(dato[0], "editar"); });
+      var esc2 = document.getElementById("escribir"); if (esc2) esc2.addEventListener("click", function () { verEntrada(dato[0], "descripcion"); });
+      return;
+    }
+    // Duplicados: un nombre o alias que ya es de otro instrumento no se puede guardar
+    function dueno(nombre) {
+      var q = sinTilde(nombre.trim()); if (!q) return null;
+      return CATALOGO.filter(function (y) { return y !== x && (sinTilde(y[0]) === q || y[3].some(function (a) { return sinTilde(a) === q; })); })[0] || null;
+    }
+    function aviso(el, otro) {
+      el.hidden = !otro; if (!otro) return;
+      el.innerHTML = "Ya existe <b></b>" + (otro[3].length ? " (también «" + esc(otro[3][0]) + "»)" : "") + ". <a href='#inst-" + slug(otro[0]) + "'>Abrir esa entrada</a>";
+      el.querySelector("b").textContent = "«" + otro[0] + "»";
+    }
+    function validar() {
+      var g = document.getElementById("guardar"), mal = false;
+      if (editaTodo) { var o = dueno(document.getElementById("f-nombre").value); aviso(document.getElementById("duplicado"), o); mal = !!o || !document.getElementById("f-nombre").value.trim() || !document.getElementById("f-cat").value; }
+      g.disabled = mal;
+    }
+    if (editaTodo) {
+      var cajaAlias = document.getElementById("f-alias");
+      var pintarAlias = function () {
+        cajaAlias.innerHTML = "";
+        alias.forEach(function (a, i) { var s = document.createElement("span"); s.textContent = a; var b = document.createElement("button"); b.type = "button"; b.innerHTML = xIcono; b.setAttribute("aria-label", "Quitar " + a); b.addEventListener("click", function () { alias.splice(i, 1); pintarAlias(); }); s.appendChild(b); cajaAlias.appendChild(s); });
+        var inp = document.createElement("input"); inp.placeholder = "Agregar alias"; inp.setAttribute("aria-label", "Agregar alias");
+        inp.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter") return; e.preventDefault();
+          var v = inp.value.trim(), otro = v && dueno(v);
+          aviso(document.getElementById("alias-dup"), otro);
+          if (v && !otro && alias.indexOf(v) === -1) { alias.push(v); pintarAlias(); cajaAlias.querySelector("input").focus(); }
+        });
+        cajaAlias.appendChild(inp);
+      };
+      pintarAlias();
+      document.getElementById("f-nombre").addEventListener("input", validar);
+      document.getElementById("f-cat").addEventListener("change", validar);
+    }
+    validar();
+    document.getElementById(soloDesc ? "f-desc" : nuevo ? "f-cat" : "f-nombre").focus();
+    document.getElementById("cancelar").addEventListener("click", function () { verEntrada(elegido || "Pinza Kelly"); });
+    document.getElementById("form-inst").addEventListener("submit", function (e) {
+      e.preventDefault(); if (document.getElementById("guardar").disabled) return;
+      var nombre = editaTodo ? document.getElementById("f-nombre").value.trim() : dato[0];
+      if (nuevo) { dato = [nombre, "", "", []]; CATALOGO.push(dato); }
+      else if (nombre !== dato[0]) { USOS.forEach(function (u) { if (u[0] === dato[0]) u[0] = nombre; }); }
+      dato[0] = nombre; if (editaTodo) { dato[1] = document.getElementById("f-cat").value; dato[3] = alias; }
+      dato[2] = document.getElementById("f-desc").value.trim();
+      if (CATEGORIAS.indexOf(dato[1]) === -1) CATEGORIAS.push(dato[1]);
+      elegido = nombre; location.hash = "inst-" + slug(nombre); verEntrada(nombre);
+      avisar(nuevo ? "Instrumento agregado al catálogo." : "Cambios guardados" + (tecs.length ? " · se ven en " + tecs.length + (tecs.length === 1 ? " técnica" : " técnicas") : "") + ".");
     });
   }
-  function escalarNumeros() {
-    document.querySelectorAll(".tec-funda svg").forEach(function (svg) {
-      var w = svg.getBoundingClientRect().width, vb = svg.viewBox.baseVal.width;
-      if (w && vb) svg.style.setProperty("--num-escala", (11 / (16 * w / vb)).toFixed(3));
-    });
-  }
-  addEventListener("resize", escalarNumeros);
-  function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
-  // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
-  // Versiones en curso del catálogo, sea quien sea el que mira; tras publicar, Colecistectomía queda sin nada en curso
-  var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
-  if (PUBLICA && PUBLICADA) delete EN_CURSO.colecistectomia;
-  document.getElementById("editar-tec").addEventListener("click", function (e) { if (this.classList.contains("inerte")) e.preventDefault(); });
-  // Para quien publica, solo Colecistectomía es suya; las demás son de Daniela Ortiz
-  // Sin sesión (#v-técnica): datos clínicos libres; instrumental y mesas piden cuenta en su pestaña
-  var prefijo = "";
-  function claveDe(h) { prefijo = h.indexOf("v-") === 0 ? "v-" : ""; document.body.classList.toggle("sin-sesion", !!prefijo); return prefijo ? h.slice(2) : h; }
-  claveDe(location.hash.slice(1));
-  // Las técnicas sin página propia en el mockup se muestran como plantilla
-  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { if (!TECNICAS[slug(t)]) TECNICAS[slug(t)] = { nombre: t, especialidad: e[0], plantilla: true, mayo: null, reserva: null }; }); });
-  var candadoG = "<span class='candado-g' aria-hidden='true'><svg width='20' height='20' viewBox='0 0 16 16'><rect x='3.5' y='7' width='9' height='7' rx='1.6' fill='none' stroke='currentColor' stroke-width='1.5'/><path d='M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></span>";
-  function puertas(clave, T) {
-    var textos = {
-      instrumental: ["Ver el instrumental completo", T.instrumental ? "Con una cuenta gratuita se abren los " + T.instrumental.length + " instrumentos de esta técnica." : "Con una cuenta gratuita se abre el instrumental de esta técnica."],
-      mayo: ["Ver la mesa de Mayo", "Con una cuenta gratuita se abre la mesa de Mayo de esta técnica."],
-      reserva: ["Ver la mesa de reserva", "Con una cuenta gratuita se abre la mesa de reserva de esta técnica."]
-    };
-    document.querySelectorAll(".puerta-tec").forEach(function (d) {
-      var t = textos[d.dataset.que];
-      d.innerHTML = candadoG + "<strong></strong><p></p><div class='acciones-puerta'><a class='boton' href='cuenta.html#crear~" + clave + "'>Crear cuenta gratis</a><a class='ya-tengo' href='cuenta.html#ingresar~" + clave + "'>Ya tengo cuenta</a></div>";
-      d.querySelector("strong").textContent = t[0]; d.querySelector("p").textContent = t[1];
-    });
-    document.getElementById("barra-ingresar").href = "cuenta.html#ingresar~" + clave;
-    document.getElementById("barra-crear").href = "cuenta.html#crear~" + clave;
-    // Los módulos también requieren cuenta
-    ["ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).href = prefijo ? "cuenta.html#crear~" + clave : "#"; });
-  }
-  var ARCHIVADAS = {}, claveVista = null, masBoton = document.getElementById("mas-boton"), masPanel = document.getElementById("mas-panel");
-  function cerrarMas() { masPanel.hidden = true; masBoton.setAttribute("aria-expanded", "false"); document.getElementById("mas-menu").hidden = false; document.getElementById("archivar-confirmar").hidden = true; }
-  masBoton.addEventListener("click", function (e) { e.stopPropagation(); var abrir = masPanel.hidden; cerrarMas(); masPanel.hidden = !abrir; masBoton.setAttribute("aria-expanded", String(abrir)); });
-  masPanel.addEventListener("click", function (e) { e.stopPropagation(); });
-  document.addEventListener("click", function () { if (!masPanel.hidden) cerrarMas(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !masPanel.hidden) { cerrarMas(); masBoton.focus(); } });
-  document.getElementById("archivar").addEventListener("click", function () { if (this.getAttribute("aria-disabled") === "true") return; document.getElementById("mas-menu").hidden = true; document.getElementById("archivar-confirmar").hidden = false; document.getElementById("si-archivar").focus(); });
-  document.getElementById("no-archivar").addEventListener("click", function () { cerrarMas(); masBoton.focus(); });
-  document.getElementById("si-archivar").addEventListener("click", function () {
-    ARCHIVADAS[claveVista] = true; pintar(claveVista);
-    var a = document.getElementById("tec-archivada"); a.classList.remove("solo-ahora"); void a.offsetWidth; a.classList.add("solo-ahora"); a.focus();
-  });
-  function pintar(clave) {
-    claveVista = clave;
-    var T = TECNICAS[clave];
-    puertas(clave, T);
-    document.getElementById("t-tecnica").textContent = T.nombre;
-    document.getElementById("tec-esp").textContent = T.especialidad;
-    document.getElementById("marca-plantilla").hidden = !T.plantilla;
-    document.title = T.nombre + " · IQ Platform";
-    // Una sola versión en curso por técnica: si ya hay una, el botón lleva a ella
-    var curso = EN_CURSO[clave], editar = document.getElementById("editar-tec");
-    var ajena = !!(PUBLICA && curso && clave !== "colecistectomia");
-    editar.querySelector("span").textContent = ajena ? (curso === "en-revision" ? "Revisar versión 2" : "En curso por Daniela Ortiz") : curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
-    editar.classList.toggle("inerte", ajena && curso !== "en-revision");
-    if (ajena && curso !== "en-revision") editar.setAttribute("aria-disabled", "true"); else editar.removeAttribute("aria-disabled");
-    editar.querySelector(".ico-lapiz").style.display = curso === "en-revision" ? "none" : "";
-    editar.querySelector(".ico-reloj").style.display = curso === "en-revision" ? "" : "none";
-    // El editor de la demostración es el de Colecistectomía; las demás versiones en curso llevan a Mis borradores
-    editar.href = ajena ? (curso === "en-revision" ? "revision.html" + CONSULTA : "#") : clave === "colecistectomia" && curso ? "editor.html" + CONSULTA + "#paso-1" : curso ? "borradores.html" + CONSULTA : "#";
-    var pub = document.getElementById("recien-publicada");
-    // Archivar: solo quien publica, solo sin versión en curso; una archivada deja de ofrecer los módulos
-    var arch = !!ARCHIVADAS[clave];
-    document.getElementById("mas-tec").hidden = !PUBLICA || arch;
-    if (curso) document.getElementById("archivar").setAttribute("aria-disabled", "true"); else document.getElementById("archivar").removeAttribute("aria-disabled");
-    document.getElementById("archivar-nota").hidden = !curso;
-    document.getElementById("arch-nombre").textContent = T.nombre;
-    document.getElementById("tec-archivada").hidden = !arch;
-    ["editar-tec", "ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).style.display = arch ? "none" : ""; });
-    cerrarMas();
-    pub.hidden = !(PUBLICA && PUBLICADA && clave === "colecistectomia");
-    var fichas = document.getElementById("fichas"), cl = T.clinicos;
-    var filas = [["Anestesia", cl && cl.anestesia], ["Ropa", cl && cl.ropa], ["Posición del paciente", cl && cl.posicion, 1], ["Equipos biomédicos", cl && cl.equipos, 1]];
-    fichas.innerHTML = "";
-    filas.forEach(function (f) {
-      var d = document.createElement("div");
-      if (f[2]) d.className = "ancha";
-      d.innerHTML = "<dt></dt><dd></dd>";
-      d.children[0].textContent = f[0];
-      if (f[1]) d.children[1].textContent = f[1]; else d.children[1].innerHTML = huesos(1);
-      fichas.appendChild(d);
-    });
-    var dlS = document.getElementById("suturas");
-    dlS.innerHTML = "";
-    (T.suturas || [["", ""], ["", ""], ["", ""], ["", ""]]).forEach(function (x) {
-      var d = document.createElement("div");
-      d.innerHTML = "<dt></dt><dd></dd>";
-      if (x[0]) { d.children[0].textContent = x[0]; d.children[1].textContent = x[1]; } else { d.children[0].innerHTML = huesos(1); d.children[1].innerHTML = huesos(1); }
-      dlS.appendChild(d);
-    });
-    document.getElementById("insumos-titulo").textContent = T.insumosTitulo || "Equipo médico-quirúrgico";
-    var ins = document.getElementById("insumos");
-    if (T.insumos) ins.textContent = T.insumos; else ins.innerHTML = huesos(2);
-    var lista = document.getElementById("lista-instrumental");
-    lista.innerHTML = "";
-    (T.instrumental || new Array(9).join(".").split(".")).forEach(function (t) {
-      var li = document.createElement("li");
-      if (t) li.textContent = t; else li.innerHTML = huesos(1);
-      lista.appendChild(li);
-    });
-    pintarMesa("mayo", T.mayo);
-    pintarMesa("reserva", T.reserva);
-    escalarNumeros();
-    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + prefijo + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
-    itemsLado.forEach(function (it) { var h = it.a.getAttribute("href"); it.a.classList.toggle("archivada", h !== "#" && !!ARCHIVADAS[h.slice(1 + prefijo.length)]); });
-    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + (ARCHIVADAS[clave] ? " · archivada" : "") + " ";
-  }
+  document.getElementById("nuevo-inst").addEventListener("click", function () { verEntrada(null, "nuevo"); lado.classList.remove("abierto"); });
+  function avisar(t) { var a = document.getElementById("aviso-ok"); a.textContent = t; a.hidden = false; setTimeout(function () { a.hidden = true; }, 3200); }
 
-  // Columna de técnicas: las mismas del catálogo, con la actual marcada
-  var gruposLado = document.getElementById("lado-grupos"), itemsLado = [];
-  ESPECIALIDADES.forEach(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    h.textContent = e[0]; sec.appendChild(h); sec.appendChild(ul);
-    e[1].forEach(function (t) {
-      var li = document.createElement("li"), a = document.createElement("a");
-      a.href = "#" + prefijo + slug(t); a.textContent = t;
-      li.appendChild(a); ul.appendChild(li);
-      itemsLado.push({ li: li, a: a, sec: sec, t: t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase() });
-    });
-    gruposLado.appendChild(sec);
-  });
-  document.getElementById("buscar-tec").addEventListener("input", function () {
-    var q = this.value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-    itemsLado.forEach(function (it) { it.li.hidden = q && it.t.indexOf(q) === -1; });
-    gruposLado.querySelectorAll("section").forEach(function (sec) { sec.hidden = !sec.querySelector("li:not([hidden])"); });
-  });
-  var lado = document.getElementById("lado"), abrirLado = document.getElementById("lado-abrir");
+  /* El instrumento va en el hash (#inst-pinza-kelly) */
+  var abrirLado = document.getElementById("lado-abrir");
   abrirLado.addEventListener("click", function () { var si = lado.classList.toggle("abierto"); abrirLado.setAttribute("aria-expanded", String(si)); });
-  // La técnica viene en el hash (#mastectomia); al elegir otra en la columna, se pinta sin salir de la página
-  var actual = claveDe(location.hash.slice(1));
-  if (!TECNICAS[actual]) actual = "tiroidectomia";
-  pintar(actual);
-  addEventListener("hashchange", function () {
-    var h = claveDe(location.hash.slice(1));
-    if (!TECNICAS[h]) return;
-    pintar(h);
+  function desdeHash() {
+    var h = sinTilde(decodeURIComponent(location.hash.slice(1)));
+    var x = h.indexOf("inst-") === 0 ? CATALOGO.filter(function (y) { return slug(y[0]) === h.slice(5); })[0] : null;
+    verEntrada(x ? x[0] : "Pinza Kelly");
+    abrirLado.firstChild.textContent = (x ? x[1] + " · " + x[0] : "Pinza · Pinza Kelly") + " ";
     lado.classList.remove("abierto"); abrirLado.setAttribute("aria-expanded", "false");
-    scrollTo(0, 0);
-  });
-
-  // Pestañas: una hoja a la vez; la raya se desliza bajo la elegida
-  var tabs = [].slice.call(document.querySelectorAll(".pestanas-tec [role=tab]")), raya = document.querySelector(".raya");
-  function moverRaya() {
-    var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0];
-    raya.style.width = t.offsetWidth + "px";
-    raya.style.transform = "translateX(" + t.offsetLeft + "px)";
   }
-  function elegirTab(t) {
-    tabs.forEach(function (x) {
-      var si = x === t;
-      x.setAttribute("aria-selected", String(si));
-      x.tabIndex = si ? 0 : -1;
-      document.getElementById(x.getAttribute("aria-controls")).hidden = !si;
-    });
-    moverRaya();
-    var barraTabs = t.parentNode;
-    if (barraTabs.scrollWidth > barraTabs.clientWidth) barraTabs.scrollTo({ left: Math.max(0, t.offsetLeft - 24), behavior: reducido ? "auto" : "smooth" });
-    escalarNumeros();
-  }
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () { elegirTab(t); });
-    t.addEventListener("keydown", function (e) {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      var j = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
-      elegirTab(tabs[j]); tabs[j].focus();
-    });
-  });
-  addEventListener("resize", moverRaya);
-  if (document.fonts) document.fonts.ready.then(moverRaya);
-  raya.style.transition = "none";
-  moverRaya();
-  requestAnimationFrame(function () { raya.style.transition = ""; });
+  addEventListener("hashchange", function () { desdeHash(); scrollTo(0, 0); });
+  desdeHash();
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("tec-") === 0) { var partes = atajo.slice(4).split("~"); pintar(partes[0]); if (partes[1]) elegirTab(document.getElementById("tab-" + partes[1])); }
-  if (atajo.indexOf("ver-") === 0) elegirTab(document.getElementById("tab-" + atajo.slice(4)));
-  if (atajo.indexOf("mayo-") === 0) { elegirTab(document.getElementById("tab-mayo")); marcarMayo(+atajo.slice(5)); }
-  if (atajo.indexOf("reserva-") === 0) { elegirTab(document.getElementById("tab-reserva")); marcarReserva(+atajo.slice(8)); }
-  if (atajo === "lado-abierto") abrirLado.click();
 })();
 </script>
 </body>

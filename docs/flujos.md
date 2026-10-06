@@ -28,36 +28,40 @@ flowchart LR
 
 | Acción | Visitante | usuario | colaborador | revisor | admin |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Entrar al shell y ver el catálogo de técnicas (nombre y especialidad) | ✔ | ✔ | ✔ | ✔ | ✔ |
-| Ver el detalle de una técnica (datos clínicos y mesa) | | ✔ | ✔ | ✔ | ✔ |
+| Entrar al shell y ver el catálogo de técnicas | ✔ | ✔ | ✔ | ✔ | ✔ |
+| Ver los datos clínicos de una técnica | ✔ | ✔ | ✔ | ✔ | ✔ |
+| Ver el instrumental y las mesas de una técnica | vista previa | ✔ | ✔ | ✔ | ✔ |
 | Usar SIVRI y SIMIQ3D | | ✔ | ✔ | ✔ | ✔ |
 | Funciones personales (p. ej. progreso en SIVRI) | | ✔ | ✔ | ✔ | ✔ |
 | Crear técnicas y editar borradores | | | ✔ | ✔ | ✔ |
-| Enviar un borrador a revisión | | | ✔ | ✔ | ✔ |
-| Aprobar o rechazar versiones (nunca las propias) | | | | ✔ | ✔ |
+| Enviar un borrador a revisión | | | ✔ | | |
+| Publicar sus propias versiones sin revisión | | | | ✔ | ✔ |
+| Aprobar o rechazar versiones de colaboradores | | | | ✔ | ✔ |
 | Archivar una técnica publicada | | | | ✔ | ✔ |
 | Crear y editar instrumental | | | | ✔ | ✔ |
 | Gestionar roles | | | | | ✔ |
 
 ## 2. Navegación
 
-Funciona como un catálogo de cursos: sin cuenta se entra al shell y se ve qué
-técnicas hay, pero abrir una técnica o usar SIVRI y SIMIQ3D pide iniciar
-sesión o registrarse (gratis). Después del ingreso, la persona vuelve a donde
+Sin cuenta se entra al shell, se ve qué técnicas hay y se abre cualquiera con
+sus datos clínicos. Su instrumental y sus mesas se ven como vista previa (la
+mesa en gris, sin números) y piden iniciar sesión o registrarse (gratis) ahí
+mismo; usar SIVRI y SIMIQ3D también lo pide. Después del ingreso, la persona vuelve a donde
 iba. La gestión aparece según el rol.
 
 ```mermaid
 flowchart LR
     subgraph Publico["Sin cuenta"]
         direction TB
-        Inicio["Inicio (shell)"] --> Catalogo["Catálogo de técnicas<br/>nombre y especialidad"]
+        Inicio["Inicio (shell)"] --> Catalogo["Catálogo de técnicas"]
+        Catalogo --> Clinicos["Técnica: datos clínicos<br/>instrumental y mesas en vista previa"]
     end
 
     Puerta{{"Ingresar o<br/>registrarse"}}
 
     subgraph Cuenta["Con cuenta"]
         direction TB
-        Detalle["Detalle de técnica<br/>datos clínicos y mesa"]
+        Detalle["Técnica completa<br/>instrumental y mesas"]
         SIMIQ3D["SIMIQ3D<br/>chat y escena 3D"]
         SIVRI["SIVRI<br/>validar la mesa con cámara"]
     end
@@ -70,7 +74,7 @@ flowchart LR
         Usuarios["Usuarios y roles<br/>admin"]
     end
 
-    Publico -->|abrir una técnica<br/>o un módulo| Puerta
+    Publico -->|ver el instrumental, una mesa<br/>o abrir un módulo| Puerta
     Puerta -->|vuelve a donde iba| Cuenta
     Puerta -->|según el rol| Gestion
 ```
@@ -79,14 +83,16 @@ flowchart LR
 
 Cada técnica tiene como máximo una versión publicada y una en curso
 (`borrador` o `en_revision`). Las transiciones se validan en el dominio
-(`app/dominio/tecnicas.py`).
+(`app/dominio/tecnicas.py`). Un colaborador envía su borrador a revisión;
+un revisor publica el suyo directamente.
 
 ```mermaid
 stateDiagram-v2
     [*] --> borrador: crear técnica o editar una publicada
-    borrador --> en_revision: el autor la envía
+    borrador --> en_revision: un colaborador la envía
+    borrador --> publicada: un revisor publica la suya
     en_revision --> borrador: un revisor la rechaza
-    en_revision --> publicada: un revisor distinto al autor la aprueba
+    en_revision --> publicada: un revisor la aprueba
     publicada --> reemplazada: se aprueba una versión nueva
     publicada --> archivada: un revisor la retira
     reemplazada --> [*]

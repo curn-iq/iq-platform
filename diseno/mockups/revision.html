@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tiroidectomía · IQ Platform</title>
+<title>Por revisar · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -672,43 +672,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 /* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
 .editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
 .editar-tec:hover { background: var(--hover-neutro); }
-.como-usuario .editar-tec, .como-usuario .cuenta-titulo, .como-usuario .cuenta-lista { display: none !important; }
-.editar-tec.inerte { color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--filete); cursor: default; }
-.editar-tec.inerte:hover { background: none; }
-.editar-tec.inerte svg { display: none !important; }
-.recien-publicada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; color: var(--marca-hondo); font-size: 15px; font-weight: 600; animation: lavar 1.2s var(--expo) both; }
-.recien-publicada[hidden] { display: none; }
-/* Más acciones (revisor y admin): archivar, con confirmación en el mismo panel */
-.mas-tec { position: relative; }
-.mas-tec[hidden] { display: none; }
-.mas-boton { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 10px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); cursor: pointer; }
-.mas-boton:hover, .mas-boton[aria-expanded="true"] { background: var(--hover-neutro); color: var(--tinta); }
-.mas-panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: 320px; padding: 8px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .3s var(--expo); }
-.mas-panel[hidden], #mas-menu[hidden], .mas-confirmar[hidden] { display: none; }
-.mas-item { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: none; color: var(--tinta); font-size: 15.5px; font-weight: 550; text-align: left; cursor: pointer; }
-.mas-item svg { flex: none; margin-top: 2px; color: var(--tinta-2); }
-.mas-item:hover { background: var(--hover-neutro); }
-.mas-item[aria-disabled="true"] { color: var(--tinta-3); cursor: default; }
-.mas-item[aria-disabled="true"]:hover { background: none; }
-.mas-item[aria-disabled="true"] svg { color: var(--tinta-3); }
-.mas-item small[hidden] { display: none; }
-.mas-item small { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 13.5px; font-weight: 500; }
-.mas-confirmar { padding: 8px; }
-.tec-cabeza .mas-confirmar p { margin: 0; color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
-.mas-confirmar p b { color: var(--tinta); font-weight: 650; }
-@media (max-width: 760px) { .tec-acciones .editar-tec { flex: 1 1 calc(100% - 52px); } .mas-tec { flex: none; } .mas-panel { width: calc(100vw - 2 * var(--lado)); } }
-.mas-confirmar .botones { display: flex; gap: 8px; margin-top: 12px; }
-.mas-confirmar .boton { height: 40px; padding: 0 16px; font-size: 15px; }
-.tec-archivada { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 12px 6px 10px; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2) !important; font-size: 15px !important; font-weight: 600; }
-.tec-archivada[hidden] { display: none; }
-.tec-archivada:focus { outline: none; }
-.tec-archivada svg { flex: none; align-self: flex-start; margin-top: 2px; }
-.tec-archivada.solo-ahora { animation: lavar-archivada 1.2s var(--expo) both; }
-@keyframes lavar-archivada { 0%, 30% { background: var(--marca-claro); } 100% { background: var(--fondo); } }
-.recien-publicada svg { flex: none; align-self: flex-start; margin-top: 3px; color: var(--marca); }
-.recien-publicada path { stroke-dasharray: 1; animation: trazar-pub .5s .15s var(--expo) both; }
-@keyframes lavar { 0%, 30% { background: var(--marca-claro); } 100% { background: transparent; } }
-@keyframes trazar-pub { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @media (max-width: 960px) { .cuenta-txt, .cuenta .flecha { display: none; } .cuenta { padding: 0 6px; } }
 @media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
 .panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
@@ -759,8 +722,6 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 .lado a { display: block; padding: 8px 10px; border-radius: 8px; font-size: 15.5px; line-height: 1.35; color: var(--tinta-2); transition: background .2s var(--cuarta), color .2s var(--cuarta); }
 .lado a:hover { background: var(--fondo); color: var(--tinta); }
 .lado a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
-.lado a.archivada { color: var(--tinta-3); }
-.lado a.archivada::after { content: "Archivada"; margin-left: 8px; padding: 0 7px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-3); font-size: 12px; font-weight: 600; }
 .lado-abrir { display: none; }
 /* Panel de la técnica */
 .panel-tec { min-width: 0; padding: 28px clamp(24px, 3vw, 48px) 40px; }
@@ -881,6 +842,197 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 }
 .pie { --antes: var(--fondo); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ---------- Versiones por revisar ---------- */
+.gestion { padding: 40px var(--lado) 104px; }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.gestion-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap; }
+.gestion-cabeza h1 { display: flex; align-items: baseline; gap: 14px; font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.gestion-cabeza .resumen { margin-top: 12px; color: var(--tinta-2); font-size: 17px; }
+.vista[hidden] { display: none; }
+.filtros { position: relative; display: inline-flex; gap: 2px; margin: 32px 0 14px; padding: 4px; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.filtros button { position: relative; z-index: 1; height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: var(--tinta-2); font-size: 15px; font-weight: 600; cursor: pointer; }
+.filtros button[aria-pressed="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
+.cifra { margin-left: 6px; color: var(--tinta-3); font-size: 14px; font-weight: 550; font-variant-numeric: tabular-nums; }
+.filtros button[aria-pressed="true"] .cifra { color: var(--marca-hondo); }
+
+/* Lista de pendientes */
+.pendientes { margin: 0; padding: 0; list-style: none; border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.pendiente { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 2.4fr) auto; gap: 20px; align-items: center; padding: 20px 24px; }
+.pendiente + .pendiente { border-top: 1px solid var(--filete); }
+.pendiente[hidden] { display: none; }
+.pend-tec b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
+.pend-tec span, .pend-dato span { display: block; margin-top: 2px; color: var(--tinta-3); font-size: 14px; }
+.pend-dato { font-size: 15.5px; }
+.pend-espera { font-variant-numeric: tabular-nums; }
+.pend-cambios { display: grid; gap: 8px; }
+.chips-cambio { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-cambio { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 600; }
+.tipo { color: var(--tinta-2); font-size: 13.5px; font-weight: 600; }
+.nota-autor { display: -webkit-box; overflow: hidden; color: var(--tinta-2); font-size: 14.5px; line-height: 1.45; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.revisar-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 10px; background: var(--marca); color: #fff; font-size: 15px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
+.revisar-btn:hover { background: var(--marca-hondo); }
+.revisar-btn svg { transition: transform .35s var(--expo); }
+.revisar-btn:hover svg { transform: translateX(3px); }
+.resultado { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+.resultado.devuelta { background: var(--tinta); color: #fff; }
+
+/* Revisión de una versión */
+.ruta-ed { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; color: var(--tinta-3); font-size: 15px; font-weight: 550; }
+.ruta-ed:hover { color: var(--marca); }
+.rev-meta { margin-top: 12px; color: var(--tinta-3); font-size: 16.5px; }
+.rev-meta b { color: var(--tinta-2); font-weight: 600; }
+.rev-acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+.boton.suave { background: var(--marca-claro); color: var(--marca-hondo); box-shadow: none; }
+.boton.suave:hover { background: var(--marca-claro-hover); }
+.nota-envio { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; max-width: 760px; margin-top: 22px; padding: 16px 18px; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.nota-envio svg { margin-top: 2px; color: var(--tinta-2); }
+.nota-envio p:first-child { color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.nota-envio p + p { margin-top: 4px; font-size: 16px; line-height: 1.55; }
+.pestanas-rev { position: relative; display: flex; gap: 28px; margin: 30px 0 24px; border-bottom: 1px solid var(--filete); overflow-x: auto; scrollbar-width: none; }
+.pestanas-rev button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 0 14px; border: 0; background: none; color: var(--tinta-3); font-size: 16px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.pestanas-rev button[aria-selected="true"] { color: var(--tinta); }
+.pestanas-rev .n-cambios { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--marca); color: #fff; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pestanas-rev .sin-cambios { color: var(--tinta-3); font-size: 13px; font-weight: 500; }
+.pestanas-rev .raya-rev { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
+.hoja-rev[hidden] { display: none; }
+.hoja-rev { animation: aparecer .4s var(--expo); }
+
+/* Mesas lado a lado */
+.comparar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.lado-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.lado-cab h3 { margin: 0; font-size: 17px; font-weight: 650; }
+.lado-cab span { color: var(--tinta-3); font-size: 14px; }
+.comparar .tec-funda { width: min(100%, calc((100vh - 420px) * var(--aspecto, 1)), 520px); }
+.comparar { justify-content: start; }
+.marca-antes { fill: none; stroke: var(--filete-2); stroke-width: 3; stroke-dasharray: 10 8; }
+.marca-ahora { fill: rgba(13, 106, 94, .08); stroke: var(--marca); stroke-width: 3.5; }
+.celda-comentada { fill: none; stroke: var(--marca-hondo); stroke-width: 2; stroke-dasharray: 3 5; }
+.tec-funda.comentable svg { cursor: crosshair; }
+.cambios-lista { margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.cambio { border-bottom: 1px solid var(--filete); }
+.cambio-fila { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 6px; border-radius: 10px; transition: background .2s var(--cuarta); }
+.cambio-fila:hover, .cambio.activo .cambio-fila { background: var(--marca-claro); }
+.cambio-fila > b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 14px; font-weight: 700; }
+.cambio-fila strong { display: block; font-size: 16px; font-weight: 650; }
+.cambio-fila span { display: block; margin-top: 2px; color: var(--tinta-2); font-size: 14.5px; font-variant-numeric: tabular-nums; }
+.comentar { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 0; border-radius: 9px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 14px; font-weight: 600; cursor: pointer; }
+.comentar:hover { background: var(--hover-neutro); }
+.ayuda-rev { margin-top: 12px; color: var(--tinta-3); font-size: 14px; }
+
+/* Comentarios */
+.redactar { display: grid; gap: 8px; margin: 0 6px 14px 54px; }
+.redactar[hidden] { display: none; }
+.redactar label { color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.redactar textarea, .devolver textarea { width: 100%; min-height: 84px; padding: 12px 14px; border: 0; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 15.5px; line-height: 1.5; resize: vertical; }
+.redactar textarea:focus, .devolver textarea:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.redactar .botones-red { display: flex; gap: 8px; }
+.redactar .boton { height: 36px; padding: 0 14px; font-size: 14.5px; }
+.boton-texto { height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: none; color: var(--tinta-2); font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.boton-texto:hover { background: var(--hover-neutro); }
+.comentarios { margin: 0 6px 14px 54px; padding: 0; list-style: none; }
+.comentario-rev { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--fondo); }
+.comentario-rev + .comentario-rev { margin-top: 8px; }
+.comentario-rev p:first-child { color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.comentario-rev p + p { margin-top: 2px; font-size: 15.5px; line-height: 1.5; }
+.quitar { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: none; color: var(--tinta-3); cursor: pointer; }
+.quitar:hover { background: var(--hover-neutro); color: var(--tinta); }
+.comentar-seccion { margin-top: 16px; }
+
+/* Datos clínicos lado a lado */
+.campos-rev { border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.campo-rev-cab, .campo-rev { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) minmax(0, 2fr) auto; gap: 20px; align-items: start; padding: 14px 20px; }
+.campo-rev-cab { color: var(--tinta-3); font-size: 13px; font-weight: 650; border-bottom: 1px solid var(--filete); }
+.campo-rev + .campo-rev, .campo-rev + .cambio-cuerpo + .campo-rev { border-top: 1px solid var(--filete); }
+.campo-rev dt { color: var(--tinta-2); font-size: 14px; font-weight: 600; }
+.campo-rev dd { margin: 0; font-size: 15.5px; line-height: 1.5; }
+.campo-rev .vacio { color: var(--tinta-3); }
+.campo-rev.cambiado dd.nuevo { margin: -6px -10px; padding: 6px 10px; border-radius: 8px; background: rgba(13, 106, 94, .08); box-shadow: inset 2px 0 0 var(--marca); }
+.tag-agregado { display: inline-block; margin-bottom: 4px; color: var(--marca); font-size: 12.5px; font-weight: 700; }
+.campo-rev .comentar { visibility: hidden; }
+.campo-rev.cambiado .comentar { visibility: visible; }
+.sin-cambios-hoja { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding: 14px 18px; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); color: var(--tinta-2); font-size: 15.5px; }
+.sin-cambios-hoja svg { color: var(--marca); }
+.inst-rev { margin: 0; padding: 0; list-style: none; columns: 3 220px; column-gap: 40px; border-top: 1px solid var(--filete); }
+.inst-rev li { break-inside: avoid; padding: 12px 2px; border-bottom: 1px solid var(--filete); font-size: 16px; }
+.reserva-sola { max-width: 560px; }
+
+/* Devolver y aprobar */
+.decidir { margin-top: 18px; padding: 20px 22px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .35s var(--expo); }
+.decidir[hidden] { display: none; }
+.decidir h2 { font-size: 20px; font-weight: 650; letter-spacing: -.02em; }
+.decidir > p { margin-top: 4px; color: var(--tinta-2); font-size: 15.5px; }
+.resumen-com { margin: 14px 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.resumen-com li { padding: 10px 0; border-bottom: 1px solid var(--filete); font-size: 15px; }
+.resumen-com li b { margin-right: 8px; color: var(--tinta-2); font-weight: 650; }
+.resumen-com .vacio { color: var(--tinta-3); }
+.decidir .botones-red { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.boton[disabled] { background: var(--filete); color: var(--tinta-2); box-shadow: none; cursor: not-allowed; transform: none; }
+.aviso-ok { position: fixed; left: 50%; bottom: 28px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 12px; background: var(--tinta); color: #fff; font-size: 15.5px; font-weight: 600; transform: translateX(-50%); animation: aparecer .4s var(--expo); }
+.aviso-ok[hidden] { display: none; }
+
+@media (max-width: 1100px) {
+  .pendiente { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pend-cambios { grid-column: 1 / -1; }
+  .pendiente > :last-child { grid-column: 1 / -1; justify-self: start; }
+  }
+@media (max-width: 760px) {
+  .gestion { padding-top: 28px; }
+  .gestion-cabeza h1 { font-size: 30px; }
+  .rev-acciones { width: 100%; }
+  .rev-acciones .boton { flex: 1; }
+  .pendiente { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 18px; }
+  .comparar { grid-template-columns: minmax(0, 1fr); }
+  .campo-rev-cab { display: none; }
+  .campo-rev { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .campo-rev dd::before { content: attr(data-etq); display: block; color: var(--tinta-3); font-size: 12.5px; font-weight: 650; }
+  .campo-rev .comentar { justify-self: start; }
+  .redactar, .comentarios { margin-left: 6px; }
+}
+
+/* Ajustes tras la revisión */
+.rev-cabeza { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); align-items: start; gap: 16px 40px; }
+.rev-lado { display: grid; gap: 12px; justify-items: end; }
+.rev-lado .nota-envio { margin-top: 0; width: 100%; padding: 12px 16px; }
+.rev-lado .nota-envio p + p { font-size: 15px; }
+.pestanas-rev { margin-top: 22px; }
+.comparar { grid-template-columns: max-content max-content minmax(240px, 1fr); column-gap: 32px; justify-content: start; }
+.cambios-tit { margin: 0 0 10px; font-size: 17px; font-weight: 650; }
+.cambios-col .cambios-lista { margin-top: 0; }
+.cambios-col .redactar, .cambios-col .comentarios { margin-left: 6px; }
+.comparar > div { width: fit-content; }
+.comparar .lado-cab { width: min(100%, calc((100svh - 480px) * var(--aspecto-m, 1)), 440px); }
+.comparar .tec-funda { width: max(260px, min(calc((100svh - 480px) * var(--aspecto-m, 1)), 440px)); }
+.trayecto { fill: none; stroke: var(--marca); stroke-width: 4; stroke-linecap: round; opacity: .3; transition: opacity .3s var(--cuarta); }
+.marcando .trayecto { opacity: 1; animation: trazar-tr .45s var(--expo) backwards; }
+@keyframes trazar-tr { from { stroke-dashoffset: var(--largo); } to { stroke-dashoffset: 0; } }
+.tec-funda svg.marcando .pieza:not(.activa) .forma { opacity: .38; }
+.pendientes { position: relative; }
+.pendientes::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--filete); pointer-events: none; }
+.pendiente:first-child { border-radius: 16px 16px 0 0; }
+.pendiente:last-child { border-radius: 0 0 16px 16px; }
+.pendiente { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 2.4fr) 9.5rem; }
+.pendiente > :last-child { justify-self: end; }
+.pend-cambios > .resultado { justify-self: start; }
+.campo-rev-cab, .campo-rev { grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) minmax(0, 2fr) 104px; }
+.campo-rev.cambiado dd.nuevo { box-shadow: inset 0 0 0 1px rgba(13, 106, 94, .35); }
+@media (max-width: 1100px) {
+  .rev-cabeza { grid-template-columns: minmax(0, 1fr); }
+  .rev-lado { justify-items: start; }
+  .pendiente { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pendiente > :last-child { justify-self: start; }
+  .comparar { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; row-gap: 20px; }
+  .cambios-col { grid-column: 1 / -1; }
+  .comparar > div, .comparar .lado-cab, .comparar .tec-funda { width: 100%; }
+}
+@media (max-width: 760px) {
+  .pendiente { grid-template-columns: minmax(0, 1fr); }
+  .comparar { grid-template-columns: minmax(0, 1fr); }
+  .pestanas-rev { -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); padding-inline: 24px; margin-inline: -24px; scroll-padding-inline: 24px; }
+  .lado-cab { flex-direction: column; align-items: start; gap: 2px; }
+  .campo-rev { grid-template-columns: minmax(0, 1fr); }
+}
+.cambio-fila .pos { display: inline; margin: 0; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -908,14 +1060,14 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
     <a class="ingresar solo-visitante" id="barra-ingresar" href="cuenta.html#ingresar">Ingresar</a>
     <a class="boton solo-visitante" id="barra-crear" href="cuenta.html#crear">Crear cuenta</a>
-    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">DO</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">LP</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -923,9 +1075,9 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
 </header>
 
 <div class="panel-cuenta" id="panel-cuenta" role="region" aria-label="Mi cuenta" hidden>
-  <div class="quien-soy"><span class="avatar" aria-hidden="true">DO</span><div><p class="quien-nombre">Daniela Ortiz</p><p class="quien-correo">daniela.ortiz@correo.com</p><span class="rol">Colaborador</span></div></div>
+  <div class="quien-soy"><span class="avatar" aria-hidden="true">LP</span><div><p class="quien-nombre">Laura Pérez</p><p class="quien-correo">laura.perez@correo.com</p><span class="rol">Revisor</span></div></div>
   <p class="cuenta-titulo">Gestión de DataIQ</p>
-  <ul class="cuenta-lista"><li><a href="borradores.html">Mis borradores<span class="cifra">4</span></a></li></ul>
+  <ul class="cuenta-lista"><li><a href="borradores.html?como=revisor">Mis borradores<span class="cifra">1</span></a></li><li><a href="revision.html" aria-current="page">Por revisar<span class="cifra">2</span></a></li><li><a href="instrumental.html">Instrumental<span class="cifra">143</span></a></li></ul>
   <a class="salir" href="inicio.html">Cerrar sesión<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </div>
 
@@ -990,88 +1142,105 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
   </div>
   <div class="acciones-movil solo-sesion">
-    <p class="quien-movil">Daniela Ortiz · Colaborador</p>
-    <a class="ingresar" href="borradores.html">Mis borradores</a>
+    <p class="quien-movil">Laura Pérez · Revisor</p>
+    <a class="ingresar" href="borradores.html?como=revisor">Mis borradores</a>
+    <a class="ingresar" href="revision.html" aria-current="page">Por revisar</a>
+    <a class="ingresar" href="instrumental.html">Instrumental</a>
     <a class="ingresar" href="inicio.html">Cerrar sesión</a>
   </div>
 </nav>
 
-<main>
-  <div class="app">
-    <nav class="lado" id="lado" aria-label="Técnicas">
-      <button type="button" class="lado-abrir" id="lado-abrir" aria-expanded="false" aria-controls="lado-cuerpo">Cirugía general · Tiroidectomía <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="lado-cuerpo" id="lado-cuerpo">
-        <div class="lado-buscar"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><label class="sr-only" for="buscar-tec">Buscar técnica</label><input type="search" id="buscar-tec" placeholder="Buscar técnica" autocomplete="off"></div>
-        <div id="lado-grupos"></div>
+<main class="gestion" id="contenido">
+  <!-- Lista de pendientes -->
+  <section class="vista" id="vista-lista" aria-labelledby="t-lista">
+    <header class="gestion-cabeza">
+      <div>
+        <h1 id="t-lista">Por revisar <span class="demo">demostración</span></h1>
+        <p class="resumen">2 versiones esperan tu revisión. La más antigua lleva 5 días.</p>
       </div>
-    </nav>
-    <article class="panel-tec" aria-labelledby="t-tecnica">
-      <header class="tec-cabeza">
-        <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p><p class="recien-publicada" id="recien-publicada" role="status" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.9 2.8 6.1-6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>Versión 2 publicada hace un momento. La versión 1 quedó en el historial.</p><p class="tec-archivada" id="tec-archivada" role="status" tabindex="-1" hidden><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Técnica archivada. Ya no se ve en el catálogo ni en los módulos; sus versiones quedan en el historial.</p></div>
-        <div class="tec-acciones">
-          <a class="editar-tec solo-sesion" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
-          <div class="mas-tec" id="mas-tec" hidden>
-            <button type="button" class="mas-boton" id="mas-boton" aria-expanded="false" aria-controls="mas-panel" aria-label="Más acciones"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="4" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="14" cy="9" r="1.6" fill="currentColor"/></svg></button>
-            <div class="mas-panel" id="mas-panel" hidden>
-              <div id="mas-menu"><button type="button" class="mas-item" id="archivar"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="3" width="13" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 6.5v7.2a1.3 1.3 0 0 0 1.3 1.3h7.8a1.3 1.3 0 0 0 1.3-1.3V6.5M7.2 9.5h3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Archivar técnica<small id="archivar-nota" hidden>No se puede mientras tenga una versión en curso.</small></span></button></div>
-              <div class="mas-confirmar" id="archivar-confirmar" hidden><p>Archivar <b id="arch-nombre"></b>. Deja de verse en el catálogo, en SIVRI y en SIMIQ3D; sus versiones se conservan en el historial.</p><div class="botones"><button type="button" class="boton" id="si-archivar">Archivar</button><button type="button" class="boton suave" id="no-archivar">Cancelar</button></div></div>
-            </div>
-          </div>
-          <a class="boton suave" id="ir-3d" href="#">Ver en 3D <small>SIMIQ3D</small></a>
-          <a class="boton" id="ir-camara" href="#">Comprobar con la cámara <small>SIVRI</small></a>
+    </header>
+    <div class="filtros" role="group" aria-label="Qué mostrar">
+      <button type="button" data-ver="pendientes" aria-pressed="true">Por revisar<span class="cifra">2</span></button>
+      <button type="button" data-ver="revisadas" aria-pressed="false">Revisadas por mí<span class="cifra">1</span></button>
+    </div>
+    <ul class="pendientes" id="lista-pend"></ul>
+  </section>
+
+  <!-- Revisión de una versión -->
+  <section class="vista" id="vista-revision" aria-labelledby="t-rev" hidden>
+    <a class="ruta-ed" href="#"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Por revisar</a>
+    <header class="gestion-cabeza rev-cabeza">
+      <div>
+        <h1 id="t-rev">Tiroidectomía <span class="demo">demostración</span></h1>
+        <p class="rev-meta"><b>Versión 2</b> · edición de la publicada · enviada por <b>Daniela Ortiz</b> el 1 oct</p>
+      </div>
+      <div class="rev-lado">
+      <div class="rev-acciones">
+        <button type="button" class="boton suave" id="abrir-devolver" aria-expanded="false" aria-controls="panel-devolver">Devolver con comentarios</button>
+        <button type="button" class="boton" id="abrir-aprobar" aria-expanded="false" aria-controls="panel-aprobar">Aprobar y publicar</button>
+      </div>
+        <div class="nota-envio"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V6A1.5 1.5 0 0 1 4 4.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><div><p>Nota de la autora</p><p>Completé «Para qué sirve» e «Indicaciones» y corregí la posición del separador de Senn Miller en la mesa de Mayo.</p></div></div>
+      </div>
+    </header>
+
+    
+    <div class="decidir" id="panel-devolver" role="region" aria-labelledby="t-devolver" hidden>
+      <h2 id="t-devolver">Devolver a Daniela Ortiz</h2>
+      <p>La versión vuelve a sus borradores con estos comentarios, cada uno en su sección.</p>
+      <ul class="resumen-com" id="resumen-com"></ul>
+      <div class="devolver"><label class="solo-lector" for="nota-general">Nota general</label><textarea id="nota-general" placeholder="Nota general (opcional)"></textarea></div>
+      <div class="botones-red"><button type="button" class="boton" id="confirmar-devolver" disabled>Devolver</button><button type="button" class="boton-texto" data-cerrar="panel-devolver">Cancelar</button></div>
+    </div>
+    <div class="decidir" id="panel-aprobar" role="region" aria-labelledby="t-aprobar" hidden>
+      <h2 id="t-aprobar">Aprobar y publicar la versión 2</h2>
+      <p>Pasa a ser la versión que ven los estudiantes; la versión 1 queda como reemplazada.</p>
+      <div class="botones-red"><button type="button" class="boton" id="confirmar-aprobar">Aprobar y publicar</button><button type="button" class="boton-texto" data-cerrar="panel-aprobar">Cancelar</button></div>
+    </div>
+
+    <div class="pestanas-rev" role="tablist" aria-label="Secciones de la versión">
+      <button type="button" role="tab" id="tr-clinicos" aria-controls="hr-clinicos" aria-selected="false" tabindex="-1">Datos clínicos <span class="n-cambios" aria-label="2 cambios">2</span></button>
+      <button type="button" role="tab" id="tr-instrumental" aria-controls="hr-instrumental" aria-selected="false" tabindex="-1">Instrumental <span class="sin-cambios">sin cambios</span></button>
+      <button type="button" role="tab" id="tr-mayo" aria-controls="hr-mayo" aria-selected="true">Mesa de Mayo <span class="n-cambios" aria-label="1 cambio">1</span></button>
+      <button type="button" role="tab" id="tr-reserva" aria-controls="hr-reserva" aria-selected="false" tabindex="-1">Mesa de reserva <span class="sin-cambios">sin cambios</span></button>
+      <span class="raya-rev" aria-hidden="true"></span>
+    </div>
+
+    <section class="hoja-rev" role="tabpanel" id="hr-mayo" aria-labelledby="tr-mayo">
+      <div class="comparar">
+        <div><div class="lado-cab"><h3>Publicada · versión 1</h3><span>La que ven hoy los estudiantes</span></div><div class="tec-funda" data-lado="antes"><svg class="mesa" viewBox="0 0 700 700" role="img" aria-label="Mesa de Mayo publicada"></svg></div></div>
+        <div><div class="lado-cab"><h3>Propuesta · versión 2</h3><span>Tocar una celda para comentarla</span></div><div class="tec-funda comentable" data-lado="ahora"><svg class="mesa" viewBox="0 0 700 700" role="img" aria-label="Mesa de Mayo propuesta"></svg></div></div>
+        <div class="cambios-col"><h3 class="cambios-tit">Cambios</h3>
+          <ul class="cambios-lista" data-seccion="Mesa de Mayo">
+        <li class="cambio" data-n="6">
+          <div class="cambio-fila"><b>6</b><div><strong>Separador de Senn Miller</strong><span><span class='pos'>Fila 4 · Columna 4</span> → <span class='pos'>Fila 4 · Columna 3</span></span></div><button type="button" class="comentar" data-comentar="Separador de Senn Miller">Comentar</button></div>
+        </li>
+      </ul>
+      <p class="ayuda-rev">Señalar un cambio lo levanta en las dos mesas.</p>
         </div>
-      </header>
-      <div class="pestanas-tec" role="tablist" aria-label="Contenido de la técnica">
-        <button type="button" role="tab" id="tab-clinicos" aria-controls="hoja-clinicos" aria-selected="true">Datos clínicos</button>
-        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
-        <span class="raya" aria-hidden="true"></span>
       </div>
 
-      <section class="hoja" role="tabpanel" id="hoja-clinicos" aria-labelledby="tab-clinicos">
-        <div class="clinicos">
-          <div>
-            <div class="para-que">
-              <header><h2>Para qué sirve</h2><span class="demo">demostración</span></header>
-              <p>Descripción breve del procedimiento y de sus indicaciones: en qué casos se realiza y qué busca resolver.</p>
-            </div>
-            <dl class="fichas" id="fichas"></dl>
-          </div>
-          <div>
-            <h2>Suturas</h2>
-            <dl class="suturas" id="suturas"></dl>
-            <div class="insumos">
-              <h2 id="insumos-titulo">Equipo médico-quirúrgico</h2>
-              <p id="insumos"></p>
-            </div>
-          </div>
-        </div>
-      </section>
+    </section>
 
-      <section class="hoja" role="tabpanel" id="hoja-instrumental" aria-labelledby="tab-instrumental" hidden>
-        <ul class="instrumental" id="lista-instrumental"></ul>
-        <div class="puerta-tec en-linea solo-visitante" data-que="instrumental"></div>
-      </section>
+    <section class="hoja-rev" role="tabpanel" id="hr-clinicos" aria-labelledby="tr-clinicos" hidden>
+      <dl class="campos-rev" id="campos-rev" data-seccion="Datos clínicos">
+        <div class="campo-rev-cab"><span>Campo</span><span>Publicada · versión 1</span><span>Propuesta · versión 2</span><span></span></div>
+      </dl>
+    </section>
 
-      <section class="hoja" role="tabpanel" id="hoja-mayo" aria-labelledby="tab-mayo" hidden>
-        <p class="sin-mesa" id="sin-mayo" hidden>Sin mesa de Mayo.</p>
-        <div class="tec-mesa" id="caja-mayo">
-          <div class="tec-info"><h2>Mesa de Mayo</h2><p>Señala un número para ubicar su pieza.</p><ol class="leyenda-tec" id="leyenda-mayo"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="mayo"></div>
-        </div>
-      </section>
+    <section class="hoja-rev" role="tabpanel" id="hr-instrumental" aria-labelledby="tr-instrumental" hidden>
+      <p class="sin-cambios-hoja"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Sin cambios frente a la versión publicada.</p>
+      <ul class="inst-rev" id="inst-rev"></ul>
+      <div class="cambios-lista comentar-seccion" data-seccion="Instrumental"><button type="button" class="comentar" data-comentar="la sección">Comentar la sección</button></div>
+    </section>
 
-      <section class="hoja" role="tabpanel" id="hoja-reserva" aria-labelledby="tab-reserva" hidden>
-        <p class="sin-mesa" id="sin-reserva" hidden>Sin mesa de reserva.</p>
-        <div class="tec-mesa" id="caja-reserva">
-          <div class="tec-info"><h2>Mesa de reserva</h2><p>Señala un número para ubicar su objeto.</p><ol class="leyenda-tec" id="leyenda-reserva"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="reserva"></div>
-        </div>
-      </section>
-    </article>
-  </div>
+    <section class="hoja-rev" role="tabpanel" id="hr-reserva" aria-labelledby="tr-reserva" hidden>
+      <p class="sin-cambios-hoja"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Sin cambios frente a la versión publicada.</p>
+      <div class="reserva-sola"><div class="tec-funda"><svg class="mesa" viewBox="0 0 800 600" role="img" aria-label="Mesa de reserva"></svg></div></div>
+      <div class="cambios-lista comentar-seccion" data-seccion="Mesa de reserva"><button type="button" class="comentar" data-comentar="la sección">Comentar la sección</button></div>
+    </section>
+  </section>
 </main>
+<p class="aviso-ok" id="aviso-ok" role="status" hidden></p>
 
 <footer class="pie ancho tramo">
   <div class="pie-rejilla">
@@ -1096,16 +1265,6 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
   var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
     admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
-  // ?como=usuario: cuenta sin gestión (ve instrumental y mesas, no edita)
-  if (COMO === "usuario") {
-    document.querySelectorAll(".avatar").forEach(function (x) { x.textContent = "VR"; });
-    document.querySelector(".quien-nombre").textContent = "Valentina Ruiz";
-    document.querySelector(".quien-correo").textContent = "valentina.ruiz@correo.com";
-    document.querySelector(".quien-soy .rol").textContent = "Usuario";
-    document.body.classList.add("como-usuario");
-    var qmU = document.querySelector(".quien-movil"); qmU.textContent = "Valentina Ruiz · Usuario";
-    qmU.parentNode.querySelectorAll("a[href^='borradores.html']").forEach(function (x) { x.remove(); });
-  }
   var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
   if (PUBLICA) {
     document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
@@ -1416,47 +1575,6 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     });
     svg.innerHTML = h;
   }
-  // Leyenda y mesa enlazadas: señalar un número levanta su pieza, y al revés (delegado, sirve para cualquier técnica)
-  function prepararMesa(caja) {
-    var svg = caja.querySelector("svg.mesa"), ol = caja.querySelector(".leyenda-tec");
-    function marcar(n) {
-      svg.classList.toggle("marcando", n != null);
-      ol.querySelectorAll("li").forEach(function (li) { li.classList.toggle("activa", +li.dataset.n === n); });
-      svg.querySelectorAll(".pieza").forEach(function (g) { var si = +g.dataset.n === n; g.classList.toggle("activa", si); g.setAttribute("aria-pressed", String(si)); });
-    }
-    function señalado(e) { var t = e.target.closest("[data-n]"); if (t && caja.contains(t)) marcar(+t.dataset.n); }
-    caja.addEventListener("mouseover", señalado);
-    caja.addEventListener("focusin", señalado);
-    caja.addEventListener("mouseleave", function () { marcar(null); });
-    caja.addEventListener("focusout", function (e) { if (!caja.contains(e.relatedTarget)) marcar(null); });
-    return marcar;
-  }
-  var marcarMayo = prepararMesa(document.getElementById("caja-mayo"));
-  var marcarReserva = prepararMesa(document.getElementById("caja-reserva"));
-  function pintarMesa(cual, mesa) {
-    var caja = document.getElementById("caja-" + cual), vacia = document.getElementById("sin-" + cual);
-    // Sin sesión no se revela si la técnica tiene o no esta mesa: se muestra una cuadrícula y la puerta
-    var visitante = document.body.classList.contains("sin-sesion");
-    if (!mesa && visitante) mesa = cual === "mayo" ? { filas: 7, cols: 7, items: [] } : { filas: 6, cols: 8, items: [] };
-    caja.hidden = !mesa; vacia.hidden = !!mesa;
-    if (!mesa) return;
-    // Sin sesión se ven las dos primeras filas; el resto se desvanece bajo la puerta
-    // Mismo tamaño de celda en toda técnica: la mesa mide según sus columnas
-    var funda = caja.querySelector(".tec-funda");
-    funda.style.setProperty("--aspecto-vista", (mesa.cols / Math.min(2.6, mesa.filas)).toFixed(3));
-    funda.style.setProperty("--cols-vista", mesa.cols);
-    caja.style.setProperty("--aspecto", mesa.cols / mesa.filas);
-    dibujarMesa(caja.querySelector("svg.mesa"), mesa);
-    var ol = caja.querySelector(".leyenda-tec");
-    ol.innerHTML = "";
-    mesa.items.forEach(function (o) {
-      var li = document.createElement("li");
-      if (o[1]) { li.dataset.n = o[0]; li.tabIndex = 0; } else li.className = "hueco";
-      li.innerHTML = "<b></b><span></span>";
-      li.children[0].textContent = o[0]; li.children[1].textContent = o[2];
-      ol.appendChild(li);
-    });
-  }
   function escalarNumeros() {
     document.querySelectorAll(".tec-funda svg").forEach(function (svg) {
       var w = svg.getBoundingClientRect().width, vb = svg.viewBox.baseVal.width;
@@ -1464,188 +1582,211 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
     });
   }
   addEventListener("resize", escalarNumeros);
-  function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
-  // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
-  // Versiones en curso del catálogo, sea quien sea el que mira; tras publicar, Colecistectomía queda sin nada en curso
-  var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
-  if (PUBLICA && PUBLICADA) delete EN_CURSO.colecistectomia;
-  document.getElementById("editar-tec").addEventListener("click", function (e) { if (this.classList.contains("inerte")) e.preventDefault(); });
-  // Para quien publica, solo Colecistectomía es suya; las demás son de Daniela Ortiz
-  // Sin sesión (#v-técnica): datos clínicos libres; instrumental y mesas piden cuenta en su pestaña
-  var prefijo = "";
-  function claveDe(h) { prefijo = h.indexOf("v-") === 0 ? "v-" : ""; document.body.classList.toggle("sin-sesion", !!prefijo); return prefijo ? h.slice(2) : h; }
-  claveDe(location.hash.slice(1));
-  // Las técnicas sin página propia en el mockup se muestran como plantilla
-  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { if (!TECNICAS[slug(t)]) TECNICAS[slug(t)] = { nombre: t, especialidad: e[0], plantilla: true, mayo: null, reserva: null }; }); });
-  var candadoG = "<span class='candado-g' aria-hidden='true'><svg width='20' height='20' viewBox='0 0 16 16'><rect x='3.5' y='7' width='9' height='7' rx='1.6' fill='none' stroke='currentColor' stroke-width='1.5'/><path d='M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></span>";
-  function puertas(clave, T) {
-    var textos = {
-      instrumental: ["Ver el instrumental completo", T.instrumental ? "Con una cuenta gratuita se abren los " + T.instrumental.length + " instrumentos de esta técnica." : "Con una cuenta gratuita se abre el instrumental de esta técnica."],
-      mayo: ["Ver la mesa de Mayo", "Con una cuenta gratuita se abre la mesa de Mayo de esta técnica."],
-      reserva: ["Ver la mesa de reserva", "Con una cuenta gratuita se abre la mesa de reserva de esta técnica."]
-    };
-    document.querySelectorAll(".puerta-tec").forEach(function (d) {
-      var t = textos[d.dataset.que];
-      d.innerHTML = candadoG + "<strong></strong><p></p><div class='acciones-puerta'><a class='boton' href='cuenta.html#crear~" + clave + "'>Crear cuenta gratis</a><a class='ya-tengo' href='cuenta.html#ingresar~" + clave + "'>Ya tengo cuenta</a></div>";
-      d.querySelector("strong").textContent = t[0]; d.querySelector("p").textContent = t[1];
-    });
-    document.getElementById("barra-ingresar").href = "cuenta.html#ingresar~" + clave;
-    document.getElementById("barra-crear").href = "cuenta.html#crear~" + clave;
-    // Los módulos también requieren cuenta
-    ["ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).href = prefijo ? "cuenta.html#crear~" + clave : "#"; });
-  }
-  var ARCHIVADAS = {}, claveVista = null, masBoton = document.getElementById("mas-boton"), masPanel = document.getElementById("mas-panel");
-  function cerrarMas() { masPanel.hidden = true; masBoton.setAttribute("aria-expanded", "false"); document.getElementById("mas-menu").hidden = false; document.getElementById("archivar-confirmar").hidden = true; }
-  masBoton.addEventListener("click", function (e) { e.stopPropagation(); var abrir = masPanel.hidden; cerrarMas(); masPanel.hidden = !abrir; masBoton.setAttribute("aria-expanded", String(abrir)); });
-  masPanel.addEventListener("click", function (e) { e.stopPropagation(); });
-  document.addEventListener("click", function () { if (!masPanel.hidden) cerrarMas(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !masPanel.hidden) { cerrarMas(); masBoton.focus(); } });
-  document.getElementById("archivar").addEventListener("click", function () { if (this.getAttribute("aria-disabled") === "true") return; document.getElementById("mas-menu").hidden = true; document.getElementById("archivar-confirmar").hidden = false; document.getElementById("si-archivar").focus(); });
-  document.getElementById("no-archivar").addEventListener("click", function () { cerrarMas(); masBoton.focus(); });
-  document.getElementById("si-archivar").addEventListener("click", function () {
-    ARCHIVADAS[claveVista] = true; pintar(claveVista);
-    var a = document.getElementById("tec-archivada"); a.classList.remove("solo-ahora"); void a.offsetWidth; a.classList.add("solo-ahora"); a.focus();
-  });
-  function pintar(clave) {
-    claveVista = clave;
-    var T = TECNICAS[clave];
-    puertas(clave, T);
-    document.getElementById("t-tecnica").textContent = T.nombre;
-    document.getElementById("tec-esp").textContent = T.especialidad;
-    document.getElementById("marca-plantilla").hidden = !T.plantilla;
-    document.title = T.nombre + " · IQ Platform";
-    // Una sola versión en curso por técnica: si ya hay una, el botón lleva a ella
-    var curso = EN_CURSO[clave], editar = document.getElementById("editar-tec");
-    var ajena = !!(PUBLICA && curso && clave !== "colecistectomia");
-    editar.querySelector("span").textContent = ajena ? (curso === "en-revision" ? "Revisar versión 2" : "En curso por Daniela Ortiz") : curso === "borrador" ? "Continuar borrador" : curso === "en-revision" ? "Ver versión en revisión" : "Editar técnica";
-    editar.classList.toggle("inerte", ajena && curso !== "en-revision");
-    if (ajena && curso !== "en-revision") editar.setAttribute("aria-disabled", "true"); else editar.removeAttribute("aria-disabled");
-    editar.querySelector(".ico-lapiz").style.display = curso === "en-revision" ? "none" : "";
-    editar.querySelector(".ico-reloj").style.display = curso === "en-revision" ? "" : "none";
-    // El editor de la demostración es el de Colecistectomía; las demás versiones en curso llevan a Mis borradores
-    editar.href = ajena ? (curso === "en-revision" ? "revision.html" + CONSULTA : "#") : clave === "colecistectomia" && curso ? "editor.html" + CONSULTA + "#paso-1" : curso ? "borradores.html" + CONSULTA : "#";
-    var pub = document.getElementById("recien-publicada");
-    // Archivar: solo quien publica, solo sin versión en curso; una archivada deja de ofrecer los módulos
-    var arch = !!ARCHIVADAS[clave];
-    document.getElementById("mas-tec").hidden = !PUBLICA || arch;
-    if (curso) document.getElementById("archivar").setAttribute("aria-disabled", "true"); else document.getElementById("archivar").removeAttribute("aria-disabled");
-    document.getElementById("archivar-nota").hidden = !curso;
-    document.getElementById("arch-nombre").textContent = T.nombre;
-    document.getElementById("tec-archivada").hidden = !arch;
-    ["editar-tec", "ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).style.display = arch ? "none" : ""; });
-    cerrarMas();
-    pub.hidden = !(PUBLICA && PUBLICADA && clave === "colecistectomia");
-    var fichas = document.getElementById("fichas"), cl = T.clinicos;
-    var filas = [["Anestesia", cl && cl.anestesia], ["Ropa", cl && cl.ropa], ["Posición del paciente", cl && cl.posicion, 1], ["Equipos biomédicos", cl && cl.equipos, 1]];
-    fichas.innerHTML = "";
-    filas.forEach(function (f) {
-      var d = document.createElement("div");
-      if (f[2]) d.className = "ancha";
-      d.innerHTML = "<dt></dt><dd></dd>";
-      d.children[0].textContent = f[0];
-      if (f[1]) d.children[1].textContent = f[1]; else d.children[1].innerHTML = huesos(1);
-      fichas.appendChild(d);
-    });
-    var dlS = document.getElementById("suturas");
-    dlS.innerHTML = "";
-    (T.suturas || [["", ""], ["", ""], ["", ""], ["", ""]]).forEach(function (x) {
-      var d = document.createElement("div");
-      d.innerHTML = "<dt></dt><dd></dd>";
-      if (x[0]) { d.children[0].textContent = x[0]; d.children[1].textContent = x[1]; } else { d.children[0].innerHTML = huesos(1); d.children[1].innerHTML = huesos(1); }
-      dlS.appendChild(d);
-    });
-    document.getElementById("insumos-titulo").textContent = T.insumosTitulo || "Equipo médico-quirúrgico";
-    var ins = document.getElementById("insumos");
-    if (T.insumos) ins.textContent = T.insumos; else ins.innerHTML = huesos(2);
-    var lista = document.getElementById("lista-instrumental");
-    lista.innerHTML = "";
-    (T.instrumental || new Array(9).join(".").split(".")).forEach(function (t) {
-      var li = document.createElement("li");
-      if (t) li.textContent = t; else li.innerHTML = huesos(1);
-      lista.appendChild(li);
-    });
-    pintarMesa("mayo", T.mayo);
-    pintarMesa("reserva", T.reserva);
-    escalarNumeros();
-    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + prefijo + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
-    itemsLado.forEach(function (it) { var h = it.a.getAttribute("href"); it.a.classList.toggle("archivada", h !== "#" && !!ARCHIVADAS[h.slice(1 + prefijo.length)]); });
-    document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + (ARCHIVADAS[clave] ? " · archivada" : "") + " ";
-  }
 
-  // Columna de técnicas: las mismas del catálogo, con la actual marcada
-  var gruposLado = document.getElementById("lado-grupos"), itemsLado = [];
-  ESPECIALIDADES.forEach(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    h.textContent = e[0]; sec.appendChild(h); sec.appendChild(ul);
-    e[1].forEach(function (t) {
-      var li = document.createElement("li"), a = document.createElement("a");
-      a.href = "#" + prefijo + slug(t); a.textContent = t;
-      li.appendChild(a); ul.appendChild(li);
-      itemsLado.push({ li: li, a: a, sec: sec, t: t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase() });
+  /* ---------- Versiones por revisar (demostración) ----------
+     La versión publicada de Tiroidectomía es la real; lo propuesto (dos textos clínicos y una pieza movida) es de demostración. */
+  var flecha = "<svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'><path d='M3 8h9M8.5 4L12.5 8l-4 4' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  var xIcono = "<svg width='12' height='12' viewBox='0 0 12 12' aria-hidden='true'><path d='M3 3l6 6M9 3l-6 6' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'/></svg>";
+  var PENDIENTES = [
+    { tec: "Tiroidectomía", esp: "Cirugía general", v: 2, autor: "Daniela Ortiz", fecha: "1 oct", espera: "hace 5 días", tipo: "Edición de la publicada", cambios: ["Datos clínicos", "Mesa de Mayo"], nota: "Completé «Para qué sirve» e «Indicaciones» y corregí la posición del separador de Senn Miller en la mesa de Mayo.", abre: "#revisar-tiroidectomia" },
+    { tec: "Cesárea", esp: "Ginecología", v: 2, autor: "Andrés Gómez", fecha: "4 oct", espera: "hace 2 días", tipo: "Edición de la publicada", cambios: ["Instrumental"], nota: "Agregué el instrumental de la ficha que faltaba." }
+  ];
+  var REVISADAS = [{ tec: "Hemicolectomía laparoscópica", esp: "Cirugía laparoscópica", v: 2, autor: "Daniela Ortiz", fecha: "4 oct", resultado: "Devuelta", nota: "La leyenda de la mesa de Mayo tiene dos objetos con el número 4 y no aparece el 9." }];
+  var listaPend = document.getElementById("lista-pend");
+  function fila(p, revisada) {
+    var li = document.createElement("li");
+    li.className = "pendiente";
+    li.dataset.grupo = revisada ? "revisadas" : "pendientes";
+    li.innerHTML = "<div class='pend-tec'><b></b><span></span></div>" +
+      "<div class='pend-dato'><span>Autor</span><em></em></div>" +
+      "<div class='pend-dato'><span>" + (revisada ? "Revisada" : "Enviada") + "</span><em class='pend-espera'></em></div>" +
+      "<div class='pend-cambios'>" + (revisada ? "<span class='resultado devuelta'><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M6 3L2.5 6.5 6 10' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/><path d='M3 6.5h6.5a4 4 0 0 1 0 8H7' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'/></svg>" + p.resultado + "</span>" : "<span class='tipo'>" + p.tipo + "</span><span class='chips-cambio'>" + p.cambios.map(function (c) { return "<span class='chip-cambio'>" + c + "</span>"; }).join("") + "</span>") + "<p class='nota-autor'></p></div>" +
+      (revisada ? "<span></span>" : "<a class='revisar-btn' href='" + (p.abre || "#") + "'>Revisar" + flecha + "</a>");
+    li.querySelector("b").textContent = p.tec;
+    li.querySelector(".pend-tec span").textContent = p.esp + " · Versión " + p.v;
+    var ems = li.querySelectorAll(".pend-dato em");
+    ems[0].textContent = p.autor; ems[1].textContent = p.fecha + (p.espera ? " · " + p.espera : "");
+    li.querySelector(".nota-autor").textContent = "«" + p.nota + "»";
+    var a = li.querySelector(".revisar-btn"); if (a) a.setAttribute("aria-label", "Revisar " + p.tec);
+    if (revisada) li.hidden = true;
+    listaPend.appendChild(li);
+  }
+  PENDIENTES.forEach(function (p) { fila(p); });
+  REVISADAS.forEach(function (p) { fila(p, true); });
+  document.querySelectorAll(".pend-dato em").forEach(function (e) { e.style.fontStyle = "normal"; });
+  document.querySelectorAll("[data-ver]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-ver]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      listaPend.querySelectorAll(".pendiente").forEach(function (li) { li.hidden = li.dataset.grupo !== b.dataset.ver; });
     });
-    gruposLado.appendChild(sec);
   });
-  document.getElementById("buscar-tec").addEventListener("input", function () {
-    var q = this.value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-    itemsLado.forEach(function (it) { it.li.hidden = q && it.t.indexOf(q) === -1; });
-    gruposLado.querySelectorAll("section").forEach(function (sec) { sec.hidden = !sec.querySelector("li:not([hidden])"); });
+
+  /* Revisión: las dos mesas lado a lado con el cambio marcado */
+  var T = TECNICAS["tiroidectomia"];
+  var antes = T.mayo, ahora = { filas: antes.filas, cols: antes.cols, items: antes.items.map(function (o) { return o[0] === 6 ? [6, [[4, 3]], o[2], o[3]] : o; }) };
+  var CAMBIOS_MESA = [{ n: 6, de: [4, 4], a: [4, 3] }];
+  function pintarComparacion() {
+    var sa = document.querySelector("[data-lado='antes'] svg"), sb = document.querySelector("[data-lado='ahora'] svg");
+    [document.querySelector("[data-lado='antes']"), document.querySelector("[data-lado='ahora']")].forEach(function (f) { f.style.setProperty("--aspecto", antes.cols / antes.filas); });
+    document.querySelector(".comparar").style.setProperty("--aspecto-m", antes.cols / antes.filas);
+    dibujarMesa(sa, antes); dibujarMesa(sb, ahora);
+    [sa, sb].forEach(function (svg) { svg.querySelectorAll(".pieza").forEach(function (g) { g.removeAttribute("tabindex"); g.removeAttribute("role"); }); });
+    CAMBIOS_MESA.forEach(function (c) {
+      sa.insertAdjacentHTML("afterbegin", "<rect class='marca-antes' x='" + ((c.de[1] - 1) * 100 + 6) + "' y='" + ((c.de[0] - 1) * 100 + 6) + "' width='88' height='88' rx='10'/>");
+      sb.insertAdjacentHTML("afterbegin", "<rect class='marca-ahora' x='" + ((c.a[1] - 1) * 100 + 6) + "' y='" + ((c.a[0] - 1) * 100 + 6) + "' width='88' height='88' rx='10'/><rect class='marca-antes' x='" + ((c.de[1] - 1) * 100 + 6) + "' y='" + ((c.de[0] - 1) * 100 + 6) + "' width='88' height='88' rx='10'/>");
+      // De dónde salió a dónde quedó: una línea con su punta, en la mesa propuesta
+      var x1 = (c.de[1] - .5) * 100, y1 = (c.de[0] - .5) * 100 - 30, x2 = (c.a[1] - .5) * 100 + 14, y2 = (c.a[0] - .5) * 100 - 30, largo = Math.hypot(x2 - x1, y2 - y1) + 20;
+      sb.insertAdjacentHTML("beforeend", "<path class='trayecto' style='stroke-dasharray:" + largo + ";--largo:" + largo + "' d='M" + x1 + " " + y1 + " L" + x2 + " " + y2 + " M" + (x2 + 10) + " " + (y2 - 10) + " L" + x2 + " " + y2 + " L" + (x2 + 10) + " " + (y2 + 10) + "'/>");
+    });
+    pintarComentadas();
+    escalarNumeros();
+  }
+  // Señalar un cambio lo levanta en las dos mesas a la vez
+  function senalar(n) {
+    document.querySelectorAll("[data-lado] .pieza").forEach(function (g) { g.classList.toggle("activa", n != null && +g.dataset.n === n); });
+    document.querySelectorAll("[data-lado] svg").forEach(function (svg) { svg.classList.toggle("marcando", n != null); });
+    document.querySelectorAll(".cambio[data-n]").forEach(function (li) { li.classList.toggle("activo", +li.dataset.n === n); });
+  }
+  document.querySelectorAll(".cambio[data-n]").forEach(function (li) {
+    li.addEventListener("mouseenter", function () { senalar(+li.dataset.n); });
+    li.addEventListener("mouseleave", function () { senalar(null); });
+    li.addEventListener("focusin", function () { senalar(+li.dataset.n); });
   });
-  var lado = document.getElementById("lado"), abrirLado = document.getElementById("lado-abrir");
-  abrirLado.addEventListener("click", function () { var si = lado.classList.toggle("abierto"); abrirLado.setAttribute("aria-expanded", String(si)); });
-  // La técnica viene en el hash (#mastectomia); al elegir otra en la columna, se pinta sin salir de la página
-  var actual = claveDe(location.hash.slice(1));
-  if (!TECNICAS[actual]) actual = "tiroidectomia";
-  pintar(actual);
-  addEventListener("hashchange", function () {
-    var h = claveDe(location.hash.slice(1));
-    if (!TECNICAS[h]) return;
-    pintar(h);
-    lado.classList.remove("abierto"); abrirLado.setAttribute("aria-expanded", "false");
+
+  /* Comentarios por sección y por celda */
+  var COMENTARIOS = [];
+  function pintarComentadas() {
+    var sb = document.querySelector("[data-lado='ahora'] svg");
+    sb.querySelectorAll(".celda-comentada").forEach(function (r) { r.remove(); });
+    COMENTARIOS.forEach(function (c) { if (c.celda) sb.insertAdjacentHTML("afterbegin", "<rect class='celda-comentada' x='" + ((c.celda[1] - 1) * 100 + 3) + "' y='" + ((c.celda[0] - 1) * 100 + 3) + "' width='94' height='94' rx='12'/>"); });
+  }
+  function abrirRedactar(cont, sobre, celda) {
+    var abierta = cont.querySelector(".redactar"); if (abierta) abierta.remove();
+    var d = document.createElement("div"), id = "red-" + Date.now();
+    d.className = "redactar";
+    d.innerHTML = "<label for='" + id + "'></label><textarea id='" + id + "' placeholder='Qué hay que corregir y por qué.'></textarea><div class='botones-red'><button type='button' class='boton'>Guardar comentario</button><button type='button' class='boton-texto'>Cancelar</button></div>";
+    d.querySelector("label").textContent = "Comentario sobre " + sobre;
+    cont.appendChild(d);
+    d.querySelector("textarea").focus();
+    d.querySelector(".boton-texto").addEventListener("click", function () { d.remove(); });
+    d.querySelector(".boton").addEventListener("click", function () {
+      var txt = d.querySelector("textarea").value.trim(); if (!txt) { d.querySelector("textarea").focus(); return; }
+      COMENTARIOS.push({ seccion: cont.closest("[data-seccion]").dataset.seccion, sobre: sobre, texto: txt, celda: celda });
+      d.remove(); pintarComentarios(); pintarComentadas();
+    });
+  }
+  function pintarComentarios() {
+    document.querySelectorAll("[data-seccion]").forEach(function (sec) {
+      var ul = sec.querySelector(":scope > .comentarios") || sec.parentNode.querySelector(".comentarios[data-de='" + sec.dataset.seccion + "']");
+      if (!ul) { ul = document.createElement("ul"); ul.className = "comentarios"; ul.dataset.de = sec.dataset.seccion; sec.insertAdjacentElement("afterend", ul); }
+      ul.innerHTML = "";
+      COMENTARIOS.forEach(function (c, i) {
+        if (c.seccion !== sec.dataset.seccion) return;
+        var li = document.createElement("li"), q = document.createElement("button");
+        li.className = "comentario-rev";
+        li.innerHTML = "<div><p></p><p></p></div>";
+        li.querySelector("p").textContent = "Tu comentario · sobre " + c.sobre; li.querySelectorAll("p")[1].textContent = c.texto;
+        q.type = "button"; q.className = "quitar"; q.innerHTML = xIcono; q.setAttribute("aria-label", "Quitar comentario");
+        q.addEventListener("click", function () { COMENTARIOS.splice(i, 1); pintarComentarios(); pintarComentadas(); });
+        li.appendChild(q); ul.appendChild(li);
+      });
+    });
+    pintarResumen();
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-comentar]"); if (!b) return;
+    var cont = b.closest(".cambio") || b.closest(".campo-rev-envoltura") || b.closest("[data-seccion]");
+    abrirRedactar(cont, b.dataset.comentar);
+  });
+  // Tocar una celda de la mesa propuesta para comentarla
+  document.querySelector("[data-lado='ahora'] svg").addEventListener("click", function (e) {
+    var r = this.getBoundingClientRect(), c = Math.min(ahora.cols, Math.max(1, Math.ceil((e.clientX - r.left) / r.width * ahora.cols))), f = Math.min(ahora.filas, Math.max(1, Math.ceil((e.clientY - r.top) / r.height * ahora.filas)));
+    var o = ahora.items.filter(function (x) { return x[1] && x[1][0][0] === f && x[1][0][1] === c; })[0];
+    abrirRedactar(document.querySelector("#hr-mayo .cambios-lista"), "la fila " + f + ", columna " + c + (o ? " (" + o[2] + ")" : ""), [f, c]);
+  });
+
+  /* Datos clínicos lado a lado: lo agregado, marcado */
+  var demoTexto = "Texto de muestra: descripción breve del procedimiento y de sus indicaciones.";
+  var CAMPOS = [
+    ["Para qué sirve", "", demoTexto],
+    ["Indicaciones", "", "Texto de muestra: en qué casos se realiza."],
+    ["Anestesia", T.clinicos.anestesia, T.clinicos.anestesia],
+    ["Ropa", T.clinicos.ropa, T.clinicos.ropa],
+    ["Posición del paciente", T.clinicos.posicion, T.clinicos.posicion],
+    ["Equipos biomédicos", T.clinicos.equipos, T.clinicos.equipos]
+  ];
+  var dl = document.getElementById("campos-rev");
+  CAMPOS.forEach(function (c) {
+    var cambiado = c[1] !== c[2], env = document.createElement("div");
+    env.className = "campo-rev-envoltura";
+    env.innerHTML = "<div class='campo-rev" + (cambiado ? " cambiado" : "") + "'><dt></dt><dd data-etq='Publicada'></dd><dd data-etq='Propuesta'" + (cambiado ? " class='nuevo'" : "") + "></dd><button type='button' class='comentar'>Comentar</button></div>";
+    env.querySelector("dt").textContent = c[0];
+    var dds = env.querySelectorAll("dd");
+    if (c[1]) dds[0].textContent = c[1]; else { dds[0].textContent = "Sin dato"; dds[0].classList.add("vacio"); }
+    if (cambiado) dds[1].innerHTML = "<span class='tag-agregado'>+ Agregado</span> <span class='demo'>demostración</span><br>";
+    dds[1].appendChild(document.createTextNode(c[2]));
+    env.querySelector(".comentar").dataset.comentar = c[0];
+    dl.appendChild(env);
+  });
+
+  /* Instrumental y reserva, sin cambios */
+  var ulI = document.getElementById("inst-rev");
+  T.instrumental.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ulI.appendChild(li); });
+  var fr = document.querySelector("#hr-reserva .tec-funda");
+  fr.style.setProperty("--aspecto", T.reserva.cols / T.reserva.filas);
+
+  /* Pestañas */
+  var tabsRev = [].slice.call(document.querySelectorAll(".pestanas-rev [role=tab]")), rayaRev = document.querySelector(".raya-rev");
+  function moverRayaRev() { var t = tabsRev.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0]; if (!t.offsetWidth) return; rayaRev.style.width = t.offsetWidth + "px"; rayaRev.style.transform = "translateX(" + t.offsetLeft + "px)"; }
+  function elegirRev(t) {
+    tabsRev.forEach(function (x) { var si = x === t; x.setAttribute("aria-selected", String(si)); x.tabIndex = si ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !si; });
+    if (t.id === "tr-reserva") { dibujarMesa(fr.querySelector("svg"), T.reserva); escalarNumeros(); }
+    if (t.id === "tr-mayo") pintarComparacion();
+    // En celular, la tira de pestañas se desplaza hasta la abierta
+    var tira = t.parentNode, prev = t.previousElementSibling; if (tira.scrollWidth > tira.clientWidth) tira.scrollLeft = (prev ? prev.offsetLeft : t.offsetLeft) - 24;
+    moverRayaRev();
+  }
+  tabsRev.forEach(function (t) { t.addEventListener("click", function () { elegirRev(t); }); });
+  addEventListener("resize", moverRayaRev);
+
+  /* Devolver y aprobar */
+  function pintarResumen() {
+    var ul = document.getElementById("resumen-com"), n = COMENTARIOS.length;
+    ul.innerHTML = n ? "" : "<li class='vacio'>Todavía no hay comentarios. Se agregan en cada sección o tocando una celda de la mesa propuesta.</li>";
+    COMENTARIOS.forEach(function (c) { var li = document.createElement("li"); li.innerHTML = "<b></b>"; li.querySelector("b").textContent = c.seccion + ":"; li.appendChild(document.createTextNode(c.texto)); ul.appendChild(li); });
+    document.getElementById("confirmar-devolver").disabled = !n && !document.getElementById("nota-general").value.trim();
+    document.getElementById("abrir-devolver").textContent = n ? "Devolver con " + n + (n === 1 ? " comentario" : " comentarios") : "Devolver con comentarios";
+  }
+  document.getElementById("nota-general").addEventListener("input", pintarResumen);
+  function panel(id, si) {
+    var p = document.getElementById(id), b = document.getElementById(id === "panel-devolver" ? "abrir-devolver" : "abrir-aprobar");
+    p.hidden = !si; b.setAttribute("aria-expanded", String(si));
+    if (si) { var otro = id === "panel-devolver" ? "panel-aprobar" : "panel-devolver"; document.getElementById(otro).hidden = true; pintarResumen(); }
+  }
+  document.getElementById("abrir-devolver").addEventListener("click", function () { panel("panel-devolver", document.getElementById("panel-devolver").hidden); });
+  document.getElementById("abrir-aprobar").addEventListener("click", function () { panel("panel-aprobar", document.getElementById("panel-aprobar").hidden); });
+  document.querySelectorAll("[data-cerrar]").forEach(function (b) { b.addEventListener("click", function () { panel(b.dataset.cerrar, false); }); });
+  function avisar(t) { var a = document.getElementById("aviso-ok"); a.textContent = t; a.hidden = false; setTimeout(function () { a.hidden = true; }, 3200); }
+  document.getElementById("confirmar-aprobar").addEventListener("click", function () { location.hash = ""; avisar("Tiroidectomía versión 2 publicada."); });
+  document.getElementById("confirmar-devolver").addEventListener("click", function () { location.hash = ""; avisar("Tiroidectomía versión 2 devuelta a Daniela Ortiz."); });
+
+  /* Vistas: la lista o la revisión, según el hash */
+  function vista() {
+    var rev = location.hash.indexOf("#revisar-") === 0;
+    document.getElementById("vista-lista").hidden = rev;
+    document.getElementById("vista-revision").hidden = !rev;
+    document.title = (rev ? "Revisar Tiroidectomía" : "Por revisar") + " · IQ Platform";
+    if (rev) { elegirRev(document.getElementById("tr-mayo")); pintarComentarios(); }
     scrollTo(0, 0);
-  });
-
-  // Pestañas: una hoja a la vez; la raya se desliza bajo la elegida
-  var tabs = [].slice.call(document.querySelectorAll(".pestanas-tec [role=tab]")), raya = document.querySelector(".raya");
-  function moverRaya() {
-    var t = tabs.filter(function (x) { return x.getAttribute("aria-selected") === "true"; })[0];
-    raya.style.width = t.offsetWidth + "px";
-    raya.style.transform = "translateX(" + t.offsetLeft + "px)";
   }
-  function elegirTab(t) {
-    tabs.forEach(function (x) {
-      var si = x === t;
-      x.setAttribute("aria-selected", String(si));
-      x.tabIndex = si ? 0 : -1;
-      document.getElementById(x.getAttribute("aria-controls")).hidden = !si;
-    });
-    moverRaya();
-    var barraTabs = t.parentNode;
-    if (barraTabs.scrollWidth > barraTabs.clientWidth) barraTabs.scrollTo({ left: Math.max(0, t.offsetLeft - 24), behavior: reducido ? "auto" : "smooth" });
-    escalarNumeros();
-  }
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () { elegirTab(t); });
-    t.addEventListener("keydown", function (e) {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      var j = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
-      elegirTab(tabs[j]); tabs[j].focus();
-    });
-  });
-  addEventListener("resize", moverRaya);
-  if (document.fonts) document.fonts.ready.then(moverRaya);
-  raya.style.transition = "none";
-  moverRaya();
-  requestAnimationFrame(function () { raya.style.transition = ""; });
+  addEventListener("hashchange", vista);
+  document.querySelector(".ruta-ed").addEventListener("click", function (e) { e.preventDefault(); location.hash = ""; });
+  vista();
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("tec-") === 0) { var partes = atajo.slice(4).split("~"); pintar(partes[0]); if (partes[1]) elegirTab(document.getElementById("tab-" + partes[1])); }
-  if (atajo.indexOf("ver-") === 0) elegirTab(document.getElementById("tab-" + atajo.slice(4)));
-  if (atajo.indexOf("mayo-") === 0) { elegirTab(document.getElementById("tab-mayo")); marcarMayo(+atajo.slice(5)); }
-  if (atajo.indexOf("reserva-") === 0) { elegirTab(document.getElementById("tab-reserva")); marcarReserva(+atajo.slice(8)); }
-  if (atajo === "lado-abierto") abrirLado.click();
 })();
 </script>
 </body>
