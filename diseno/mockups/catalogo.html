@@ -488,13 +488,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 #preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
 .pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
 
-.aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
-.aviso-cuenta[hidden] { display: none; }
-.aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
-.aviso-cuenta b { font-weight: 700; }
-.aviso-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.aviso-acciones .ingresar { color: var(--marca-hondo); }
-.aviso-acciones .ingresar:hover { background: rgba(8, 70, 62, .08); color: var(--marca-hondo); }
 /* Lo que dice la investigación: capítulo oscuro */
 .investigacion { overflow: clip; }
 .inv { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; align-items: center; }
@@ -688,8 +681,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 .tecnica:hover, .tecnica[aria-expanded="true"] { color: var(--marca); padding-left: 10px; }
 .tecnica:hover svg, .tecnica[aria-expanded="true"] svg { opacity: 1; transform: none; }
 .tecnica mark { background: var(--marca-claro); color: var(--marca-hondo); border-radius: 3px; padding: 0 1px; }
-.cat-lista .aviso-cuenta { margin: 0 0 16px; }
-.cat-vacio { padding: 40px 0 8px; display: grid; gap: 16px; justify-items: start; }
+.cat-lista .cat-vacio { padding: 40px 0 8px; display: grid; gap: 16px; justify-items: start; }
 .cat-vacio[hidden] { display: none; }
 .cat-vacio h2 { font-size: 26px; font-weight: 650; letter-spacing: -.03em; }
 .cat-vacio p { color: var(--tinta-2); font-size: 17px; }
@@ -907,8 +899,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     ["Ginecología", ["Cesárea", "Ooforectomía con salpingectomía", "Histerectomía vaginal", "Colporrafia anterior y posterior"]],
     ["Ortopedia", ["Reemplazo total de cadera", "Reemplazo total de rodilla"]]
   ];
-  // Técnicas cuya mesa aún no está en el catálogo: su aviso no la promete
-  var SIN_MESA = ["Nefrectomía laparoscópica"];
   var listaEsp = document.getElementById("panel-lista-esp");
   function mostrarEspecialidad(i) {
     var e = ESPECIALIDADES[i], ul = document.getElementById("vista-esp");
@@ -1054,11 +1044,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
 
 
-  /* ---------- Catálogo: filtro por especialidad, búsqueda y aviso de cuenta ---------- */
+  /* ---------- Catálogo: filtro por especialidad y búsqueda; cada técnica abre su detalle ---------- */
   var filtro = document.getElementById("cat-filtro"), placa = document.querySelector(".cat-filtro .placa");
   var lista = document.getElementById("cat-lista"), vacio = document.getElementById("cat-vacio");
   var buscar = document.getElementById("buscar"), limpiar = document.getElementById("limpiar");
-  var elegida = -1, avisoAbierto = null;
+  var elegida = -1;
   // Sin tildes ni mayúsculas, letra por letra, para que los índices coincidan con el texto original
   function plano(t) { return Array.from(t).map(function (c) { return c.normalize("NFD")[0].toLowerCase(); }).join(""); }
   var botonesEsp = [];
@@ -1085,7 +1075,8 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       b.setAttribute("aria-expanded", "false");
       b.innerHTML = "<span></span>" + flecha;
       b.firstChild.textContent = t;
-      b.addEventListener("click", function () { alternarAviso(li, b, t); });
+      // Abre el detalle: los datos clínicos son libres; el resto pide cuenta allí mismo
+      b.addEventListener("click", function () { location.href = "tecnica.html#v-" + slugDe(t); });
       li.appendChild(b);
       ul.appendChild(li);
       return { li: li, b: b, t: t, p: plano(t) };
@@ -1096,28 +1087,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   // Técnicas con su página en el mockup (Cirugía general)
   function slugDe(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
   function rutaTecnica(t) { return "cuenta.html#ingresar~" + slugDe(t); }
-  function alternarAviso(li, b, t) {
-    var mismo = avisoAbierto && avisoAbierto.li === li;
-    cerrarAviso();
-    if (mismo) return;
-    var div = document.createElement("div");
-    div.className = "aviso-cuenta";
-    div.setAttribute("role", "status");
-    div.id = "aviso-tecnica";
-    div.innerHTML = "<p>Para ver <b></b> por dentro, " + (SIN_MESA.indexOf(t) === -1 ? "con su mesa y su instrumental" : "con su instrumental") + ", se crea una cuenta gratuita.</p><div class='aviso-acciones'><a class='boton' href='cuenta.html#crear~" + slugDe(t) + "'>Crear cuenta gratis</a><a class='ingresar' href='" + rutaTecnica(t) + "'>Ya tengo cuenta</a></div>";
-    div.querySelector("b").textContent = t;
-    li.appendChild(div);
-    b.setAttribute("aria-expanded", "true");
-    b.setAttribute("aria-controls", "aviso-tecnica");
-    avisoAbierto = { li: li, b: b, div: div };
-  }
-  function cerrarAviso() {
-    if (!avisoAbierto) return;
-    avisoAbierto.div.remove();
-    avisoAbierto.b.setAttribute("aria-expanded", "false");
-    avisoAbierto.b.removeAttribute("aria-controls");
-    avisoAbierto = null;
-  }
   function moverPlaca() {
     var b = botonesEsp[elegida + 1];
     if (!b.offsetParent) return;
@@ -1143,7 +1112,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   function aplicar() {
     var q = plano(buscar.value.trim()), hay = false;
     limpiar.hidden = !buscar.value;
-    cerrarAviso();
     grupos.forEach(function (g, i) {
       var enEsp = elegida === -1 || elegida === i;
       var porNombre = q && g.nombre.indexOf(q) !== -1;
@@ -1180,10 +1148,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   limpiar.addEventListener("click", function () { buscar.value = ""; conFlip(aplicar); buscar.focus(); });
   document.getElementById("ver-todas").addEventListener("click", function () { buscar.value = ""; elegir(-1); });
   addEventListener("resize", moverPlaca);
-  // Escape cierra el aviso y devuelve el foco a su técnica
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && avisoAbierto && !abierto) { var b = avisoAbierto.b; cerrarAviso(); b.focus(); }
-  });
   if (document.fonts) document.fonts.ready.then(moverPlaca);
   placa.style.transition = "none";
   moverPlaca();
@@ -1197,7 +1161,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   // Desde el menú, dentro del mismo catálogo: el cambio de hash elige la especialidad
   addEventListener("hashchange", function () { var h = location.hash.slice(1); if (h.indexOf("esp-") === 0) elegir(+h.slice(4)); });
   if (atajo.indexOf("buscar-") === 0) { buscar.value = atajo.slice(7); aplicar(); }
-  if (atajo.indexOf("aviso-") === 0) { var f = grupos[0].filas[+atajo.slice(6)]; alternarAviso(f.li, f.b, f.t); }
 })();
 </script>
 </body>

@@ -487,10 +487,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 #quien { --antes: var(--superficie); --color: var(--fondo); --despues: var(--superficie); }
 #preguntas { --antes: var(--fondo); --color: var(--superficie); --despues: var(--noche); }
 .pie { --antes: var(--superficie); --color: var(--noche); --fa: 160px; }
-.aviso-cuenta { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border-radius: 16px; background: var(--marca-claro); animation: aparecer .5s var(--expo); }
-.aviso-cuenta[hidden] { display: none; }
-.aviso-cuenta p { color: var(--marca-hondo); font-size: 17px; }
-.aviso-cuenta b { font-weight: 700; }
 
 /* Lo que dice la investigación: capítulo oscuro */
 .investigacion { overflow: clip; }
@@ -680,6 +676,36 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 @media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
 .panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
 
+/* ---------- Sin sesión: los datos clínicos son libres; instrumental y mesas, un vistazo real y una puerta discreta ---------- */
+body.sin-sesion .solo-sesion { display: none !important; }
+body:not(.sin-sesion) .solo-visitante { display: none !important; }
+.candado-tab { margin-left: 7px; vertical-align: -1px; color: var(--tinta-3); }
+.sin-sesion #lista-instrumental { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 40px; columns: auto; }
+.sin-sesion #lista-instrumental { -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
+.sin-sesion #lista-instrumental li:nth-child(n+7) { display: none; }
+/* 6. sin el título suelto: la pestaña ya nombra la mesa */
+.sin-sesion .tec-info { display: none; }
+@media (max-width: 760px) {
+  body.sin-sesion #lista-instrumental { grid-template-columns: minmax(0, 1fr); }
+  body.sin-sesion #lista-instrumental li:nth-child(n+4) { display: none; }
+}
+.sin-sesion .tec-funda svg { pointer-events: none; }
+.sin-sesion .tec-funda .numero, .sin-sesion .leyenda-tec, .sin-sesion .tec-info > p { display: none; }
+.puerta-tec { position: absolute; z-index: 3; left: 50%; top: 50%; width: min(340px, 88%); padding: 22px 22px 18px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); text-align: center; transform: translate(-50%, -50%); animation: aparecer .45s var(--expo); }
+.puerta-tec.en-linea { position: static; margin: 24px auto 0; transform: none; }
+/* Las mesas, como el instrumental: sus primeras filas a la vista, el resto se difumina y la tarjeta va debajo */
+.sin-sesion .tec-mesa { display: block; }
+body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista, 7) * 104px)); margin: 14px auto 0; aspect-ratio: var(--aspecto-vista, 2); overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
+.sin-sesion .tec-funda svg.mesa { bottom: auto; height: auto; aspect-ratio: var(--aspecto, 1); }
+.tec-funda .puerta-tec svg { position: static; inset: auto; width: 20px; height: 20px; overflow: visible; }
+.puerta-tec .candado-g { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-bottom: 10px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+.puerta-tec strong { display: block; font-size: 18px; font-weight: 650; letter-spacing: -.01em; line-height: 1.25; }
+.puerta-tec p { margin-top: 6px; color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
+.puerta-tec .acciones-puerta { display: grid; gap: 6px; margin-top: 16px; }
+.puerta-tec .boton { width: 100%; }
+.puerta-tec .ya-tengo { padding: 8px; color: var(--marca); font-size: 15px; font-weight: 650; }
+.puerta-tec .ya-tengo:hover { text-decoration: underline; text-underline-offset: 3px; }
+
 /* ---------- Detalle de técnica: la ventana de DataIQ, técnicas a la izquierda y la técnica con pestañas ---------- */
 .nav > button[aria-current="page"] { color: var(--marca-hondo); font-weight: 650; }
 .app { display: grid; align-content: start; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100svh - var(--barra)); border-bottom: 1px solid var(--filete); }
@@ -848,7 +874,9 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
-    <button type="button" class="cuenta" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">DO</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <a class="ingresar solo-visitante" id="barra-ingresar" href="cuenta.html#ingresar">Ingresar</a>
+    <a class="boton solo-visitante" id="barra-crear" href="cuenta.html#crear">Crear cuenta</a>
+    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">DO</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -918,7 +946,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"><li><a href="catalogo.html">Ver todas las técnicas</a></li></ul></details>
   <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
   <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
-  <div class="acciones-movil">
+  <div class="acciones-movil solo-visitante">
+    <a class="boton grande" href="cuenta.html#crear">Crear cuenta gratis</a>
+    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
+  </div>
+  <div class="acciones-movil solo-sesion">
     <p class="quien-movil">Daniela Ortiz · Colaborador</p>
     <a class="ingresar" href="borradores.html">Mis borradores</a>
     <a class="ingresar" href="inicio.html">Cerrar sesión</a>
@@ -938,16 +970,16 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
       <header class="tec-cabeza">
         <div><h1><span id="t-tecnica">Tiroidectomía</span><span class="demo" id="marca-plantilla" hidden>demostración</span></h1><p id="tec-esp">Cirugía general</p></div>
         <div class="tec-acciones">
-          <a class="editar-tec" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
-          <a class="boton suave" href="#">Ver en 3D <small>SIMIQ3D</small></a>
-          <a class="boton" href="#">Comprobar con la cámara <small>SIVRI</small></a>
+          <a class="editar-tec solo-sesion" id="editar-tec" href="#"><svg class="ico-reloj" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="ico-lapiz" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8H2.5v-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Editar técnica</span></a>
+          <a class="boton suave" id="ir-3d" href="#">Ver en 3D <small>SIMIQ3D</small></a>
+          <a class="boton" id="ir-camara" href="#">Comprobar con la cámara <small>SIVRI</small></a>
         </div>
       </header>
       <div class="pestanas-tec" role="tablist" aria-label="Contenido de la técnica">
         <button type="button" role="tab" id="tab-clinicos" aria-controls="hoja-clinicos" aria-selected="true">Datos clínicos</button>
-        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental</button>
-        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo</button>
-        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva</button>
+        <button type="button" role="tab" id="tab-instrumental" aria-controls="hoja-instrumental" aria-selected="false" tabindex="-1">Instrumental<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        <button type="button" role="tab" id="tab-mayo" aria-controls="hoja-mayo" aria-selected="false" tabindex="-1">Mesa de Mayo<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        <button type="button" role="tab" id="tab-reserva" aria-controls="hoja-reserva" aria-selected="false" tabindex="-1">Mesa de reserva<svg class="candado-tab solo-visitante" width="13" height="13" viewBox="0 0 16 16" aria-label="Requiere cuenta" role="img"><rect x="3.5" y="7" width="9" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
         <span class="raya" aria-hidden="true"></span>
       </div>
 
@@ -973,13 +1005,14 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
       <section class="hoja" role="tabpanel" id="hoja-instrumental" aria-labelledby="tab-instrumental" hidden>
         <ul class="instrumental" id="lista-instrumental"></ul>
+        <div class="puerta-tec en-linea solo-visitante" data-que="instrumental"></div>
       </section>
 
       <section class="hoja" role="tabpanel" id="hoja-mayo" aria-labelledby="tab-mayo" hidden>
         <p class="sin-mesa" id="sin-mayo" hidden>Sin mesa de Mayo.</p>
         <div class="tec-mesa" id="caja-mayo">
           <div class="tec-info"><h2>Mesa de Mayo</h2><p>Señala un número para ubicar su pieza.</p><ol class="leyenda-tec" id="leyenda-mayo"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div>
+          <div class="tec-funda"><svg class="mesa" id="mesa-tec" viewBox="0 0 700 700" role="group" aria-label="Mesa de Mayo de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="mayo"></div>
         </div>
       </section>
 
@@ -987,7 +1020,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         <p class="sin-mesa" id="sin-reserva" hidden>Sin mesa de reserva.</p>
         <div class="tec-mesa" id="caja-reserva">
           <div class="tec-info"><h2>Mesa de reserva</h2><p>Señala un número para ubicar su objeto.</p><ol class="leyenda-tec" id="leyenda-reserva"></ol></div>
-          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div>
+          <div class="tec-funda"><svg class="mesa" id="reserva-tec" viewBox="0 0 800 600" role="group" aria-label="Mesa de reserva de Tiroidectomía"></svg></div><div class="puerta-tec en-linea solo-visitante" data-que="reserva"></div>
         </div>
       </section>
     </article>
@@ -1306,7 +1339,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   }
   // Leyenda y mesa enlazadas: señalar un número levanta su pieza, y al revés (delegado, sirve para cualquier técnica)
   function prepararMesa(caja) {
-    var svg = caja.querySelector("svg"), ol = caja.querySelector(".leyenda-tec");
+    var svg = caja.querySelector("svg.mesa"), ol = caja.querySelector(".leyenda-tec");
     function marcar(n) {
       svg.classList.toggle("marcando", n != null);
       ol.querySelectorAll("li").forEach(function (li) { li.classList.toggle("activa", +li.dataset.n === n); });
@@ -1323,10 +1356,18 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   var marcarReserva = prepararMesa(document.getElementById("caja-reserva"));
   function pintarMesa(cual, mesa) {
     var caja = document.getElementById("caja-" + cual), vacia = document.getElementById("sin-" + cual);
+    // Sin sesión no se revela si la técnica tiene o no esta mesa: se muestra una cuadrícula y la puerta
+    var visitante = document.body.classList.contains("sin-sesion");
+    if (!mesa && visitante) mesa = cual === "mayo" ? { filas: 7, cols: 7, items: [] } : { filas: 6, cols: 8, items: [] };
     caja.hidden = !mesa; vacia.hidden = !!mesa;
     if (!mesa) return;
+    // Sin sesión se ven las dos primeras filas; el resto se desvanece bajo la puerta
+    // Mismo tamaño de celda en toda técnica: la mesa mide según sus columnas
+    var funda = caja.querySelector(".tec-funda");
+    funda.style.setProperty("--aspecto-vista", (mesa.cols / Math.min(2.6, mesa.filas)).toFixed(3));
+    funda.style.setProperty("--cols-vista", mesa.cols);
     caja.style.setProperty("--aspecto", mesa.cols / mesa.filas);
-    dibujarMesa(caja.querySelector("svg"), mesa);
+    dibujarMesa(caja.querySelector("svg.mesa"), mesa);
     var ol = caja.querySelector(".leyenda-tec");
     ol.innerHTML = "";
     mesa.items.forEach(function (o) {
@@ -1347,8 +1388,32 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   function huesos(n) { var s = ""; for (var i = 0; i < n; i++) s += "<span class='hueso' style='width:" + (55 + (i * 37) % 40) + "%'></span>"; return s; }
   // Versiones en curso de la colaboradora de la demostración (las mismas de Mis borradores)
   var EN_CURSO = { "colecistectomia": "borrador", "tiroidectomia": "en-revision", "hemicolectomia-laparoscopica": "borrador", "nefrectomia-laparoscopica": "borrador" };
+  // Sin sesión (#v-técnica): datos clínicos libres; instrumental y mesas piden cuenta en su pestaña
+  var prefijo = "";
+  function claveDe(h) { prefijo = h.indexOf("v-") === 0 ? "v-" : ""; document.body.classList.toggle("sin-sesion", !!prefijo); return prefijo ? h.slice(2) : h; }
+  claveDe(location.hash.slice(1));
+  // Las técnicas sin página propia en el mockup se muestran como plantilla
+  ESPECIALIDADES.forEach(function (e) { e[1].forEach(function (t) { if (!TECNICAS[slug(t)]) TECNICAS[slug(t)] = { nombre: t, especialidad: e[0], plantilla: true, mayo: null, reserva: null }; }); });
+  var candadoG = "<span class='candado-g' aria-hidden='true'><svg width='20' height='20' viewBox='0 0 16 16'><rect x='3.5' y='7' width='9' height='7' rx='1.6' fill='none' stroke='currentColor' stroke-width='1.5'/><path d='M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></span>";
+  function puertas(clave, T) {
+    var textos = {
+      instrumental: ["Ver el instrumental completo", T.instrumental ? "Con una cuenta gratuita se abren los " + T.instrumental.length + " instrumentos de esta técnica." : "Con una cuenta gratuita se abre el instrumental de esta técnica."],
+      mayo: ["Ver la mesa de Mayo", "Con una cuenta gratuita se abre la mesa de Mayo de esta técnica."],
+      reserva: ["Ver la mesa de reserva", "Con una cuenta gratuita se abre la mesa de reserva de esta técnica."]
+    };
+    document.querySelectorAll(".puerta-tec").forEach(function (d) {
+      var t = textos[d.dataset.que];
+      d.innerHTML = candadoG + "<strong></strong><p></p><div class='acciones-puerta'><a class='boton' href='cuenta.html#crear~" + clave + "'>Crear cuenta gratis</a><a class='ya-tengo' href='cuenta.html#ingresar~" + clave + "'>Ya tengo cuenta</a></div>";
+      d.querySelector("strong").textContent = t[0]; d.querySelector("p").textContent = t[1];
+    });
+    document.getElementById("barra-ingresar").href = "cuenta.html#ingresar~" + clave;
+    document.getElementById("barra-crear").href = "cuenta.html#crear~" + clave;
+    // Los módulos también requieren cuenta
+    ["ir-3d", "ir-camara"].forEach(function (id) { document.getElementById(id).href = prefijo ? "cuenta.html#crear~" + clave : "#"; });
+  }
   function pintar(clave) {
     var T = TECNICAS[clave];
+    puertas(clave, T);
     document.getElementById("t-tecnica").textContent = T.nombre;
     document.getElementById("tec-esp").textContent = T.especialidad;
     document.getElementById("marca-plantilla").hidden = !T.plantilla;
@@ -1392,7 +1457,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     pintarMesa("mayo", T.mayo);
     pintarMesa("reserva", T.reserva);
     escalarNumeros();
-    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
+    itemsLado.forEach(function (it) { if (it.a.getAttribute("href") !== "#") it.a.toggleAttribute("aria-current", it.a.getAttribute("href") === "#" + prefijo + clave); if (it.a.hasAttribute("aria-current")) it.a.setAttribute("aria-current", "page"); });
     document.getElementById("lado-abrir").firstChild.textContent = T.especialidad + " · " + T.nombre + " ";
   }
 
@@ -1403,7 +1468,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     h.textContent = e[0]; sec.appendChild(h); sec.appendChild(ul);
     e[1].forEach(function (t) {
       var li = document.createElement("li"), a = document.createElement("a");
-      a.href = TECNICAS[slug(t)] ? "#" + slug(t) : "#"; a.textContent = t;
+      a.href = "#" + prefijo + slug(t); a.textContent = t;
       li.appendChild(a); ul.appendChild(li);
       itemsLado.push({ li: li, a: a, sec: sec, t: t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase() });
     });
@@ -1417,10 +1482,11 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   var lado = document.getElementById("lado"), abrirLado = document.getElementById("lado-abrir");
   abrirLado.addEventListener("click", function () { var si = lado.classList.toggle("abierto"); abrirLado.setAttribute("aria-expanded", String(si)); });
   // La técnica viene en el hash (#mastectomia); al elegir otra en la columna, se pinta sin salir de la página
-  var actual = TECNICAS[location.hash.slice(1)] ? location.hash.slice(1) : "tiroidectomia";
+  var actual = claveDe(location.hash.slice(1));
+  if (!TECNICAS[actual]) actual = "tiroidectomia";
   pintar(actual);
   addEventListener("hashchange", function () {
-    var h = location.hash.slice(1);
+    var h = claveDe(location.hash.slice(1));
     if (!TECNICAS[h]) return;
     pintar(h);
     lado.classList.remove("abierto"); abrirLado.setAttribute("aria-expanded", "false");

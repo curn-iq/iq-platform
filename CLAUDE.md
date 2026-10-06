@@ -177,19 +177,22 @@ navegación (ver más abajo) NO se considera un módulo.
     cualquier institución, o alguien sin institución, p. ej. un bachiller
     curioso), no solo a la CURN. El riesgo a controlar no es la lectura sino
     la **publicación** de técnicas incorrectas.
-  - Principio: **ver el catálogo es libre; usar los módulos requiere cuenta**
-    (gratis, por autorregistro). Como un catálogo de cursos: sin cuenta se
-    entra al shell y se ve qué técnicas hay (nombre y especialidad); para ver
-    una técnica por dentro (datos clínicos y mesa) o usar SIVRI y SIMIQ3D hay
-    que registrarse. Escribir y publicar depende del rol.
+  - Principio: **ver el catálogo y los datos clínicos es libre; el
+    instrumental, las mesas y los módulos requieren cuenta** (gratis, por
+    autorregistro). Sin cuenta se entra al shell, se ve qué técnicas hay y se
+    abre cualquiera con sus datos clínicos; su instrumental y sus mesas se
+    muestran como vista previa y piden registrarse ahí mismo (cambio decidido
+    por Mauricio el 2026-10-06: pedir la cuenta antes de dejar ver nada daba
+    pereza). Usar SIVRI y SIMIQ3D también requiere cuenta. Escribir y publicar
+    depende del rol.
   - Los roles son **acumulativos**: cada uno puede todo lo del anterior
     (`usuario` < `colaborador` < `revisor` < `admin`). Cada cuenta tiene un
     solo rol.
 
     | Quién | Qué puede hacer | Cómo lo obtiene |
     |---|---|---|
-    | Visitante (sin cuenta) | Entrar al shell y ver el catálogo de técnicas publicadas (nombre y especialidad) | Nada |
-    | `usuario` | Ver el detalle de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
+    | Visitante (sin cuenta) | Entrar al shell, ver el catálogo de técnicas publicadas y los datos clínicos de cada una | Nada |
+    | `usuario` | Ver el instrumental y las mesas de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
     | `colaborador` | Crear técnicas y editar versiones en **borrador**; enviarlas a revisión | Lo asigna un admin |
     | `revisor` | Aprobar o rechazar versiones (nunca las propias); archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
     | `admin` | Gestionar roles | Mauricio |
