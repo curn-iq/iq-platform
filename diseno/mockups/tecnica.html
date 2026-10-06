@@ -21,7 +21,7 @@
   --marca: #0d6a5e;
   --marca-hondo: #08463e;
   --marca-claro: #ddefeb;
-  --marca-claro-hover: var(--marca-claro-hover);
+  --marca-claro-hover: #cfe7e1;
   --hover-neutro: #e6eded;
   --pano: #1d7564;
   /* Cámara: menta para detecciones, rojo solo para "fuera de lugar" */
@@ -976,6 +976,10 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 
 <script>
 (function () {
+  // Siempre abre arriba: el navegador no restaura el scroll de la visita anterior al recargar o volver
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  scrollTo(0, 0);
+  addEventListener("pageshow", function (e) { if (e.persisted) scrollTo(0, 0); });
   var reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- Menús de la barra: uno abierto a la vez ---------- */
