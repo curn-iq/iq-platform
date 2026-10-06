@@ -158,6 +158,30 @@
           "diseno/mockups/instrumental.html"
         ],
         "createdAt": "2026-10-06T15:19:57.983Z"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/usuarios.html"
+        ],
+        "createdAt": "2026-10-06T15:46:29.269Z"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "diseno/mockups/usuarios.html"
+        ],
+        "createdAt": "2026-10-06T15:46:29.281Z"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "diseno/mockups/tecnica.html"
+        ],
+        "createdAt": "2026-10-06T20:21:13.506Z"
       }
     ]
   }
