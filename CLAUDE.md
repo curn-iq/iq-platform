@@ -379,3 +379,8 @@ propia.
    HTTPS al backend correspondiente.
 6. **DataIQ es la única fuente de verdad** del catálogo de técnicas — SIVRI y
    SIMIQ3D consumen, no duplican permanentemente.
+7. **Navegador sin ventana desde un script** (capturas, pruebas): lanzarlo en
+   su propio grupo de procesos y cerrarlo por grupo al terminar (el navegador
+   deja procesos hijos), usar un puerto libre (`--remote-debugging-port=0`, no
+   uno fijo) y borrar su perfil temporal. Si no, se acumulan procesos y
+   memoria en el equipo de quien trabaja.
