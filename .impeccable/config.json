@@ -150,6 +150,14 @@
           "diseno/mockups/revision.html"
         ],
         "createdAt": "2026-10-06T14:47:38.873Z"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "diseno/mockups/instrumental.html"
+        ],
+        "createdAt": "2026-10-06T15:19:57.983Z"
       }
     ]
   }
