@@ -672,6 +672,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
 /* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
 .editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
 .editar-tec:hover { background: var(--hover-neutro); }
+.como-usuario .editar-tec, .como-usuario .cuenta-titulo, .como-usuario .cuenta-lista { display: none !important; }
 .editar-tec.inerte { color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--filete); cursor: default; }
 .editar-tec.inerte:hover { background: none; }
 .editar-tec.inerte svg { display: none !important; }
@@ -1095,6 +1096,16 @@ body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista,
   var PARAMS = new URLSearchParams(location.search), COMO = PARAMS.get("como"), PUBLICADA = PARAMS.get("publicada") === "1";
   var QUIEN = { revisor: { ini: "LP", n: "Laura Pérez", m: "laura.perez@correo.com", rol: "Revisor", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143]] },
     admin: { ini: "ML", n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", rol: "Admin", menu: [["revision.html", "Por revisar", 2], ["instrumental.html", "Instrumental", 143], ["usuarios.html", "Usuarios y roles"]] } }[COMO];
+  // ?como=usuario: cuenta sin gestión (ve instrumental y mesas, no edita)
+  if (COMO === "usuario") {
+    document.querySelectorAll(".avatar").forEach(function (x) { x.textContent = "VR"; });
+    document.querySelector(".quien-nombre").textContent = "Valentina Ruiz";
+    document.querySelector(".quien-correo").textContent = "valentina.ruiz@correo.com";
+    document.querySelector(".quien-soy .rol").textContent = "Usuario";
+    document.body.classList.add("como-usuario");
+    var qmU = document.querySelector(".quien-movil"); qmU.textContent = "Valentina Ruiz · Usuario";
+    qmU.parentNode.querySelectorAll("a[href^='borradores.html']").forEach(function (x) { x.remove(); });
+  }
   var PUBLICA = !!QUIEN, CONSULTA = PUBLICA ? "?como=" + COMO + (PUBLICADA ? "&publicada=1" : "") : "";
   if (PUBLICA) {
     document.querySelectorAll(".avatar").forEach(function (a) { a.textContent = QUIEN.ini; });
