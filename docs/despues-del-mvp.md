@@ -59,6 +59,18 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   MVP basta con que aprobar o rechazar fallen si otro revisor ya decidió la
   versión.
 
+## Cuentas e inicio de sesión
+
+- **Renovar la sesión sin volver a ingresar** (refresh tokens). En el MVP el
+  token dura 12 horas y después hay que iniciar sesión otra vez.
+- **Recuperar la contraseña por correo.** Hace falta un servicio de envío de
+  correos.
+- **Limitar los intentos de inicio de sesión** para frenar a quien prueba
+  contraseñas por fuerza bruta.
+- **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalogo/completo`, si
+  algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
+  piden con el token de quien lo usa.
+
 ## Opciones descartadas para el MVP
 
 - **Una plataforma con espacios por institución** (cada una con su catálogo y

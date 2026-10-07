@@ -138,11 +138,15 @@ def leer_archivo(ruta: Path):
                 celdas=celdas,
             )
         )
-    nuevos = [
+    # El catálogo base (hoja catalogo) y lo que se le agregó (catalogo_nuevo):
+    # así la carga también sirve en una base de datos vacía.
+    instrumental = [
+        (f["nombre"], f["categoria"], None) for f in _filas(libro, "catalogo")
+    ] + [
         (f["nombre"], f["categoria"], _texto(f["alias"]))
         for f in _filas(libro, "catalogo_nuevo")
     ]
-    return tecnicas, nuevos
+    return tecnicas, instrumental
 
 
 def validar(tecnicas, instrumental_conocido: set[str]) -> list[str]:
@@ -261,11 +265,12 @@ async def _borrar_huerfanos(sesion: AsyncSession) -> None:
 
 
 async def cargar(forzar: bool = False) -> None:
-    tecnicas, nuevos = leer_archivo(ARCHIVO)
+    tecnicas, catalogo = leer_archivo(ARCHIVO)
 
     async with SesionLocal() as sesion, sesion.begin():
-        # Catálogo: los instrumentos nuevos del archivo, con su categoría y sus alias
-        for nombre, categoria, alias in nuevos:
+        # Catálogo: los instrumentos que falten, con su categoría y sus alias. Los
+        # que ya existen no se tocan (un revisor pudo haberlos editado).
+        for nombre, categoria, alias in catalogo:
             cat = await _obtener_o_crear(
                 sesion, CategoriaInstrumental, nombre=categoria
             )
