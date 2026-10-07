@@ -5,13 +5,16 @@ from pathlib import Path
 import pytest
 from alembic import command
 from alembic.config import Config as ConfigAlembic
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import make_url, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from app.adaptadores.entrada.api.dependencias import obtener_sesion
 from app.adaptadores.salida.persistencia.modelos.tecnicas import Especialidad
 from app.adaptadores.salida.persistencia.modelos.usuarios import Usuario
 from app.config import config
+from app.main import app
 
 
 @pytest.fixture
@@ -60,6 +63,18 @@ async def sesion():
             yield s
         await transaccion.rollback()
     await motor.dispose()
+
+
+@pytest.fixture
+async def cliente(sesion):
+    # La API usa la misma sesión del test, así ve lo que el test guardó y todo
+    # se deshace al final.
+    app.dependency_overrides[obtener_sesion] = lambda: sesion
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://prueba"
+    ) as c:
+        yield c
+    app.dependency_overrides.clear()
 
 
 async def guardar_usuario(sesion, nombre: str, email: str) -> Usuario:
