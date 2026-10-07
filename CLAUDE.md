@@ -71,6 +71,9 @@ navegación (ver más abajo) NO se considera un módulo.
     DataIQ firma con su clave privada y publica la clave pública (JWKS); los
     demás módulos validan solo con la pública. Nunca HS256 con secreto
     compartido (violaría la regla de no mezclar credenciales entre módulos).
+    Se usa **EdDSA (Ed25519)**: la clave privada va en `JWT_CLAVE_PRIVADA`
+    (solo en el entorno de DataIQ) y la pública se publica en
+    `/.well-known/jwks.json`.
   - Contenedorización: Docker / Podman (Dockerfiles compatibles entre ambos).
   - Arquitectura: **hexagonal** (dominio / puertos / adaptadores).
   - Migraciones: SQLAlchemy + Alembic.
