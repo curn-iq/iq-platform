@@ -40,18 +40,33 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
 1. [x] Dominio: reglas del versionado (transiciones de estado; solo un revisor o un admin publica)
 2. [x] Puertos y repositorios
-3. [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
-4. [ ] Endpoints de escritura:
-   - Técnicas: crear borrador, editar el borrador, enviar a revisión, aprobar
-     y rechazar
+3. [x] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
+   - Sin cuenta: `GET /tecnicas` y `GET /tecnicas/{id}` (datos clínicos)
+   - Con cuenta: `GET /tecnicas/{id}/instrumental` (objetos, mesas, suturas,
+     equipos y dispositivos), `GET /instrumental` y `GET /catalogo/completo`
+4. [x] Endpoints de escritura:
+   - [x] Técnicas: crear técnica nueva y crear versión desde la publicada
+     (desde colaborador), editar el borrador propio (`PUT`, reemplaza todo el
+     contenido), enviar a revisión, aprobar, rechazar con motivo, publicar
+     directo (revisor o admin, lo suyo) y archivar (desde revisor, no con una
+     versión en curso). Consultar versiones: `GET /versiones` y
+     `GET /versiones/{id}`
    - [x] Tabla `RechazoVersion`: al rechazar se guarda quién, por qué y cuándo
      (el motivo es obligatorio) y la versión vuelve a borrador
-   - Aprobar y rechazar solo si la versión sigue `en_revision`
-     (`UPDATE ... WHERE estado = 'en_revision'`); si no cambió ninguna fila,
-     otro revisor ya la decidió: responder 409
-   - Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
+   - [x] Aprobar y rechazar solo si la versión sigue `en_revision`: la fila se
+     bloquea (`SELECT ... FOR UPDATE`) y se vuelve a revisar el estado; si otro
+     revisor ya la decidió, se responde 409
+   - [x] Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
      cambia las técnicas publicadas que lo usan sin pasar por revisión)
-5. [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id
+   - [x] Roles: `GET /usuarios` y `PATCH /usuarios/{id}/rol`, solo admin y no
+     sobre su propia cuenta. El primer admin se asigna por terminal:
+     `uv run python -m app.adaptadores.entrada.cli.asignar_rol <correo> admin`
+5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
+   - `POST /auth/registro` (autorregistro con la política aceptada),
+     `POST /auth/login`, `GET /auth/yo` y `GET /.well-known/jwks.json`
+   - El rol se lee de la base de datos en cada petición, no del token
+   - SIVRI y SIMIQ3D piden `/catalogo/completo` con el token de quien usa el
+     módulo
 6. [x] Datos: completar el catálogo con los objetos de los arreglos de mesa y
    transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
    por la mesa de Mayo de Tiroidectomía)
