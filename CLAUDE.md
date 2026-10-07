@@ -139,7 +139,14 @@ navegación (ver más abajo) NO se considera un módulo.
   - Transiciones de estado permitidas (se validan en el dominio, no en la BD):
     `borrador → en_revision`, `en_revision → borrador` (rechazo),
     `en_revision → publicada`, `publicada → reemplazada`,
-    `publicada → archivada`.
+    `publicada → archivada`, y `borrador → publicada` (el revisor o el admin
+    publica lo suyo sin revisión). Publicar solo lo hace un revisor o un admin
+    (`validar_publicacion`).
+  - `TecnicaVersion.fuente`: de dónde salió el contenido de la versión
+    (enlaces o libros), para validarlo.
+  - Carga inicial: `dataiq/backend/semilla/cargar.py` lee
+    `semilla/tecnicas.xlsx` y deja cada técnica con su versión 1 publicada; se
+    puede correr varias veces (`uv run python -m semilla.cargar`).
   - `ItemTecnica` = un objeto físico de la versión, con su `numero_leyenda`
     (trazabilidad al número del documento fuente de IQ; nulo si la técnica aún
     no tiene diagrama de mesa) y `texto_fuente` literal. **Cada mesa tiene su
@@ -176,25 +183,31 @@ navegación (ver más abajo) NO se considera un módulo.
     cualquier institución, o alguien sin institución, p. ej. un bachiller
     curioso), no solo a la CURN. El riesgo a controlar no es la lectura sino
     la **publicación** de técnicas incorrectas.
-  - Principio: **ver el catálogo es libre; usar los módulos requiere cuenta**
-    (gratis, por autorregistro). Como un catálogo de cursos: sin cuenta se
-    entra al shell y se ve qué técnicas hay (nombre y especialidad); para ver
-    una técnica por dentro (datos clínicos y mesa) o usar SIVRI y SIMIQ3D hay
-    que registrarse. Escribir y publicar depende del rol.
+  - Principio: **ver el catálogo y los datos clínicos es libre; el
+    instrumental, las mesas y los módulos requieren cuenta** (gratis, por
+    autorregistro). Sin cuenta se entra al shell, se ve qué técnicas hay y se
+    abre cualquiera con sus datos clínicos; su instrumental y sus mesas se
+    muestran como vista previa y piden registrarse ahí mismo (cambio decidido
+    por Mauricio el 2026-10-06: pedir la cuenta antes de dejar ver nada daba
+    pereza). Usar SIVRI y SIMIQ3D también requiere cuenta. Escribir y publicar
+    depende del rol.
   - Los roles son **acumulativos**: cada uno puede todo lo del anterior
     (`usuario` < `colaborador` < `revisor` < `admin`). Cada cuenta tiene un
     solo rol.
 
     | Quién | Qué puede hacer | Cómo lo obtiene |
     |---|---|---|
-    | Visitante (sin cuenta) | Entrar al shell y ver el catálogo de técnicas publicadas (nombre y especialidad) | Nada |
-    | `usuario` | Ver el detalle de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
+    | Visitante (sin cuenta) | Entrar al shell, ver el catálogo de técnicas publicadas y los datos clínicos de cada una | Nada |
+    | `usuario` | Ver el instrumental y las mesas de las técnicas publicadas; usar SIVRI y SIMIQ3D; funciones personales futuras (p. ej. progreso en SIVRI) | **Autorregistro libre**, aceptando la política de datos |
     | `colaborador` | Crear técnicas y editar versiones en **borrador**; enviarlas a revisión | Lo asigna un admin |
-    | `revisor` | Aprobar o rechazar versiones (nunca las propias); archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado |
-    | `admin` | Gestionar roles | Mauricio |
+    | `revisor` | Publicar directamente sus propias técnicas y versiones (sin pasar por revisión); aprobar o rechazar las de los colaboradores; archivar técnicas publicadas; crear y editar instrumental | Lo asigna un admin tras verificar que es docente o instrumentador titulado; la decanatura del programa también es revisor |
+    | `admin` | Gestionar roles | El equipo operativo del proyecto (decidido por Mauricio el 2026-10-06) |
 
-  - Un contenido incorrecto nunca llega a estudiantes: queda en borrador
-    hasta que un revisor distinto al autor lo aprueba.
+  - Un contenido incorrecto nunca llega a estudiantes: lo de un
+    colaborador queda en borrador hasta que un revisor lo aprueba. Un
+    revisor (docente o instrumentador titulado) publica lo suyo
+    directamente, sin que otro lo revise; un colaborador nunca se
+    autopublica (decidido por Mauricio el 2026-10-06).
   - **MVP: una sola plataforma, la de la CURN** (decidido el 2026-10-05). Se
     abre a estudiantes de cualquier institución, que usan el catálogo de la
     CURN; no hay catálogos ni espacios por institución. La prioridad es
@@ -368,3 +381,8 @@ propia.
    HTTPS al backend correspondiente.
 6. **DataIQ es la única fuente de verdad** del catálogo de técnicas — SIVRI y
    SIMIQ3D consumen, no duplican permanentemente.
+7. **Navegador sin ventana desde un script** (capturas, pruebas): lanzarlo en
+   su propio grupo de procesos y cerrarlo por grupo al terminar (el navegador
+   deja procesos hijos), usar un puerto libre (`--remote-debugging-port=0`, no
+   uno fijo) y borrar su perfil temporal. Si no, se acumulan procesos y
+   memoria en el equipo de quien trabaja.

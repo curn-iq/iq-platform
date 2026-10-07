@@ -75,8 +75,9 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 ## Capabilities and Constraints
 
 - Navegación (detalle en `docs/flujos.md`): el inicio y el catálogo de
-  técnicas (nombre y especialidad) son públicos; ver el detalle de una técnica
-  y usar los módulos requiere una cuenta gratuita por autorregistro; la
+  técnicas y los datos clínicos de cada técnica son públicos; su instrumental
+  y sus mesas (que se muestran como vista previa) y los módulos requieren una
+  cuenta gratuita por autorregistro, que se pide ahí mismo; la
   gestión aparece según el rol. Al iniciar sesión, la persona vuelve a donde
   iba.
 - Roles acumulativos: usuario < colaborador < revisor < admin. El colaborador

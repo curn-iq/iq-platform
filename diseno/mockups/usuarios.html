@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Catálogo de técnicas</title>
+<title>Usuarios y roles · IQ Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
@@ -646,68 +646,320 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   .pie-rejilla { grid-template-columns: 1fr 1fr; }
 }
 
-/* ---------- Catálogo: buscador, filtro lateral y lista ---------- */
-.cat-cabeza { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; align-items: end; padding-block: clamp(56px, 8vh, 96px) 36px; }
-.cat-titulos { grid-column: 1 / 6; display: grid; gap: 16px; }
-.cat-buscar { grid-column: 7 / 13; position: relative; }
-.cat-buscar > svg { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--tinta-3); pointer-events: none; }
-.cat-buscar input { width: 100%; height: 60px; padding: 0 20px 0 54px; border: 0; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2), 0 10px 24px -18px rgba(10, 27, 34, .35); font: inherit; font-size: 17px; color: var(--tinta); transition: box-shadow .3s var(--cuarta); }
-.cat-buscar input:not(:placeholder-shown) { padding-right: 56px; }
-.texto-seccion { text-wrap: pretty; }
-.cat-buscar input::placeholder { color: var(--tinta-3); }
-.cat-buscar input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca), 0 10px 24px -18px rgba(10, 27, 34, .35); }
-.cat-buscar input::-webkit-search-cancel-button { display: none; }
-.limpiar { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--tinta-3); cursor: pointer; }
-.limpiar:hover { background: var(--hover-neutro); color: var(--tinta); }
-.limpiar[hidden] { display: none; }
-.cat-cuerpo { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; border-top: 2px solid var(--tinta); padding-bottom: clamp(72px, 10vh, 112px); }
-.cat-filtro { grid-column: 1 / 6; position: sticky; top: var(--barra); align-self: start; padding-top: 24px; }
-.cat-filtro ul { max-width: 320px; list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-/* Firma: la selección es una placa que se desliza a la especialidad elegida */
-.placa { position: absolute; z-index: 0; left: 0; width: min(100%, 320px); top: 0; height: 0; border-radius: 10px; background: var(--marca-claro); transition: transform .45s var(--expo), height .45s var(--expo); pointer-events: none; }
-.cat-filtro button { position: relative; z-index: 1; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; padding: 10px 14px; border: 0; border-radius: 10px; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-2); text-align: left; cursor: pointer; transition: color .2s var(--cuarta), background .2s var(--cuarta); }
-.cat-filtro button:hover { color: var(--tinta); }
-.cat-filtro button:not([aria-pressed="true"]):hover { background: rgba(10, 27, 34, .04); }
-.cat-filtro button[aria-pressed="true"] { color: var(--marca-hondo); font-weight: 650; }
-.cat-filtro button svg { opacity: 0; transform: translateX(-4px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
-.cat-filtro button[aria-pressed="true"] svg { opacity: 1; transform: none; }
-.cat-lista { grid-column: 7 / 13; }
-.cat-grupo[hidden] { display: none; }
-.cat-grupo h2 { position: sticky; top: var(--barra); z-index: 2; padding: 26px 0 12px; background: var(--fondo); font-size: 24px; font-weight: 650; letter-spacing: -.03em; }
-.cat-grupo ul { list-style: none; margin: 0 0 12px; padding: 0; border-bottom: 1px solid var(--filete); }
-.cat-grupo li[hidden] { display: none; }
-.tecnica { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 4px; border: 0; border-top: 1px solid var(--filete); background: transparent; font-size: 17px; font-weight: 500; letter-spacing: -.01em; color: var(--tinta); text-align: left; cursor: pointer; transition: color .2s var(--cuarta), padding .35s var(--expo); }
-.tecnica svg { flex: none; color: var(--marca); opacity: 0; transform: translateX(-6px); transition: opacity .2s var(--cuarta), transform .35s var(--expo); }
-.tecnica:hover, .tecnica[aria-expanded="true"] { color: var(--marca); padding-left: 10px; }
-.tecnica:hover svg, .tecnica[aria-expanded="true"] svg { opacity: 1; transform: none; }
-.tecnica mark { background: var(--marca-claro); color: var(--marca-hondo); border-radius: 3px; padding: 0 1px; }
-.cat-lista .cat-vacio { padding: 40px 0 8px; display: grid; gap: 16px; justify-items: start; }
-.cat-vacio[hidden] { display: none; }
-.cat-vacio h2 { font-size: 26px; font-weight: 650; letter-spacing: -.03em; }
-.cat-vacio p { color: var(--tinta-2); font-size: 17px; }
+/* ---------- Mi cuenta: nombre, rol y la gestión que el rol permite ---------- */
+.cuenta { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 10px 0 6px; border: 0; border-radius: 12px; background: transparent; color: var(--tinta); font-size: 15.5px; font-weight: 600; cursor: pointer; transition: background .2s var(--cuarta); }
+.cuenta:hover, .cuenta[aria-expanded="true"] { background: var(--hover-neutro); }
+.cuenta .flecha { color: var(--tinta-3); transition: transform .3s var(--expo); }
+.cuenta[aria-expanded="true"] .flecha { transform: rotate(180deg); }
+.avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+.panel-cuenta { position: fixed; top: calc(var(--barra) - 4px); right: var(--lado); z-index: 50; width: 300px; padding: 8px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); animation: bajar .35s var(--expo); }
+.panel-cuenta[hidden] { display: none; }
+.quien-soy { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px 10px 16px; border-bottom: 1px solid var(--filete); }
+.quien-soy .avatar { width: 44px; height: 44px; font-size: 15px; }
+.quien-nombre { font-size: 16px; font-weight: 650; line-height: 1.3; }
+.quien-correo { overflow: hidden; color: var(--tinta-3); font-size: 14px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.rol { display: inline-block; margin-top: 6px; padding: 1px 10px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 600; line-height: 22px; }
+.cuenta-titulo { padding: 12px 10px 6px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.cuenta-lista { list-style: none; margin: 0; padding: 0 0 8px; border-bottom: 1px solid var(--filete); }
+.cuenta-lista a, .salir { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px; border-radius: 10px; font-size: 15.5px; font-weight: 550; transition: background .2s var(--cuarta); }
+.cuenta-lista a:hover, .salir:hover { background: var(--hover-neutro); }
+.cuenta-lista a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); }
+.cifra { color: var(--tinta-3); font-size: 14px; font-weight: 550; font-variant-numeric: tabular-nums; }
+.cuenta-lista a[aria-current="page"] .cifra { color: var(--marca-hondo); }
+.salir { margin-top: 8px; color: var(--tinta-2); }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Editar la técnica: crea la versión nueva, o lleva a la que ya está en curso */
+.editar-tec { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 15.5px; font-weight: 650; white-space: nowrap; transition: background .2s var(--cuarta); }
+.editar-tec:hover { background: var(--hover-neutro); }
+@media (max-width: 960px) { .cuenta-txt, .cuenta .flecha { display: none; } .cuenta { padding: 0 6px; } }
+@media (max-width: 760px) { .panel-cuenta { left: var(--lado); right: var(--lado); width: auto; } .editar-tec { flex: 1 1 100%; justify-content: center; } }
+.panel-movil .quien-movil { color: var(--tinta-3); font-size: 15px; font-weight: 600; }
+
+/* ---------- Sin sesión: los datos clínicos son libres; instrumental y mesas, un vistazo real y una puerta discreta ---------- */
+body.sin-sesion .solo-sesion { display: none !important; }
+body:not(.sin-sesion) .solo-visitante { display: none !important; }
+.candado-tab { margin-left: 7px; vertical-align: -1px; color: var(--tinta-3); }
+.sin-sesion #lista-instrumental { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 40px; columns: auto; }
+.sin-sesion #lista-instrumental { -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
+.sin-sesion #lista-instrumental li:nth-child(n+7) { display: none; }
+/* 6. sin el título suelto: la pestaña ya nombra la mesa */
+.sin-sesion .tec-info { display: none; }
+@media (max-width: 760px) {
+  body.sin-sesion #lista-instrumental { grid-template-columns: minmax(0, 1fr); }
+  body.sin-sesion #lista-instrumental li:nth-child(n+4) { display: none; }
+}
+.sin-sesion .tec-funda svg { pointer-events: none; }
+.sin-sesion .tec-funda .numero, .sin-sesion .leyenda-tec, .sin-sesion .tec-info > p { display: none; }
+.puerta-tec { position: absolute; z-index: 3; left: 50%; top: 50%; width: min(340px, 88%); padding: 22px 22px 18px; border-radius: 16px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); text-align: center; transform: translate(-50%, -50%); animation: aparecer .45s var(--expo); }
+.puerta-tec.en-linea { position: static; margin: 24px auto 0; transform: none; }
+/* Las mesas, como el instrumental: sus primeras filas a la vista, el resto se difumina y la tarjeta va debajo */
+.sin-sesion .tec-mesa { display: block; }
+body.sin-sesion .tec-mesa > .tec-funda { width: min(100%, calc(var(--cols-vista, 7) * 104px)); margin: 14px auto 0; aspect-ratio: var(--aspecto-vista, 2); overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
+.sin-sesion .tec-funda svg.mesa { bottom: auto; height: auto; aspect-ratio: var(--aspecto, 1); }
+.tec-funda .puerta-tec svg { position: static; inset: auto; width: 20px; height: 20px; overflow: visible; }
+.puerta-tec .candado-g { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-bottom: 10px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); }
+.puerta-tec strong { display: block; font-size: 18px; font-weight: 650; letter-spacing: -.01em; line-height: 1.25; }
+.puerta-tec p { margin-top: 6px; color: var(--tinta-2); font-size: 15px; line-height: 1.5; }
+.puerta-tec .acciones-puerta { display: grid; gap: 6px; margin-top: 16px; }
+.puerta-tec .boton { width: 100%; }
+.puerta-tec .ya-tengo { padding: 8px; color: var(--marca); font-size: 15px; font-weight: 650; }
+.puerta-tec .ya-tengo:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Detalle de técnica: la ventana de DataIQ, técnicas a la izquierda y la técnica con pestañas ---------- */
+.nav > button[aria-current="page"] { color: var(--marca-hondo); font-weight: 650; }
+.app { display: grid; align-content: start; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100svh - var(--barra)); border-bottom: 1px solid var(--filete); }
+/* Columna de técnicas */
+.lado { position: sticky; top: var(--barra); align-self: start; height: calc(100svh - var(--barra)); overflow-y: auto; padding: 20px 16px 32px; background: var(--superficie); border-right: 1px solid var(--filete); scrollbar-width: thin; }
+.lado-buscar { position: relative; margin-bottom: 18px; }
+.lado-buscar svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--tinta-3); pointer-events: none; }
+.lado-buscar input { width: 100%; height: 42px; padding: 0 12px 0 38px; border: 0; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete); font: inherit; font-size: 15px; color: var(--tinta); }
+.lado-buscar input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--marca); }
+.lado-buscar input::placeholder { color: var(--tinta-3); }
+.lado h2 { margin: 18px 10px 6px; font-size: 13px; font-weight: 650; color: var(--tinta-3); }
+.lado ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.lado li[hidden], .lado section[hidden] { display: none; }
+.lado a { display: block; padding: 8px 10px; border-radius: 8px; font-size: 15.5px; line-height: 1.35; color: var(--tinta-2); transition: background .2s var(--cuarta), color .2s var(--cuarta); }
+.lado a:hover { background: var(--fondo); color: var(--tinta); }
+.lado a[aria-current="page"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
+.lado-abrir { display: none; }
+/* Panel de la técnica */
+.panel-tec { min-width: 0; padding: 28px clamp(24px, 3vw, 48px) 40px; }
+.tec-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.tec-cabeza h1 { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.tec-cabeza p { margin-top: 10px; color: var(--tinta-3); font-size: 17px; }
+.tec-acciones { display: flex; flex-wrap: wrap; gap: 10px; }
 .boton.suave { background: var(--marca-claro); color: var(--marca-hondo); box-shadow: none; }
 .boton.suave:hover { background: var(--marca-claro-hover); }
+.boton small { font-size: 13px; font-weight: 500; color: var(--marca-claro-hover); }
+.boton.suave small { color: var(--marca-hondo); font-weight: 450; }
+/* Pestañas: la raya activa se desliza bajo la elegida */
+.pestanas-tec { position: relative; display: flex; gap: 28px; margin: 24px 0 22px; border-bottom: 1px solid var(--filete); overflow-x: auto; scrollbar-width: none; }
+.pestanas-tec button { position: relative; padding: 10px 0 12px; border: 0; background: transparent; font-size: 16px; font-weight: 550; color: var(--tinta-3); white-space: nowrap; cursor: pointer; transition: color .2s var(--cuarta); }
+.pestanas-tec button:hover { color: var(--tinta); }
+.pestanas-tec button:focus-visible { outline-offset: -3px; }
+.pestanas-tec button[aria-selected="true"] { color: var(--tinta); font-weight: 650; }
+.raya { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--tinta); transition: transform .45s var(--expo), width .45s var(--expo); pointer-events: none; }
+.hoja[hidden] { display: none; }
+/* En el detalle la mesa es un diagrama claro y sereno: sin paño, rejilla fina, sombras suaves y entrada rápida */
+.tec-funda .rejilla-r path { stroke: var(--filete); stroke-width: 1; }
+.tec-funda .hit { stroke: none; }
+.tec-funda .pieza .forma { filter: drop-shadow(0 1px 1px rgba(3, 20, 28, .22)) drop-shadow(0 4px 6px rgba(3, 20, 28, .08)); }
+.tec-funda .mesa .pieza.activa .forma { filter: drop-shadow(0 10px 8px rgba(3, 20, 28, .22)); }
+.tec-funda .caucho { stroke: #8b979d; }
+.tec-funda .caucho-luz { stroke: #fff; }
+.tec-funda .numero { transform: scale(var(--num-escala, 1)); }
+.leyenda-tec li.hueco { cursor: default; color: var(--tinta-3); }
+.leyenda-tec li.hueco b { background: transparent; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); }
+.tec-funda .mesa .pieza { animation-duration: .35s; animation-delay: calc(var(--i) * 25ms); }
+.sin-mesa { display: grid; place-items: center; min-height: 220px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); font-size: 16px; }
+.sin-mesa[hidden] { display: none; }
+.tec-cabeza h1 .demo { margin-left: 12px; font-size: 12.5px; letter-spacing: 0; vertical-align: middle; }
+/* Plantilla sin datos: barras en lugar de texto */
+.hueso { display: block; height: 12px; margin: 5px 0; border-radius: 8px; background: var(--filete); }
+.hoja { animation: aparecer .4s var(--expo); }
+/* Datos clínicos */
+.clinicos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px 48px; align-items: start; }
+.para-que { padding: 20px 22px; border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.para-que header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.para-que h2, .clinicos h2 { font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.para-que p { color: var(--tinta-2); font-size: 16px; line-height: 1.55; }
+.fichas { margin: 22px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--filete); }
+.fichas div:not(.ancha):nth-child(odd) { padding-right: 24px; }
+.fichas div { padding: 12px 0; border-bottom: 1px solid var(--filete); }
+.fichas div.ancha { grid-column: 1 / -1; }
+.fichas dt { font-size: 13.5px; font-weight: 600; color: var(--tinta-3); }
+.fichas dd { margin: 3px 0 0; font-size: 16px; line-height: 1.45; color: var(--tinta); }
+.suturas { margin-top: 12px; border-top: 1px solid var(--filete); }
+.suturas div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--filete); }
+.suturas dt { font-size: 14.5px; font-weight: 600; color: var(--tinta-2); }
+.suturas dd { margin: 0; font-size: 15px; line-height: 1.45; color: var(--tinta); }
+.insumos { margin-top: 20px; }
+.insumos p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: var(--tinta-2); }
+/* Instrumental en columnas reguladas por filete */
+.instrumental { list-style: none; margin: 0; padding: 0; columns: 3 220px; column-gap: 40px; border-top: 1px solid var(--filete); }
+.instrumental li { break-inside: avoid; padding: 12px 2px; border-bottom: 1px solid var(--filete); font-size: 16px; color: var(--tinta); }
+/* La mesa y su leyenda lado a lado; la mesa de Mayo cabe entera en la primera pantalla */
+.tec-mesa[hidden] { display: none; }
+.tec-mesa { --mesa-lado: min(46%, calc((100svh - 360px) * var(--aspecto, 1)), calc(440px * var(--aspecto, 1))); display: grid; grid-template-columns: var(--mesa-lado) minmax(220px, 1fr); gap: 36px; align-items: start; }
+.tec-mesa > .tec-funda { grid-column: 1; grid-row: 1; }
+.tec-info { grid-column: 2; grid-row: 1; display: grid; gap: 4px; align-content: start; }
+.tec-info h2 { font-size: 20px; font-weight: 650; letter-spacing: -.02em; }
+.tec-info > p { color: var(--tinta-3); font-size: 15px; }
+.tec-funda { position: relative; width: 100%; aspect-ratio: var(--aspecto, 1); border-radius: 14px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.tec-funda svg { position: absolute; z-index: 1; inset: 4.5%; display: block; width: 91%; height: 91%; overflow: visible; }
+/* Señalar: la pieza se levanta y las demás se atenúan */
+.tec-funda svg .forma { transition: transform .45s var(--expo), filter .45s var(--expo), opacity .3s var(--cuarta); }
+/* Solo se atenúa el dibujo: los números siguen legibles; la tela clara se atenúa menos */
+.tec-funda svg.marcando .pieza:not(.activa) .forma { opacity: .38; }
+.tec-funda svg.marcando .pieza.plana:not(.activa) .forma { opacity: .55; }
+.tec-funda .mesa .pieza.activa .forma, .tec-funda .objeto.activa .forma { transform: translate(-3px, -12px); filter: drop-shadow(0 18px 10px rgba(3, 20, 28, .45)); }
+.objeto { cursor: pointer; }
+.objeto .hit { fill: transparent; }
+.objeto .forma { filter: drop-shadow(0 2px 1.4px rgba(3, 20, 28, .55)) drop-shadow(0 6px 8px rgba(3, 20, 28, .2)); transition: transform .45s var(--expo), filter .45s var(--expo); transform-box: fill-box; transform-origin: center; }
+.objeto.activa .numero circle { fill: #fff; }
+.objeto.activa .numero text { fill: var(--marca-hondo); }
+.tela-plana { fill: #eef3f3; stroke: #8b979d; stroke-width: 1.4; }
+.pliegue { fill: none; stroke: #8b979d; stroke-width: 1.2; }
+.trama { fill: none; stroke: #b3bec4; stroke-width: .8; }
+.bandeja-borde { fill: #c9d3d7; stroke: #8b979d; stroke-width: 1.4; }
+.bandeja-fondo { fill: #dde4e7; }
+.caucho { fill: none; stroke: rgba(255, 255, 255, .78); stroke-width: 6; stroke-linecap: round; }
+.caucho-luz { fill: none; stroke: var(--filete); stroke-width: 2; stroke-linecap: round; }
+.sutura-hilo { fill: none; stroke: var(--tinta-3); stroke-width: 1.2; }
+.rejilla-r path { stroke: rgba(255, 255, 255, .2); stroke-width: 1.2; }
+.leyenda-tec { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--filete); }
+.leyenda-tec li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 44px; padding: 8px 6px; border-bottom: 1px solid var(--filete); border-radius: 0; font-size: 16px; color: var(--tinta-2); cursor: pointer; transition: color .2s var(--cuarta), background .2s var(--cuarta); }
+.leyenda-tec li b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(6, 18, 23, .72); color: #fff; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; transition: background .2s var(--cuarta); }
+.leyenda-tec li.activa { color: var(--tinta); background: var(--marca-claro); }
+.leyenda-tec li.activa b { background: var(--marca); }
 @media (max-width: 1100px) {
-  .cat-titulos { grid-column: 1 / -1; }
-  .cat-buscar { grid-column: 1 / -1; }
-  .cat-filtro { grid-column: 1 / 5; }
-  .cat-lista { grid-column: 5 / 13; }
+  .app { grid-template-columns: 240px minmax(0, 1fr); }
+  .clinicos { grid-template-columns: minmax(0, 1fr); }
+  .tec-mesa { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .tec-info { display: contents; }
+  .tec-mesa > .tec-funda { grid-column: auto; grid-row: auto; order: 1; margin: 12px 0 6px; width: min(100%, calc(440px * var(--aspecto, 1))); }
+  .tec-info .leyenda-tec { order: 2; }
+  .leyenda-tec { grid-template-columns: 1fr 1fr; column-gap: 24px; }
 }
 @media (max-width: 760px) {
-  .cat-cabeza { padding-block: 36px 24px; }
-  .cat-filtro { grid-column: 1 / -1; z-index: 3; margin-inline: calc(-1 * var(--lado)); padding: 12px var(--lado); background: var(--fondo); border-bottom: 1px solid var(--filete); overflow-x: auto; scrollbar-width: none; }
-  .cat-filtro ul { display: flex; gap: 8px; width: max-content; max-width: none; }
-  .placa { display: none; }
-  .cat-filtro button { min-height: 40px; padding: 8px 16px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filete-2); white-space: nowrap; font-size: 15px; }
-  .cat-filtro button[aria-pressed="true"] { background: var(--marca); color: #fff; box-shadow: none; }
-  .cat-filtro button svg { display: none; }
-  .cat-lista { grid-column: 1 / -1; }
-  .cat-grupo h2 { top: calc(var(--barra) + 65px); font-size: 20px; }
-  .tecnica { font-size: 17px; }
+  .cuenta-txt { display: none; }
+  .cuenta { padding: 0 6px; }
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .lado { position: static; height: auto; padding: 12px var(--lado); border-right: 0; border-bottom: 1px solid var(--filete); }
+  .lado-abrir { display: flex; width: 100%; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete); font-size: 15px; font-weight: 600; color: var(--tinta); cursor: pointer; }
+  .lado-abrir svg { transition: transform .3s var(--expo); }
+  .lado.abierto .lado-abrir svg { transform: rotate(180deg); }
+  .lado-cuerpo { display: none; padding-top: 14px; }
+  .lado.abierto .lado-cuerpo { display: block; }
+  .panel-tec { padding: 24px var(--lado) 32px; }
+  .tec-acciones { width: 100%; }
+  .tec-acciones .boton { flex: 1 1 100%; justify-content: center; }
+  .pestanas-tec { -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 88%, transparent); gap: 22px; margin-inline: calc(-1 * var(--lado)); padding-inline: var(--lado); }
+  .fichas { grid-template-columns: 1fr; }
+  .suturas div { grid-template-columns: 1fr; gap: 2px; }
+  .leyenda-tec { grid-template-columns: 1fr; }
 }
 .pie { --antes: var(--fondo); }
-.nav > button[aria-current="page"] { color: var(--marca-hondo); font-weight: 650; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ---------- Usuarios y roles: una columna por rol; los usuarios, por búsqueda ---------- */
+.gestion { padding: 36px var(--lado) 96px; }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.us-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap; }
+.us-cabeza h1 { display: flex; align-items: baseline; gap: 14px; font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.us-cabeza .resumen { margin-top: 12px; color: var(--tinta-2); font-size: 16.5px; font-variant-numeric: tabular-nums; }
+.us-vistas { display: inline-flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.us-vistas button { height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: none; color: var(--tinta-2); font-size: 15px; font-weight: 600; cursor: pointer; }
+.us-vistas button[aria-pressed="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
+.buscar-global { position: relative; margin: 26px 0 22px; max-width: 640px; }
+.buscar-global svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--tinta-3); pointer-events: none; }
+.buscar-global input { width: 100%; height: 52px; padding: 0 16px 0 46px; border: 0; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font: inherit; font-size: 16.5px; }
+.buscar-global input:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.resultados { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 20; margin: 0; padding: 6px; list-style: none; border-radius: 14px; background: var(--superficie); box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10, 27, 34, .06), 0 16px 24px -14px rgba(10, 27, 34, .3); }
+.resultados[hidden] { display: none; }
+.resultados button { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: left; cursor: pointer; }
+.resultados button:hover, .resultados button:focus-visible { background: var(--hover-neutro); }
+.vacio-res { padding: 12px 10px; color: var(--tinta-3); font-size: 15px; }
+
+.us-tablero { display: grid; grid-template-columns: minmax(0, 8.6fr) minmax(300px, 3.4fr); gap: 28px; align-items: start; }
+.columnas-rol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--tinta); }
+.col-rol { padding: 14px 16px 16px 0; }
+.col-rol + .col-rol { padding-left: 16px; border-left: 1px solid var(--filete); }
+.col-rol h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 17px; font-weight: 650; }
+.col-rol h2 .cifra { color: var(--tinta-3); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.col-rol .que-puede { margin-top: 4px; min-height: 2.8em; color: var(--tinta-3); font-size: 13.5px; line-height: 1.4; }
+.personas { margin: 10px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.persona { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; align-items: center; width: 100%; padding: 9px 6px; border: 0; border-bottom: 1px solid var(--filete); border-radius: 0; background: none; text-align: left; cursor: pointer; transition: background .2s var(--cuarta); }
+.persona:hover { background: var(--hover-neutro); }
+.persona[aria-pressed="true"] { background: var(--marca-claro); }
+.persona.llega { animation: llegar 1.2s var(--expo); }
+@keyframes llegar { 0% { background: var(--marca-claro); opacity: 0; transform: translateY(-24px); } 35% { background: var(--marca-claro); opacity: 1; transform: none; } }
+.persona.sale { animation: salir .28s var(--expo) forwards; }
+@keyframes salir { to { opacity: 0; transform: translateX(16px); } }
+.ini { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); font-size: 12.5px; font-weight: 700; }
+.persona[aria-pressed="true"] .ini { background: var(--superficie); }
+.nom { display: block; overflow: hidden; font-size: 15px; font-weight: 600; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+.mail { display: flex; align-items: center; min-width: 0; color: var(--tinta-3); font-size: 13px; line-height: 1.3; white-space: nowrap; }
+.mail .loc { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.mail .dom { flex: none; }
+.ini.pausa { background: var(--fondo); box-shadow: inset 0 0 0 1.5px var(--filete-2); color: var(--tinta-3); }
+.suspendida .nom { color: var(--tinta-3); }
+.etq-susp { display: inline-block; margin-left: 6px; white-space: nowrap; padding: 0 7px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 11.5px; font-weight: 650; text-decoration: none; vertical-align: 1px; }
+/* Usuarios: muchos; se buscan */
+.total-us { margin-top: 10px; font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.total-us + p { margin-top: 4px; color: var(--tinta-3); font-size: 13.5px; }
+.buscar-us { width: 100%; height: 40px; margin-top: 12px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2); font: inherit; font-size: 14.5px; }
+.buscar-us:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--marca); }
+.sub-us { margin-top: 14px; color: var(--tinta-3); font-size: 12.5px; font-weight: 650; }
+
+/* Ficha de la persona */
+.ficha { scroll-margin-top: calc(var(--barra) + 16px); position: sticky; top: calc(var(--barra) + 16px); padding: 22px; border-radius: 16px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete); }
+.ficha-cab { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; align-items: center; }
+.ficha-cab .ini { width: 52px; height: 52px; font-size: 17px; }
+.ficha-cab h2 { font-size: 24px; line-height: 1.2; font-weight: 650; letter-spacing: -.02em; }
+.ficha-cab p { color: var(--tinta-3); font-size: 14.5px; }
+.ficha h3 { margin: 20px 0 8px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.rol-sel { position: relative; display: grid; grid-template-columns: repeat(4, auto); justify-content: stretch; gap: 2px; padding: 4px; border-radius: 12px; background: var(--fondo); }
+.rol-sel button { position: relative; z-index: 1; height: 36px; padding: 0 10px; border: 0; border-radius: 9px; background: none; color: var(--tinta-2); font-size: 14px; font-weight: 600; cursor: pointer; }
+.rol-sel button[aria-checked="true"] { color: var(--marca-hondo); }
+.rol-sel .placa { position: absolute; top: 4px; left: 0; height: 36px; border-radius: 9px; background: var(--marca-claro); transition: transform .45s var(--expo), width .45s var(--expo); }
+.confirmar { margin-top: 12px; padding: 14px 16px; border-radius: 12px; background: var(--fondo); animation: bajar .3s var(--expo); }
+.confirmar[hidden] { display: none; }
+.confirmar p { font-size: 15px; line-height: 1.5; }
+.confirmar label { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; font-size: 14.5px; line-height: 1.45; cursor: pointer; }
+.confirmar input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--marca); flex: none; }
+.confirmar .botones { display: flex; gap: 8px; margin-top: 12px; }
+.confirmar .boton { height: 38px; padding: 0 14px; font-size: 14.5px; }
+.boton[disabled] { background: var(--filete); color: var(--tinta-2); box-shadow: none; cursor: not-allowed; transform: none; }
+.boton-texto { height: 38px; padding: 0 12px; border: 0; border-radius: 9px; background: none; color: var(--tinta-2); font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.boton-texto:hover { background: var(--hover-neutro); }
+.datos-ficha { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; font-size: 14.5px; }
+.datos-ficha dt { color: var(--tinta-3); }
+.datos-ficha dd { margin: 0; font-variant-numeric: tabular-nums; }
+.hist-mini { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.hist-mini li { padding: 8px 0; border-bottom: 1px solid var(--filete); color: var(--tinta-2); font-size: 14px; line-height: 1.45; }
+.hist-mini li b { color: var(--tinta); font-weight: 600; }
+.hist-mini time { display: block; color: var(--tinta-3); font-size: 12.5px; }
+.suspender { display: inline-flex; align-items: center; gap: 8px; height: 38px; margin-top: 18px; padding: 0 14px; border: 0; border-radius: 10px; background: none; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta); font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.suspender:hover { background: var(--hover-neutro); }
+.volver-lista { display: none; margin: -6px 0 14px; padding: 0; border: 0; background: none; color: var(--marca); font-size: 14.5px; font-weight: 650; cursor: pointer; }
+.rol-sel button[disabled] { cursor: not-allowed; }
+.rol-sel.fijo { opacity: .6; }
+.suspender[disabled] { opacity: .5; cursor: not-allowed; }
+.nota-ficha { margin-top: 8px; color: var(--tinta-3); font-size: 13px; line-height: 1.45; }
+
+/* Historial */
+.historial { max-width: none; }
+.historial h2 { margin: 26px 0 8px; color: var(--tinta-3); font-size: 13px; font-weight: 650; }
+.historial ol { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--filete); }
+.historial li { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(200px, .45fr); gap: 24px; padding: 12px 0; border-bottom: 1px solid var(--filete); font-size: 15.5px; line-height: 1.5; }
+.historial time { color: var(--tinta-3); font-size: 14px; font-variant-numeric: tabular-nums; }
+.historial b { font-weight: 650; }
+.historial .por { color: var(--tinta-3); font-size: 14.5px; text-align: right; }
+.resultados mark { border-radius: 3px; background: var(--marca-claro); color: var(--marca-hondo); }
+.rol-p { display: inline-block; padding: 0 9px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 600; line-height: 22px; }
+.vista[hidden] { display: none; }
+.aviso-ok { position: fixed; left: 50%; bottom: 28px; z-index: 60; padding: 12px 18px; border-radius: 12px; background: var(--tinta); color: #fff; font-size: 15.5px; font-weight: 600; transform: translateX(-50%); animation: aparecer .4s var(--expo); }
+.aviso-ok[hidden] { display: none; }
+
+@media (max-width: 1100px) {
+  .us-tablero { grid-template-columns: minmax(0, 1fr); }
+  .ficha { position: static; }
+  .volver-lista { display: inline-block; }
+  .columnas-rol { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8px; }
+  .col-rol:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 760px) {
+  .us-cabeza h1 { font-size: 30px; }
+  .columnas-rol { grid-template-columns: minmax(0, 1fr); }
+  .col-rol, .col-rol + .col-rol { padding: 14px 0; border-left: 0; border-top: 1px solid var(--filete); }
+  .col-rol .que-puede { min-height: 0; }
+  .historial li { grid-template-columns: 64px minmax(0, 1fr); gap: 4px 16px; }
+  .historial .por { grid-column: 2; text-align: left; }
+  .rol-sel button { padding: 0 6px; font-size: 13.5px; }
+}
+.persona .nom { white-space: normal; overflow: visible; }
 </style>
 </head>
 <body>
@@ -735,18 +987,26 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   </a>
   <nav class="nav" aria-label="Principal">
     <button type="button" data-menu="panel-herramientas" aria-expanded="false" aria-controls="panel-herramientas">Herramientas <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" aria-current="page" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" data-menu="panel-especialidades" data-destino="catalogo.html" aria-expanded="false" aria-controls="panel-especialidades">Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-porque" aria-expanded="false" aria-controls="panel-porque">¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" data-menu="panel-ayuda" aria-expanded="false" aria-controls="panel-ayuda">Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="derecha">
-    <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
-    <a class="boton" href="cuenta.html#crear">Crear cuenta</a>
+    <a class="ingresar solo-visitante" id="barra-ingresar" href="cuenta.html#ingresar">Ingresar</a>
+    <a class="boton solo-visitante" id="barra-crear" href="cuenta.html#crear">Crear cuenta</a>
+    <button type="button" class="cuenta solo-sesion" data-menu="panel-cuenta" aria-expanded="false" aria-controls="panel-cuenta"><span class="avatar" aria-hidden="true">ML</span><span class="cuenta-txt">Mi cuenta</span><svg class="flecha" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button type="button" class="menu-movil" data-menu="panel-movil" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir menú">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="#0a1b22" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
   </div>
 </header>
+
+<div class="panel-cuenta" id="panel-cuenta" role="region" aria-label="Mi cuenta" hidden>
+  <div class="quien-soy"><span class="avatar" aria-hidden="true">ML</span><div><p class="quien-nombre">Mauricio Lugo Granados</p><p class="quien-correo">mauricio.lugo@correo.com</p><span class="rol">Admin</span></div></div>
+  <p class="cuenta-titulo">Gestión de DataIQ</p>
+  <ul class="cuenta-lista"><li><a href="borradores.html?como=admin">Mis borradores<span class="cifra">1</span></a></li><li><a href="revision.html?como=admin">Por revisar<span class="cifra">2</span></a></li><li><a href="instrumental.html?como=admin">Instrumental<span class="cifra">143</span></a></li><li><a href="usuarios.html" aria-current="page">Usuarios y roles</a></li></ul>
+  <a class="salir" href="inicio.html">Cerrar sesión<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+</div>
 
 <div class="panel-nav" id="panel-herramientas" role="region" aria-label="Herramientas" hidden>
   <div class="panel-cabeza"><p class="panel-nombre">Herramientas</p><p class="panel-linea">Tres formas de recorrer cada técnica.</p></div>
@@ -804,38 +1064,48 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   <details><summary>Especialidades <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul id="movil-especialidades"><li><a href="catalogo.html">Ver todas las técnicas</a></li></ul></details>
   <details><summary>¿Por qué IQ Platform? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Cómo funciona</a></li><li><a href="#">La investigación</a></li><li><a href="#">Quiénes somos</a></li></ul></details>
   <details><summary>Ayuda <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Guía para estudiantes</a></li><li><a href="#">Para docentes</a></li></ul></details>
-  <div class="acciones-movil">
+  <div class="acciones-movil solo-visitante">
     <a class="boton grande" href="cuenta.html#crear">Crear cuenta gratis</a>
     <a class="ingresar" href="cuenta.html#ingresar">Ingresar</a>
   </div>
+  <div class="acciones-movil solo-sesion">
+    <p class="quien-movil">Mauricio Lugo Granados · Admin</p>
+    <a class="ingresar" href="borradores.html?como=admin">Mis borradores</a>
+    <a class="ingresar" href="revision.html?como=admin">Por revisar</a>
+    <a class="ingresar" href="instrumental.html?como=admin">Instrumental</a>
+    <a class="ingresar" href="usuarios.html" aria-current="page">Usuarios y roles</a>
+    <a class="ingresar" href="inicio.html">Cerrar sesión</a>
+  </div>
 </nav>
 
-<main>
-  <section class="ancho" id="catalogo" aria-labelledby="t-catalogo">
-    <div class="cat-cabeza">
-      <div class="cat-titulos">
-        <h1 class="titulo-seccion" id="t-catalogo">Técnicas</h1>
-        <p class="texto-seccion">Cada técnica, con su instrumental y su mesa.</p>
-      </div>
-      <div class="cat-buscar" role="search">
-        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <label class="sr-only" for="buscar">Buscar una técnica o especialidad</label>
-        <input type="search" id="buscar" placeholder="Buscar técnica o especialidad" autocomplete="off">
-        <button type="button" class="limpiar" id="limpiar" aria-label="Borrar la búsqueda" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-      </div>
+<main class="gestion" id="contenido">
+  <header class="us-cabeza">
+    <div>
+      <h1>Usuarios y roles <span class="demo">demostración</span></h1>
+      <p class="resumen" id="resumen"></p>
     </div>
-    <div class="cat-cuerpo">
-      <nav class="cat-filtro" aria-label="Especialidad"><span class="placa" aria-hidden="true"></span><ul id="cat-filtro"></ul></nav>
-      <div class="cat-lista" id="cat-lista" aria-live="polite">
-        <div class="cat-vacio" id="cat-vacio" hidden>
-          <h2 id="cat-vacio-titulo"></h2>
-          <p>Prueba con otra palabra o revisa la especialidad elegida.</p>
-          <button type="button" class="boton suave" id="ver-todas">Ver todas las técnicas</button>
-        </div>
-      </div>
+    <div class="us-vistas" role="group" aria-label="Vista">
+      <button type="button" data-vista="personas" aria-pressed="true">Personas</button>
+      <button type="button" data-vista="historial" aria-pressed="false">Historial de cambios</button>
+    </div>
+  </header>
+
+  <section class="vista" id="v-personas" aria-label="Personas por rol">
+    <div class="buscar-global">
+      <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <label class="solo-lector" for="buscar-global">Buscar a cualquier persona por nombre o correo</label>
+      <input type="search" id="buscar-global" placeholder="Buscar a cualquier persona por nombre o correo" autocomplete="off" aria-controls="resultados">
+      <ul class="resultados" id="resultados" hidden></ul>
+    </div>
+    <div class="us-tablero">
+      <div class="columnas-rol" id="columnas"></div>
+      <aside class="ficha" id="ficha" aria-live="polite"></aside>
     </div>
   </section>
+
+  <section class="vista historial" id="v-historial" aria-label="Historial de cambios" hidden></section>
 </main>
+<p class="aviso-ok" id="aviso-ok" role="status" hidden></p>
 
 <footer class="pie ancho tramo">
   <div class="pie-rejilla">
@@ -863,7 +1133,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   var reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- Menús de la barra: uno abierto a la vez ---------- */
-  var paneles = document.querySelectorAll(".panel-nav, .panel-movil");
+  var paneles = document.querySelectorAll(".panel-nav, .panel-movil, .panel-cuenta");
   var abridores = document.querySelectorAll("[data-menu]");
   var abierto = null;
   function abrirMenu(id) {
@@ -889,7 +1159,6 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     if (e.key === "Escape" && abierto) { var b = document.querySelector("[data-menu='" + abierto + "']"); abrirMenu(null); if (b) b.focus(); }
   });
   document.addEventListener("click", function (e) { if (abierto && !document.getElementById(abierto).contains(e.target)) abrirMenu(null); });
-
 
   /* ---------- Catálogo real: técnicas por especialidad ---------- */
   var ESPECIALIDADES = [
@@ -926,241 +1195,158 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     });
   });
 
-  /* ---------- Instrumental dibujado en acero ----------
-     Cada pieza en coordenadas locales: vertical, punta en y=0, anillos o mango en y=100. */
-  function anillo(cx) { return "<path class='acero' fill-rule='evenodd' d='M" + (cx - 7) + " 92a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z M" + (cx - 4.3) + " 92a4.3 4.3 0 1 0 8.6 0a4.3 4.3 0 1 0 -8.6 0Z'/>"; }
-  function argollas(b, cremallera) {
-    var s = anillo(-7.6) + anillo(7.6);
-    s += "<path class='acero' d='M-10.8 87.4 L-2.9 " + (b + 8) + " L-0.7 " + (b + 8) + " L-4.6 86.1 Z'/>";
-    s += "<path class='acero' d='M10.8 87.4 L2.9 " + (b + 8) + " L0.7 " + (b + 8) + " L4.6 86.1 Z'/>";
-    if (cremallera) s += "<path class='caja' d='M-5.6 79.5 l2.6 -1.6 v3.2z M5.6 79.5 l-2.6 -1.6 v3.2z'/>";
-    return s + "<rect class='caja' x='-3.4' y='" + b + "' width='6.8' height='8.6' rx='1.4'/>";
-  }
-  function estrias(desde, hasta, x, ancho) { var s = ""; for (var y = desde; y < hasta; y += 3.2) s += "<path class='raya' d='M" + x + " " + y.toFixed(1) + " h" + ancho + "'/>"; return s; }
-  function tijera(b, t, w) {
-    return argollas(b, false) +
-      "<path class='acero' d='M" + (-w) + " " + b + " C" + (-w * 1.1) + " " + (b - 16) + " " + (-w * 0.8) + " " + (t + 8) + " " + (w * 0.25) + " " + (t + 1.5) + " Q" + (w * 0.7) + " " + t + " " + (w * 0.95) + " " + (t + 2.2) + " C" + (w * 1.05) + " " + (t + 10) + " " + (w * 1.15) + " " + (b - 16) + " " + w + " " + b + " Z'/>" +
-      "<path class='raya' d='M0 " + b + " C0 " + (b - 16) + " .3 " + (t + 9) + " 1.2 " + (t + 2.2) + "'/>";
-  }
-  var dibujos = {
-    bisturi: function () { return "<rect class='acero' x='-3.6' y='32' width='7.2' height='68' rx='1.8'/>" + estrias(64, 94, -2.5, 5) + "<path class='hoja' d='M-2.3 33 L-2.3 15 C-2.3 7 1.6 1.5 3.6 4.8 C5 8 3.4 18 2.3 33 Z'/>"; },
-    metzenbaum: function () { return tijera(52, 16, 2.6); },
-    mayo: function () { return tijera(46, 6, 3.6); },
-    diseccion: function () { return "<path class='acero' fill-rule='evenodd' d='M-1.3 0 L-5.4 66 Q-6 97 0 100 Q6 97 5.4 66 L1.3 0 Z M-0.35 7 L-3.2 66 Q-3.4 90 0 92 Q3.4 90 3.2 66 L0.35 7 Z'/>" + estrias(40, 64, -4.6, 1.6) + estrias(40, 64, 3, 1.6); },
-    farabeuf: function () { return "<path class='acero' d='M-13 4 H2.4 V96 H-15 V91 H-2.4 V9 H-13 Z'/><path class='raya' d='M-0.6 22 V78'/>"; },
-    senn: function () { return "<rect class='acero' x='-1.9' y='16' width='3.8' height='68' rx='1.2'/>" + estrias(40, 62, -1.3, 2.6) + "<rect class='acero' x='-5.4' y='13.5' width='10.8' height='3.2' rx='1'/><path class='punta' d='M-4.2 14 V4.5 Q-4.2 2 -2.2 3.4 M0 14 V3.5 Q0 1 2 2.4 M4.2 14 V4.5 Q4.2 2 6.2 3.4'/><rect class='acero' x='-6.8' y='83.5' width='13.6' height='6' rx='1.5'/>"; },
-    allis: function () { return argollas(44, true) + "<path class='acero' d='M-1.9 44 L-1.3 11 L-4.3 6.5 L-4.3 2 L4.3 2 L4.3 6.5 L1.3 11 L1.9 44 Z'/><path class='raya' d='M-3.8 3.3 h7.6'/>"; },
-    lahey: function () { return argollas(44, true) + "<path class='acero' d='M-2.1 44 L-1.5 9 L-3.8 3.2 L-2.6 2 L-0.5 6.2 L0.5 6.2 L2.6 2 L3.8 3.2 L1.5 9 L2.1 44 Z'/>"; },
-    rochester: function () { return argollas(44, true) + "<path class='acero' d='M-2.8 44 L-1.7 6 Q0 2 1.7 6 L2.8 44 Z'/>" + estrias(10, 42, -1.5, 3); },
-    mosquito: function () { return argollas(46, true) + "<path class='acero' d='M-2.3 46 C-2.3 32 -1.2 20 2.6 9.5 Q4.2 8 3.9 10.6 C1.8 20 1.9 32 2.3 46 Z'/><path class='raya' d='M0 46 C0 32 .6 20 3 10'/>"; }
-  };
 
-  /* Mesa de Mayo de Tiroidectomía: datos reales del documento de IQ.
-     [número, fila, columna, nombre normalizado, texto de la fuente, dibujo, largo relativo, nombre corto] */
-  var MESA = [
-    [1, 7, 5, "Mango de bisturí N.° 3 y hoja #15", "M.B #3 H.B #15", "bisturi", .84, "Bisturí N.° 3"],
-    [2, 6, 5, "Tijera de Metzenbaum", "Tijera de metzembaum", "metzenbaum", 1, "Metzenbaum"],
-    [3, 5, 5, "Tijera de Mayo", "Tijera de mayo", "mayo", .88, "Tijera de Mayo"],
-    [4, 4, 1, "Pinza de disección con y sin garra", "Diseccion c/s garras", "diseccion", .9, "Disección"],
-    [5, 4, 2, "Separador de Farabeuf", "Separador de farabeauf", "farabeuf", .9, "Farabeuf"],
-    [6, 4, 4, "Separador de Senn Miller", "Separador senn Miller", "senn", .72, "Senn Miller"],
-    [7, 1, 3, "Pinza de Allis", "Pinzas allis", "allis", .92, "Allis"],
-    [8, 1, 6, "Pinza Lahey", "Pinza lahey", "lahey", .95, "Lahey"],
-    [9, 2, 7, "Pinza Rochester", "Pinza Rochester", "rochester", .95, "Rochester"],
-    [10, 3, 7, "Pinza Mosquito curva", "Pinza mosquito", "mosquito", .74, "Mosquito"]
+
+  /* ---------- Usuarios y roles (demostración; los admins son el equipo operativo real) ---------- */
+  var ROLES = ["admin", "revisor", "colaborador", "usuario"];
+  var NOMBRE_ROL = { admin: "Admin", revisor: "Revisor", colaborador: "Colaborador", usuario: "Usuario" };
+  var COLUMNA = { admin: "Admin", revisor: "Revisores", colaborador: "Colaboradores", usuario: "Usuarios" };
+  var QUE_PUEDE = { admin: "Asigna roles y suspende cuentas.", revisor: "Publica lo suyo y aprueba lo de los colaboradores.", colaborador: "Crea técnicas y las envía a revisión.", usuario: "Ve las técnicas completas y usa los módulos." };
+  var PODRA = { admin: "asignar roles y suspender cuentas", revisor: "publicar lo suyo y aprobar lo de los colaboradores", colaborador: "crear técnicas y enviarlas a revisión", usuario: "ver las técnicas completas y usar los módulos" };
+  var TOTAL_USUARIOS = 86;
+  var PERSONAS = [
+    { n: "Mauricio Lugo Granados", m: "mauricio.lugo@correo.com", r: "admin", reg: "25 sep 2026", pol: "1.0", acep: "25 sep 2026" },
+    { n: "Guebriel Garces", m: "guebriel.garces@correo.com", r: "admin", reg: "25 sep 2026", pol: "1.0", acep: "25 sep 2026" },
+    { n: "Juan Caraballo", m: "juan.caraballo@correo.com", r: "admin", reg: "26 sep 2026", pol: "1.0", acep: "26 sep 2026" },
+    { n: "Laura Pérez", alta: 8, m: "laura.perez@correo.com", r: "revisor", reg: "28 sep 2026", pol: "1.0", acep: "28 sep 2026", act: "2 versiones revisadas · 1 técnica publicada" },
+    { n: "Decanatura de Instrumentación Quirúrgica", alta: 7, m: "decanatura.iq@correo.com", r: "revisor", reg: "29 sep 2026", pol: "1.0", acep: "29 sep 2026", act: "Sin actividad en DataIQ" },
+    { n: "Daniela Ortiz", alta: 6, m: "daniela.ortiz@correo.com", r: "colaborador", reg: "30 sep 2026", pol: "1.0", acep: "30 sep 2026", act: "4 versiones en curso · 1 devuelta" },
+    { n: "Andrés Gómez", alta: 5, m: "andres.gomez@correo.com", r: "colaborador", reg: "1 oct 2026", pol: "1.0", acep: "1 oct 2026", act: "1 versión en revisión" },
+    { n: "Valentina Ruiz", alta: 0, m: "valentina.ruiz@correo.com", r: "usuario", reg: "Hoy", pol: "1.0", acep: "Hoy" },
+    { n: "Sebastián Mora", alta: 1, m: "sebastian.mora@correo.com", r: "usuario", reg: "Ayer", pol: "1.0", acep: "Ayer" },
+    { n: "Camila Herrera", alta: 2, m: "camila.herrera@correo.com", r: "usuario", reg: "4 oct 2026", pol: "1.0", acep: "4 oct 2026" },
+    { n: "Natalia Peña", alta: 3, m: "natalia.pena@correo.com", r: "usuario", reg: "3 oct 2026", pol: "1.0", acep: "3 oct 2026", susp: true },
+    { n: "Felipe Castro", alta: 4, m: "felipe.castro@correo.com", r: "usuario", reg: "2 oct 2026", pol: "1.0", acep: "2 oct 2026" }
   ];
-  // Confianza de la demostración de SIVRI (valores de ejemplo)
-  var CONFIANZA = { 1: "0,97", 2: "0,95", 3: "0,96", 4: "0,93", 5: "0,98", 6: "0,91", 7: "0,97", 8: "0,94", 9: "0,96", 10: "0,92" };
-  function pieza(n) { return MESA.filter(function (x) { return x[0] === n; })[0]; }
-
-  function construirMesa(svg, op) {
+  var HISTORIAL = [
+    { cuando: "Hoy", hora: "09:12", por: "Mauricio Lugo Granados", txt: "Suspendió la cuenta de <b>Natalia Peña</b>." },
+    { cuando: "Semana pasada", hora: "1 oct", por: "Guebriel Garces", txt: "Cambió el rol de <b>Andrés Gómez</b> de <span class='rol-p'>Usuario</span> a <span class='rol-p'>Colaborador</span>." },
+    { cuando: "Semana pasada", hora: "30 sep", por: "Mauricio Lugo Granados", txt: "Cambió el rol de <b>Daniela Ortiz</b> de <span class='rol-p'>Usuario</span> a <span class='rol-p'>Colaborador</span>." },
+    { cuando: "Semana pasada", hora: "29 sep", por: "Juan Caraballo", txt: "Dio el rol <span class='rol-p'>Revisor</span> a <b>Decanatura de Instrumentación Quirúrgica</b>, tras verificar que es docente." },
+    { cuando: "Semana pasada", hora: "28 sep", por: "Mauricio Lugo Granados", txt: "Dio el rol <span class='rol-p'>Revisor</span> a <b>Laura Pérez</b>, tras verificar que es instrumentadora titulada." }
+  ];
+  function iniciales(n) { return n.split(" ").filter(function (p) { return p.length > 2 || p === p.toUpperCase(); }).slice(0, 2).map(function (p) { return p[0]; }).join("").toUpperCase(); }
+  function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+  function sinTilde(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  var elegida = PERSONAS[5], llego = null, YO = "Mauricio Lugo Granados";
+  function mostrarFicha() { if (matchMedia("(max-width: 1100px)").matches) document.getElementById("ficha").scrollIntoView({ block: "start", behavior: reducido ? "auto" : "smooth" }); }
+  function correo(m) { var i = m.indexOf("@"); return "<span class='mail'><span class='loc'>" + esc(m.slice(0, i)) + "</span><span class='dom'>" + esc(m.slice(i)) + "</span></span>"; }
+  function botonPersona(p) {
+    return "<button type='button' class='persona" + (p.susp ? " suspendida" : "") + (p === llego ? " llega" : "") + "' data-i='" + PERSONAS.indexOf(p) + "' aria-pressed='" + (p === elegida) + "'>" + (p.susp ? "<span class='ini pausa' aria-hidden='true'><svg width='12' height='12' viewBox='0 0 16 16'><path d='M5.5 3.5v9M10.5 3.5v9' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/></svg></span>" : "<span class='ini' aria-hidden='true'>" + iniciales(p.n) + "</span>") + "<span><span class='nom'>" + esc(p.n) + (p.susp ? "<span class='solo-lector'>, cuenta suspendida</span>" : "") + "</span>" + correo(p.m) + "</span></button>";
+  }
+  function pintarColumnas() {
     var h = "";
-    if (op.rejilla) {
-      h += "<g class='rejilla' aria-hidden='true'>";
-      for (var c = 1; c < 7; c++) h += "<path d='M" + c * 100 + " 0 V700 M0 " + c * 100 + " H700'/>";
-      h += "</g>";
-    }
-    MESA.forEach(function (o, i) {
-      var x = (o[2] - 1) * 100, y = (o[1] - 1) * 100, k = 1.2 * o[6];
-      h += "<g class='pieza' data-n='" + o[0] + "' style='--i:" + i + "'" + (op.interactiva ? " tabindex='0' role='button' aria-label='" + o[0] + ": " + o[3] + "'" : "") + ">" +
-        (op.interactiva ? "<rect class='hit' x='" + (x + 4) + "' y='" + (y + 4) + "' width='92' height='92' rx='10'/>" : "") +
-        "<g class='forma'" + (op.mover && o[0] === 6 ? " transform='translate(100 0)'" : "") + "><g transform='translate(" + (x + 54) + " " + (y + 54) + ") rotate(40) scale(" + (k * 1.15) + " " + k + ") translate(0 -50)'>" + dibujos[o[5]]() + "</g></g>" +
-        (op.numeros ? "<g class='numero'><circle cx='" + (x + 19) + "' cy='" + (y + 19) + "' r='16'/><text x='" + (x + 19) + "' y='" + (y + 19.5) + "'>" + o[0] + "</text></g>" : "") +
-        "</g>";
-    });
-    if (op.deteccion) h += "<g class='detecciones'></g>";
-    svg.innerHTML = h;
-    if (op.deteccion) dibujarDetecciones(svg, op.mover);
-  }
-
-  /* Cajas de detección; las etiquetas se ubican después, cuando la fuente cargó */
-  function dibujarDetecciones(svg, yaMovida) {
-    var h = "", angosto = matchMedia("(max-width: 760px)").matches;
-    MESA.forEach(function (o, i) {
-      var bb = svg.querySelector(".pieza[data-n='" + o[0] + "'] .forma").getBBox();
-      var mal = o[0] === 6, dx = mal && !yaMovida ? 100 : 0;
-      var x = bb.x - 5 + dx, y = bb.y - 5, w = bb.width + 10, alto = bb.height + 10;
-      h += "<g class='det" + (mal ? " error" : "") + "' style='--i:" + i + ";--per:" + Math.round(2 * (w + alto)) + "'>" +
-        "<rect class='caja-det' x='" + x.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-        "<g class='etq'><rect x='" + x.toFixed(1) + "' y='" + (y - 26).toFixed(1) + "' width='120' height='24' rx='4'/><text x='" + (x + 8).toFixed(1) + "' y='" + (y - 14).toFixed(1) + "'>" + o[7] + (angosto ? "" : " " + CONFIANZA[o[0]]) + "</text></g></g>";
-      if (mal) {
-        var ox = x - 100;
-        h += "<rect class='destino' x='" + ox.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + w.toFixed(1) + "' height='" + alto.toFixed(1) + "' rx='6'/>" +
-          "<text class='destino-etq' x='" + ox.toFixed(1) + "' y='" + (y + alto + 16).toFixed(1) + "'>Va aquí</text>";
+    ROLES.forEach(function (r) {
+      var del = PERSONAS.filter(function (p) { return p.r === r; });
+      h += "<section class='col-rol' aria-labelledby='c-" + r + "'><h2 id='c-" + r + "'>" + COLUMNA[r] + (r === "usuario" ? "" : "<span class='cifra'>" + del.length + "</span>") + "</h2><p class='que-puede'>" + QUE_PUEDE[r] + "</p>";
+      if (r === "usuario") {
+        var ahora = del.filter(function (p) { return p.cambioAhora; }), recientes = del.filter(function (p) { return !p.cambioAhora && p.alta !== undefined; }).sort(function (a, b) { return a.alta - b.alta; }).slice(0, 5);
+        h += "<p class='total-us'>" + TOTAL_USUARIOS + "</p><p>cuentas con rol Usuario</p><label class='solo-lector' for='buscar-us'>Buscar un usuario</label><input class='buscar-us' id='buscar-us' type='search' placeholder='Buscar un usuario' autocomplete='off'>" + (ahora.length ? "<p class='sub-us'>Rol cambiado ahora</p><ul class='personas'>" + ahora.map(function (p) { return "<li>" + botonPersona(p) + "</li>"; }).join("") + "</ul>" : "") + "<p class='sub-us'>Registrados recientemente</p><ul class='personas'>" + recientes.map(function (p) { return "<li>" + botonPersona(p) + "</li>"; }).join("") + "</ul>";
+      } else {
+        h += "<ul class='personas'>" + del.map(function (p) { return "<li>" + botonPersona(p) + "</li>"; }).join("") + "</ul>";
       }
+      h += "</section>";
     });
-    svg.querySelector(".detecciones").innerHTML = h;
+    document.getElementById("columnas").innerHTML = h;
+    document.getElementById("resumen").textContent = ROLES.filter(function (r) { return r !== "usuario"; }).map(function (r) { var n = PERSONAS.filter(function (p) { return p.r === r; }).length; return n + " " + (n === 1 ? NOMBRE_ROL[r].toLowerCase() : COLUMNA[r].toLowerCase()); }).join(" · ") + " · " + TOTAL_USUARIOS + " usuarios";
+    var bu = document.getElementById("buscar-us");
+    bu.addEventListener("input", function () { buscarGlobal(bu.value, "usuario"); var g = document.getElementById("buscar-global"); g.value = bu.value; });
+    llego = null;
   }
-  function choque(a, b) { var w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y); return w > 0 && h > 0 ? w * h : 0; }
-  function ubicarEtiquetas(svg) {
-    var grupos = svg.querySelectorAll(".det");
-    var cajas = [].map.call(grupos, function (g) { var r = g.querySelector(".caja-det"); return { x: +r.getAttribute("x"), y: +r.getAttribute("y"), w: +r.getAttribute("width"), h: +r.getAttribute("height") }; });
-    var destino = svg.querySelector(".destino");
-    if (destino) cajas.push({ x: +destino.getAttribute("x"), y: +destino.getAttribute("y"), w: +destino.getAttribute("width"), h: +destino.getAttribute("height") });
-    var puestas = [];
-    var aviso = svg.querySelector(".destino-etq");
-    if (aviso) { var ba = aviso.getBBox(); puestas.push({ x: ba.x - 4, y: ba.y - 4, w: ba.width + 8, h: ba.height + 8 }); }
-    grupos.forEach(function (g, i) {
-      var c = cajas[i], t = g.querySelector(".etq text"), r = g.querySelector(".etq rect");
-      var fs = parseFloat(getComputedStyle(t).fontSize) || 14;
-      var w = t.getComputedTextLength() + fs * 1.1, h = fs + 10, mejor = null, menor = Infinity;
-      [[c.x, c.y - h - 3], [c.x + c.w - w, c.y - h - 3], [c.x, c.y + c.h + 3], [c.x + c.w - w, c.y + c.h + 3], [c.x - w - 3, c.y], [c.x + c.w + 3, c.y], [c.x + 3, c.y + 3]].forEach(function (p, k) {
-        var e = { x: Math.min(Math.max(p[0], 2), 698 - w), y: Math.min(Math.max(p[1], 2), 698 - h), w: w, h: h };
-        var costo = k * 4;
-        puestas.forEach(function (q) { costo += choque(e, q) * 6; });
-        cajas.forEach(function (o, j) { if (j !== i) costo += choque(e, o); });
-        if (costo < menor) { menor = costo; mejor = e; }
-      });
-      puestas.push(mejor);
-      r.setAttribute("x", mejor.x.toFixed(1)); r.setAttribute("y", mejor.y.toFixed(1)); r.setAttribute("width", w.toFixed(1));
-      r.setAttribute("height", h.toFixed(1));
-      t.setAttribute("x", (mejor.x + fs * .55).toFixed(1)); t.setAttribute("y", (mejor.y + h / 2).toFixed(1));
-    });
-  }
+  document.getElementById("columnas").addEventListener("click", function (e) { var b = e.target.closest(".persona"); if (b) { elegida = PERSONAS[+b.dataset.i]; rolNuevo = null; pintarColumnas(); pintarFicha(); mostrarFicha(); } });
 
-
-  mostrarEspecialidad(0);
-  listaEsp.querySelector("a").classList.add("activa");
-  document.querySelector(".panel-lista[data-vista-de] a").classList.add("activa");
-
-
-  /* ---------- Catálogo: filtro por especialidad y búsqueda; cada técnica abre su detalle ---------- */
-  var filtro = document.getElementById("cat-filtro"), placa = document.querySelector(".cat-filtro .placa");
-  var lista = document.getElementById("cat-lista"), vacio = document.getElementById("cat-vacio");
-  var buscar = document.getElementById("buscar"), limpiar = document.getElementById("limpiar");
-  var elegida = -1;
-  // Sin tildes ni mayúsculas, letra por letra, para que los índices coincidan con el texto original
-  function plano(t) { return Array.from(t).map(function (c) { return c.normalize("NFD")[0].toLowerCase(); }).join(""); }
-  var botonesEsp = [];
-  [["Todas", -1]].concat(ESPECIALIDADES.map(function (e, i) { return [e[0], i]; })).forEach(function (par) {
-    var li = document.createElement("li"), b = document.createElement("button");
-    b.type = "button";
-    b.setAttribute("aria-pressed", String(par[1] === -1));
-    b.innerHTML = "<span></span>" + flecha;
-    b.firstChild.textContent = par[0];
-    b.addEventListener("click", function () { elegir(par[1]); });
-    li.appendChild(b);
-    filtro.appendChild(li);
-    botonesEsp.push(b);
-  });
-  var grupos = ESPECIALIDADES.map(function (e) {
-    var sec = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
-    sec.className = "cat-grupo";
-    h.textContent = e[0];
-    sec.appendChild(h); sec.appendChild(ul);
-    var filas = e[1].map(function (t) {
-      var li = document.createElement("li"), b = document.createElement("button");
-      b.type = "button";
-      b.className = "tecnica";
-      b.setAttribute("aria-expanded", "false");
-      b.innerHTML = "<span></span>" + flecha;
-      b.firstChild.textContent = t;
-      // Abre el detalle: los datos clínicos son libres; el resto pide cuenta allí mismo
-      b.addEventListener("click", function () { location.href = "tecnica.html#v-" + slugDe(t); });
-      li.appendChild(b);
-      ul.appendChild(li);
-      return { li: li, b: b, t: t, p: plano(t) };
-    });
-    lista.insertBefore(sec, vacio);
-    return { sec: sec, nombre: plano(e[0]), filas: filas };
-  });
-  // Técnicas con su página en el mockup (Cirugía general)
-  function slugDe(t) { return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-"); }
-  function rutaTecnica(t) { return "cuenta.html#ingresar~" + slugDe(t); }
-  function moverPlaca() {
-    var b = botonesEsp[elegida + 1];
-    if (!b.offsetParent) return;
-    var li = b.parentNode;
-    placa.style.height = b.offsetHeight + "px";
-    placa.style.transform = "translateY(" + li.offsetTop + "px)";
-  }
-  // FLIP: cada fila que sigue a la vista se desliza desde donde estaba
-  function conFlip(cambio) {
-    var antes = new Map();
-    if (!reducido) grupos.forEach(function (g) { g.filas.forEach(function (f) { if (f.li.offsetParent) antes.set(f.li, f.li.getBoundingClientRect().top); }); });
-    cambio();
-    if (reducido) return;
-    grupos.forEach(function (g) {
-      g.filas.forEach(function (f) {
-        if (!f.li.offsetParent) return;
-        var y0 = antes.get(f.li), y1 = f.li.getBoundingClientRect().top;
-        if (y0 === undefined) f.li.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" });
-        else if (Math.abs(y0 - y1) > 1) f.li.animate([{ transform: "translateY(" + (y0 - y1) + "px)" }, { transform: "none" }], { duration: 520, easing: "cubic-bezier(.16,1,.3,1)" });
-      });
-    });
-  }
-  function aplicar() {
-    var q = plano(buscar.value.trim()), hay = false;
-    limpiar.hidden = !buscar.value;
-    grupos.forEach(function (g, i) {
-      var enEsp = elegida === -1 || elegida === i;
-      var porNombre = q && g.nombre.indexOf(q) !== -1;
-      var visibles = 0;
-      g.filas.forEach(function (f) {
-        var pos = q ? f.p.indexOf(q) : -1;
-        var ve = enEsp && (!q || porNombre || pos !== -1);
-        f.li.hidden = !ve;
-        var span = f.b.firstChild;
-        if (ve && pos !== -1) {
-          span.textContent = "";
-          span.append(f.t.slice(0, pos));
-          var m = document.createElement("mark"); m.textContent = f.t.slice(pos, pos + q.length); span.append(m);
-          span.append(f.t.slice(pos + q.length));
-        } else span.textContent = f.t;
-        if (ve) visibles++;
-      });
-      g.sec.hidden = !visibles;
-      if (visibles) hay = true;
-    });
-    vacio.hidden = hay;
-    if (!hay) document.getElementById("cat-vacio-titulo").textContent = q ? "Ninguna técnica coincide con «" + buscar.value.trim() + "»." : "No hay técnicas en esta especialidad.";
-  }
-  function elegir(i) {
-    elegida = i;
-    botonesEsp.forEach(function (b, j) { b.setAttribute("aria-pressed", String(j === i + 1)); });
+  /* Ficha: rol, datos, consentimiento, historial y suspender */
+  var rolNuevo = null;
+  function pintarFicha() {
+    var p = elegida, hist = HISTORIAL.filter(function (x) { return x.txt.indexOf(esc(p.n)) !== -1; });
+    var propia = p.n === YO;
+    var h = "<button type='button' class='volver-lista' id='volver-lista'>Volver a la lista</button><div class='ficha-cab'><span class='ini' aria-hidden='true'>" + iniciales(p.n) + "</span><div><h2>" + esc(p.n) + (p.susp ? " <span class='etq-susp'>Suspendida</span>" : "") + "</h2><p>" + esc(p.m) + "</p></div></div>" +
+      "<h3 id='t-rol'>Rol</h3><div class='rol-sel" + (propia ? " fijo" : "") + "' role='radiogroup' aria-labelledby='t-rol'><span class='placa' aria-hidden='true'></span>" + ROLES.slice().reverse().map(function (r) { return "<button type='button' role='radio' data-rol='" + r + "' aria-checked='" + (r === (rolNuevo || p.r)) + "'" + (propia ? " disabled" : "") + ">" + NOMBRE_ROL[r] + "</button>"; }).join("") + "</div>" +
+      (propia ? "<p class='nota-ficha'>No se puede cambiar el rol ni suspender la cuenta propia.</p>" : "") + "<div class='confirmar' id='confirmar' hidden></div>" +
+      "<h3>Cuenta</h3><dl class='datos-ficha'><dt>Registro</dt><dd>" + p.reg + "</dd><dt>Política de datos</dt><dd>Aceptó la versión " + p.pol + " el " + p.acep + "</dd><dt>En DataIQ</dt><dd>" + esc(p.act || "Sin actividad en DataIQ") + "</dd></dl>" +
+      "<h3>Historial</h3>" + (hist.length ? "<ul class='hist-mini'>" + hist.map(function (x) { return "<li><time>" + x.hora + " · " + x.por + "</time>" + x.txt + "</li>"; }).join("") + "</ul>" : "<p class='nota-ficha'>Sin cambios de rol desde su registro.</p>") +
+      "<button type='button' class='suspender' id='suspender'" + (propia ? " disabled" : "") + "><svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'>" + (p.susp ? "<path d='M5 3.5v9l7-4.5z' fill='currentColor'/>" : "<path d='M5.5 3.5v9M10.5 3.5v9' stroke='currentColor' stroke-width='2' stroke-linecap='round'/>") + "</svg>" + (p.susp ? "Reactivar la cuenta" : "Suspender la cuenta") + "</button>" +
+      "<p class='nota-ficha'>" + (p.susp ? "No puede ingresar. Lo que publicó sigue visible." : "Suspender impide ingresar; no borra sus datos ni lo que publicó.") + "</p>";
+    var f = document.getElementById("ficha"); f.innerHTML = h;
     moverPlaca();
-    // En celular, el chip elegido entra a la vista
-    var nav = filtro.parentNode, chip = botonesEsp[i + 1];
-    if (nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: chip.offsetLeft - 16, behavior: reducido ? "auto" : "smooth" });
-    conFlip(aplicar);
+    document.getElementById("volver-lista").addEventListener("click", function () { var b = document.querySelector(".persona[aria-pressed='true']"); (b || document.getElementById("columnas")).scrollIntoView({ block: "center", behavior: reducido ? "auto" : "smooth" }); if (b) b.focus({ preventScroll: true }); });
+    f.querySelectorAll("[data-rol]").forEach(function (b) { b.addEventListener("click", function () { proponer(b.dataset.rol); }); });
+    document.getElementById("suspender").addEventListener("click", function () {
+      p.susp = !p.susp;
+      HISTORIAL.unshift({ cuando: "Hoy", hora: "Ahora", por: "Mauricio Lugo Granados", txt: (p.susp ? "Suspendió" : "Reactivó") + " la cuenta de <b>" + esc(p.n) + "</b>." });
+      pintarColumnas(); pintarFicha(); pintarHistorial(); avisar(p.susp ? "Cuenta suspendida." : "Cuenta reactivada.");
+    });
   }
-  buscar.addEventListener("input", function () { conFlip(aplicar); });
-  limpiar.addEventListener("click", function () { buscar.value = ""; conFlip(aplicar); buscar.focus(); });
-  document.getElementById("ver-todas").addEventListener("click", function () { buscar.value = ""; elegir(-1); });
+  function moverPlaca() {
+    var sel = document.querySelector(".rol-sel"); if (!sel) return;
+    var b = sel.querySelector("[aria-checked='true']"), pl = sel.querySelector(".placa");
+    pl.style.width = b.offsetWidth + "px"; pl.style.transform = "translateX(" + b.offsetLeft + "px)";
+  }
+  // Cambiar el rol pide confirmar; dar revisor o admin recuerda la verificación hecha por fuera
+  function proponer(r) {
+    var p = elegida;
+    if (r === p.r) { rolNuevo = null; pintarFicha(); return; }
+    rolNuevo = r; pintarFicha();
+    var c = document.getElementById("confirmar"), sube = ROLES.indexOf(r) < ROLES.indexOf(p.r);
+    if (p.r === "admin" && PERSONAS.filter(function (x) { return x.r === "admin"; }).length === 1) { c.innerHTML = "<p>Debe quedar al menos un admin.</p><div class='botones'><button type='button' class='boton-texto' id='no-aplicar'>Entendido</button></div>"; c.hidden = false; document.getElementById("no-aplicar").addEventListener("click", function () { rolNuevo = null; pintarFicha(); }); return; }
+    var pide = r === "revisor" ? "Verifiqué que es docente o instrumentador titulado." : r === "admin" ? "Es parte del equipo operativo del proyecto." : null;
+    c.innerHTML = "<p>Cambiar el rol de <b>" + esc(p.n) + "</b> de " + NOMBRE_ROL[p.r] + " a <b>" + NOMBRE_ROL[r] + "</b>. " + (sube ? "Podrá " + PODRA[r] + "." : "Deja de poder lo que su rol actual le permitía.") + "</p>" +
+      (pide ? "<label><input type='checkbox' id='verifico'><span></span></label>" : "") +
+      "<div class='botones'><button type='button' class='boton' id='aplicar'" + (pide ? " disabled" : "") + ">Cambiar a " + NOMBRE_ROL[r] + "</button><button type='button' class='boton-texto' id='no-aplicar'>Cancelar</button></div>";
+    if (pide) { c.querySelector("label span").textContent = pide; document.getElementById("verifico").addEventListener("change", function () { document.getElementById("aplicar").disabled = !this.checked; }); }
+    c.hidden = false;
+    document.getElementById("no-aplicar").addEventListener("click", function () { rolNuevo = null; pintarFicha(); });
+    document.getElementById("aplicar").addEventListener("click", function () {
+      var antes = p.r;
+      var vieja = document.querySelector(".persona[data-i='" + PERSONAS.indexOf(p) + "']");
+      function aplicar() { p.cambioAhora = r === "usuario"; p.r = r; rolNuevo = null; llego = p; pintarColumnas(); pintarFicha(); pintarHistorial(); avisar("Rol cambiado a " + NOMBRE_ROL[r] + "."); }
+      HISTORIAL.unshift({ cuando: "Hoy", hora: "Ahora", por: "Mauricio Lugo Granados", txt: "Cambió el rol de <b>" + esc(p.n) + "</b> de <span class='rol-p'>" + NOMBRE_ROL[antes] + "</span> a <span class='rol-p'>" + NOMBRE_ROL[r] + "</span>." });
+      if (vieja && !reducido) { vieja.classList.add("sale"); setTimeout(aplicar, 280); } else aplicar();
+    });
+  }
   addEventListener("resize", moverPlaca);
-  if (document.fonts) document.fonts.ready.then(moverPlaca);
-  placa.style.transition = "none";
-  moverPlaca();
-  requestAnimationFrame(function () { placa.style.transition = ""; });
+
+  /* Búsqueda global: por nombre o correo, en cualquier rol */
+  var buscar = document.getElementById("buscar-global"), res = document.getElementById("resultados");
+  function marcar(t, q) { var i = sinTilde(t).indexOf(q); return i === -1 ? esc(t) : esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length)); }
+  function buscarGlobal(v, soloRol) {
+    var q = sinTilde(v.trim());
+    if (!q) { res.hidden = true; return; }
+    var hits = PERSONAS.filter(function (p) { return (!soloRol || p.r === soloRol) && (sinTilde(p.n).indexOf(q) !== -1 || p.m.indexOf(q) !== -1); });
+    res.innerHTML = hits.length ? hits.map(function (p) { return "<li><button type='button' data-i='" + PERSONAS.indexOf(p) + "'><span class='ini' aria-hidden='true'>" + iniciales(p.n) + "</span><span><span class='nom'>" + marcar(p.n, q) + "</span><span class='mail'>" + marcar(p.m, q) + "</span></span><span class='rol-p'>" + NOMBRE_ROL[p.r] + "</span></button></li>"; }).join("") : "<li class='vacio-res'>Nadie con ese nombre o correo.</li>";
+    res.hidden = false;
+  }
+  buscar.addEventListener("input", function () { buscarGlobal(buscar.value); });
+  res.addEventListener("click", function (e) { var b = e.target.closest("[data-i]"); if (!b) return; elegida = PERSONAS[+b.dataset.i]; res.hidden = true; buscar.value = ""; rolNuevo = null; pintarColumnas(); pintarFicha(); mostrarFicha(); });
+  document.addEventListener("click", function (e) { if (!res.hidden && !e.target.closest(".buscar-global") && !e.target.closest(".buscar-us")) res.hidden = true; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") res.hidden = true; });
+
+  /* Historial de cambios */
+  function pintarHistorial() {
+    var h = "", grupo = null;
+    HISTORIAL.forEach(function (x) {
+      if (x.cuando !== grupo) { if (grupo) h += "</ol>"; grupo = x.cuando; h += "<h2>" + grupo + "</h2><ol>"; }
+      h += "<li><time>" + x.hora + "</time><p>" + x.txt + "</p><span class='por'>Por " + x.por + "</span></li>";
+    });
+    document.getElementById("v-historial").innerHTML = h + "</ol>";
+  }
+  document.querySelectorAll("[data-vista]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-vista]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.getElementById("v-personas").hidden = b.dataset.vista !== "personas";
+      document.getElementById("v-historial").hidden = b.dataset.vista !== "historial";
+      if (b.dataset.vista === "personas") moverPlaca();
+    });
+  });
+  function avisar(t) { var a = document.getElementById("aviso-ok"); a.textContent = t; a.hidden = false; setTimeout(function () { a.hidden = true; }, 3200); }
+  pintarColumnas(); pintarFicha(); pintarHistorial();
 
   /* ---------- Atajos para las capturas del mockup ---------- */
   var atajo = decodeURIComponent(location.hash.replace("#", ""));
   if (atajo === "panel-movil") abrirMenu(atajo);
   if (atajo.indexOf("menu-") === 0) abrirMenu("panel-" + atajo.slice(5));
-  if (atajo.indexOf("esp-") === 0) elegir(+atajo.slice(4));
-  // Desde el menú, dentro del mismo catálogo: el cambio de hash elige la especialidad
-  addEventListener("hashchange", function () { var h = location.hash.slice(1); if (h.indexOf("esp-") === 0) elegir(+h.slice(4)); });
-  if (atajo.indexOf("buscar-") === 0) { buscar.value = atajo.slice(7); aplicar(); }
+  if (atajo === "historial") document.querySelector("[data-vista=historial]").click();
+  if (atajo.indexOf("rol-") === 0) proponer(atajo.slice(4));
 })();
 </script>
 </body>
