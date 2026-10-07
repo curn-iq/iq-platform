@@ -39,7 +39,7 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
 1. [x] Dominio: reglas del versionado (transiciones de estado; solo un revisor o un admin publica)
-2. [ ] Puertos y repositorios
+2. [x] Puertos y repositorios
 3. [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
 4. [ ] Endpoints de escritura:
    - Técnicas: crear borrador, editar el borrador, enviar a revisión, aprobar

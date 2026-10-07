@@ -54,6 +54,56 @@ class TecnicaResumen:
 
 
 @dataclass(frozen=True)
+class Celda:
+    fila: int
+    columna: int
+
+
+@dataclass(frozen=True)
+class ComponenteItem:
+    """Una parte de un objeto: un instrumento o una sutura, nunca ambos."""
+
+    instrumental_id: UUID | None
+    sutura_id: UUID | None
+    nombre: str
+
+
+@dataclass(frozen=True)
+class ItemDetalle:
+    """Un objeto físico de la técnica; sin zona ni celdas si solo va en el listado."""
+
+    id: UUID
+    zona: str | None
+    numero_leyenda: int | None
+    texto_fuente: str
+    componentes: tuple[ComponenteItem, ...]
+    celdas: tuple[Celda, ...]
+
+
+@dataclass(frozen=True)
+class SuturaDetalle:
+    id: UUID
+    nombre: str
+    calibre: str | None
+    tipo_aguja: str | None
+    uso: str | None
+
+
+@dataclass(frozen=True)
+class Equipo:
+    id: UUID
+    nombre: str
+    descripcion: str | None
+
+
+@dataclass(frozen=True)
+class Dispositivo:
+    id: UUID
+    nombre: str
+    descripcion: str | None
+
+
+@dataclass(frozen=True)
 class TecnicaDetalle:
     id: UUID
     nombre: str
@@ -67,3 +117,8 @@ class TecnicaDetalle:
     indicaciones: str | None
     complicaciones: str | None
     tecnica_quirurgica: str | None
+    fuente: str | None
+    items: tuple[ItemDetalle, ...]
+    suturas: tuple[SuturaDetalle, ...]
+    equipos: tuple[Equipo, ...]
+    dispositivos: tuple[Dispositivo, ...]
