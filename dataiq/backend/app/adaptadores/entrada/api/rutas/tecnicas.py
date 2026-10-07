@@ -1,22 +1,26 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request, Response, status
 from pydantic import TypeAdapter
 
 from app.adaptadores.entrada.api.cache import responder_con_cache
 from app.adaptadores.entrada.api.dependencias import (
     CuentaActual,
     Tecnicas,
+    Versiones,
     obtener_repositorio_tecnicas,
 )
 from app.adaptadores.entrada.api.esquemas import (
     InstrumentalDeTecnicaSalida,
+    TecnicaNuevaEntrada,
     TecnicaPublicaSalida,
     TecnicaResumenSalida,
+    VersionDetalleSalida,
 )
-from app.dominio.errores import NoEncontrado
-from app.dominio.tecnicas import TecnicaDetalle
+from app.dominio.errores import Conflicto, NoEncontrado
+from app.dominio.tecnicas import EstadoVersion, TecnicaDetalle, validar_transicion
+from app.dominio.usuarios import RolUsuario, exigir_rol
 from app.puertos.tecnicas import RepositorioTecnicas
 
 router = APIRouter(prefix="/tecnicas", tags=["Técnicas"])
@@ -64,3 +68,52 @@ async def obtener_instrumental_de_tecnica(
         InstrumentalDeTecnicaSalida.model_validate(detalle).model_dump_json().encode()
     )
     return responder_con_cache(request, cuerpo, max_age=60, privado=True)
+
+
+@router.post(
+    "",
+    response_model=VersionDetalleSalida,
+    status_code=status.HTTP_201_CREATED,
+)
+async def crear_tecnica(
+    datos: TecnicaNuevaEntrada, versiones: Versiones, cuenta: CuentaActual
+):
+    """Crea una técnica nueva con su versión 1 vacía, en borrador. Desde colaborador."""
+    exigir_rol(cuenta.rol, RolUsuario.colaborador)
+    version_id = await versiones.crear_tecnica(
+        datos.nombre, datos.especialidad_id, cuenta.id
+    )
+    return await versiones.obtener(version_id)
+
+
+@router.post(
+    "/{tecnica_id}/versiones",
+    response_model=VersionDetalleSalida,
+    status_code=status.HTTP_201_CREATED,
+)
+async def crear_version(tecnica_id: UUID, versiones: Versiones, cuenta: CuentaActual):
+    """Empieza a editar una técnica publicada: copia la versión publicada en una
+    versión nueva en borrador. Desde colaborador."""
+    exigir_rol(cuenta.rol, RolUsuario.colaborador)
+    version_id = await versiones.crear_desde_publicada(tecnica_id, cuenta.id)
+    return await versiones.obtener(version_id)
+
+
+@router.post("/{tecnica_id}/archivar", status_code=status.HTTP_204_NO_CONTENT)
+async def archivar_tecnica(
+    tecnica_id: UUID, versiones: Versiones, cuenta: CuentaActual
+) -> None:
+    """Retira la técnica: su versión publicada pasa a archivada. Desde revisor.
+
+    No se puede mientras tenga una versión en curso (borrador o en revisión).
+    """
+    exigir_rol(cuenta.rol, RolUsuario.revisor)
+    publicada = await versiones.obtener_publicada_de(tecnica_id)
+    if publicada is None:
+        raise NoEncontrado("La técnica no existe o no está publicada")
+    if await versiones.tiene_version_en_curso(tecnica_id):
+        raise Conflicto("La técnica tiene una versión en curso")
+    validar_transicion(publicada.estado, EstadoVersion.archivada)
+    await versiones.cambiar_estado(
+        publicada.id, EstadoVersion.publicada, EstadoVersion.archivada
+    )

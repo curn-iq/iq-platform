@@ -26,3 +26,12 @@ class SuturaCatalogo:
     nombre: str
     calibre: str | None
     tipo_aguja: str | None
+
+
+@dataclass(frozen=True)
+class CambiosInstrumento:
+    """Lo que se cambia de un instrumento; None deja el valor como está."""
+
+    nombre: str | None = None
+    categoria_id: UUID | None = None
+    descripcion: str | None = None

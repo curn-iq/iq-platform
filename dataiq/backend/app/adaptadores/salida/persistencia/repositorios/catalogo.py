@@ -14,10 +14,12 @@ from app.adaptadores.salida.persistencia.modelos.catalogo import (
 )
 from app.adaptadores.salida.persistencia.modelos.tecnicas import Especialidad, Zona
 from app.dominio.catalogo import (
+    CambiosInstrumento,
     Instrumento,
     Referencia,
     SuturaCatalogo,
 )
+from app.dominio.errores import Conflicto, NoEncontrado
 from app.dominio.tecnicas import Dispositivo, Equipo
 
 
@@ -68,6 +70,57 @@ class RepositorioCatalogoSQLAlchemy:
     async def obtener_instrumento(self, instrumento_id: UUID) -> Instrumento | None:
         encontrados = await self.listar_instrumental(instrumento_id)
         return encontrados[0] if encontrados else None
+
+    async def crear_instrumento(
+        self, nombre: str, categoria_id: UUID, descripcion: str | None
+    ) -> Instrumento:
+        await self._validar_instrumento(nombre, categoria_id)
+        instrumento = Instrumental(
+            nombre=nombre, categoria_id=categoria_id, descripcion=descripcion
+        )
+        self._sesion.add(instrumento)
+        await self._sesion.flush()
+        instrumento_id = instrumento.id
+        await self._sesion.commit()
+        return await self.obtener_instrumento(instrumento_id)
+
+    async def editar_instrumento(
+        self, instrumento_id: UUID, cambios: CambiosInstrumento
+    ) -> Instrumento:
+        instrumento = await self._sesion.get(
+            Instrumental, instrumento_id, with_for_update=True
+        )
+        if instrumento is None:
+            raise NoEncontrado("El instrumento no existe")
+        await self._validar_instrumento(
+            cambios.nombre, cambios.categoria_id, excepto=instrumento_id
+        )
+        if cambios.nombre is not None:
+            instrumento.nombre = cambios.nombre
+        if cambios.categoria_id is not None:
+            instrumento.categoria_id = cambios.categoria_id
+        if cambios.descripcion is not None:
+            instrumento.descripcion = cambios.descripcion
+        await self._sesion.flush()
+        await self._sesion.commit()
+        return await self.obtener_instrumento(instrumento_id)
+
+    async def _validar_instrumento(
+        self,
+        nombre: str | None,
+        categoria_id: UUID | None,
+        excepto: UUID | None = None,
+    ) -> None:
+        if categoria_id is not None and not await self._sesion.get(
+            CategoriaInstrumental, categoria_id
+        ):
+            raise NoEncontrado("La categoría no existe")
+        if nombre is not None:
+            consulta = select(Instrumental.id).where(Instrumental.nombre == nombre)
+            if excepto is not None:
+                consulta = consulta.where(Instrumental.id != excepto)
+            if await self._sesion.scalar(consulta):
+                raise Conflicto("Ya hay un instrumento con ese nombre")
 
     async def _referencias(self, modelo) -> list[Referencia]:
         filas = await self._sesion.execute(

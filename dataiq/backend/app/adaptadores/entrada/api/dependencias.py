@@ -15,13 +15,16 @@ from app.adaptadores.salida.persistencia.repositorios.tecnicas import (
 from app.adaptadores.salida.persistencia.repositorios.usuarios import (
     RepositorioUsuariosSQLAlchemy,
 )
+from app.adaptadores.salida.persistencia.repositorios.versiones import (
+    RepositorioVersionesSQLAlchemy,
+)
 from app.adaptadores.salida.seguridad.contrasenas import CifradorArgon2
 from app.adaptadores.salida.seguridad.tokens import EmisorJWT
 from app.config import config
 from app.dominio.usuarios import Cuenta
 from app.puertos.catalogo import RepositorioCatalogo
 from app.puertos.seguridad import CifradorContrasenas, EmisorTokens, TokenInvalido
-from app.puertos.tecnicas import RepositorioTecnicas
+from app.puertos.tecnicas import RepositorioTecnicas, RepositorioVersiones
 from app.puertos.usuarios import RepositorioUsuarios
 
 
@@ -37,6 +40,10 @@ def obtener_repositorio_tecnicas(sesion: Sesion) -> RepositorioTecnicas:
     return RepositorioTecnicasSQLAlchemy(sesion)
 
 
+def obtener_repositorio_versiones(sesion: Sesion) -> RepositorioVersiones:
+    return RepositorioVersionesSQLAlchemy(sesion)
+
+
 def obtener_repositorio_catalogo(sesion: Sesion) -> RepositorioCatalogo:
     return RepositorioCatalogoSQLAlchemy(sesion)
 
@@ -46,6 +53,7 @@ def obtener_repositorio_usuarios(sesion: Sesion) -> RepositorioUsuarios:
 
 
 Tecnicas = Annotated[RepositorioTecnicas, Depends(obtener_repositorio_tecnicas)]
+Versiones = Annotated[RepositorioVersiones, Depends(obtener_repositorio_versiones)]
 Catalogo = Annotated[RepositorioCatalogo, Depends(obtener_repositorio_catalogo)]
 Usuarios = Annotated[RepositorioUsuarios, Depends(obtener_repositorio_usuarios)]
 

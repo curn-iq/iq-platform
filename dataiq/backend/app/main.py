@@ -6,6 +6,7 @@ from app.adaptadores.entrada.api.rutas import (
     catalogo,
     tecnicas,
     usuarios,
+    versiones,
 )
 from app.dominio.errores import Conflicto, ContenidoInvalido, NoEncontrado, SinPermiso
 from app.dominio.tecnicas import PublicacionNoPermitida, TransicionNoPermitida
@@ -17,6 +18,7 @@ app = FastAPI(
 )
 
 app.include_router(tecnicas.router)
+app.include_router(versiones.router)
 app.include_router(catalogo.router)
 app.include_router(autenticacion.router)
 app.include_router(usuarios.router)

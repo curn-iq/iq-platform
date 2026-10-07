@@ -1,12 +1,17 @@
-from fastapi import APIRouter, Request, Response
+from uuid import UUID
+
+from fastapi import APIRouter, Request, Response, status
 from pydantic import TypeAdapter
 
 from app.adaptadores.entrada.api.cache import responder_con_cache
 from app.adaptadores.entrada.api.dependencias import Catalogo, CuentaActual, Tecnicas
 from app.adaptadores.entrada.api.esquemas import (
     CatalogoCompletoSalida,
+    InstrumentoCambiosEntrada,
+    InstrumentoNuevoEntrada,
     InstrumentoSalida,
 )
+from app.dominio.usuarios import RolUsuario, exigir_rol
 
 router = APIRouter(tags=["Catálogo"])
 
@@ -49,3 +54,34 @@ async def listar_instrumental(
         [InstrumentoSalida.model_validate(i) for i in instrumentos]
     )
     return responder_con_cache(request, cuerpo, max_age=60, privado=True)
+
+
+@router.post(
+    "/instrumental",
+    response_model=InstrumentoSalida,
+    status_code=status.HTTP_201_CREATED,
+)
+async def crear_instrumento(
+    datos: InstrumentoNuevoEntrada, catalogo: Catalogo, cuenta: CuentaActual
+):
+    """Agrega un instrumento al catálogo. Desde revisor."""
+    exigir_rol(cuenta.rol, RolUsuario.revisor)
+    return await catalogo.crear_instrumento(
+        datos.nombre, datos.categoria_id, datos.descripcion
+    )
+
+
+@router.patch("/instrumental/{instrumento_id}", response_model=InstrumentoSalida)
+async def editar_instrumento(
+    instrumento_id: UUID,
+    datos: InstrumentoCambiosEntrada,
+    catalogo: Catalogo,
+    cuenta: CuentaActual,
+):
+    """Cambia el nombre, la categoría o la descripción. Desde revisor.
+
+    No pasa por revisión: el cambio se ve de una vez en las técnicas publicadas
+    que usan el instrumento. El instrumental no se borra.
+    """
+    exigir_rol(cuenta.rol, RolUsuario.revisor)
+    return await catalogo.editar_instrumento(instrumento_id, datos.al_dominio())
