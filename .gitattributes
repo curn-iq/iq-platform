@@ -2,3 +2,5 @@
 # los cuenta en la barra de lenguajes del repositorio.
 diseno/** linguist-documentation
 .impeccable/** linguist-documentation
+# Plantilla de Alembic para crear migraciones: no es código escrito a mano.
+dataiq/backend/migraciones/script.py.mako linguist-generated

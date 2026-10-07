@@ -23,20 +23,17 @@ Sistema Inteligente de Visión y Retroalimentación para Instrumentación Quirú
 Reconoce el instrumental quirúrgico en tiempo real mediante YOLO26, valida si la
 disposición en mesa es correcta según la técnica evaluada y da retroalimentación
 inmediata al estudiante.
-**Estado**: por iniciar.
 
 ### M2 — DataIQ
 Plataforma web y dataset estructurado de técnicas quirúrgicas: instrumental,
 suturas, equipos biomédicos, dispositivos y arreglos de mesa. Es la fuente única
 de verdad del ecosistema y la API que consumen SIVRI y SIMIQ3D.
-**Estado**: en desarrollo.
 
 ### M3 — SIMIQ3D
 Sistema Interactivo de Modelado e Instrumentación Quirúrgica 3D.
 Herramienta conversacional (chat + visor 3D): el estudiante consulta técnicas en
 lenguaje natural y explora una escena 3D con el instrumental dispuesto en mesa.
 Es una herramienta de exploración, no de evaluación.
-**Estado**: por iniciar.
 
 ## Comunicación entre módulos
 
@@ -64,7 +61,8 @@ iq-platform/
 
 - Backend: Python (DataIQ con FastAPI; detalles de SIVRI y SIMIQ3D por definir)
 - Base de datos: PostgreSQL, una por módulo
-- Autenticación: JWT emitido por DataIQ, contraseñas con Argon2id
+- Autenticación: JWT firmado por DataIQ con EdDSA (los demás módulos lo validan
+  con la clave pública que DataIQ publica), contraseñas con Argon2id
 - Frontend: por definir (se decide con los mockups)
 
 ## Licencia

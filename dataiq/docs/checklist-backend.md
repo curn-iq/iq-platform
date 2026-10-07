@@ -74,10 +74,14 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 8. [ ] Revisar y completar la documentación Swagger
 9. [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon (Corte 3)
 
-## Datos de la fuente que no se cargan por ahora
+## Datos de la fuente que no cuadraban
 
-Criterio: se carga lo que está completo en los documentos fuente. Lo que no se
-puede cargar sin suponer datos queda fuera de la carga inicial y anotado aquí.
+Criterio: lo que los documentos de IQ traen completo se carga tal cual. Lo que
+no cuadra se corrige cuando el mismo documento lo aclara (`IQ corregido`), y
+lo que falta se propone con los principios publicados de armado de mesa
+(`propuesto`). La columna `origen` de `semilla/tecnicas.xlsx` lo marca en cada
+mesa y cada objeto: lo corregido y lo propuesto es lo que IQ debe validar.
+
 Criterios para los arreglos sin nombre:
 
 - Un arreglo sin nombre, en una técnica que no tiene mesa de reserva, se toma
@@ -92,13 +96,15 @@ Criterios para los arreglos sin nombre:
 - Si la técnica ya tiene una mesa de Mayo con nombre, el otro arreglo sin
   nombre es la de reserva (Histerectomía laparoscópica).
 
-| Técnica | Qué no cuadra en la fuente | Qué no se carga |
+| Técnica | Qué no cuadraba en la fuente | Cómo quedó en la carga |
 |---|---|---|
-| Mastectomía | Mesa de Mayo, número 8: "Mb 4 h.b 2º" no dice qué hoja de bisturí es | Ese objeto |
-| Mastectomía, Cesárea, Ooforectomía con salpingectomía | La mesa de reserva usa letras (A, B, a, c, E) sin significado definido | Mesa de reserva |
-| Hemicolectomía (las dos) | Mesa de Mayo: el número 4 lo reclaman dos objetos y el 9 no aparece en la grilla. La de Cirugía General tiene además una segunda mesa sin identificar, a la que le falta el 7 | Arreglos |
-| Colecistectomía | Mesa de reserva: 12 números en la grilla y 11 objetos en la leyenda | Mesa de reserva |
-| Prostatectomía laparoscópica | Mesa de reserva: la leyenda tiene 13 objetos; la grilla llega hasta el 14 y le falta el 8 | Mesa de reserva |
-| Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | Mesa de Mayo |
-| Nefrectomía laparoscópica | No tiene arreglo de mesa | Posiciones (se carga el listado) |
-| Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Esos dos objetos |
+| Mastectomía | Mesa de Mayo, número 8: "Mb 4 h.b 2º" no dice qué hoja de bisturí es; la mesa de reserva usa letras sin significado definido | Mango n.° 4 con hoja #20 (IQ corregido); mesa de reserva propuesta |
+| Cesárea, Ooforectomía con salpingectomía | La mesa de reserva usa letras (A, B, a, c, E) sin significado definido | A y B se leyeron por su texto (IQ corregido); la mesa de reserva, propuesta |
+| Hemicolectomía laparoscópica | Mesa de Mayo: el número 4 lo reclaman dos objetos y el 9 no aparece en la grilla; hay una segunda mesa sin identificar | El 4 es la aguja de Veress (IQ corregido); las dos mesas, propuestas |
+| Hemicolectomía derecha (abierta) | Los dos documentos de hemicolectomía de IQ son de la técnica laparoscópica | Las dos mesas, propuestas |
+| Colecistectomía | Mesa de reserva: 12 números en la grilla y 11 objetos en la leyenda | Mesa de reserva propuesta |
+| Prostatectomía laparoscópica | Mesa de reserva: la leyenda tiene 13 objetos; la grilla llega hasta el 14 y le falta el 8 | Mesa de reserva propuesta |
+| Prostatectomía | No trae una mesa de reserva que se pueda cargar | Mesa de reserva propuesta |
+| Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | El 9 se separó en los trocares de 10-12 mm y de 5 mm (IQ corregido); la mesa de Mayo, propuesta |
+| Nefrectomía laparoscópica | No tiene arreglo de mesa | Las dos mesas, propuestas |
+| Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Varilla del Lithoclast y evacuador de Ellik (IQ corregido) |

@@ -252,13 +252,12 @@ navegación (ver más abajo) NO se considera un módulo.
     objeto físico en una sola posición**, no dos instrumentos compitiendo por el
     mismo número. Un conflicto real es cuando dos instrumentos independientes
     reclaman el mismo número sin ese patrón "X con Y".
-  - **Pendiente de aclarar con IQ** (no inventar, esperar respuesta de IQ):
-    - *Hemicolectomía laparoscópica*: el número "4" aparece reclamado por dos
-      instrumentos distintos en el arreglo de mesa, y el número "9" no aparece
-      en la grilla. Ver el documento fuente de IQ para el detalle exacto.
-    - *Nefrectomía laparoscópica*: el listado de instrumental ya está
-      documentado, pero el diagrama de posición de mesa (fila/columna) todavía
-      no ha sido entregado por IQ.
+  - La carga inicial (`semilla/tecnicas.xlsx`, hoja `catalogo`) suma a esos
+    94 los objetos de los arreglos de mesa: 146 instrumentos en total.
+  - Lo que no cuadra en los documentos de IQ (numeración repetida, mesas sin
+    identificar, arreglos que faltan) y cómo quedó en la carga está en
+    [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md),
+    sección «Datos de la fuente que no cuadraban».
   - Prostatectomía (Urología, abierta) y Prostatectomía laparoscópica (Cirugía
     Laparoscopia) **no son duplicados accidentales** — IQ confirmó que son dos
     procedimientos distintos con arreglos de mesa distintos, a pesar de que
@@ -273,7 +272,12 @@ navegación (ver más abajo) NO se considera un módulo.
   - Endpoint separado `/catalogo/completo` (bulk, para que SIVRI y SIMIQ3D lo
     cacheen una vez por sesión) distinto de los endpoints paginados/filtrables
     para usuarios humanos del frontend.
-  - `orjson` para payloads grandes.
+  - El JSON lo genera Pydantic (serializa en Rust); no hace falta `orjson`.
+
+- **API**: las rutas y sus reglas (quién puede qué) están en la checklist del
+  backend; la documentación interactiva, en `/docs`. El primer admin se
+  asigna por terminal: `uv run python -m app.adaptadores.entrada.cli.asignar_rol
+  <correo> admin`; los demás roles los asigna un admin desde la API.
 
 ### M3 — SIMIQ3D (Sistema Interactivo de Modelado e Instrumentación Quirúrgica 3D)
 
@@ -369,10 +373,13 @@ propia.
 ## Reglas para quien trabaje en este repo (Claude Code incluido)
 
 1. **No inventar datos de catálogo ni de técnicas quirúrgicas.** Todo el
-   instrumental, suturas, posiciones de mesa, etc. viene de documentos reales
-   entregados por IQ. Si falta un dato (ej. posición de mesa de Nefrectomía
-   laparoscópica), se deja pendiente y se marca para preguntarle a IQ — nunca se
-   rellena por inferencia o suposición.
+   instrumental, suturas, posiciones de mesa, etc. sale de una fuente
+   citable: los documentos de IQ o las fuentes anotadas en
+   `TecnicaVersion.fuente`. Lo que la fuente no trae (ej. el arreglo de mesa
+   de Nefrectomía laparoscópica) solo se puede proponer con los principios
+   publicados de armado de mesa y marcado como «propuesto» (columna `origen`
+   de `semilla/tecnicas.xlsx`), para que IQ lo valide. Nunca se rellena por
+   suposición sin marcarlo.
 2. **No mezclar credenciales entre módulos.** Cada módulo tiene su propio Neon
    Postgres y su propio deploy en Cloud Run; no compartir variables de entorno
    de un módulo con otro.
