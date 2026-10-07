@@ -105,6 +105,25 @@ class TecnicaVersion(Base):
     )
 
 
+class RechazoVersion(Base):
+    """Cada vez que un revisor devuelve una versión en revisión a borrador."""
+
+    __tablename__ = "RechazoVersion"
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=text("uuidv7()")
+    )
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("TecnicaVersion.id"), index=True
+    )
+    rechazado_por: Mapped[uuid.UUID] = mapped_column(ForeignKey("Usuario.id"))
+    motivo: Mapped[str] = mapped_column(Text)
+    fecha: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    __table_args__ = (CheckConstraint("btrim(motivo) <> ''", name="motivo_no_vacio"),)
+
+
 class ItemTecnica(Base):
     __tablename__ = "ItemTecnica"
 

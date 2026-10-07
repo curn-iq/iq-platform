@@ -44,6 +44,11 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 4. [ ] Endpoints de escritura:
    - Técnicas: crear borrador, editar el borrador, enviar a revisión, aprobar
      y rechazar
+   - [x] Tabla `RechazoVersion`: al rechazar se guarda quién, por qué y cuándo
+     (el motivo es obligatorio) y la versión vuelve a borrador
+   - Aprobar y rechazar solo si la versión sigue `en_revision`
+     (`UPDATE ... WHERE estado = 'en_revision'`); si no cambió ninguna fila,
+     otro revisor ya la decidió: responder 409
    - Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
      cambia las técnicas publicadas que lo usan sin pasar por revisión)
 5. [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id

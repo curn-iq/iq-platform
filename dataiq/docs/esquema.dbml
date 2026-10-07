@@ -84,6 +84,24 @@ Table TecnicaVersion {
   '''
 }
 
+Table RechazoVersion {
+  id uuid [pk, default: `uuidv7()`]
+  version_id uuid [not null, ref: > TecnicaVersion.id]
+  rechazado_por uuid [not null, ref: > Usuario.id]
+  motivo Text [not null]
+  fecha timestamptz [not null, default: `now()`]
+
+  indexes {
+    version_id
+  }
+
+  checks {
+    `btrim(motivo) <> ''` [name: 'motivo_no_vacio']
+  }
+
+  Note: 'Cada vez que un revisor devuelve una versión en revisión: quién, por qué y cuándo. La versión vuelve a borrador.'
+}
+
 Table CategoriaInstrumental {
   id uuid [pk, default: `uuidv7()`]
   nombre Varchar [not null, unique]
