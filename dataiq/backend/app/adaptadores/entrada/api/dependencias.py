@@ -6,6 +6,9 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adaptadores.salida.persistencia.base_datos import SesionLocal
+from app.adaptadores.salida.persistencia.repositorios.catalogo import (
+    RepositorioCatalogoSQLAlchemy,
+)
 from app.adaptadores.salida.persistencia.repositorios.tecnicas import (
     RepositorioTecnicasSQLAlchemy,
 )
@@ -16,6 +19,7 @@ from app.adaptadores.salida.seguridad.contrasenas import CifradorArgon2
 from app.adaptadores.salida.seguridad.tokens import EmisorJWT
 from app.config import config
 from app.dominio.usuarios import Cuenta
+from app.puertos.catalogo import RepositorioCatalogo
 from app.puertos.seguridad import CifradorContrasenas, EmisorTokens, TokenInvalido
 from app.puertos.tecnicas import RepositorioTecnicas
 from app.puertos.usuarios import RepositorioUsuarios
@@ -33,11 +37,16 @@ def obtener_repositorio_tecnicas(sesion: Sesion) -> RepositorioTecnicas:
     return RepositorioTecnicasSQLAlchemy(sesion)
 
 
+def obtener_repositorio_catalogo(sesion: Sesion) -> RepositorioCatalogo:
+    return RepositorioCatalogoSQLAlchemy(sesion)
+
+
 def obtener_repositorio_usuarios(sesion: Sesion) -> RepositorioUsuarios:
     return RepositorioUsuariosSQLAlchemy(sesion)
 
 
 Tecnicas = Annotated[RepositorioTecnicas, Depends(obtener_repositorio_tecnicas)]
+Catalogo = Annotated[RepositorioCatalogo, Depends(obtener_repositorio_catalogo)]
 Usuarios = Annotated[RepositorioUsuarios, Depends(obtener_repositorio_usuarios)]
 
 # --- Seguridad -----------------------------------------------------------

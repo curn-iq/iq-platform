@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime
 
 import pytest
@@ -7,6 +8,7 @@ from app.adaptadores.salida.persistencia.modelos.tecnicas import (
     TecnicaVersion,
 )
 from app.dominio.tecnicas import EstadoVersion
+from tests.conftest import cabeceras
 
 
 async def guardar_publicada(sesion, nombre, especialidad, autor, revisor) -> Tecnica:
@@ -79,3 +81,47 @@ async def test_listar_tecnicas_cambia_el_etag_si_cambian_los_datos(
 
     assert despues.status_code == 200
     assert len(despues.json()) == 2
+
+
+@pytest.mark.anyio
+async def test_el_detalle_publico_trae_los_datos_clinicos_sin_instrumental(
+    cliente, sesion, autor, revisor, especialidad
+):
+    tecnica = await guardar_publicada(sesion, "Técnica", especialidad, autor, revisor)
+
+    respuesta = await cliente.get(f"/tecnicas/{tecnica.id}")
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["nombre"] == "Técnica"
+    assert "items" not in respuesta.json()
+    assert respuesta.headers["cache-control"] == "public, max-age=60"
+
+
+@pytest.mark.anyio
+async def test_el_detalle_de_una_tecnica_que_no_existe_responde_404(cliente):
+    respuesta = await cliente.get(f"/tecnicas/{uuid.uuid7()}")
+
+    assert respuesta.status_code == 404
+
+
+@pytest.mark.anyio
+async def test_el_instrumental_de_una_tecnica_pide_cuenta(
+    cliente, sesion, autor, revisor, usuario, especialidad
+):
+    tecnica = await guardar_publicada(sesion, "Técnica", especialidad, autor, revisor)
+
+    sin_cuenta = await cliente.get(f"/tecnicas/{tecnica.id}/instrumental")
+    con_cuenta = await cliente.get(
+        f"/tecnicas/{tecnica.id}/instrumental", headers=cabeceras(usuario)
+    )
+
+    assert sin_cuenta.status_code == 401
+    assert con_cuenta.status_code == 200
+    assert con_cuenta.json() == {
+        "items": [],
+        "suturas": [],
+        "equipos": [],
+        "dispositivos": [],
+    }
+    assert con_cuenta.headers["cache-control"] == "private, max-age=60"
+    assert con_cuenta.headers["vary"] == "Authorization"

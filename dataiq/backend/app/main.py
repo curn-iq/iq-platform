@@ -1,7 +1,12 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from app.adaptadores.entrada.api.rutas import autenticacion, tecnicas, usuarios
+from app.adaptadores.entrada.api.rutas import (
+    autenticacion,
+    catalogo,
+    tecnicas,
+    usuarios,
+)
 from app.dominio.errores import Conflicto, ContenidoInvalido, NoEncontrado, SinPermiso
 from app.dominio.tecnicas import PublicacionNoPermitida, TransicionNoPermitida
 
@@ -12,6 +17,7 @@ app = FastAPI(
 )
 
 app.include_router(tecnicas.router)
+app.include_router(catalogo.router)
 app.include_router(autenticacion.router)
 app.include_router(usuarios.router)
 
