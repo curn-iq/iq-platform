@@ -36,6 +36,7 @@ from app.adaptadores.salida.persistencia.modelos.tecnicas import (
     ItemTecnica,
     ItemTecnicaComponente,
     PosicionMesa,
+    RechazoVersion,
     Tecnica,
     TecnicaVersion,
     TecnicaVersionDispositivoMedico,
@@ -228,6 +229,7 @@ async def _borrar_versiones(sesion: AsyncSession, versiones: list) -> None:
     )
     await sesion.execute(delete(ItemTecnica).where(ItemTecnica.version_id.in_(ids)))
     for tabla in (
+        RechazoVersion,
         TecnicaVersionSutura,
         TecnicaVersionEquipoBiomedico,
         TecnicaVersionDispositivoMedico,

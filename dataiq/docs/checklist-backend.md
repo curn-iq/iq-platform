@@ -2,7 +2,7 @@
 
 Avance del backend de DataIQ. Se marca cada pieza al terminarla.
 
-Meta del Corte 2 (mediados de octubre, según la Planificación del Módulo 2):
+Meta del Corte 2 (12 de octubre, según la Planificación del Módulo 2):
 base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 
 ## Base del proyecto
@@ -38,15 +38,24 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 
 Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
-1. [x] Dominio: reglas del versionado (transiciones de estado, sin autoaprobación)
-2. [ ] Puertos y repositorios
+1. [x] Dominio: reglas del versionado (transiciones de estado; solo un revisor o un admin publica)
+2. [x] Puertos y repositorios
 3. [ ] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
-4. [ ] Endpoints de escritura: crear borrador, enviar a revisión, aprobar
+4. [ ] Endpoints de escritura:
+   - Técnicas: crear borrador, editar el borrador, enviar a revisión, aprobar
+     y rechazar
+   - [x] Tabla `RechazoVersion`: al rechazar se guarda quién, por qué y cuándo
+     (el motivo es obligatorio) y la versión vuelve a borrador
+   - Aprobar y rechazar solo si la versión sigue `en_revision`
+     (`UPDATE ... WHERE estado = 'en_revision'`); si no cambió ninguna fila,
+     otro revisor ya la decidió: responder 409
+   - Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
+     cambia las técnicas publicadas que lo usan sin pasar por revisión)
 5. [ ] Autenticación: JWT asimétrico (RS256/EdDSA) + JWKS, Argon2id
-6. [ ] Datos: completar el catálogo con los objetos de los arreglos de mesa y
+6. [x] Datos: completar el catálogo con los objetos de los arreglos de mesa y
    transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
    por la mesa de Mayo de Tiroidectomía)
-7. [ ] Script de carga inicial (seed): catálogo normalizado + técnicas
+7. [x] Script de carga inicial (seed): catálogo normalizado + técnicas
 8. [ ] Revisar y completar la documentación Swagger
 9. [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon (Corte 3)
 
@@ -54,15 +63,27 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
 Criterio: se carga lo que está completo en los documentos fuente. Lo que no se
 puede cargar sin suponer datos queda fuera de la carga inicial y anotado aquí.
-Lista parcial: la revisión completa se hace mesa por mesa al transcribir las
-posiciones.
+Criterios para los arreglos sin nombre:
+
+- Un arreglo sin nombre, en una técnica que no tiene mesa de reserva, se toma
+  como mesa de Mayo.
+- Si el dibujo trae un recuadro chico dentro de uno grande (Histerectomía
+  vaginal, Colporrafia, Reemplazo total de cadera y de rodilla), el chico es
+  la mesa de Mayo y el resto la de reserva. Así lo indica el contenido: el
+  recuadro chico tiene el instrumental de las mesas de Mayo que IQ sí nombra
+  (por ejemplo, la de Cesárea y la de Ooforectomía), y el resto tiene lo de sus
+  mesas de reserva (compresa con sutura y portaagujas, pinza Foerster,
+  riñonera, instrumental sobrante).
+- Si la técnica ya tiene una mesa de Mayo con nombre, el otro arreglo sin
+  nombre es la de reserva (Histerectomía laparoscópica).
 
 | Técnica | Qué no cuadra en la fuente | Qué no se carga |
 |---|---|---|
+| Mastectomía | Mesa de Mayo, número 8: "Mb 4 h.b 2º" no dice qué hoja de bisturí es | Ese objeto |
 | Mastectomía, Cesárea, Ooforectomía con salpingectomía | La mesa de reserva usa letras (A, B, a, c, E) sin significado definido | Mesa de reserva |
-| Hemicolectomía (las dos) | Mesa de Mayo: el número 4 lo reclaman dos objetos y el 9 no aparece en la grilla. La de Cirugía General tiene además una segunda mesa sin identificar | Arreglos |
+| Hemicolectomía (las dos) | Mesa de Mayo: el número 4 lo reclaman dos objetos y el 9 no aparece en la grilla. La de Cirugía General tiene además una segunda mesa sin identificar, a la que le falta el 7 | Arreglos |
 | Colecistectomía | Mesa de reserva: 12 números en la grilla y 11 objetos en la leyenda | Mesa de reserva |
-| Prostatectomía laparoscópica | Mesa de reserva: 14 números en la grilla y 13 objetos en la leyenda | Mesa de reserva |
-| Ureterolitotomía endoscópica, Prostatectomía, Histerectomía vaginal, Colporrafia anterior y posterior, Reemplazo total de cadera, Reemplazo total de rodilla | El arreglo no indica si es mesa de Mayo o de reserva | Arreglo |
-| Histerectomía laparoscópica | Un arreglo sin mesa identificada y otro "Mayo tiempo abdominal" (por tiempo quirúrgico) | Arreglos |
+| Prostatectomía laparoscópica | Mesa de reserva: la leyenda tiene 13 objetos; la grilla llega hasta el 14 y le falta el 8 | Mesa de reserva |
+| Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | Mesa de Mayo |
 | Nefrectomía laparoscópica | No tiene arreglo de mesa | Posiciones (se carga el listado) |
+| Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Esos dos objetos |
