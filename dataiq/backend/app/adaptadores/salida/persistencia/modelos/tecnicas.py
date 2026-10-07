@@ -71,6 +71,8 @@ class TecnicaVersion(Base):
     indicaciones: Mapped[str | None] = mapped_column(Text)
     complicaciones: Mapped[str | None] = mapped_column(Text)
     tecnica_quirurgica: Mapped[str | None] = mapped_column(Text)
+    # De dónde salió el contenido de la versión (enlaces o libros), para validarlo
+    fuente: Mapped[str | None] = mapped_column(Text)
     creado_por: Mapped[uuid.UUID] = mapped_column(ForeignKey("Usuario.id"))
     revisado_por: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("Usuario.id"))
     fecha_creacion: Mapped[datetime] = mapped_column(
@@ -88,7 +90,6 @@ class TecnicaVersion(Base):
             "(revisado_por IS NULL AND fecha_revision IS NULL)",
             name="revision_coherente",
         ),
-        CheckConstraint("revisado_por <> creado_por", name="sin_autoaprobacion"),
         Index(
             "una_publicada_por_tecnica",
             "tecnica_id",

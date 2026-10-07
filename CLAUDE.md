@@ -140,7 +140,14 @@ navegación (ver más abajo) NO se considera un módulo.
   - Transiciones de estado permitidas (se validan en el dominio, no en la BD):
     `borrador → en_revision`, `en_revision → borrador` (rechazo),
     `en_revision → publicada`, `publicada → reemplazada`,
-    `publicada → archivada`.
+    `publicada → archivada`, y `borrador → publicada` (el revisor o el admin
+    publica lo suyo sin revisión). Publicar solo lo hace un revisor o un admin
+    (`validar_publicacion`).
+  - `TecnicaVersion.fuente`: de dónde salió el contenido de la versión
+    (enlaces o libros), para validarlo.
+  - Carga inicial: `dataiq/backend/semilla/cargar.py` lee
+    `semilla/tecnicas.xlsx` y deja cada técnica con su versión 1 publicada; se
+    puede correr varias veces (`uv run python -m semilla.cargar`).
   - `ItemTecnica` = un objeto físico de la versión, con su `numero_leyenda`
     (trazabilidad al número del documento fuente de IQ; nulo si la técnica aún
     no tiene diagrama de mesa) y `texto_fuente` literal. **Cada mesa tiene su

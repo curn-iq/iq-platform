@@ -1,20 +1,20 @@
-import uuid
-
 import pytest
 
 from app.dominio.tecnicas import (
-    AutoAprobacionNoPermitida,
     EstadoVersion,
+    PublicacionNoPermitida,
     TransicionNoPermitida,
-    validar_aprobacion,
+    validar_publicacion,
     validar_transicion,
 )
+from app.dominio.usuarios import RolUsuario
 
 
 @pytest.mark.parametrize(
     ("actual", "nuevo"),
     [
         (EstadoVersion.borrador, EstadoVersion.en_revision),
+        (EstadoVersion.borrador, EstadoVersion.publicada),
         (EstadoVersion.en_revision, EstadoVersion.borrador),
         (EstadoVersion.en_revision, EstadoVersion.publicada),
         (EstadoVersion.publicada, EstadoVersion.reemplazada),
@@ -28,7 +28,6 @@ def test_transiciones_permitidas(actual, nuevo):
 @pytest.mark.parametrize(
     ("actual", "nuevo"),
     [
-        (EstadoVersion.borrador, EstadoVersion.publicada),
         (EstadoVersion.publicada, EstadoVersion.borrador),
         (EstadoVersion.archivada, EstadoVersion.publicada),
         (EstadoVersion.reemplazada, EstadoVersion.publicada),
@@ -40,13 +39,12 @@ def test_transiciones_prohibidas(actual, nuevo):
         validar_transicion(actual, nuevo)
 
 
-def test_no_se_puede_autoaprobar():
-    ana = uuid.uuid7()
-    with pytest.raises(AutoAprobacionNoPermitida):
-        validar_aprobacion(creado_por=ana, revisor=ana)
+@pytest.mark.parametrize("rol", [RolUsuario.revisor, RolUsuario.admin])
+def test_revisor_y_admin_pueden_publicar(rol):
+    validar_publicacion(rol)
 
 
-def test_otro_usuario_puede_aprobar():
-    ana = uuid.uuid7()
-    daniel = uuid.uuid7()
-    validar_aprobacion(creado_por=ana, revisor=daniel)
+@pytest.mark.parametrize("rol", [RolUsuario.usuario, RolUsuario.colaborador])
+def test_usuario_y_colaborador_no_pueden_publicar(rol):
+    with pytest.raises(PublicacionNoPermitida):
+        validar_publicacion(rol)

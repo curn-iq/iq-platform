@@ -62,6 +62,7 @@ Table TecnicaVersion {
   indicaciones Text
   complicaciones Text
   tecnica_quirurgica Text
+  fuente Text [note: 'De dónde salió el contenido de la versión (enlaces o libros)']
   creado_por uuid [not null, ref: > Usuario.id]
   revisado_por uuid [ref: >? Usuario.id]
   fecha_creacion timestamptz [not null, default: `now()`]
