@@ -55,13 +55,14 @@ navegación (ver más abajo) NO se considera un módulo.
   API que consumen SIVRI y SIMIQ3D.
 - **Equipo**: colaborativo ING (Guebriel principalmente en backend) + IQ
   (documentación de técnicas).
-- **Stack decidido** (excepto frontend):
+- **Stack decidido**:
   - Backend: **Python + FastAPI** (async nativo, tipado con Pydantic, Swagger
     automático; Python también reduce fricción con SIVRI que usa YOLO26).
   - Base de datos: **PostgreSQL** (esquema relacional, bien definido, ACID).
-  - Frontend: **por definir.** Se decide después de que Juan entregue los
-    mockups; depende también de la capa de navegación compartida — ver más
-    abajo. (Candidato inicial: Svelte, por bundle liviano.)
+  - Frontend: **Angular 22** (decidido el 2026-10-11, tras los mockups), en
+    `dataiq/frontend`. Una sola app con el shell y DataIQ (ver «Capa de
+    navegación»). **El código del frontend va en inglés** (el del backend
+    sigue en español); la interfaz, la documentación y las URL, en español.
   - Autenticación: **JWT + Argon2id**, implementación propia de endpoints (no
     FastAPI-Users, para control total del flujo). Argon2id se prefiere sobre
     bcrypt por ser más resistente a ataques con GPU y de canal lateral
@@ -304,7 +305,10 @@ Se está considerando un punto de entrada único / shell de navegación con acce
 basado en rol a los tres módulos, usando el JWT emitido por DataIQ. **No se
 categoriza como "M4"** porque, a diferencia de M1/M2/M3, no tiene backend ni
 base de datos propios — es una capa de frontend/routing sobre los módulos
-existentes. Dónde vivirá exactamente en el repo está **por definir**.
+existentes. Vive en la misma app Angular que DataIQ (`dataiq/frontend`),
+aislada en `app/shell/` para poder separarla si algún día hace falta
+(decidido el 2026-10-11). Cómo pasa la sesión a los frontends de SIVRI y
+SIMIQ3D, si quedan en otro dominio, está **por definir**.
 
 **Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
 mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.
@@ -336,7 +340,7 @@ iq-platform/
 │   └── frontend/
 ├── dataiq/
 │   ├── backend/
-│   ├── frontend/
+│   ├── frontend/           (Angular: shell + DataIQ)
 │   └── docs/esquema.dbml   (esquema completo, se pega en dbdiagram.io)
 ├── simiq3d/
 │   ├── backend/
@@ -344,7 +348,7 @@ iq-platform/
 └── CLAUDE.md   (este archivo)
 ```
 
-(La capa de navegación aún no tiene ubicación definitiva en esta estructura.)
+(La capa de navegación vive en `dataiq/frontend`, junto con DataIQ.)
 
 ## Dónde encontrar más detalle (Google Drive)
 

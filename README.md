@@ -63,7 +63,7 @@ iq-platform/
 - Base de datos: PostgreSQL, una por módulo
 - Autenticación: JWT firmado por DataIQ con EdDSA (los demás módulos lo validan
   con la clave pública que DataIQ publica), contraseñas con Argon2id
-- Frontend: por definir (se decide con los mockups)
+- Frontend: Angular (el shell de navegación y DataIQ, en `dataiq/frontend`)
 
 ## Licencia
 
