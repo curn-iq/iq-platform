@@ -80,6 +80,14 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.
 
+## SIVRI
+
+- **Reconocer en el celular** (YOLO exportado a ONNX en el navegador) en vez
+  de en el backend: no viaja video por internet, no gasta datos móviles del
+  estudiante ni cupo de Cloud Run. En el MVP reconoce el backend: un solo
+  lenguaje (Python), el modelo evaluado es el que se usa y todos los celulares
+  reciben la misma calidad.
+
 ## Opciones descartadas para el MVP
 
 - **Una plataforma con espacios por institución** (cada una con su catálogo y
