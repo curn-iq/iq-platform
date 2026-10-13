@@ -372,29 +372,43 @@ iq-platform/
 
 (La capa de navegación aún no tiene ubicación definitiva en esta estructura.)
 
-## Dónde encontrar más detalle (Google Drive)
+## Dónde vive cada cosa
 
-Este archivo es un resumen denso para desarrollo. Para más detalle o para ver
-las decisiones originales con su razonamiento completo, están en Drive, carpeta
-raíz **"Tesis ING-IQ - CURN"**:
-- `Estructura del Proyecto` — overview general, roles, roadmap.
-- `ENTREGABLES/` — entregas del proyecto de grado por corte.
-- `Modulo 2 - DataIQ/Planificación Módulo 2 — DataIQ` — alcance y entregables
-  por corte.
-- `Modulo 2 - DataIQ/Diseño/Stack Tecnológico — DataIQ` — stack con
-  alternativas descartadas y por qué.
-- `Modulo 2 - DataIQ/Diseño/Infraestructura de Despliegue` (.xlsx) —
-  proveedores, planes, límites y qué pasa al exceder cada límite gratuito.
-- `Modulo 2 - DataIQ/Diseño/Diagrama Entidad-Relacion DataIQ` — imagen del ER.
-- `Modulo 2 - DataIQ/Recursos/Catalogo Instrumental/` — catálogo crudo y
-  normalizado del instrumental quirúrgico (.xlsx).
-- `Modulo 2 - DataIQ/Documentos IQ/` — documentos fuente de las técnicas.
-- `Modulo 2 - DataIQ/Tareas/` — checklists por persona (Guebriel, Juan
-  Caraballo, Mauricio).
+Cada tipo de información tiene **un solo lugar**; los demás documentos
+enlazan, no copian. Un cambio se documenta en su lugar dentro del mismo PR del
+código (decidido por Mauricio el 2026-10-13: la información repartida entre el
+repo, el Drive y las ramas obligaba a actualizar lo mismo en varios sitios).
 
-**Importante**: los checklists y otros documentos del Drive solo se modifican
-cuando Mauricio lo pide explícitamente. No editar el Drive por iniciativa
-propia.
+| Información | Dónde |
+|---|---|
+| Decisiones técnicas y reglas del proyecto | Este archivo (resumen) |
+| Cómo funciona y cómo se corre cada módulo | El README del módulo (p. ej. [`dataiq/README.md`](dataiq/README.md)) |
+| Esquema de la base de DataIQ | [`dataiq/docs/esquema.dbml`](dataiq/docs/esquema.dbml) y su diagrama (`diagramabd.png`, dbdiagram.io) |
+| Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
+| Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |
+| Avance | Las checklists del repo (p. ej. [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md)) |
+| Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub (notas generadas de los PR) |
+| Entregables académicos (Formato 115, entregas por corte) | Drive, `ENTREGABLES/`: se arman al cerrar cada corte con lo que está en el repo |
+| Documentos fuente de IQ y catálogo crudo | Drive (abajo) |
+
+**Google Drive**, carpeta raíz **"Tesis ING-IQ - CURN"**. El tutor no lo exige;
+se usa solo para lo que no es código:
+
+- Vigentes:
+  - `ENTREGABLES/` — entregas del proyecto de grado por corte.
+  - `Modulo 2 - DataIQ/Documentos IQ/` — documentos fuente de las técnicas.
+  - `Modulo 2 - DataIQ/Recursos/Catalogo Instrumental/` — catálogo crudo y
+    normalizado del instrumental quirúrgico (.xlsx).
+- Históricos (como quedaron al cerrar el Corte 2; **no se actualizan**, sirven
+  para ver el razonamiento original, p. ej. las alternativas descartadas):
+  `Estructura del Proyecto`, `Modulo 2 - DataIQ/Planificación Módulo 2 —
+  DataIQ`, `Modulo 2 - DataIQ/Diseño/Stack Tecnológico — DataIQ`,
+  `Modulo 2 - DataIQ/Diseño/Infraestructura de Despliegue` (.xlsx),
+  `Modulo 2 - DataIQ/Diseño/Diagrama Entidad-Relacion DataIQ` y
+  `Modulo 2 - DataIQ/Tareas/`.
+
+**Importante**: el Drive solo se modifica cuando Mauricio lo pide
+explícitamente. No editar el Drive por iniciativa propia.
 
 ## Reglas para quien trabaje en este repo (Claude Code incluido)
 
@@ -410,9 +424,10 @@ propia.
    Postgres y su propio deploy en Cloud Run; no compartir variables de entorno
    de un módulo con otro.
 3. **Todo endpoint GET nuevo debe llevar `Cache-Control`/`ETag`.**
-4. **Si se cambia el esquema de datos de DataIQ, ese cambio debe reflejarse
-   también en el Drive** (documento de Planificación Módulo 2 y/o el diagrama en
-   dbdiagram.io), no solo en el código.
+4. **Cada cambio se documenta en su único lugar, en el mismo PR del código**
+   (ver «Dónde vive cada cosa»); los demás documentos enlazan, no copian. Si
+   cambia el esquema de DataIQ: `esquema.dbml`, el diagrama (`diagramabd.png`
+   y dbdiagram.io) y la migración van juntos. El Drive no se actualiza.
 5. **Nunca acceso directo entre bases de datos de distintos módulos** — siempre
    HTTPS al backend correspondiente.
 6. **DataIQ es la única fuente de verdad** del catálogo de técnicas — SIVRI y
