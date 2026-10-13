@@ -57,6 +57,15 @@ iq-platform/
     └── frontend/
 ```
 
+## Documentación
+
+- Qué cambió: [Releases](https://github.com/curn-iq/iq-platform/releases).
+- Cómo funciona y cómo se corre cada módulo: su README (p. ej.
+  [`dataiq/README.md`](dataiq/README.md)).
+- Roles y flujos: [`docs/flujos.md`](docs/flujos.md). Lo que queda para
+  después del MVP: [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md).
+- Decisiones y reglas del proyecto, en resumen: [`CLAUDE.md`](CLAUDE.md).
+
 ## Stack
 
 - Backend: Python (DataIQ con FastAPI; detalles de SIVRI y SIMIQ3D por definir)
