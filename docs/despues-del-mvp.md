@@ -62,7 +62,7 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 ## Cuentas e inicio de sesión
 
 - **Renovar la sesión sin volver a ingresar** (refresh tokens). En el MVP el
-  token dura 12 horas y después hay que iniciar sesión otra vez.
+  token dura 2 horas y después hay que iniciar sesión otra vez.
 - **Recuperar la contraseña por correo.** Hace falta un servicio de envío de
   correos.
 - **Limitar los intentos de inicio de sesión** para frenar a quien prueba
