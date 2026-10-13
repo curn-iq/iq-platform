@@ -21,6 +21,7 @@ from app.adapters.outbound.persistence.models.techniques import (
     VersionEquipment,
     VersionRejection,
     VersionSuture,
+    VersionZone,
     Zone,
 )
 from app.adapters.outbound.persistence.models.users import User
@@ -236,6 +237,7 @@ class SQLAlchemyVersionRepository:
             for p in positions
         )
         for table, columns in (
+            (VersionZone, ("zone_id", "used", "grid_rows", "grid_columns")),
             (VersionSuture, ("suture_id", "usage")),
             (VersionEquipment, ("equipment_id",)),
             (VersionDevice, ("device_id",)),
@@ -262,6 +264,17 @@ class SQLAlchemyVersionRepository:
         version.updated_at = func.now()
 
         await self._delete_content(version_id)
+        # Las mesas van primero: los objetos y sus celdas se ubican en ellas.
+        self._session.add_all(
+            VersionZone(
+                version_id=version_id,
+                zone_id=layout.zone_id,
+                used=layout.used,
+                grid_rows=layout.rows,
+                grid_columns=layout.columns,
+            )
+            for layout in content.zones
+        )
         items = []
         for item in content.items:
             row = TechniqueItem(
@@ -316,7 +329,11 @@ class SQLAlchemyVersionRepository:
     async def _validate_references(self, content: VersionContent) -> None:
         problems = []
         lookups = (
-            (Zone, {i.zone_id for i in content.items}, "la mesa"),
+            (
+                Zone,
+                {i.zone_id for i in content.items} | {z.zone_id for z in content.zones},
+                "la mesa",
+            ),
             (
                 Instrument,
                 {c.instrument_id for i in content.items for c in i.components},
@@ -352,6 +369,7 @@ class SQLAlchemyVersionRepository:
             delete(TechniqueItem).where(TechniqueItem.version_id == version_id)
         )
         for table in (
+            VersionZone,
             VersionSuture,
             VersionEquipment,
             VersionDevice,

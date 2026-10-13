@@ -42,6 +42,7 @@ from app.adapters.outbound.persistence.models.techniques import (
     VersionEquipment,
     VersionRejection,
     VersionSuture,
+    VersionZone,
     Zone,
 )
 from app.adapters.outbound.persistence.models.users import User
@@ -74,6 +75,8 @@ class SeedTechnique:
     equipment: list[str] = field(default_factory=list)
     devices: list[str] = field(default_factory=list)
     sizes: dict[str, tuple[int, int]] = field(default_factory=dict)
+    # Mesas que la técnica no lleva (columna no_lleva = «Sí»)
+    unused: list[str] = field(default_factory=list)
     items: list[SeedItem] = field(default_factory=list)
 
 
@@ -117,7 +120,9 @@ def read_file(path_: Path):
     for f in _rows(workbook, "dispositivos"):
         techniques[f["tecnica"]].devices.append(f["dispositivo"])
     for f in _rows(workbook, "mesas"):
-        if f["filas"] not in NO_DATA:
+        if f["no_lleva"] == "Sí":
+            techniques[f["tecnica"]].unused.append(f["mesa"])
+        elif f["filas"] not in NO_DATA:
             techniques[f["tecnica"]].sizes[f["mesa"]] = (
                 int(f["filas"]),
                 int(f["columnas"]),
@@ -230,6 +235,7 @@ async def _delete_versions(session: AsyncSession, versions: list) -> None:
     )
     for table in (
         VersionRejection,
+        VersionZone,
         VersionSuture,
         VersionEquipment,
         VersionDevice,
@@ -342,6 +348,21 @@ async def load(force: bool = False) -> None:
             )
             session.add(version)
             await session.flush()
+
+            for stand, (rows, columns) in t.sizes.items():
+                session.add(
+                    VersionZone(
+                        version_id=version.id,
+                        zone_id=zones[stand],
+                        used=True,
+                        grid_rows=rows,
+                        grid_columns=columns,
+                    )
+                )
+            for stand in t.unused:
+                session.add(
+                    VersionZone(version_id=version.id, zone_id=zones[stand], used=False)
+                )
 
             # Una misma sutura puede usarse en varios planos: un solo registro con todos
             planes = defaultdict(list)

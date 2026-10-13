@@ -22,6 +22,7 @@ async def create_technique(client, account, specialty, name="Técnica nueva") ->
 def content(zone, instrument, **changes) -> dict:
     return {
         "anesthesia": "General",
+        "zones": [{"zone_id": str(zone.id), "used": True, "rows": 4, "columns": 6}],
         "items": [
             {
                 "zone_id": str(zone.id),
@@ -70,6 +71,15 @@ async def test_contributor_cycle_until_published(
         {"row": 1, "column": 2},
     ]
     assert [s["usage"] for s in detail["sutures"]] == ["Piel"]
+    assert detail["zones"] == [
+        {
+            "zone_id": str(zone.id),
+            "zone": zone.name,
+            "used": True,
+            "rows": 4,
+            "columns": 6,
+        }
+    ]
 
     assert (
         await action(client, contributor, version["id"], "submit")
@@ -203,6 +213,7 @@ async def test_editing_a_published_one_copies_its_content_into_a_new_version(
     assert copy_["anesthesia"] == "General"
     assert [i["source_text"] for i in copy_["items"]] == ["Pinza", "Solo del listado"]
     assert len(copy_["items"][0]["cells"]) == 2
+    assert [(z["rows"], z["columns"]) for z in copy_["zones"]] == [(4, 6)]
     assert [e["name"] for e in copy_["equipment"]] == ["Electrobisturí"]
 
     await action(client, reviewer, v2["summary"]["id"], "publish")

@@ -110,6 +110,17 @@ class Device:
 
 
 @dataclass(frozen=True)
+class ZoneLayout:
+    """Lo que la versión dice de una mesa: si la lleva y de qué tamaño es."""
+
+    zone_id: UUID
+    zone: str
+    used: bool
+    rows: int | None
+    columns: int | None
+
+
+@dataclass(frozen=True)
 class TechniqueDetail:
     id: UUID
     name: str
@@ -124,6 +135,7 @@ class TechniqueDetail:
     complications: str | None
     surgical_technique: str | None
     source: str | None
+    zones: tuple[ZoneLayout, ...]
     items: tuple[ItemDetail, ...]
     sutures: tuple[SutureDetail, ...]
     equipment: tuple[Equipment, ...]
@@ -162,6 +174,14 @@ class VersionDetail:
 
 
 @dataclass(frozen=True)
+class NewZoneLayout:
+    zone_id: UUID
+    used: bool
+    rows: int | None
+    columns: int | None
+
+
+@dataclass(frozen=True)
 class NewComponent:
     instrument_id: UUID | None
     suture_id: UUID | None
@@ -195,6 +215,7 @@ class VersionContent:
     complications: str | None
     surgical_technique: str | None
     source: str | None
+    zones: tuple[NewZoneLayout, ...]
     items: tuple[NewItem, ...]
     sutures: tuple[NewSuture, ...]
     equipment: tuple[str, ...]
@@ -204,6 +225,16 @@ class VersionContent:
 def validate_content(content: VersionContent) -> None:
     """Revisa la mesa y las listas antes de escribir; junta todos los problemas."""
     problems = []
+    layouts = {}
+    for layout in content.zones:
+        if layout.zone_id in layouts:
+            problems.append("Una mesa aparece dos veces")
+        layouts[layout.zone_id] = layout
+        has_size = layout.rows is not None and layout.columns is not None
+        if layout.used and not (has_size and layout.rows >= 1 and layout.columns >= 1):
+            problems.append("Una mesa que se lleva necesita filas y columnas")
+        if not layout.used and (layout.rows is not None or layout.columns is not None):
+            problems.append("Una mesa que no se lleva no tiene tamaño")
     numbers = Counter()
     cells = Counter()
     for item in content.items:
@@ -219,8 +250,16 @@ def validate_content(content: VersionContent) -> None:
                 problems.append(
                     f"Cada componente de {name} es un instrumento o una sutura"
                 )
+        layout = layouts.get(item.zone_id)
+        if item.zone_id is not None and (layout is None or not layout.used):
+            problems.append(f"{name} está en una mesa que la versión no lleva")
         for cell in item.cells:
-            if cell.row < 1 or cell.column < 1:
+            outside = cell.row < 1 or cell.column < 1
+            if layout is not None and layout.used and layout.rows and layout.columns:
+                outside = (
+                    outside or cell.row > layout.rows or cell.column > layout.columns
+                )
+            if outside:
                 problems.append(f"{name} tiene una celda fuera de la mesa")
         if item.legend_number is not None:
             numbers[(item.zone_id, item.legend_number)] += 1

@@ -8,6 +8,7 @@ from app.domain.techniques import (
     NewComponent,
     NewItem,
     NewSuture,
+    NewZoneLayout,
     VersionContent,
     validate_content,
 )
@@ -26,7 +27,14 @@ def item(source_text="Pinza", zone=STAND, number=None, cells=(), components=(FOR
     )
 
 
-def content(items=(), sutures=(), equipment=(), devices=()):
+def layout(zone=STAND, used=True, rows=8, columns=8):
+    return NewZoneLayout(zone_id=zone, used=used, rows=rows, columns=columns)
+
+
+def content(items=(), sutures=(), equipment=(), devices=(), zones=None):
+    if zones is None:
+        # Por defecto, cada mesa que usan los objetos se lleva y es de 8 x 8
+        zones = [layout(z) for z in dict.fromkeys(i.zone_id for i in items) if z]
     return VersionContent(
         cups_code=None,
         anesthesia=None,
@@ -37,6 +45,7 @@ def content(items=(), sutures=(), equipment=(), devices=()):
         complications=None,
         surgical_technique=None,
         source=None,
+        zones=tuple(zones),
         items=tuple(items),
         sutures=tuple(sutures),
         equipment=tuple(equipment),
@@ -102,4 +111,42 @@ def test_sutures_equipment_and_devices_do_not_repeat():
         "Hay una sutura repetida (junta sus usos en una sola)",
         "Hay un equipo repetido",
         "Hay un dispositivo repetido",
+    ]
+
+
+def test_stand_needs_size_only_when_used():
+    assert problems(
+        content(
+            zones=[
+                layout(rows=None),
+                layout(uuid.uuid7(), used=False, rows=3, columns=3),
+            ]
+        )
+    ) == [
+        "Una mesa que se lleva necesita filas y columnas",
+        "Una mesa que no se lleva no tiene tamaño",
+    ]
+
+
+def test_stand_cannot_appear_twice():
+    assert problems(content(zones=[layout(), layout()])) == [
+        "Una mesa aparece dos veces"
+    ]
+
+
+def test_item_must_be_on_a_stand_the_version_uses():
+    unused = layout(used=False, rows=None, columns=None)
+    assert problems(content([item(number=1)], zones=[unused])) == [
+        "«Pinza» está en una mesa que la versión no lleva"
+    ]
+    assert problems(content([item(number=1)], zones=[])) == [
+        "«Pinza» está en una mesa que la versión no lleva"
+    ]
+
+
+def test_cell_beyond_the_stand_size_fails():
+    small = layout(rows=2, columns=3)
+    validate_content(content([item(cells=[(2, 3)])], zones=[small]))
+    assert problems(content([item(cells=[(3, 1)])], zones=[small])) == [
+        "«Pinza» tiene una celda fuera de la mesa"
     ]

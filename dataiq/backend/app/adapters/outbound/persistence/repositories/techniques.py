@@ -20,6 +20,7 @@ from app.adapters.outbound.persistence.models.techniques import (
     VersionDevice,
     VersionEquipment,
     VersionSuture,
+    VersionZone,
     Zone,
 )
 from app.domain.techniques import (
@@ -32,6 +33,7 @@ from app.domain.techniques import (
     TechniqueDetail,
     TechniqueSummary,
     VersionState,
+    ZoneLayout,
 )
 
 
@@ -79,7 +81,7 @@ class SQLAlchemyTechniqueRepository:
 
 async def build_details(session: AsyncSession, *filters) -> list[TechniqueDetail]:
     # Las partes del detalle se piden para todas las versiones a la vez y se
-    # agrupan en Python: siete consultas sin importar cuántas técnicas sean.
+    # agrupan en Python: ocho consultas sin importar cuántas técnicas sean.
     query = (
         select(
             Technique.id,
@@ -106,6 +108,7 @@ async def build_details(session: AsyncSession, *filters) -> list[TechniqueDetail
     if not rows:
         return []
     versions = [row.version_id for row in rows]
+    zones = await _zones(session, versions)
     items = await _items(session, versions)
     sutures = await _sutures(session, versions)
     equipment = await _equipment(session, versions)
@@ -125,6 +128,7 @@ async def build_details(session: AsyncSession, *filters) -> list[TechniqueDetail
             complications=row.complications,
             surgical_technique=row.surgical_technique,
             source=row.source,
+            zones=tuple(zones[row.version_id]),
             items=tuple(items[row.version_id]),
             sutures=tuple(sutures[row.version_id]),
             equipment=tuple(equipment[row.version_id]),
@@ -132,6 +136,36 @@ async def build_details(session: AsyncSession, *filters) -> list[TechniqueDetail
         )
         for row in rows
     ]
+
+
+async def _zones(
+    session: AsyncSession, versions: list[UUID]
+) -> dict[UUID, list[ZoneLayout]]:
+    zones: dict[UUID, list[ZoneLayout]] = defaultdict(list)
+    query = (
+        select(
+            VersionZone.version_id,
+            VersionZone.zone_id,
+            Zone.name.label("zone"),
+            VersionZone.used,
+            VersionZone.grid_rows,
+            VersionZone.grid_columns,
+        )
+        .join(Zone, Zone.id == VersionZone.zone_id)
+        .where(VersionZone.version_id.in_(versions))
+        .order_by(Zone.name)
+    )
+    for row in await session.execute(query):
+        zones[row.version_id].append(
+            ZoneLayout(
+                zone_id=row.zone_id,
+                zone=row.zone,
+                used=row.used,
+                rows=row.grid_rows,
+                columns=row.grid_columns,
+            )
+        )
+    return zones
 
 
 async def _items(

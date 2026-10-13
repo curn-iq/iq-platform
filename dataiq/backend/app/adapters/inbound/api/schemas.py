@@ -10,6 +10,7 @@ from app.domain.techniques import (
     NewComponent,
     NewItem,
     NewSuture,
+    NewZoneLayout,
     VersionContent,
     VersionState,
 )
@@ -46,6 +47,16 @@ class TechniquePublicOut(TechniqueSummaryOut):
     complications: str | None
     surgical_technique: str | None
     source: str | None
+
+
+class ZoneLayoutOut(OutModel):
+    """Una mesa de la técnica: si la lleva y, si la lleva, su tamaño en celdas."""
+
+    zone_id: UUID
+    zone: str
+    used: bool
+    rows: int | None
+    columns: int | None
 
 
 class CellOut(OutModel):
@@ -85,8 +96,9 @@ class ElementOut(OutModel):
 
 
 class TechniqueInstrumentsOut(OutModel):
-    """Lo que pide cuenta: objetos con su mesa, suturas, equipos y dispositivos."""
+    """Lo que pide cuenta: mesas, objetos, suturas, equipos y dispositivos."""
 
+    zones: list[ZoneLayoutOut]
     items: list[ItemOut]
     sutures: list[SutureOut]
     equipment: list[ElementOut]
@@ -129,6 +141,13 @@ class TechniqueCreateIn(BaseModel):
     specialty_id: UUID
 
 
+class ZoneLayoutIn(BaseModel):
+    zone_id: UUID
+    used: bool = Field(description="False si la técnica no lleva esa mesa")
+    rows: int | None = Field(default=None, ge=1)
+    columns: int | None = Field(default=None, ge=1)
+
+
 class ComponentIn(BaseModel):
     instrument_id: UUID | None = None
     suture_id: UUID | None = None
@@ -166,6 +185,9 @@ class ContentIn(BaseModel):
     complications: str | None = None
     surgical_technique: str | None = None
     source: str | None = None
+    zones: list[ZoneLayoutIn] = Field(
+        default=[], description="Las mesas que usan los objetos van aquí"
+    )
     items: list[ItemIn] = []
     sutures: list[SutureIn] = []
     equipment: list[NonEmptyStr] = Field(
@@ -186,6 +208,12 @@ class ContentIn(BaseModel):
             complications=self.complications,
             surgical_technique=self.surgical_technique,
             source=self.source,
+            zones=tuple(
+                NewZoneLayout(
+                    zone_id=z.zone_id, used=z.used, rows=z.rows, columns=z.columns
+                )
+                for z in self.zones
+            ),
             items=tuple(
                 NewItem(
                     zone_id=i.zone_id,

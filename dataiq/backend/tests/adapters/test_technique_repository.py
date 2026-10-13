@@ -19,6 +19,7 @@ from app.adapters.outbound.persistence.models.techniques import (
     VersionDevice,
     VersionEquipment,
     VersionSuture,
+    VersionZone,
     Zone,
 )
 from app.adapters.outbound.persistence.repositories.techniques import (
@@ -34,6 +35,7 @@ from app.domain.techniques import (
     TechniqueDetail,
     TechniqueSummary,
     VersionState,
+    ZoneLayout,
 )
 
 
@@ -135,6 +137,7 @@ async def test_get_published_returns_the_published_version(
         complications=None,
         surgical_technique=None,
         source=None,
+        zones=(),
         items=(),
         sutures=(),
         equipment=(),
@@ -222,6 +225,14 @@ async def test_get_published_returns_items_stands_and_elements_of_the_version(
             VersionSuture(version_id=v2.id, suture_id=suture.id, usage="Piel"),
             VersionEquipment(version_id=v2.id, equipment_id=equipment_item.id),
             VersionDevice(version_id=v2.id, device_id=device.id),
+            VersionZone(
+                version_id=v2.id,
+                zone_id=mayo_stand.id,
+                used=True,
+                grid_rows=3,
+                grid_columns=2,
+            ),
+            VersionZone(version_id=v1.id, zone_id=mayo_stand.id, used=False),
         ]
     )
     await session.flush()
@@ -259,6 +270,11 @@ async def test_get_published_returns_items_stands_and_elements_of_the_version(
                 ),
             ),
             cells=(),
+        ),
+    )
+    assert result.zones == (
+        ZoneLayout(
+            zone_id=mayo_stand.id, zone="Mesa de prueba", used=True, rows=3, columns=2
         ),
     )
     assert result.sutures == (

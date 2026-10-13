@@ -116,6 +116,7 @@ async def test_technique_instruments_require_account(
     assert without_account.status_code == 401
     assert with_account.status_code == 200
     assert with_account.json() == {
+        "zones": [],
         "items": [],
         "sutures": [],
         "equipment": [],
