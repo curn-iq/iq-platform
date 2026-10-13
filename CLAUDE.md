@@ -387,7 +387,7 @@ repo, el Drive y las ramas obligaba a actualizar lo mismo en varios sitios).
 | Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
 | Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |
 | Avance | Las checklists del repo (p. ej. [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md)) |
-| Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub (notas generadas de los PR) |
+| Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub: uno por semana y uno al cerrar cada corte, con notas generadas de los PR (cómo, en el README) |
 | Entregables académicos (Formato 115, entregas por corte) | Drive, `ENTREGABLES/`: se arman al cerrar cada corte con lo que está en el repo |
 | Documentos fuente de IQ y catálogo crudo | Drive (abajo) |
 
