@@ -80,7 +80,9 @@ async def client(session):
     # se deshace al final.
     app.dependency_overrides[get_session] = lambda: session
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://prueba"
+        # https: el cliente no manda por http las cookies Secure (la de sesión)
+        transport=ASGITransport(app=app),
+        base_url="https://prueba",
     ) as c:
         yield c
     app.dependency_overrides.clear()

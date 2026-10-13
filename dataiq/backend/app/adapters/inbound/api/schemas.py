@@ -324,6 +324,11 @@ class RegisterIn(BaseModel):
     )
 
 
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class TokenOut(BaseModel):
     # Nombres fijos de OAuth2: así funciona el botón «Authorize» de /docs.
     access_token: str
