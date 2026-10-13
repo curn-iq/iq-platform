@@ -48,27 +48,43 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - Con cuenta: `GET /techniques/{id}/instruments` (mesas con su tamaño,
      objetos, suturas, equipos y dispositivos), `GET /instruments` y
      `GET /catalog/full`
+   - [x] Sin cuenta: `GET /specialties` (para filtrar y para crear técnicas)
+   - [x] Cada objeto trae `zone_id` además del nombre de la mesa (lo que pide
+     el `PUT` del borrador)
 4. [x] Endpoints de escritura:
    - [x] Técnicas: crear técnica nueva y crear versión desde la publicada
      (desde colaborador), editar el borrador propio (`PUT`, reemplaza todo el
      contenido), enviar a revisión, aprobar, rechazar con motivo, publicar
      directo (revisor o admin, lo suyo) y archivar (desde revisor, no con una
      versión en curso). Consultar versiones: `GET /versions` y
-     `GET /versions/{id}`
+     `GET /versions/{id}`; «Revisadas por mí» con `?reviewed_by_me=true`
+     (las de otros que el revisor aprobó o rechazó)
    - [x] Tabla `version_rejections`: al rechazar se guarda quién, por qué y cuándo
      (el motivo es obligatorio) y la versión vuelve a borrador
    - [x] Aprobar y rechazar solo si la versión sigue `in_review`: la fila se
      bloquea (`SELECT ... FOR UPDATE`) y se vuelve a revisar el estado; si otro
      revisor ya la decidió, se responde 409
    - [x] Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
-     cambia las técnicas publicadas que lo usan sin pasar por revisión)
-   - [x] Roles: `GET /users` y `PATCH /users/{id}/role`, solo admin y no
+     cambia las técnicas publicadas que lo usan sin pasar por revisión). El
+     `PATCH` también reemplaza los alias
+   - [x] Descartar un borrador (`DELETE /versions/{id}`): solo su autor o un
+     admin; si la técnica nunca se publicó, se borra con él. Lo publicado no se
+     borra, se archiva
+   - [x] Roles: `GET /users` (con la fecha de registro y la política aceptada)
+     y `PATCH /users/{id}/role`, solo admin y no
      sobre su propia cuenta. El primer admin se asigna por terminal:
      `uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`
 5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
    - `POST /auth/register` (autorregistro con la política aceptada),
      `POST /auth/login`, `GET /auth/me` y `GET /.well-known/jwks.json`
    - El rol se lee de la base de datos en cada petición, no del token
+   - [x] Token de 2 horas
+   - [x] Sesión del navegador en cookie `HttpOnly` (`POST /auth/login` y
+     `POST /auth/logout`), encabezado `X-IQ-Client` contra CSRF y
+     `POST /auth/token` (Bearer) para lo que no es navegador
+   - [x] CORS configurable (`CORS_ORIGINS`), vacío por defecto: con el proxy
+     de Vercel todo es mismo origen
+   - [x] Dos peticiones que chocan contra un `UNIQUE` responden 409, no 500
    - SIVRI y SIMIQ3D piden `/catalog/full` con el token de quien usa el
      módulo
 6. [x] Datos: completar el catálogo con los objetos de los arreglos de mesa y
