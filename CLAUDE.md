@@ -24,7 +24,7 @@ quirúrgico en mesa fuera del laboratorio. El equipo de ING construye el ecosist
 de software que responde a esa brecha.
 
 **Importante**: todo el ecosistema (los 3 módulos) es el proyecto de grado de
-Mauricio, no solo SIVRI. Aunque originalmente se planeó una hoja de ruta escalonada
+los tres integrantes del equipo ING, no solo SIVRI. Aunque originalmente se planeó una hoja de ruta escalonada
 (SIVRI y DataIQ en 2026, SIMIQ3D desde febrero 2027), el tutor presionó para que
 **los 3 módulos avancen en paralelo este mismo semestre**.
 
@@ -53,8 +53,7 @@ navegación (ver más abajo) NO se considera un módulo.
   instrumental, suturas, equipos biomédicos, dispositivos y arreglos de mesa.
   Plataforma web (panel administrativo, uso interno por directores/docentes) +
   API que consumen SIVRI y SIMIQ3D.
-- **Equipo**: colaborativo ING (Guebriel principalmente en backend) + IQ
-  (documentación de técnicas).
+- **Equipo**: colaborativo ING + IQ (documentación de técnicas).
 - **Stack decidido** (excepto frontend):
   - Backend: **Python + FastAPI** (async nativo, tipado con Pydantic, Swagger
     automático; Python también reduce fricción con SIVRI que usa YOLO26).
