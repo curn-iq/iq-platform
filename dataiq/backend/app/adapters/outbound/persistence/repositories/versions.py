@@ -406,6 +406,30 @@ class SQLAlchemyVersionRepository:
         await self._session.flush()
         return new_.id
 
+    async def discard_draft(self, version_id: UUID) -> None:
+        """Borra un borrador con su contenido y sus rechazos. Si la técnica se
+        queda sin versiones (nunca se publicó), se borra también."""
+        version = await self._lock(version_id)
+        if version.state != VersionState.draft:
+            raise Conflict("Solo se descarta un borrador")
+        technique_id = version.technique_id
+        await self._delete_content(version_id)
+        await self._session.execute(
+            delete(VersionRejection).where(VersionRejection.version_id == version_id)
+        )
+        await self._session.delete(version)
+        await self._session.flush()
+        remaining = await self._session.scalar(
+            select(TechniqueVersion.id).where(
+                TechniqueVersion.technique_id == technique_id
+            )
+        )
+        if remaining is None:
+            await self._session.execute(
+                delete(Technique).where(Technique.id == technique_id)
+            )
+        await self._session.commit()
+
     # --- Cambios de estado -----------------------------------------------
 
     async def _lock(self, version_id: UUID) -> TechniqueVersion:

@@ -93,6 +93,21 @@ async def update_version(
     return await versions.get(version_id)
 
 
+@router.delete("/{version_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def discard_draft(
+    version_id: UUID, versions: VersionRepo, account: CurrentAccount
+) -> None:
+    """Descarta un borrador: lo de quien lo creó, o cualquiera si es admin. Si
+    era la primera versión y la técnica nunca se publicó, se borra la técnica.
+    Lo publicado no se borra nunca: se archiva."""
+    version = await _get_version(versions, version_id)
+    if account.role != Role.admin:
+        _require_author(version, account)
+    if version.state != VersionState.draft:
+        raise Conflict("Solo se descarta un borrador")
+    await versions.discard_draft(version_id)
+
+
 async def _change_state(
     versions: VersionRepo,
     version: VersionSummary,

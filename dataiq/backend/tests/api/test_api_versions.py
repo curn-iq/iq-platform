@@ -334,3 +334,80 @@ async def test_archiving_removes_the_technique_from_the_catalog(
     assert response_.status_code == 204
     assert (await client.get("/techniques")).json() == []
     assert (await client.get(f"/techniques/{v1['technique_id']}")).status_code == 404
+
+
+@pytest.mark.anyio
+async def test_discarding_the_first_draft_deletes_the_technique(
+    client, contributor, specialty, zone, instrument
+):
+    version = await create_technique(client, contributor, specialty)
+    await edit(client, contributor, version["id"], content(zone, instrument))
+
+    discarded = await action_delete(client, contributor, version["id"])
+    again = await client.get(
+        f"/versions/{version['id']}", headers=auth_headers(contributor)
+    )
+
+    assert discarded.status_code == 204
+    assert again.status_code == 404
+    # El nombre queda libre: la técnica se puede crear de nuevo
+    await create_technique(client, contributor, specialty)
+
+
+@pytest.mark.anyio
+async def test_discarding_a_new_version_keeps_the_published_one(
+    client, reviewer, specialty, zone, instrument
+):
+    v1 = await create_technique(client, reviewer, specialty)
+    await edit(client, reviewer, v1["id"], content(zone, instrument))
+    await action(client, reviewer, v1["id"], "publish")
+    v2 = (
+        await client.post(
+            f"/techniques/{v1['technique_id']}/versions",
+            headers=auth_headers(reviewer),
+        )
+    ).json()
+
+    discarded = await action_delete(client, reviewer, v2["summary"]["id"])
+    published = await client.get(f"/techniques/{v1['technique_id']}")
+    new_draft = await client.post(
+        f"/techniques/{v1['technique_id']}/versions", headers=auth_headers(reviewer)
+    )
+
+    assert discarded.status_code == 204
+    assert published.json()["version_number"] == 1
+    assert new_draft.status_code == 201  # ya no hay una versión en curso
+
+
+@pytest.mark.anyio
+async def test_only_drafts_are_discarded_and_only_by_author_or_admin(
+    session, client, contributor, reviewer, admin, specialty
+):
+    other = await save_user(session, "Otro", "otro@prueba.com", Role.contributor)
+    draft = await create_technique(client, contributor, specialty)
+    in_review = await create_technique(client, contributor, specialty, "En revisión")
+    await action(client, contributor, in_review["id"], "submit")
+    published = await create_technique(client, reviewer, specialty, "Publicada")
+    await action(client, reviewer, published["id"], "publish")
+
+    assert (await action_delete(client, other, draft["id"])).status_code == 403
+    assert (
+        await action_delete(client, contributor, in_review["id"])
+    ).status_code == 409
+    assert (await action_delete(client, reviewer, published["id"])).status_code == 409
+    assert (await action_delete(client, admin, draft["id"])).status_code == 204
+
+
+@pytest.mark.anyio
+async def test_a_rejected_draft_can_be_discarded(
+    client, contributor, reviewer, specialty
+):
+    version = await create_technique(client, contributor, specialty)
+    await action(client, contributor, version["id"], "submit")
+    await action(client, reviewer, version["id"], "reject", json={"reason": "No sirve"})
+
+    assert (await action_delete(client, contributor, version["id"])).status_code == 204
+
+
+async def action_delete(client, account, version_id):
+    return await client.delete(f"/versions/{version_id}", headers=auth_headers(account))
