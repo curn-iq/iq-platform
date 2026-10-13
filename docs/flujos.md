@@ -82,8 +82,8 @@ flowchart LR
 ## 3. Ciclo de vida de una versión
 
 Cada técnica tiene como máximo una versión publicada y una en curso
-(`borrador` o `en_revision`). Las transiciones se validan en el dominio
-(`app/dominio/tecnicas.py`). Un colaborador envía su borrador a revisión;
+(borrador o en revisión). Las transiciones se validan en el dominio
+(`app/domain/techniques.py`). Un colaborador envía su borrador a revisión;
 un revisor publica el suyo directamente.
 
 ```mermaid
