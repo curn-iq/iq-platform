@@ -38,13 +38,13 @@ async def test_list_instruments_returns_category_and_aliases(session):
             name="Pinza de prueba",
             category="Categoría de prueba",
             description="Sujeta",
-            alias=("Pinza prueba", "Pinzas de prueba"),
+            aliases=("Pinza prueba", "Pinzas de prueba"),
         ),
         CatalogInstrument(
             id=scissors.id,
             name="Tijera de prueba",
             category="Categoría de prueba",
             description=None,
-            alias=(),
+            aliases=(),
         ),
     ]

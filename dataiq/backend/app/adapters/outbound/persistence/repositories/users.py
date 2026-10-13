@@ -6,11 +6,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.outbound.persistence.models.users import User
 from app.domain.errors import Conflict, NotFound
-from app.domain.users import Account, Role
+from app.domain.users import Account, Role, UserRecord
 
 
 def _account(user: User) -> Account:
     return Account(id=user.id, name=user.name, email=user.email, role=user.role)
+
+
+def _record(user: User) -> UserRecord:
+    return UserRecord(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        role=user.role,
+        created_at=user.created_at,
+        policy_accepted_at=user.policy_accepted_at,
+        policy_version=user.policy_version,
+    )
 
 
 class SQLAlchemyUserRepository:
@@ -45,18 +57,18 @@ class SQLAlchemyUserRepository:
         await self._session.commit()
         return account
 
-    async def list_all(self) -> list[Account]:
+    async def list_all(self) -> list[UserRecord]:
         users = await self._session.scalars(
             select(User).order_by(User.name, User.email)
         )
-        return [_account(u) for u in users]
+        return [_record(u) for u in users]
 
-    async def change_role(self, user_id: UUID, role: Role) -> Account:
+    async def change_role(self, user_id: UUID, role: Role) -> UserRecord:
         user = await self._session.get(User, user_id, with_for_update=True)
         if user is None:
             raise NotFound("La cuenta no existe")
         user.role = role
         await self._session.flush()
-        account = _account(user)
+        record = _record(user)
         await self._session.commit()
-        return account
+        return record

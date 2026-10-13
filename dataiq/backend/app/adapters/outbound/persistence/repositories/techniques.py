@@ -208,6 +208,7 @@ async def _items(
         select(
             TechniqueItem.id,
             TechniqueItem.version_id,
+            TechniqueItem.zone_id,
             Zone.name.label("zone"),
             TechniqueItem.legend_number,
             TechniqueItem.source_text,
@@ -226,6 +227,7 @@ async def _items(
         items[row.version_id].append(
             ItemDetail(
                 id=row.id,
+                zone_id=row.zone_id,
                 zone=row.zone,
                 legend_number=row.legend_number,
                 source_text=row.source_text,

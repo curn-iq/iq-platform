@@ -9,7 +9,7 @@ class CatalogInstrument:
     category: str
     description: str | None
     # Variantes del nombre en los documentos fuente (InstrumentAlias)
-    alias: tuple[str, ...]
+    aliases: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -35,3 +35,5 @@ class InstrumentChanges:
     name: str | None = None
     category_id: UUID | None = None
     description: str | None = None
+    # Si se manda, reemplaza todos los alias del instrumento
+    aliases: tuple[str, ...] | None = None

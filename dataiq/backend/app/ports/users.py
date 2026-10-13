@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-from app.domain.users import Account, Role
+from app.domain.users import Account, Role, UserRecord
 
 
 class UserRepository(Protocol):
@@ -13,6 +13,6 @@ class UserRepository(Protocol):
         self, name: str, email: str, password_hash: str, policy_version: str
     ) -> Account: ...
 
-    async def list_all(self) -> list[Account]: ...
+    async def list_all(self) -> list[UserRecord]: ...
 
-    async def change_role(self, user_id: UUID, role: Role) -> Account: ...
+    async def change_role(self, user_id: UUID, role: Role) -> UserRecord: ...

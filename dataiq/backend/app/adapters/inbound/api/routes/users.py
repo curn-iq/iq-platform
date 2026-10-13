@@ -5,27 +5,28 @@ from pydantic import TypeAdapter
 
 from app.adapters.inbound.api.cache import respond_with_cache
 from app.adapters.inbound.api.dependencies import CurrentAccount, UserRepo
-from app.adapters.inbound.api.schemas import AccountOut, RoleIn
+from app.adapters.inbound.api.schemas import RoleIn, UserOut
 from app.domain.errors import Conflict
 from app.domain.users import Role, require_role
 
 router = APIRouter(prefix="/users", tags=["Usuarios y roles"])
 
-account_list = TypeAdapter(list[AccountOut])
+user_list = TypeAdapter(list[UserOut])
 
 
-@router.get("", response_model=list[AccountOut])
+@router.get("", response_model=list[UserOut])
 async def list_users(
     request: Request, users: UserRepo, account: CurrentAccount
 ) -> Response:
-    """Todas las cuentas con su rol. Solo admin."""
+    """Todas las cuentas con su rol, cuándo se registraron y qué versión de la
+    política aceptaron. Solo admin."""
     require_role(account.role, Role.admin)
-    accounts = await users.list_all()
-    body = account_list.dump_json([AccountOut.model_validate(c) for c in accounts])
+    records = await users.list_all()
+    body = user_list.dump_json([UserOut.model_validate(r) for r in records])
     return respond_with_cache(request, body, max_age=0, private=True)
 
 
-@router.patch("/{user_id}/role", response_model=AccountOut)
+@router.patch("/{user_id}/role", response_model=UserOut)
 async def change_role(
     user_id: UUID, data: RoleIn, users: UserRepo, account: CurrentAccount
 ):

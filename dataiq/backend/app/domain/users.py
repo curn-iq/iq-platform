@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from enum import StrEnum
 from uuid import UUID
 
@@ -36,3 +37,17 @@ class Account:
     name: str
     email: str
     role: Role
+
+
+@dataclass(frozen=True)
+class UserRecord:
+    """La ficha de una cuenta para el admin: incluye la prueba de que aceptó la
+    política de datos (Decreto 1377 de 2013, art. 8)."""
+
+    id: UUID
+    name: str
+    email: str
+    role: Role
+    created_at: datetime
+    policy_accepted_at: datetime
+    policy_version: str

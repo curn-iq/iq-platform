@@ -72,6 +72,8 @@ class ComponentOut(OutModel):
 
 class ItemOut(OutModel):
     id: UUID
+    # El id es lo que pide el PUT del borrador; el nombre, para mostrar
+    zone_id: UUID | None
     zone: str | None
     legend_number: int | None
     source_text: str
@@ -260,7 +262,7 @@ class InstrumentOut(OutModel):
     name: str
     category: str
     description: str | None
-    alias: list[str]
+    aliases: list[str]
 
 
 class CatalogSutureOut(OutModel):
@@ -295,12 +297,19 @@ class InstrumentUpdateIn(BaseModel):
     name: NonEmptyStr | None = None
     category_id: UUID | None = None
     description: str | None = None
+    aliases: list[NonEmptyStr] | None = Field(
+        default=None, description="Si se manda, reemplaza todos los alias"
+    )
 
     def to_domain(self) -> InstrumentChanges:
         return InstrumentChanges(
             name=self.name,
             category_id=self.category_id,
             description=self.description,
+            # dict.fromkeys quita repetidos y conserva el orden
+            aliases=None
+            if self.aliases is None
+            else tuple(dict.fromkeys(self.aliases)),
         )
 
 
@@ -312,6 +321,14 @@ class AccountOut(OutModel):
     name: str
     email: str
     role: Role
+
+
+class UserOut(AccountOut):
+    """Lo que ve el admin de cada cuenta."""
+
+    created_at: datetime
+    policy_accepted_at: datetime
+    policy_version: str
 
 
 class RegisterIn(BaseModel):

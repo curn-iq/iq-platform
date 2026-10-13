@@ -66,6 +66,8 @@ async def test_contributor_cycle_until_published(
         "Pinza",
         "Solo del listado",
     ]
+    assert detail["items"][0]["zone_id"] == str(zone.id)
+    assert detail["items"][1]["zone_id"] is None
     assert detail["items"][0]["cells"] == [
         {"row": 1, "column": 1},
         {"row": 1, "column": 2},
@@ -411,3 +413,36 @@ async def test_a_rejected_draft_can_be_discarded(
 
 async def action_delete(client, account, version_id):
     return await client.delete(f"/versions/{version_id}", headers=auth_headers(account))
+
+
+@pytest.mark.anyio
+async def test_reviewed_by_me_lists_what_the_reviewer_approved_or_rejected(
+    client, contributor, reviewer, other_reviewer, specialty
+):
+    approved = await create_technique(client, contributor, specialty, "Aprobada")
+    rejected = await create_technique(client, contributor, specialty, "Rechazada")
+    by_other = await create_technique(client, contributor, specialty, "De otro")
+    own = await create_technique(client, reviewer, specialty, "Propia")
+    for version in (approved, rejected, by_other):
+        await action(client, contributor, version["id"], "submit")
+    await action(client, reviewer, approved["id"], "approve")
+    await action(
+        client, reviewer, rejected["id"], "reject", json={"reason": "Falta la ropa"}
+    )
+    await action(client, other_reviewer, by_other["id"], "approve")
+    await action(client, reviewer, own["id"], "publish")
+
+    response_ = await client.get(
+        "/versions?reviewed_by_me=true", headers=auth_headers(reviewer)
+    )
+    only_drafts = await client.get(
+        "/versions?reviewed_by_me=true&state=draft", headers=auth_headers(reviewer)
+    )
+    as_contributor = await client.get(
+        "/versions?reviewed_by_me=true", headers=auth_headers(contributor)
+    )
+
+    assert response_.status_code == 200
+    assert {v["technique"] for v in response_.json()} == {"Aprobada", "Rechazada"}
+    assert [v["technique"] for v in only_drafts.json()] == ["Rechazada"]
+    assert as_contributor.status_code == 403

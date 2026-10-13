@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from uuid import UUID
 
-from sqlalchemy import delete, func, insert, literal, select, update
+from sqlalchemy import delete, exists, func, insert, literal, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.outbound.persistence.models.catalog import (
@@ -74,7 +74,10 @@ class SQLAlchemyVersionRepository:
         )
 
     async def list_all(
-        self, states: Iterable[VersionState], created_by: UUID | None = None
+        self,
+        states: Iterable[VersionState],
+        created_by: UUID | None = None,
+        reviewed_by: UUID | None = None,
     ) -> list[VersionSummary]:
         query = (
             self._summary_query()
@@ -83,6 +86,17 @@ class SQLAlchemyVersionRepository:
         )
         if created_by is not None:
             query = query.where(TechniqueVersion.created_by == created_by)
+        if reviewed_by is not None:
+            # Las que aprobó (reviewed_by) o rechazó alguna vez (version_rejections),
+            # sin contar las propias que publicó directo: revisar es sobre lo de otros.
+            rejected = exists().where(
+                VersionRejection.version_id == TechniqueVersion.id,
+                VersionRejection.rejected_by == reviewed_by,
+            )
+            query = query.where(
+                or_(TechniqueVersion.reviewed_by == reviewed_by, rejected),
+                TechniqueVersion.created_by != reviewed_by,
+            )
         return [
             VersionSummary(**row._mapping) for row in await self._session.execute(query)
         ]

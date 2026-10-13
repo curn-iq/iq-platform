@@ -53,3 +53,13 @@ async def test_only_admin_manages_roles(client, reviewer, user):
 
     assert list_.status_code == 403
     assert change.status_code == 403
+
+
+@pytest.mark.anyio
+async def test_admin_sees_registration_and_accepted_policy(client, admin, user):
+    response_ = await client.get("/users", headers=auth_headers(admin))
+
+    record = next(u for u in response_.json() if u["email"] == "usuaria@prueba.com")
+    assert record["policy_version"] == "1.0"
+    assert record["policy_accepted_at"]
+    assert record["created_at"]
