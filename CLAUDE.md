@@ -46,6 +46,12 @@ navegación (ver más abajo) NO se considera un módulo.
   permanente — cachea por sesión, ver "Comunicación entre módulos").
 - Núcleo del proyecto de grado (visión computacional), pero ya no es el único
   entregable — ver nota de arriba.
+- **MVP** (decidido por Mauricio el 2026-10-13): valida la **mesa de Mayo de
+  las cinco técnicas de Cirugía General**. Dataset propio: fotos de la mesa
+  real tomadas por el programa de IQ, etiquetadas por ING y publicadas en
+  Kaggle; cada clase es un instrumento del catálogo. Alcance, decisiones por
+  definir y avance:
+  [`sivri/README.md`](sivri/README.md).
 
 ### M2 — DataIQ (Plataforma y Dataset de Técnicas Quirúrgicas)
 
