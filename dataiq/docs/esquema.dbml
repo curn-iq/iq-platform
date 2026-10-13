@@ -1,236 +1,265 @@
 // Ids: UUIDv7 generado por la base de datos (uuidv7(), PostgreSQL 18+).
 // Da a cada registro una identidad única entre instancias de DataIQ.
+// Nombres en inglés (tablas en plural, snake_case); notas en español.
 
-Enum rol_usuario {
-  usuario
-  colaborador
-  revisor
+Enum user_role {
+  user
+  contributor
+  reviewer
   admin
 }
 
-Enum estado_version {
-  borrador
-  en_revision
-  publicada
-  reemplazada
-  archivada
+Enum version_state {
+  draft
+  in_review
+  published
+  superseded
+  archived
 }
 
-Table Usuario {
+Table users {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null]
+  name Varchar [not null]
   email Varchar [not null, unique]
   password_hash Varchar [not null]
-  rol rol_usuario [not null, default: 'usuario']
-  fecha_creacion timestamptz [not null, default: `now()`]
-  fecha_aceptacion_politica timestamptz [not null]
-  version_politica Varchar [not null]
+  role user_role [not null, default: 'user']
+  created_at timestamptz [not null, default: `now()`]
+  policy_accepted_at timestamptz [not null]
+  policy_version Varchar [not null]
 
   Note: '''
-  fecha_aceptacion_politica y version_politica son la prueba de la autorización
-  de tratamiento de datos personales (Decreto 1377 de 2013, art. 8).
+  policy_accepted_at y policy_version son la prueba de la autorización de
+  tratamiento de datos personales (Decreto 1377 de 2013, art. 8).
   '''
 }
 
-Table Especialidad {
+Table specialties {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
+  name Varchar [not null, unique]
 }
 
-Table Tecnica {
+Table techniques {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null]
-  especialidad_id uuid [not null, ref: > Especialidad.id]
-  creado_por uuid [not null, ref: > Usuario.id]
-  fecha_creacion timestamptz [not null, default: `now()`]
+  name Varchar [not null]
+  specialty_id uuid [not null, ref: > specialties.id]
+  created_by uuid [not null, ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (nombre, especialidad_id) [unique]
+    (name, specialty_id) [unique]
   }
 }
 
-Table TecnicaVersion {
+Table technique_versions {
   id uuid [pk, default: `uuidv7()`]
-  tecnica_id uuid [not null, ref: > Tecnica.id]
-  numero Int [not null]
-  estado estado_version [not null, default: 'borrador']
-  codigo_cups Varchar
-  anestesia Varchar
-  posicion_paciente Varchar
-  ropa Varchar
-  descripcion Text
-  indicaciones Text
-  complicaciones Text
-  tecnica_quirurgica Text
-  fuente Text [note: 'De dónde salió el contenido de la versión (enlaces o libros)']
-  creado_por uuid [not null, ref: > Usuario.id]
-  revisado_por uuid [ref: >? Usuario.id]
-  fecha_creacion timestamptz [not null, default: `now()`]
-  fecha_actualizacion timestamptz [not null, default: `now()`]
-  fecha_revision timestamptz
+  technique_id uuid [not null, ref: > techniques.id]
+  number Int [not null]
+  state version_state [not null, default: 'draft']
+  cups_code Varchar
+  anesthesia Varchar
+  patient_position Varchar
+  drapes Varchar
+  description Text
+  indications Text
+  complications Text
+  surgical_technique Text
+  source Text [note: 'De dónde salió el contenido de la versión (enlaces o libros)']
+  created_by uuid [not null, ref: > users.id]
+  reviewed_by uuid [ref: >? users.id]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  reviewed_at timestamptz
 
   indexes {
-    (tecnica_id, numero) [unique]
+    (technique_id, number) [unique]
   }
 
   checks {
-    `(estado IN ('borrador', 'en_revision')) = (revisado_por IS NULL AND fecha_revision IS NULL)` [name: 'revision_coherente']
+    `(state IN ('draft', 'in_review')) = (reviewed_by IS NULL AND reviewed_at IS NULL)` [name: 'review_consistent']
   }
 
   Note: '''
   Índices únicos parciales (DBML no los soporta, van en la migración):
-  CREATE UNIQUE INDEX una_publicada_por_tecnica ON "TecnicaVersion" (tecnica_id) WHERE estado = 'publicada';
-  CREATE UNIQUE INDEX un_borrador_por_tecnica ON "TecnicaVersion" (tecnica_id) WHERE estado IN ('borrador', 'en_revision');
+  CREATE UNIQUE INDEX one_published_per_technique ON technique_versions (technique_id) WHERE state = 'published';
+  CREATE UNIQUE INDEX one_in_progress_per_technique ON technique_versions (technique_id) WHERE state IN ('draft', 'in_review');
   '''
 }
 
-Table RechazoVersion {
+Table version_rejections {
   id uuid [pk, default: `uuidv7()`]
-  version_id uuid [not null, ref: > TecnicaVersion.id]
-  rechazado_por uuid [not null, ref: > Usuario.id]
-  motivo Text [not null]
-  fecha timestamptz [not null, default: `now()`]
+  version_id uuid [not null, ref: > technique_versions.id]
+  rejected_by uuid [not null, ref: > users.id]
+  reason Text [not null]
+  created_at timestamptz [not null, default: `now()`]
 
   indexes {
     version_id
   }
 
   checks {
-    `btrim(motivo) <> ''` [name: 'motivo_no_vacio']
+    `btrim(reason) <> ''` [name: 'reason_not_empty']
   }
 
   Note: 'Cada vez que un revisor devuelve una versión en revisión: quién, por qué y cuándo. La versión vuelve a borrador.'
 }
 
-Table CategoriaInstrumental {
+Table instrument_categories {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
+  name Varchar [not null, unique]
 }
 
-Table Instrumental {
+Table instruments {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
-  categoria_id uuid [not null, ref: > CategoriaInstrumental.id]
-  descripcion Varchar
+  name Varchar [not null, unique]
+  category_id uuid [not null, ref: > instrument_categories.id]
+  description Varchar
 }
 
-Table InstrumentalAlias {
+Table instrument_aliases {
   id uuid [pk, default: `uuidv7()`]
-  instrumental_id uuid [not null, ref: > Instrumental.id]
+  instrument_id uuid [not null, ref: > instruments.id]
   alias Varchar [not null, unique]
 }
 
-Table ItemTecnica {
+Table zones {
   id uuid [pk, default: `uuidv7()`]
-  version_id uuid [not null, ref: > TecnicaVersion.id]
-  zona_id uuid [ref: >? Zona.id]
-  numero_leyenda Int
-  texto_fuente Varchar [not null]
+  name Varchar [not null, unique]
+}
+
+Table version_zones {
+  version_id uuid [ref: > technique_versions.id]
+  zone_id uuid [ref: > zones.id]
+  used Boolean [not null]
+  grid_rows Int
+  grid_columns Int
 
   indexes {
-    (version_id, zona_id, numero_leyenda) [unique]
-    (id, version_id, zona_id) [unique]
+    (version_id, zone_id) [pk]
   }
 
   checks {
-    `numero_leyenda IS NULL OR zona_id IS NOT NULL` [name: 'numero_con_mesa']
+    `used = (grid_rows IS NOT NULL AND grid_columns IS NOT NULL)` [name: 'size_when_used']
+    `(grid_rows IS NULL OR grid_rows >= 1) AND (grid_columns IS NULL OR grid_columns >= 1)` [name: 'valid_size']
   }
 
   Note: '''
-  Cada mesa tiene su propia numeración (Mayo 1..n, Reserva 1..m): zona_id dice
+  Lo que la versión dice de cada mesa. used = false es «no lleva» (la técnica
+  no usa esa mesa), distinto de no tener fila. Si la lleva, grid_rows y
+  grid_columns son el tamaño de su grilla. Que los objetos y sus celdas caigan
+  en una mesa que se lleva y dentro de su tamaño se valida en el dominio.
+  '''
+}
+
+Table technique_items {
+  id uuid [pk, default: `uuidv7()`]
+  version_id uuid [not null, ref: > technique_versions.id]
+  zone_id uuid [ref: >? zones.id]
+  legend_number Int
+  source_text Varchar [not null]
+
+  indexes {
+    (version_id, zone_id, legend_number) [unique]
+    (id, version_id, zone_id) [unique]
+  }
+
+  checks {
+    `legend_number IS NULL OR zone_id IS NOT NULL` [name: 'number_requires_zone']
+  }
+
+  Note: '''
+  Cada mesa tiene su propia numeración (Mayo 1..n, Reserva 1..m): zone_id dice
   a qué mesa pertenece el número. Un objeto solo del listado no tiene ni mesa
   ni número.
   '''
 }
 
-Table ItemTecnicaComponente {
+Table item_components {
   id uuid [pk, default: `uuidv7()`]
-  item_id uuid [not null, ref: > ItemTecnica.id]
-  instrumental_id uuid [ref: >? Instrumental.id]
-  sutura_id uuid [ref: >? Sutura.id]
+  item_id uuid [not null, ref: > technique_items.id]
+  instrument_id uuid [ref: >? instruments.id]
+  suture_id uuid [ref: >? sutures.id]
 
   checks {
-    `num_nonnulls(instrumental_id, sutura_id) = 1` [name: 'componente_exactamente_uno']
+    `num_nonnulls(instrument_id, suture_id) = 1` [name: 'component_exactly_one']
   }
 }
 
-Table Zona {
-  id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
-}
-
-Table PosicionMesa {
+Table item_cells {
   id uuid [pk, default: `uuidv7()`]
   item_id uuid [not null]
   version_id uuid [not null]
-  zona_id uuid [not null, ref: > Zona.id]
-  fila Int [not null]
-  columna Int [not null]
+  zone_id uuid [not null, ref: > zones.id]
+  grid_row Int [not null]
+  grid_column Int [not null]
 
   indexes {
-    (version_id, zona_id, fila, columna) [unique]
+    (version_id, zone_id, grid_row, grid_column) [unique]
   }
 
   checks {
-    `fila >= 1 AND columna >= 1` [name: 'celda_valida']
-  }
-}
-
-Ref: PosicionMesa.(item_id, version_id, zona_id) > ItemTecnica.(id, version_id, zona_id)
-
-Table Sutura {
-  id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null]
-  calibre Varchar
-  tipo_aguja Varchar
-
-  indexes {
-    (nombre, calibre, tipo_aguja) [unique]
+    `grid_row >= 1 AND grid_column >= 1` [name: 'valid_cell']
   }
 
   Note: '''
-  El UNIQUE (nombre, calibre, tipo_aguja) va con NULLS NOT DISTINCT
+  grid_row y grid_column (no row y column): column es palabra reservada en SQL.
+  '''
+}
+
+Ref: item_cells.(item_id, version_id, zone_id) > technique_items.(id, version_id, zone_id)
+
+Table sutures {
+  id uuid [pk, default: `uuidv7()`]
+  name Varchar [not null]
+  gauge Varchar
+  needle_type Varchar
+
+  indexes {
+    (name, gauge, needle_type) [unique]
+  }
+
+  Note: '''
+  El UNIQUE (name, gauge, needle_type) va con NULLS NOT DISTINCT
   (PostgreSQL 15+; DBML no lo soporta, se declara en el modelo): dos suturas
   con los mismos datos y los mismos campos vacíos cuentan como repetidas.
   '''
 }
 
-Table TecnicaVersion_Sutura {
-  version_id uuid [ref: > TecnicaVersion.id]
-  sutura_id uuid [ref: > Sutura.id]
-  uso Text
+Table version_sutures {
+  version_id uuid [ref: > technique_versions.id]
+  suture_id uuid [ref: > sutures.id]
+  usage Text
 
   indexes {
-    (version_id, sutura_id) [pk]
+    (version_id, suture_id) [pk]
   }
 }
 
-Table EquipoBiomedico {
+Table biomedical_equipment {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
-  descripcion Varchar
+  name Varchar [not null, unique]
+  description Varchar
 }
 
-Table TecnicaVersion_EquipoBiomedico {
-  version_id uuid [ref: > TecnicaVersion.id]
-  equipo_id uuid [ref: > EquipoBiomedico.id]
+Table version_equipment {
+  version_id uuid [ref: > technique_versions.id]
+  equipment_id uuid [ref: > biomedical_equipment.id]
 
   indexes {
-    (version_id, equipo_id) [pk]
+    (version_id, equipment_id) [pk]
   }
 }
 
-Table DispositivoMedico {
+Table medical_devices {
   id uuid [pk, default: `uuidv7()`]
-  nombre Varchar [not null, unique]
-  descripcion Varchar
+  name Varchar [not null, unique]
+  description Varchar
 }
 
-Table TecnicaVersion_DispositivoMedico {
-  version_id uuid [ref: > TecnicaVersion.id]
-  dispositivo_id uuid [ref: > DispositivoMedico.id]
+Table version_devices {
+  version_id uuid [ref: > technique_versions.id]
+  device_id uuid [ref: > medical_devices.id]
 
   indexes {
-    (version_id, dispositivo_id) [pk]
+    (version_id, device_id) [pk]
   }
 }

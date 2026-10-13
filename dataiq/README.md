@@ -37,17 +37,17 @@ desde `dataiq/backend`.
 
    ```sh
    uv run alembic upgrade head
-   uv run python -m semilla.cargar
+   uv run python -m seed.load
    uv run fastapi dev app/main.py
    ```
 
    La documentación interactiva queda en http://127.0.0.1:8000/docs.
 
 4. Para escribir hace falta una cuenta con rol: registrarse en
-   `POST /auth/registro` y asignarse el rol por terminal:
+   `POST /auth/register` y asignarse el rol por terminal:
 
    ```sh
-   uv run python -m app.adaptadores.entrada.cli.asignar_rol <correo> admin
+   uv run python -m app.adapters.inbound.cli.assign_role <correo> admin
    ```
 
 Tests y estilo:

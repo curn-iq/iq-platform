@@ -71,12 +71,17 @@ navegación (ver más abajo) NO se considera un módulo.
     DataIQ firma con su clave privada y publica la clave pública (JWKS); los
     demás módulos validan solo con la pública. Nunca HS256 con secreto
     compartido (violaría la regla de no mezclar credenciales entre módulos).
-    Se usa **EdDSA (Ed25519)**: la clave privada va en `JWT_CLAVE_PRIVADA`
+    Se usa **EdDSA (Ed25519)**: la clave privada va en `JWT_PRIVATE_KEY`
     (solo en el entorno de DataIQ) y la pública se publica en
     `/.well-known/jwks.json`.
   - Contenedorización: Docker / Podman (Dockerfiles compatibles entre ambos).
   - Arquitectura: **hexagonal** (dominio / puertos / adaptadores).
   - Migraciones: SQLAlchemy + Alembic.
+  - Idioma del código (decidido por el equipo el 2026-10-13): nombres en
+    inglés en el backend (funciones, clases, variables), la base de datos
+    (tablas, columnas, enums) y la API (rutas y campos JSON). Comentarios,
+    docstrings, mensajes de error y etiquetas de Swagger, en español.
+    `seed/tecnicas.xlsx` sigue en español; la carga traduce.
 
 - **Avance del backend**: [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md).
   Leerla al empezar a trabajar en el backend y marcar cada pieza al terminarla.
@@ -124,61 +129,68 @@ navegación (ver más abajo) NO se considera un módulo.
     (requiere **PostgreSQL 18**, también en Neon). Motivo: DataIQ es open
     source y cada institución puede tener su instancia; con UUID el catálogo
     base tiene la misma identidad en todas, y los mapeos que guardan SIVRI
-    (clases YOLO) y SIMIQ3D (modelos 3D) contra `Instrumental.id` sirven en
+    (clases YOLO) y SIMIQ3D (modelos 3D) contra `instruments.id` sirven en
     cualquier instancia. Costo aceptado: un UUIDv7 revela su fecha de creación.
   - **Fechas: `timestamptz`** (instante exacto, se guarda en UTC). El
     servidor, la BD y los usuarios están en zonas horarias distintas.
-    `fecha_creacion` y `fecha_actualizacion` tienen `now()` por defecto.
+    `created_at` y `updated_at` tienen `now()` por defecto.
   - **Solo importa la posición, no la cantidad** (definido por IQ). No existe
     campo `cantidad`.
-  - **Versionado**: `Tecnica` es solo la identidad (nombre + especialidad).
-    Todo el contenido (datos clínicos, `codigo_cups`, items, posiciones,
-    suturas, equipos, dispositivos) cuelga de `TecnicaVersion`. Editar una
-    técnica publicada = crear una versión nueva (copia) en `borrador`; al
-    aprobarla, en una misma transacción la anterior pasa a `reemplazada` y la
-    nueva a `publicada`. Máximo una versión publicada y una en curso
-    (`borrador`/`en_revision`) por técnica. Solo la versión publicada se expone
+  - **Versionado**: `techniques` es solo la identidad (nombre + especialidad).
+    Todo el contenido (datos clínicos, `cups_code`, mesas, items, posiciones,
+    suturas, equipos, dispositivos) cuelga de `technique_versions`. Editar una
+    técnica publicada = crear una versión nueva (copia) en `draft`; al
+    aprobarla, en una misma transacción la anterior pasa a `superseded` y la
+    nueva a `published`. Máximo una versión publicada y una en curso
+    (`draft`/`in_review`) por técnica. Solo la versión publicada se expone
     a estudiantes, SIVRI y SIMIQ3D.
   - Transiciones de estado permitidas (se validan en el dominio, no en la BD):
-    `borrador → en_revision`, `en_revision → borrador` (rechazo),
-    `en_revision → publicada`, `publicada → reemplazada`,
-    `publicada → archivada`, y `borrador → publicada` (el revisor o el admin
+    `draft → in_review`, `in_review → draft` (rechazo),
+    `in_review → published`, `published → superseded`,
+    `published → archived`, y `draft → published` (el revisor o el admin
     publica lo suyo sin revisión). Publicar solo lo hace un revisor o un admin
-    (`validar_publicacion`).
-  - `TecnicaVersion.fuente`: de dónde salió el contenido de la versión
+    (`validate_publishing`).
+  - `technique_versions.source`: de dónde salió el contenido de la versión
     (enlaces o libros), para validarlo.
-  - Carga inicial: `dataiq/backend/semilla/cargar.py` lee
-    `semilla/tecnicas.xlsx` y deja cada técnica con su versión 1 publicada; se
-    puede correr varias veces (`uv run python -m semilla.cargar`).
-  - `ItemTecnica` = un objeto físico de la versión, con su `numero_leyenda`
+  - Carga inicial: `dataiq/backend/seed/load.py` lee
+    `seed/tecnicas.xlsx` y deja cada técnica con su versión 1 publicada; se
+    puede correr varias veces (`uv run python -m seed.load`).
+  - `version_zones` = lo que la versión dice de cada mesa: si la lleva
+    (`used`; `false` es el «no lleva» de los documentos de IQ) y, si la lleva,
+    el tamaño de su grilla (`grid_rows`, `grid_columns`). El dominio valida
+    que cada objeto con mesa esté en una que la versión lleva y que sus celdas
+    caigan dentro del tamaño.
+  - `technique_items` = un objeto físico de la versión, con su `legend_number`
     (trazabilidad al número del documento fuente de IQ; nulo si la técnica aún
-    no tiene diagrama de mesa) y `texto_fuente` literal. **Cada mesa tiene su
+    no tiene diagrama de mesa) y `source_text` literal. **Cada mesa tiene su
     propia numeración** en los documentos (Mayo 1..n, Reserva 1..m), por eso
-    el item lleva `zona_id` y es único por `(version_id, zona_id,
-    numero_leyenda)`: la BD rechaza "dos objetos reclaman el mismo número en
-    la misma mesa". Un número siempre tiene mesa (CHECK `numero_con_mesa`);
+    el item lleva `zone_id` y es único por `(version_id, zone_id,
+    legend_number)`: la BD rechaza "dos objetos reclaman el mismo número en
+    la misma mesa". Un número siempre tiene mesa (CHECK `number_requires_zone`);
     un objeto solo del listado no tiene ni mesa ni número.
-  - Objetos compuestos "X con Y" = **un** `ItemTecnica` con varios
-    `ItemTecnicaComponente` (cada uno apunta a un `Instrumental` o a una
-    `Sutura`, nunca a ambos ni a ninguno).
-  - `PosicionMesa` = celda `(zona, fila, columna)` en grilla discreta — **no**
+  - Objetos compuestos "X con Y" = **un** `technique_items` con varios
+    `item_components` (cada uno apunta a un instrumento o a una sutura, nunca
+    a ambos ni a ninguno).
+  - `item_cells` = celda `(zona, fila, columna)` en grilla discreta — **no**
     coordenadas continuas x/y (los arreglos de IQ son diagramas a mano, no
-    medidos). Un item puede ocupar varias celdas; una celda tiene un solo
-    objeto por versión. `PosicionMesa.version_id` y `PosicionMesa.zona_id`
-    son redundantes **a propósito**: sin ellos no se puede garantizar la
-    unicidad de celda, y la FK compuesta `(item_id, version_id, zona_id)`
-    impide que la celda quede en otra versión u otra mesa que su objeto (por
-    eso `ItemTecnica` necesita el `UNIQUE (id, version_id, zona_id)`:
-    PostgreSQL lo exige para esa FK). No "simplificar" quitándolos.
-  - `InstrumentalAlias` guarda las variantes crudas del catálogo apuntando a
+    medidos). Las columnas son `grid_row` y `grid_column` (`column` es palabra
+    reservada en SQL); en el dominio y el JSON son `row` y `column`. Un item
+    puede ocupar varias celdas; una celda tiene un solo objeto por versión.
+    `item_cells.version_id` y `item_cells.zone_id` son redundantes **a
+    propósito**: sin ellos no se puede garantizar la unicidad de celda, y la
+    FK compuesta `(item_id, version_id, zone_id)` impide que la celda quede en
+    otra versión u otra mesa que su objeto (por eso `technique_items` necesita
+    el `UNIQUE (id, version_id, zone_id)`: PostgreSQL lo exige para esa FK).
+    No "simplificar" quitándolos.
+  - `instrument_aliases` guarda las variantes crudas del catálogo apuntando a
     su instrumento canónico (trazabilidad de la normalización 148 → 94).
-  - `codigo_cups`: código CUPS (Clasificación Única de Procedimientos en
+  - `cups_code`: código CUPS (Clasificación Única de Procedimientos en
     Salud, Colombia) del procedimiento; opcional. CIE-10 no aplica porque
     clasifica diagnósticos, no procedimientos.
-  - `Usuario.fecha_aceptacion_politica` y `Usuario.version_politica` son la
-    prueba de la autorización de tratamiento de datos personales que exige el
-    Decreto 1377 de 2013 (art. 8).
-  - Roles en el enum `rol_usuario`: ver "Modelo de roles" abajo.
+  - `users.policy_accepted_at` y `users.policy_version` son la prueba de la
+    autorización de tratamiento de datos personales que exige el Decreto 1377
+    de 2013 (art. 8).
+  - Roles en el enum `user_role`: ver "Modelo de roles" abajo.
 
 - **Modelo de roles** (decidido por Mauricio el 2026-10-04; diagramas en
   [`docs/flujos.md`](docs/flujos.md)):
@@ -195,8 +207,8 @@ navegación (ver más abajo) NO se considera un módulo.
     pereza). Usar SIVRI y SIMIQ3D también requiere cuenta. Escribir y publicar
     depende del rol.
   - Los roles son **acumulativos**: cada uno puede todo lo del anterior
-    (`usuario` < `colaborador` < `revisor` < `admin`). Cada cuenta tiene un
-    solo rol.
+    (`usuario` < `colaborador` < `revisor` < `admin`; en el código, `user` <
+    `contributor` < `reviewer` < `admin`). Cada cuenta tiene un solo rol.
 
     | Quién | Qué puede hacer | Cómo lo obtiene |
     |---|---|---|
@@ -222,19 +234,19 @@ navegación (ver más abajo) NO se considera un módulo.
     documentos de IQ. Quien quiera otro arreglo tiene el código.
   - Todo el esquema vive en un solo archivo, incluidas las restricciones: los
     CHECK van en bloques `checks { }` (se exportan al SQL); los dos índices
-    únicos parciales de `TecnicaVersion` y el `NULLS NOT DISTINCT` del UNIQUE
-    de `Sutura` van en la `Note` de su tabla, porque DBML no los soporta.
+    únicos parciales de `technique_versions` y el `NULLS NOT DISTINCT` del
+    UNIQUE de `sutures` van en la `Note` de su tabla, porque DBML no los soporta.
     Verificado en PostgreSQL 17. Al pasarlo a SQLAlchemy, **declarar todo en
     los modelos** (`CheckConstraint`, `Index(..., unique=True,
     postgresql_where=...)`, `UniqueConstraint(...,
     postgresql_nulls_not_distinct=True)`); si no, `alembic --autogenerate` no
     los incluye. La BD se crea con las migraciones de Alembic, nunca con el
     "Export" de dbdiagram (no trae esas restricciones).
-  - El mapeo de clases de YOLO26 → `Instrumental.id` no está modelado todavía
+  - El mapeo de clases de YOLO26 → `instruments.id` no está modelado todavía
     (depende de la definición de SIVRI).
   - DataIQ **no guarda imágenes del instrumental** (fuera de alcance). Los
-    modelos 3D son de SIMIQ3D: el mapeo modelo 3D → `Instrumental.id` vive en
-    su propia BD, igual que las clases de YOLO en SIVRI. `Instrumental.descripcion`
+    modelos 3D son de SIMIQ3D: el mapeo modelo 3D → `instruments.id` vive en
+    su propia BD, igual que las clases de YOLO en SIVRI. `instruments.description`
     es la descripción breve que SIMIQ3D muestra al hacer clic; se llena con
     fuentes citables.
 
@@ -252,7 +264,7 @@ navegación (ver más abajo) NO se considera un módulo.
     objeto físico en una sola posición**, no dos instrumentos compitiendo por el
     mismo número. Un conflicto real es cuando dos instrumentos independientes
     reclaman el mismo número sin ese patrón "X con Y".
-  - La carga inicial (`semilla/tecnicas.xlsx`, hoja `catalogo`) suma a esos
+  - La carga inicial (`seed/tecnicas.xlsx`, hoja `catalogo`) suma a esos
     94 los objetos de los arreglos de mesa: 146 instrumentos en total.
   - Lo que no cuadra en los documentos de IQ (numeración repetida, mesas sin
     identificar, arreglos que faltan) y cómo quedó en la carga está en
@@ -269,14 +281,14 @@ navegación (ver más abajo) NO se considera un módulo.
   - Evitar N+1 queries (usar joins / eager loading).
   - **`Cache-Control` / `ETag` en las rutas GET** — obligatorio en cualquier
     endpoint nuevo de lectura.
-  - Endpoint separado `/catalogo/completo` (bulk, para que SIVRI y SIMIQ3D lo
+  - Endpoint separado `/catalog/full` (bulk, para que SIVRI y SIMIQ3D lo
     cacheen una vez por sesión) distinto de los endpoints paginados/filtrables
     para usuarios humanos del frontend.
   - El JSON lo genera Pydantic (serializa en Rust); no hace falta `orjson`.
 
 - **API**: las rutas y sus reglas (quién puede qué) están en la checklist del
   backend; la documentación interactiva, en `/docs`. El primer admin se
-  asigna por terminal: `uv run python -m app.adaptadores.entrada.cli.asignar_rol
+  asigna por terminal: `uv run python -m app.adapters.inbound.cli.assign_role
   <correo> admin`; los demás roles los asigna un admin desde la API.
 
 ### M3 — SIMIQ3D (Sistema Interactivo de Modelado e Instrumentación Quirúrgica 3D)
@@ -318,7 +330,7 @@ mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.
   directa a la base de datos de otro módulo.
 - DataIQ es la **fuente única de verdad** del catálogo de técnicas: SIVRI y
   SIMIQ3D no mantienen su propia copia permanente, cachean por sesión (ver
-  `/catalogo/completo` arriba) para reducir latencia, no para duplicar la
+  `/catalog/full` arriba) para reducir latencia, no para duplicar la
   fuente de verdad.
 - Autenticación centralizada: DataIQ emite los JWT; los demás módulos solo
   validan firma.
@@ -375,10 +387,10 @@ propia.
 1. **No inventar datos de catálogo ni de técnicas quirúrgicas.** Todo el
    instrumental, suturas, posiciones de mesa, etc. sale de una fuente
    citable: los documentos de IQ o las fuentes anotadas en
-   `TecnicaVersion.fuente`. Lo que la fuente no trae (ej. el arreglo de mesa
+   `technique_versions.source`. Lo que la fuente no trae (ej. el arreglo de mesa
    de Nefrectomía laparoscópica) solo se puede proponer con los principios
    publicados de armado de mesa y marcado como «propuesto» (columna `origen`
-   de `semilla/tecnicas.xlsx`), para que IQ lo valide. Nunca se rellena por
+   de `seed/tecnicas.xlsx`), para que IQ lo valide. Nunca se rellena por
    suposición sin marcarlo.
 2. **No mezclar credenciales entre módulos.** Cada módulo tiene su propio Neon
    Postgres y su propio deploy en Cloud Run; no compartir variables de entorno

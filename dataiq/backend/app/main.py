@@ -1,15 +1,15 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from app.adaptadores.entrada.api.rutas import (
-    autenticacion,
-    catalogo,
-    tecnicas,
-    usuarios,
-    versiones,
+from app.adapters.inbound.api.routes import (
+    auth,
+    catalog,
+    techniques,
+    users,
+    versions,
 )
-from app.dominio.errores import Conflicto, ContenidoInvalido, NoEncontrado, SinPermiso
-from app.dominio.tecnicas import PublicacionNoPermitida, TransicionNoPermitida
+from app.domain.errors import Conflict, Forbidden, InvalidContent, NotFound
+from app.domain.techniques import PublishingNotAllowed, TransitionNotAllowed
 
 app = FastAPI(
     title="DataIQ",
@@ -17,38 +17,38 @@ app = FastAPI(
     version="0.1.0",
 )
 
-app.include_router(tecnicas.router)
-app.include_router(versiones.router)
-app.include_router(catalogo.router)
-app.include_router(autenticacion.router)
-app.include_router(usuarios.router)
+app.include_router(techniques.router)
+app.include_router(versions.router)
+app.include_router(catalog.router)
+app.include_router(auth.router)
+app.include_router(users.router)
 
 # Los errores del dominio no saben de HTTP; aquí se traducen a su código.
-CODIGOS = {
-    NoEncontrado: status.HTTP_404_NOT_FOUND,
-    SinPermiso: status.HTTP_403_FORBIDDEN,
-    PublicacionNoPermitida: status.HTTP_403_FORBIDDEN,
-    Conflicto: status.HTTP_409_CONFLICT,
-    TransicionNoPermitida: status.HTTP_409_CONFLICT,
+STATUS_CODES = {
+    NotFound: status.HTTP_404_NOT_FOUND,
+    Forbidden: status.HTTP_403_FORBIDDEN,
+    PublishingNotAllowed: status.HTTP_403_FORBIDDEN,
+    Conflict: status.HTTP_409_CONFLICT,
+    TransitionNotAllowed: status.HTTP_409_CONFLICT,
 }
 
 
-def _responder_error(codigo: int):
-    async def manejar(request: Request, error: Exception) -> JSONResponse:
-        return JSONResponse({"detail": str(error)}, status_code=codigo)
+def _error_response(code: int):
+    async def handle(request: Request, error: Exception) -> JSONResponse:
+        return JSONResponse({"detail": str(error)}, status_code=code)
 
-    return manejar
-
-
-for excepcion, codigo in CODIGOS.items():
-    app.add_exception_handler(excepcion, _responder_error(codigo))
+    return handle
 
 
-@app.exception_handler(ContenidoInvalido)
-async def manejar_contenido_invalido(
-    request: Request, error: ContenidoInvalido
+for exception, code in STATUS_CODES.items():
+    app.add_exception_handler(exception, _error_response(code))
+
+
+@app.exception_handler(InvalidContent)
+async def handle_invalid_content(
+    request: Request, error: InvalidContent
 ) -> JSONResponse:
     return JSONResponse(
-        {"detail": error.problemas},
+        {"detail": error.problems},
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )

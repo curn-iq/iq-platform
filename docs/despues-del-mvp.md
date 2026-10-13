@@ -67,7 +67,7 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   correos.
 - **Limitar los intentos de inicio de sesión** para frenar a quien prueba
   contraseñas por fuerza bruta.
-- **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalogo/completo`, si
+- **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalog/full`, si
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.
 
