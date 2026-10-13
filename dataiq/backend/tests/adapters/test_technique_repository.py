@@ -246,6 +246,7 @@ async def test_get_published_returns_items_stands_and_elements_of_the_version(
     assert result.items == (
         ItemDetail(
             id=composite.id,
+            zone_id=mayo_stand.id,
             zone="Mesa de prueba",
             legend_number=1,
             source_text="Pinza con sutura",
@@ -261,6 +262,7 @@ async def test_get_published_returns_items_stands_and_elements_of_the_version(
         ),
         ItemDetail(
             id=list_only.id,
+            zone_id=None,
             zone=None,
             legend_number=None,
             source_text="Tijera",

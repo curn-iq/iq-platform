@@ -60,7 +60,7 @@ async def test_reviewer_creates_and_updates_instruments(client, reviewer, instru
         "name": "Tijera nueva",
         "category": "Categoría de prueba",
         "description": "Corta tejido",
-        "alias": [],
+        "aliases": [],
     }
 
 
@@ -76,3 +76,55 @@ async def test_instrument_name_cannot_repeat(client, reviewer, instrument):
     )
 
     assert response_.status_code == 409
+
+
+@pytest.mark.anyio
+async def test_specialties_are_public_and_cached(client, specialty):
+    response_ = await client.get("/specialties")
+
+    assert response_.status_code == 200
+    assert response_.json() == [
+        {"id": str(specialty.id), "name": "Especialidad de prueba"}
+    ]
+    assert response_.headers["cache-control"] == "public, max-age=300"
+    assert response_.headers["etag"]
+
+
+@pytest.mark.anyio
+async def test_patch_replaces_the_aliases(client, reviewer, instrument):
+    url = f"/instruments/{instrument.id}"
+    headers = auth_headers(reviewer)
+
+    first = await client.patch(
+        url, json={"aliases": ["Pinza P", "Pinza P", "Pinzas P"]}, headers=headers
+    )
+    untouched = await client.patch(url, json={"description": "D"}, headers=headers)
+    replaced = await client.patch(url, json={"aliases": ["Pinza Q"]}, headers=headers)
+    emptied = await client.patch(url, json={"aliases": []}, headers=headers)
+
+    assert first.json()["aliases"] == ["Pinza P", "Pinzas P"]  # sin repetidos
+    assert untouched.json()["aliases"] == ["Pinza P", "Pinzas P"]  # no se mandaron
+    assert replaced.json()["aliases"] == ["Pinza Q"]
+    assert emptied.json()["aliases"] == []
+
+
+@pytest.mark.anyio
+async def test_an_alias_belongs_to_a_single_instrument(client, reviewer, instrument):
+    headers = auth_headers(reviewer)
+    other = await client.post(
+        "/instruments",
+        json={"name": "Otra pinza", "category_id": str(instrument.category_id)},
+        headers=headers,
+    )
+    await client.patch(
+        f"/instruments/{instrument.id}", json={"aliases": ["Pinza P"]}, headers=headers
+    )
+
+    response_ = await client.patch(
+        f"/instruments/{other.json()['id']}",
+        json={"aliases": ["Pinza P"]},
+        headers=headers,
+    )
+
+    assert response_.status_code == 409
+    assert response_.json()["detail"] == "El alias «Pinza P» ya es de otro instrumento"

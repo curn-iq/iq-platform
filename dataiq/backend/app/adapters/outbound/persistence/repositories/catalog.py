@@ -1,7 +1,7 @@
 from collections import defaultdict
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.outbound.persistence.models.catalog import (
@@ -30,7 +30,7 @@ class SQLAlchemyCatalogRepository:
     async def list_instruments(
         self, instrument_id: UUID | None = None
     ) -> list[CatalogInstrument]:
-        alias: dict[UUID, list[str]] = defaultdict(list)
+        aliases: dict[UUID, list[str]] = defaultdict(list)
         alias_query = select(
             InstrumentAlias.instrument_id, InstrumentAlias.alias
         ).order_by(InstrumentAlias.alias)
@@ -39,7 +39,7 @@ class SQLAlchemyCatalogRepository:
                 InstrumentAlias.instrument_id == instrument_id
             )
         for row in await self._session.execute(alias_query):
-            alias[row.instrument_id].append(row.alias)
+            aliases[row.instrument_id].append(row.alias)
 
         query = (
             select(
@@ -62,7 +62,7 @@ class SQLAlchemyCatalogRepository:
                 name=row.name,
                 category=row.category,
                 description=row.description,
-                alias=tuple(alias[row.id]),
+                aliases=tuple(aliases[row.id]),
             )
             for row in await self._session.execute(query)
         ]
@@ -101,9 +101,31 @@ class SQLAlchemyCatalogRepository:
             instrument.category_id = changes.category_id
         if changes.description is not None:
             instrument.description = changes.description
+        if changes.aliases is not None:
+            await self._replace_aliases(instrument_id, changes.aliases)
         await self._session.flush()
         await self._session.commit()
         return await self.get_instrument(instrument_id)
+
+    async def _replace_aliases(
+        self, instrument_id: UUID, aliases: tuple[str, ...]
+    ) -> None:
+        taken = await self._session.scalar(
+            select(InstrumentAlias.alias).where(
+                InstrumentAlias.alias.in_(aliases),
+                InstrumentAlias.instrument_id != instrument_id,
+            )
+        )
+        if taken:
+            raise Conflict(f"El alias «{taken}» ya es de otro instrumento")
+        await self._session.execute(
+            delete(InstrumentAlias).where(
+                InstrumentAlias.instrument_id == instrument_id
+            )
+        )
+        self._session.add_all(
+            InstrumentAlias(instrument_id=instrument_id, alias=a) for a in aliases
+        )
 
     async def _validate_instrument(
         self,

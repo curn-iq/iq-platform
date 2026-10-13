@@ -79,6 +79,7 @@ class ItemDetail:
     """Un objeto físico de la técnica; sin zona ni celdas si solo va en el listado."""
 
     id: UUID
+    zone_id: UUID | None
     zone: str | None
     legend_number: int | None
     source_text: str

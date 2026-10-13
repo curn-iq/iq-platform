@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from uuid import UUID
 
-from sqlalchemy import delete, func, insert, literal, select, update
+from sqlalchemy import delete, exists, func, insert, literal, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.outbound.persistence.models.catalog import (
@@ -74,7 +74,10 @@ class SQLAlchemyVersionRepository:
         )
 
     async def list_all(
-        self, states: Iterable[VersionState], created_by: UUID | None = None
+        self,
+        states: Iterable[VersionState],
+        created_by: UUID | None = None,
+        reviewed_by: UUID | None = None,
     ) -> list[VersionSummary]:
         query = (
             self._summary_query()
@@ -83,6 +86,17 @@ class SQLAlchemyVersionRepository:
         )
         if created_by is not None:
             query = query.where(TechniqueVersion.created_by == created_by)
+        if reviewed_by is not None:
+            # Las que aprobó (reviewed_by) o rechazó alguna vez (version_rejections),
+            # sin contar las propias que publicó directo: revisar es sobre lo de otros.
+            rejected = exists().where(
+                VersionRejection.version_id == TechniqueVersion.id,
+                VersionRejection.rejected_by == reviewed_by,
+            )
+            query = query.where(
+                or_(TechniqueVersion.reviewed_by == reviewed_by, rejected),
+                TechniqueVersion.created_by != reviewed_by,
+            )
         return [
             VersionSummary(**row._mapping) for row in await self._session.execute(query)
         ]
@@ -405,6 +419,30 @@ class SQLAlchemyVersionRepository:
         self._session.add(new_)
         await self._session.flush()
         return new_.id
+
+    async def discard_draft(self, version_id: UUID) -> None:
+        """Borra un borrador con su contenido y sus rechazos. Si la técnica se
+        queda sin versiones (nunca se publicó), se borra también."""
+        version = await self._lock(version_id)
+        if version.state != VersionState.draft:
+            raise Conflict("Solo se descarta un borrador")
+        technique_id = version.technique_id
+        await self._delete_content(version_id)
+        await self._session.execute(
+            delete(VersionRejection).where(VersionRejection.version_id == version_id)
+        )
+        await self._session.delete(version)
+        await self._session.flush()
+        remaining = await self._session.scalar(
+            select(TechniqueVersion.id).where(
+                TechniqueVersion.technique_id == technique_id
+            )
+        )
+        if remaining is None:
+            await self._session.execute(
+                delete(Technique).where(Technique.id == technique_id)
+            )
+        await self._session.commit()
 
     # --- Cambios de estado -----------------------------------------------
 

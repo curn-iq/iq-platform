@@ -14,12 +14,25 @@ from app.adapters.inbound.api.schemas import (
     InstrumentCreateIn,
     InstrumentOut,
     InstrumentUpdateIn,
+    ReferenceOut,
 )
 from app.domain.users import Role, require_role
 
 router = APIRouter(tags=["Catálogo"])
 
 instrument_list = TypeAdapter(list[InstrumentOut])
+reference_list = TypeAdapter(list[ReferenceOut])
+
+
+@router.get("/specialties", response_model=list[ReferenceOut])
+async def list_specialties(request: Request, catalog: CatalogRepo) -> Response:
+    """Las especialidades, para filtrar el catálogo y elegir la de una técnica
+    nueva. Sin cuenta; cambian muy poco, por eso se guardan 5 minutos."""
+    specialties = await catalog.list_specialties()
+    body = reference_list.dump_json(
+        [ReferenceOut.model_validate(s) for s in specialties]
+    )
+    return respond_with_cache(request, body, max_age=300)
 
 
 @router.get("/catalog/full", response_model=FullCatalogOut)
@@ -85,7 +98,8 @@ async def update_instrument(
     catalog: CatalogRepo,
     account: CurrentAccount,
 ):
-    """Cambia el nombre, la categoría o la descripción. Desde revisor.
+    """Cambia el nombre, la categoría, la descripción o los alias (la lista que
+    se manda reemplaza la anterior). Desde revisor.
 
     No pasa por revisión: el cambio se ve de una vez en las técnicas publicadas
     que usan el instrumento. El instrumental no se borra.

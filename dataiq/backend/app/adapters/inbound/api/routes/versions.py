@@ -48,15 +48,23 @@ async def list_versions(
     account: CurrentAccount,
     state: Annotated[list[VersionState] | None, Query()] = None,
     mine: bool = False,
+    reviewed_by_me: bool = False,
 ) -> Response:
     """Versiones por estado (por defecto, las en curso), de la más reciente a la
     más vieja. Un colaborador solo ve las suyas; un revisor ve todas, o solo las
-    suyas con `mine=true`."""
+    suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
+    otros que aprobó o rechazó, en cualquier estado salvo que se pida uno."""
     require_role(account.role, Role.contributor)
-    only_mine = mine or not has_at_least(account.role, Role.reviewer)
-    found = await versions.list_all(
-        state or IN_PROGRESS, created_by=account.id if only_mine else None
-    )
+    if reviewed_by_me:
+        require_role(account.role, Role.reviewer)
+        found = await versions.list_all(
+            state or list(VersionState), reviewed_by=account.id
+        )
+    else:
+        only_mine = mine or not has_at_least(account.role, Role.reviewer)
+        found = await versions.list_all(
+            state or IN_PROGRESS, created_by=account.id if only_mine else None
+        )
     body = version_list.dump_json([VersionSummaryOut.model_validate(v) for v in found])
     return respond_with_cache(request, body, max_age=0, private=True)
 
@@ -91,6 +99,21 @@ async def update_version(
     validate_content(new_)
     await versions.replace_content(version_id, new_)
     return await versions.get(version_id)
+
+
+@router.delete("/{version_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def discard_draft(
+    version_id: UUID, versions: VersionRepo, account: CurrentAccount
+) -> None:
+    """Descarta un borrador: lo de quien lo creó, o cualquiera si es admin. Si
+    era la primera versión y la técnica nunca se publicó, se borra la técnica.
+    Lo publicado no se borra nunca: se archiva."""
+    version = await _get_version(versions, version_id)
+    if account.role != Role.admin:
+        _require_author(version, account)
+    if version.state != VersionState.draft:
+        raise Conflict("Solo se descarta un borrador")
+    await versions.discard_draft(version_id)
 
 
 async def _change_state(

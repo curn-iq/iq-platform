@@ -123,4 +123,4 @@ async def test_technique_instruments_require_account(
         "devices": [],
     }
     assert with_account.headers["cache-control"] == "private, max-age=60"
-    assert with_account.headers["vary"] == "Authorization"
+    assert with_account.headers["vary"] == "Authorization, Cookie, Origin"

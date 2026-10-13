@@ -1,10 +1,11 @@
 from collections.abc import AsyncIterator
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.adapters.inbound.api.session import session_token
 from app.adapters.outbound.persistence.database import SessionLocal
 from app.adapters.outbound.persistence.repositories.catalog import (
     SQLAlchemyCatalogRepository,
@@ -80,7 +81,9 @@ Hasher = Annotated[PasswordService, Depends(get_hasher)]
 Issuer = Annotated[TokenIssuer, Depends(get_issuer)]
 
 # auto_error=False: sin token no falla aquí; cada ruta decide si lo exige.
-_oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+# El «Authorize» de /docs pide el token a /auth/token (el login del navegador
+# deja una cookie y no devuelve el token).
+_oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 
 
 def _unauthenticated(detail: str) -> HTTPException:
@@ -92,15 +95,23 @@ def _unauthenticated(detail: str) -> HTTPException:
 
 
 async def get_optional_account(
-    token: Annotated[str | None, Depends(_oauth_scheme)],
+    request: Request,
+    bearer: Annotated[str | None, Depends(_oauth_scheme)],
     issuer: Issuer,
     users: UserRepo,
 ) -> Account | None:
+    # Primero Authorization (Swagger, servidores, apps); si no, la cookie del
+    # navegador.
+    token = bearer or session_token(request)
     if token is None:
         return None
     try:
         account_id = issuer.read_token(token)
     except InvalidToken as error:
+        if bearer is None:
+            # Una cookie vencida no impide navegar lo público: es como no
+            # tener sesión, y lo que pide cuenta responde 401.
+            return None
         raise _unauthenticated("El token no es válido o ya venció") from error
     # El rol se lee de la base de datos, no del token: si un admin lo cambia,
     # vale desde la siguiente petición.

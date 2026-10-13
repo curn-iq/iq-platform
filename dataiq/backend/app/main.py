@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 
 from app.adapters.inbound.api.routes import (
     auth,
@@ -8,6 +10,8 @@ from app.adapters.inbound.api.routes import (
     users,
     versions,
 )
+from app.adapters.inbound.api.session import CSRF_HEADER
+from app.config import config
 from app.domain.errors import Conflict, Forbidden, InvalidContent, NotFound
 from app.domain.techniques import PublishingNotAllowed, TransitionNotAllowed
 
@@ -16,6 +20,23 @@ app = FastAPI(
     description="Técnicas quirúrgicas, su instrumental y sus arreglos de mesa.",
     version="0.1.0",
 )
+
+
+def cors_options(origins: list[str]) -> dict:
+    """El navegador solo deja que una página lea respuestas de otro origen si la
+    API lo autoriza. Con el proxy no hay otro origen y la lista va vacía; si la
+    API pasa a su propio subdominio, la cookie de sesión tiene que viajar
+    (allow_credentials) y el frontend necesita mandar el encabezado CSRF."""
+    return {
+        "allow_origins": origins,
+        "allow_credentials": True,
+        "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type", CSRF_HEADER],
+        "max_age": 600,
+    }
+
+
+app.add_middleware(CORSMiddleware, **cors_options(config.cors_origins))
 
 app.include_router(techniques.router)
 app.include_router(versions.router)
@@ -51,4 +72,22 @@ async def handle_invalid_content(
     return JSONResponse(
         {"detail": error.problems},
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+    )
+
+
+# Código de PostgreSQL para «valor único repetido»
+UNIQUE_VIOLATION = "23505"
+
+
+@app.exception_handler(IntegrityError)
+async def handle_integrity_error(request: Request, error: IntegrityError):
+    """Los repositorios revisan antes de insertar, pero si dos peticiones llegan
+    a la vez, ambas pasan la revisión y la segunda choca con un UNIQUE de la base.
+    Eso es un conflicto (409), no un error del servidor. Cualquier otra violación
+    sí es un error del código y sigue siendo 500."""
+    if getattr(error.orig, "sqlstate", None) != UNIQUE_VIOLATION:
+        raise error
+    return JSONResponse(
+        {"detail": "Otro cambio llegó primero. Recarga e intenta de nuevo."},
+        status_code=status.HTTP_409_CONFLICT,
     )

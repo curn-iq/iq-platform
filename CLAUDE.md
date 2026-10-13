@@ -72,7 +72,20 @@ navegación (ver más abajo) NO se considera un módulo.
     compartido (violaría la regla de no mezclar credenciales entre módulos).
     Se usa **EdDSA (Ed25519)**: la clave privada va en `JWT_PRIVATE_KEY`
     (solo en el entorno de DataIQ) y la pública se publica en
-    `/.well-known/jwks.json`.
+    `/.well-known/jwks.json`. El token dura **2 horas**.
+  - Sesión del navegador (decidido por Mauricio el 2026-10-13): el JWT va en
+    una **cookie `HttpOnly`** (`__Host-iq_session`, `Secure`,
+    `SameSite=Strict`, `Path=/`, sin `Domain`), nunca en `localStorage`: un
+    XSS no puede robarla (RFC 10017, OAuth 2.0 for Browser-Based Apps). Para
+    que la cookie sea propia y no de terceros, el frontend y las APIs
+    comparten origen con **rewrites de Vercel** (`/api/dataiq/*`,
+    `/api/sivri/*`, `/api/simiq3d/*` → Cloud Run); un solo login sirve para
+    los tres módulos. Contra CSRF, las escrituras con cookie exigen el
+    encabezado `X-IQ-Client`. `POST /auth/login` deja la cookie y no devuelve
+    el token; `POST /auth/token` devuelve el token (Bearer) para lo que no es
+    navegador (Swagger, servidores, apps). La API acepta las dos. Preparado
+    para un dominio propio (`api.dominio.com`) si algún día se financia: basta
+    con `CORS_ORIGINS`, ver [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md).
   - Contenedorización: Docker / Podman (Dockerfiles compatibles entre ambos).
   - Arquitectura: **hexagonal** (dominio / puertos / adaptadores).
   - Migraciones: SQLAlchemy + Alembic.
@@ -100,7 +113,9 @@ navegación (ver más abajo) NO se considera un módulo.
     `us-central1` de Cloud Run). Al exceder el plan gratis no se cobra: el
     cómputo se suspende hasta el siguiente ciclo, y por encima de 0.5GB fallan
     las escrituras.
-  - Frontend → **Vercel** (plan Hobby, 100GB bandwidth/mes). *Nota: Hobby es
+  - Frontend → **Vercel** (plan Hobby, 100GB bandwidth/mes). Hace de proxy
+    de las APIs (ver «Sesión del navegador»): ese tráfico también cuenta en
+    los 100GB. Si SIVRI manda video a su backend, medirlo antes. *Nota: Hobby es
     solo para uso no comercial — condición real de los términos de servicio, no
     solo un límite técnico.* **Ojo**: Hobby no permite conectar un proyecto a
     un repo de una organización de GitHub (este repo es de `curn-iq`); hay que

@@ -22,7 +22,10 @@ class TechniqueRepository(Protocol):
 
 class VersionRepository(Protocol):
     async def list_all(
-        self, states: Iterable[VersionState], created_by: UUID | None = None
+        self,
+        states: Iterable[VersionState],
+        created_by: UUID | None = None,
+        reviewed_by: UUID | None = None,
     ) -> list[VersionSummary]: ...
 
     async def get_summary(self, version_id: UUID) -> VersionSummary | None: ...
@@ -56,3 +59,5 @@ class VersionRepository(Protocol):
     async def reject(
         self, version_id: UUID, reviewer_id: UUID, reason: str
     ) -> None: ...
+
+    async def discard_draft(self, version_id: UUID) -> None: ...

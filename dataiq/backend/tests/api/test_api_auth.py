@@ -11,10 +11,10 @@ REGISTRATION = {
 }
 
 
-async def register_and_login(client) -> str:
+async def register_and_get_token(client) -> str:
     await client.post("/auth/register", json=REGISTRATION)
     response_ = await client.post(
-        "/auth/login",
+        "/auth/token",
         data={"username": "ana@prueba.com", "password": REGISTRATION["password"]},
     )
     return response_.json()["access_token"]
@@ -54,8 +54,8 @@ async def test_register_validates_policy_password_and_email(client, change):
 
 
 @pytest.mark.anyio
-async def test_login_returns_a_working_token(client):
-    token = await register_and_login(client)
+async def test_token_endpoint_returns_a_working_token(client):
+    token = await register_and_get_token(client)
 
     response_ = await client.get(
         "/auth/me", headers={"Authorization": f"Bearer {token}"}
@@ -74,10 +74,10 @@ async def test_login_returns_a_working_token(client):
         {"username": "nadie@prueba.com", "password": "una-contraseña-larga"},
     ],
 )
-async def test_login_fails_with_wrong_credentials(client, credentials):
+async def test_token_fails_with_wrong_credentials(client, credentials):
     await client.post("/auth/register", json=REGISTRATION)
 
-    response_ = await client.post("/auth/login", data=credentials)
+    response_ = await client.post("/auth/token", data=credentials)
 
     assert response_.status_code == 401
     assert response_.json()["detail"] == "Correo o contraseña incorrectos"

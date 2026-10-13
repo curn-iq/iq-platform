@@ -16,7 +16,8 @@ def respond_with_cache(
     scope = "private" if private else "public"
     auth_headers = {"ETag": etag, "Cache-Control": f"{scope}, max-age={max_age}"}
     if private:
-        auth_headers["Vary"] = "Authorization"
+        # La cuenta llega por el token o por la cookie de sesión
+        auth_headers["Vary"] = "Authorization, Cookie"
     client_etags = request.headers.get("if-none-match", "")
     if etag in [e.strip() for e in client_etags.split(",")]:
         return Response(status_code=304, headers=auth_headers)
