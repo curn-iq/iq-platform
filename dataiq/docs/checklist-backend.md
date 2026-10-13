@@ -91,8 +91,19 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
    por la mesa de Mayo de Tiroidectomía)
 7. [x] Script de carga inicial (seed): catálogo normalizado + técnicas
-8. [ ] Revisar y completar la documentación Swagger
-9. [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon (Corte 3)
+8. [—] Completar la documentación Swagger: fuera del MVP. FastAPI ya genera
+   `/docs` con las rutas, los esquemas y la explicación de cada ruta; faltaría
+   declarar las respuestas de error (401, 403, 409, 422), que siempre traen
+   `{"detail": ...}`
+9. [ ] Despliegue (Corte 3)
+   - [x] `Dockerfile` (dos etapas con uv, sin root, sin `.env`) y `.dockerignore`
+   - [x] GitHub Actions: estilo y pruebas en cada PR (con PostgreSQL 18); en
+     `main`, la imagen a `ghcr.io/curn-iq/dataiq-backend` con un tag por commit
+   - [ ] Hacer pública la imagen en ghcr.io (Cloud Run solo baja imágenes
+     públicas de ghcr.io)
+   - [ ] Neon: proyecto, migraciones y carga inicial
+   - [ ] Cloud Run: servicio con las variables de entorno y despliegue desde
+     GitHub Actions
 
 ## Datos de la fuente que no cuadraban
 

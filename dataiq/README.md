@@ -117,6 +117,18 @@ uv run pytest      # crea y migra su propia base de datos, dataiq_test
 uv run ruff format . && uv run ruff check .
 ```
 
+Imagen de contenedor (la misma que va a Cloud Run; sirve con Docker o Podman):
+
+```sh
+podman build -t dataiq-backend .
+podman run --rm --network host --env-file .env -e PORT=8000 dataiq-backend
+podman run --rm --network host --env-file .env dataiq-backend alembic upgrade head
+```
+
+La imagen lleva la API y las migraciones, no la carga inicial ni las pruebas.
+En GitHub Actions, cada PR corre el estilo y las pruebas; cada push a `main`
+publica la imagen en `ghcr.io/curn-iq/dataiq-backend` con el commit como tag.
+
 ## Estructura
 
 ```
