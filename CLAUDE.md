@@ -99,6 +99,8 @@ navegación (ver más abajo) NO se considera un módulo.
 
 - **Avance del backend**: [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md).
   Leerla al empezar a trabajar en el backend y marcar cada pieza al terminarla.
+- **Avance del frontend**: [`dataiq/docs/checklist-frontend.md`](dataiq/docs/checklist-frontend.md),
+  igual que la del backend. Cómo está hecho: [`dataiq/frontend/README.md`](dataiq/frontend/README.md).
 
 - **Infraestructura de despliegue (decidida, capa gratuita, sin trampas de
   "trial" con vencimiento)**:
