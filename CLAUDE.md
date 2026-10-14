@@ -87,8 +87,11 @@ navegación (ver más abajo) NO se considera un módulo.
     XSS no puede robarla (RFC 10017, OAuth 2.0 for Browser-Based Apps). Para
     que la cookie sea propia y no de terceros, el frontend y las APIs
     comparten origen con **rewrites de Vercel** (`/api/dataiq/*`,
-    `/api/sivri/*`, `/api/simiq3d/*`); un solo login sirve para
-    los tres módulos. Contra CSRF, las escrituras con cookie exigen el
+    `/api/simiq3d/*`); un solo login sirve para los tres módulos. SIVRI no
+    pasa por el proxy (los cuadros de la cámara irían por Vercel): su backend
+    está en el portátil del laboratorio, adonde la cookie no llega, y recibe
+    un token corto de DataIQ en `Authorization: Bearer` (pieza 10 de la
+    checklist del backend). Contra CSRF, las escrituras con cookie exigen el
     encabezado `X-IQ-Client`. `POST /auth/login` deja la cookie y no devuelve
     el token; `POST /auth/token` devuelve el token (Bearer) para lo que no es
     navegador (Swagger, servidores, apps). La API acepta las dos. Preparado
@@ -355,10 +358,11 @@ base de datos propios — es una capa de frontend/routing sobre los módulos
 existentes. Vive en la misma app Angular que DataIQ (`dataiq/frontend`),
 aislada en `app/shell/` para poder separarla si algún día hace falta
 (decidido el 2026-10-11). La sesión es la cookie de «Sesión del navegador»:
-las APIs de los tres módulos la reciben por el proxy de Vercel. Para que los
-frontends de SIVRI y SIMIQ3D también la usen, tienen que servirse desde ese
-mismo origen (p. ej. bajo `/sivri/*` y `/simiq3d/*`); cómo se sirven está
-**por definir** con esos módulos.
+las APIs de DataIQ y SIMIQ3D la reciben por el proxy de Vercel; SIVRI, un
+token corto. Para que los frontends de SIVRI y SIMIQ3D también la usen (el de
+SIVRI, para pedir ese token), tienen que servirse desde ese mismo origen (p.
+ej. bajo `/sivri/*` y `/simiq3d/*`); cómo se sirven está **por definir** con
+esos módulos.
 
 **Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
 mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.

@@ -133,7 +133,9 @@ DataIQ es el único que emite tokens. SIVRI y SIMIQ3D no tienen tabla de
 usuarios: solo validan la firma con la clave pública de DataIQ. En el
 navegador el token viaja en una cookie que JavaScript no puede leer; como el
 frontend y las APIs comparten origen (proxy de Vercel), la misma cookie llega
-a los tres módulos. Para pedir el catálogo, SIVRI y SIMIQ3D reenvían a DataIQ
+a DataIQ y a SIMIQ3D. A SIVRI no llega, porque corre en el portátil del
+laboratorio, en otro dominio: su frontend pide a DataIQ un token corto y se lo
+manda. Para pedir el catálogo, SIVRI y SIMIQ3D reenvían a DataIQ
 el token de quien usa el módulo.
 
 ```mermaid
@@ -146,7 +148,11 @@ sequenceDiagram
     Note over D: Guarda la fecha y la versión de la política<br/>(Decreto 1377, art. 8). Rol: usuario
     P->>D: Ingreso: correo y contraseña
     D-->>P: Cookie HttpOnly con el token firmado por DataIQ
-    P->>M: Usa el módulo (el navegador manda la cookie)
+    opt SIVRI (la cookie no llega al portátil)
+        P->>D: Pide un token corto (con la cookie)
+        D-->>P: Token de pocos minutos
+    end
+    P->>M: Usa el módulo (con la cookie, o con el token corto en SIVRI)
     M->>D: Pide la clave pública (JWKS), una vez
     Note over M: Valida la firma del token<br/>sin consultar a DataIQ en cada petición
     M->>D: Pide el catálogo completo, una vez por sesión

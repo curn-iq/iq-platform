@@ -65,7 +65,7 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   token dura 2 horas y después hay que iniciar sesión otra vez.
 - **Pasar las APIs a un dominio propio** (`app.dominio.com` para el frontend y
   `api.dominio.com` para las APIs), si la institución lo financia. Quita el
-  paso por el proxy de Vercel (útil si SIVRI manda video). Qué cambia:
+  paso por el proxy de Vercel. Qué cambia:
   `CORS_ORIGINS=["https://app.dominio.com"]` en cada API; el frontend llama a
   la URL completa con `withCredentials: true` y sigue mandando `X-IQ-Client`.
   La cookie sirve igual porque los subdominios son el mismo sitio; si cada
