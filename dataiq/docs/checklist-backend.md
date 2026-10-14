@@ -104,6 +104,13 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [ ] Neon: proyecto, migraciones y carga inicial
    - [ ] Cloud Run: servicio con las variables de entorno y despliegue desde
      GitHub Actions
+10. [ ] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
+    backend de SIVRI en otro dominio (el portátil del laboratorio, por
+    Tailscale), así que la cookie de sesión no viaja. Un endpoint con la
+    cookie y `X-IQ-Client` devuelve un JWT de pocos minutos, renovable, que la
+    página manda a SIVRI en `Authorization: Bearer`; SIVRI lo valida con el
+    JWKS y lo reenvía a DataIQ para pedir los datos. Revisar que la ruta del
+    JWKS quede accesible en el despliegue (Vercel reserva `/.well-known`)
 
 ## Datos de la fuente que no cuadraban
 
