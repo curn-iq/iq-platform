@@ -57,6 +57,30 @@ iq-platform/
     └── frontend/
 ```
 
+## Documentación
+
+- Qué cambió: [Releases](https://github.com/curn-iq/iq-platform/releases).
+- Cómo funciona y cómo se corre cada módulo: su README (p. ej.
+  [`dataiq/README.md`](dataiq/README.md)).
+- Roles y flujos: [`docs/flujos.md`](docs/flujos.md). Lo que queda para
+  después del MVP: [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md).
+- Decisiones y reglas del proyecto, en resumen: [`CLAUDE.md`](CLAUDE.md).
+
+### Cómo se registran los cambios
+
+1. Cada cambio entra por un PR a `main`, como siempre. El **título del PR** es
+   lo que aparece en el release: que diga qué cambia, en español (p. ej.
+   «feat(dataiq): editor de mesas con arrastrar y soltar», no «cambios»).
+   La descripción del PR lleva el detalle.
+2. **Una vez por semana** se publica un release con lo que entró desde el
+   anterior (si no entró nada, no se publica), y otro al cerrar cada corte.
+   Lo publica una sola persona:
+   Releases → *Draft a new release* → *Choose a tag*: el siguiente nombre
+   (`corte-3.2`, `corte-3.3`…; al cerrar el corte, `corte-3`) sobre `main` →
+   *Generate release notes* → una línea de resumen arriba → *Publish release*.
+3. Para enterarse sin que nadie avise: en el repo, *Watch* → *Custom* →
+   *Releases* → *Apply*. Cada release llega por correo.
+
 ## Stack
 
 - Backend: Python (DataIQ con FastAPI; detalles de SIVRI y SIMIQ3D por definir)

@@ -38,18 +38,78 @@ desde `dataiq/backend`.
 
    ```sh
    uv run alembic upgrade head
-   uv run python -m semilla.cargar
+   uv run python -m seed.load
    uv run fastapi dev app/main.py
    ```
 
-   La documentación interactiva queda en http://127.0.0.1:8000/docs.
+   La documentación interactiva queda en http://127.0.0.1:8000/docs. Su botón
+   «Authorize» pide el token a `POST /auth/token`.
 
 4. Para escribir hace falta una cuenta con rol: registrarse en
-   `POST /auth/registro` y asignarse el rol por terminal:
+   `POST /auth/register` y asignarse el rol por terminal:
 
    ```sh
-   uv run python -m app.adaptadores.entrada.cli.asignar_rol <correo> admin
+   uv run python -m app.adapters.inbound.cli.assign_role <correo> admin
    ```
+
+## Cómo lo usa el frontend
+
+La sesión del navegador va en una cookie `HttpOnly` que JavaScript no puede
+leer (`__Host-iq_session`); el token nunca se guarda en `localStorage`. Para
+que esa cookie sea propia y no de terceros, el frontend llama a la API por su
+mismo origen, a través de un proxy:
+
+- **Producción (Vercel):** `vercel.json` del frontend con un rewrite por
+  módulo. Vercel reenvía la cookie y el `Set-Cookie`; confirmarlo en el primer
+  despliegue.
+
+  ```json
+  {
+    "rewrites": [
+      { "source": "/api/dataiq/:path*", "destination": "https://<servicio-dataiq>.run.app/:path*" }
+    ]
+  }
+  ```
+
+- **Desarrollo (Angular):** `proxy.conf.json`, que se pasa a `ng serve` con
+  `--proxy-config` (o en `angular.json`):
+
+  ```json
+  {
+    "/api/dataiq": {
+      "target": "http://127.0.0.1:8000",
+      "pathRewrite": { "^/api/dataiq": "" }
+    }
+  }
+  ```
+
+  Chrome y Firefox aceptan la cookie `Secure` en `http://localhost`. Si un
+  navegador la rechaza, poner `SESSION_COOKIE_SECURE=false` en el `.env` del
+  backend (solo en desarrollo).
+
+Reglas para las peticiones:
+
+1. URLs relativas (`/api/dataiq/techniques`), nunca la de Cloud Run. Así el
+   navegador manda la cookie solo; no hace falta `withCredentials`.
+2. Todas las peticiones llevan el encabezado `X-IQ-Client: web` (un
+   interceptor). La API lo exige en las escrituras con cookie, en el login y
+   en el logout: es la protección contra CSRF.
+3. Ingreso: `POST /auth/login` con JSON `{"email", "password"}`. Responde la
+   cuenta y deja la cookie; no devuelve el token.
+4. Quién está conectado y con qué rol: `GET /auth/me` (401 si no hay sesión).
+   El rol solo decide qué se muestra; quien permite o niega es la API.
+5. Salir: `POST /auth/logout`, que borra la cookie.
+6. La sesión dura 2 horas. Un 401 en algo que pide cuenta significa que hay
+   que volver a ingresar.
+7. Sin manejar el ETag a mano: el navegador revalida solo con el `ETag` y el
+   `Cache-Control` que manda la API.
+8. CSP estricta en los encabezados de Vercel, y nada de `innerHTML` con datos
+   de la API ni `bypassSecurityTrust…`: aun sin poder robar la cookie, un XSS
+   puede hacer peticiones mientras la página está abierta.
+
+Lo que no es navegador (Swagger, pruebas, servidores, una app) pide el token a
+`POST /auth/token` (formulario OAuth2: `username` = correo, `password`) y lo
+manda en `Authorization: Bearer`; con Bearer no hace falta `X-IQ-Client`.
 
 Tests y estilo:
 
@@ -57,6 +117,18 @@ Tests y estilo:
 uv run pytest      # crea y migra su propia base de datos, dataiq_test
 uv run ruff format . && uv run ruff check .
 ```
+
+Imagen de contenedor (la misma que va a Cloud Run; sirve con Docker o Podman):
+
+```sh
+podman build -t dataiq-backend .
+podman run --rm --network host --env-file .env -e PORT=8000 dataiq-backend
+podman run --rm --network host --env-file .env dataiq-backend alembic upgrade head
+```
+
+La imagen lleva la API y las migraciones, no la carga inicial ni las pruebas.
+En GitHub Actions, cada PR corre el estilo y las pruebas; cada push a `main`
+publica la imagen en `ghcr.io/curn-iq/dataiq-backend` con el commit como tag.
 
 ## Estructura
 

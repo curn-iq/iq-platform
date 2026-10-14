@@ -10,29 +10,32 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] Proyecto Python con `uv` (Python 3.14)
 - [x] Dependencias base: FastAPI, SQLAlchemy async, asyncpg, Alembic, pydantic-settings
 - [x] `.gitignore` en la raíz
-- [x] Estructura hexagonal (`dominio/`, `puertos/`, `adaptadores/entrada|salida`)
+- [x] Estructura hexagonal (`domain/`, `ports/`, `adapters/inbound|outbound`)
 - [x] Configuración con `pydantic-settings` + `.env.example`
 - [x] PostgreSQL local en contenedor (Podman)
-- [x] Conexión async (`base_datos.py`) con `naming_convention`
+- [x] Conexión async (`database.py`) con `naming_convention`
 - [x] Ruff (formato + lint)
 - [x] Pasar el contenedor local a PostgreSQL 18 (lo exige `uuidv7()`)
 - [x] Ids UUIDv7 en los modelos ya escritos
+- [x] Código, base de datos y API en inglés; comentarios y mensajes en español
 
 ## Modelos SQLAlchemy (según `esquema.dbml`)
 
-- [x] Tablas simples: `Especialidad`, `Zona`, `CategoriaInstrumental`, `EquipoBiomedico`, `DispositivoMedico`
-- [x] `Sutura` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
-- [x] `Usuario` (enum `rol_usuario`, campos de consentimiento)
-- [x] `Instrumental` (con `descripcion`, sin imagen), `InstrumentalAlias`, `Tecnica` (FK)
-- [x] `TecnicaVersion` (enum `estado_version`, CHECKs, índices únicos parciales)
-- [x] `ItemTecnica` (`zona_id`, CHECK `numero_con_mesa`), `ItemTecnicaComponente` (CHECK `num_nonnulls`)
-- [x] `PosicionMesa` (FK compuesta de 3 columnas)
-- [x] Tablas intermedias de `TecnicaVersion` (PK compuesta)
+- [x] Tablas simples: `specialties`, `zones`, `instrument_categories`, `biomedical_equipment`, `medical_devices`
+- [x] `sutures` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
+- [x] `users` (enum `user_role`, campos de consentimiento)
+- [x] `instruments` (con `description`, sin imagen), `instrument_aliases`, `techniques` (FK)
+- [x] `technique_versions` (enum `version_state`, CHECKs, índices únicos parciales)
+- [x] `technique_items` (`zone_id`, CHECK `number_requires_zone`), `item_components` (CHECK `num_nonnulls`)
+- [x] `item_cells` (FK compuesta de 3 columnas)
+- [x] `version_zones`: si la versión lleva cada mesa («no lleva») y su tamaño
+- [x] Tablas intermedias de `technique_versions` (PK compuesta)
 
 ## Migraciones
 
 - [x] Configurar Alembic en modo async
-- [x] Primera migración y comparación contra `esquema.dbml`
+- [x] Primera migración y comparación contra `esquema.dbml` (rehecha como una
+  sola al pasar a inglés: no había base de datos desplegada)
 
 ## Siguientes piezas (en este orden)
 
@@ -40,46 +43,74 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 
 1. [x] Dominio: reglas del versionado (transiciones de estado; solo un revisor o un admin publica)
 2. [x] Puertos y repositorios
-3. [x] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalogo/completo`
-   - Sin cuenta: `GET /tecnicas` y `GET /tecnicas/{id}` (datos clínicos)
-   - Con cuenta: `GET /tecnicas/{id}/instrumental` (objetos, mesas, suturas,
-     equipos y dispositivos), `GET /instrumental` y `GET /catalogo/completo`
+3. [x] Endpoints de lectura (con `Cache-Control`/`ETag`) y `/catalog/full`
+   - Sin cuenta: `GET /techniques` y `GET /techniques/{id}` (datos clínicos)
+   - Con cuenta: `GET /techniques/{id}/instruments` (mesas con su tamaño,
+     objetos, suturas, equipos y dispositivos), `GET /instruments` y
+     `GET /catalog/full`
+   - [x] Sin cuenta: `GET /specialties` (para filtrar y para crear técnicas)
+   - [x] Cada objeto trae `zone_id` además del nombre de la mesa (lo que pide
+     el `PUT` del borrador)
 4. [x] Endpoints de escritura:
    - [x] Técnicas: crear técnica nueva y crear versión desde la publicada
      (desde colaborador), editar el borrador propio (`PUT`, reemplaza todo el
      contenido), enviar a revisión, aprobar, rechazar con motivo, publicar
      directo (revisor o admin, lo suyo) y archivar (desde revisor, no con una
-     versión en curso). Consultar versiones: `GET /versiones` y
-     `GET /versiones/{id}`
-   - [x] Tabla `RechazoVersion`: al rechazar se guarda quién, por qué y cuándo
+     versión en curso). Consultar versiones: `GET /versions` y
+     `GET /versions/{id}`; «Revisadas por mí» con `?reviewed_by_me=true`
+     (las de otros que el revisor aprobó o rechazó)
+   - [x] Tabla `version_rejections`: al rechazar se guarda quién, por qué y cuándo
      (el motivo es obligatorio) y la versión vuelve a borrador
-   - [x] Aprobar y rechazar solo si la versión sigue `en_revision`: la fila se
+   - [x] Aprobar y rechazar solo si la versión sigue `in_review`: la fila se
      bloquea (`SELECT ... FOR UPDATE`) y se vuelve a revisar el estado; si otro
      revisor ya la decidió, se responde 409
    - [x] Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
-     cambia las técnicas publicadas que lo usan sin pasar por revisión)
-   - [x] Roles: `GET /usuarios` y `PATCH /usuarios/{id}/rol`, solo admin y no
+     cambia las técnicas publicadas que lo usan sin pasar por revisión). El
+     `PATCH` también reemplaza los alias
+   - [x] Descartar un borrador (`DELETE /versions/{id}`): solo su autor o un
+     admin; si la técnica nunca se publicó, se borra con él. Lo publicado no se
+     borra, se archiva
+   - [x] Roles: `GET /users` (con la fecha de registro y la política aceptada)
+     y `PATCH /users/{id}/role`, solo admin y no
      sobre su propia cuenta. El primer admin se asigna por terminal:
-     `uv run python -m app.adaptadores.entrada.cli.asignar_rol <correo> admin`
+     `uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`
 5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
-   - `POST /auth/registro` (autorregistro con la política aceptada),
-     `POST /auth/login`, `GET /auth/yo` y `GET /.well-known/jwks.json`
+   - `POST /auth/register` (autorregistro con la política aceptada),
+     `POST /auth/login`, `GET /auth/me` y `GET /.well-known/jwks.json`
    - El rol se lee de la base de datos en cada petición, no del token
-   - SIVRI y SIMIQ3D piden `/catalogo/completo` con el token de quien usa el
+   - [x] Token de 2 horas
+   - [x] Sesión del navegador en cookie `HttpOnly` (`POST /auth/login` y
+     `POST /auth/logout`), encabezado `X-IQ-Client` contra CSRF y
+     `POST /auth/token` (Bearer) para lo que no es navegador
+   - [x] CORS configurable (`CORS_ORIGINS`), vacío por defecto: con el proxy
+     de Vercel todo es mismo origen
+   - [x] Dos peticiones que chocan contra un `UNIQUE` responden 409, no 500
+   - SIVRI y SIMIQ3D piden `/catalog/full` con el token de quien usa el
      módulo
 6. [x] Datos: completar el catálogo con los objetos de los arreglos de mesa y
    transcribir las posiciones a fila/columna (en paralelo con 1–5, empezando
    por la mesa de Mayo de Tiroidectomía)
 7. [x] Script de carga inicial (seed): catálogo normalizado + técnicas
-8. [ ] Revisar y completar la documentación Swagger
-9. [ ] Dockerfile, CI/CD (GitHub Actions → ghcr.io → Cloud Run), Neon (Corte 3)
+8. [—] Completar la documentación Swagger: fuera del MVP. FastAPI ya genera
+   `/docs` con las rutas, los esquemas y la explicación de cada ruta; faltaría
+   declarar las respuestas de error (401, 403, 409, 422), que siempre traen
+   `{"detail": ...}`
+9. [ ] Despliegue (Corte 3)
+   - [x] `Dockerfile` (dos etapas con uv, sin root, sin `.env`) y `.dockerignore`
+   - [x] GitHub Actions: estilo y pruebas en cada PR (con PostgreSQL 18); en
+     `main`, la imagen a `ghcr.io/curn-iq/dataiq-backend` con un tag por commit
+   - [ ] Hacer pública la imagen en ghcr.io (Cloud Run solo baja imágenes
+     públicas de ghcr.io)
+   - [ ] Neon: proyecto, migraciones y carga inicial
+   - [ ] Cloud Run: servicio con las variables de entorno y despliegue desde
+     GitHub Actions
 
 ## Datos de la fuente que no cuadraban
 
 Criterio: lo que los documentos de IQ traen completo se carga tal cual. Lo que
 no cuadra se corrige cuando el mismo documento lo aclara (`IQ corregido`), y
 lo que falta se propone con los principios publicados de armado de mesa
-(`propuesto`). La columna `origen` de `semilla/tecnicas.xlsx` lo marca en cada
+(`propuesto`). La columna `origen` de `seed/tecnicas.xlsx` lo marca en cada
 mesa y cada objeto: lo corregido y lo propuesto es lo que IQ debe validar.
 
 Criterios para los arreglos sin nombre:
