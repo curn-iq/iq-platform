@@ -55,8 +55,11 @@ El avance, por actividad de DSRM, está en
 - Visión artificial: YOLO26 (Ultralytics, licencia AGPL-3.0)
 - Backend: Python (por definir el framework); su propia base de datos (Neon),
   separada de la de DataIQ
-- Autenticación: valida el JWT de DataIQ con su clave pública (JWKS); llega en
-  la cookie de sesión del navegador, igual que a DataIQ
+- Autenticación: valida el JWT de DataIQ con su clave pública (JWKS). La
+  cookie de sesión no llega al portátil del laboratorio (otro dominio): el
+  frontend pide a DataIQ un token corto y lo manda en
+  `Authorization: Bearer` (pieza 10 de la
+  [checklist del backend de DataIQ](../dataiq/docs/checklist-backend.md))
 - Frontend: por definir
 
 ## Licencia
