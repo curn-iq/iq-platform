@@ -1,5 +1,5 @@
-# Backend de DataIQ: pruebas en cada PR y, en main, la imagen a ghcr.io.
-# El despliegue a Cloud Run se agrega cuando existan el proyecto de GCP y Neon.
+# Backend de DataIQ: pruebas en cada PR; en main, el despliegue a Vercel
+# (producción) y la imagen a ghcr.io (para correrlo en cualquier otro lado).
 
 name: DataIQ backend
 
@@ -81,3 +81,23 @@ jobs:
             ghcr.io/curn-iq/dataiq-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    name: Despliegue en Vercel (producción)
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Un despliegue a la vez: si llegan dos pushes seguidos, el segundo espera
+    concurrency: vercel-produccion
+    env:
+      # No son secretos: identifican la cuenta y el proyecto de Vercel
+      # (dataiq/backend/.vercel/project.json, que no se sube al repo)
+      VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
+      VERCEL_PROJECT_ID: prj_2WlkLXYrBnZVyoHV3gkriR5vhpYW
+    steps:
+      - uses: actions/checkout@v7
+      # Vercel construye en sus servidores, igual que el despliegue a mano.
+      # Las variables de entorno (DATABASE_URL, JWT_PRIVATE_KEY…) viven en el
+      # proyecto de Vercel, no aquí. El plan Hobby no conecta repos de una
+      # organización de GitHub: por eso se despliega con el CLI y un token.
+      - run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
