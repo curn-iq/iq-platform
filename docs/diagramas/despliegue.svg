@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 950" role="img" aria-labelledby="titulo desc" font-family="'Noto Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <title id="titulo">Diagrama de despliegue de IQ Platform</title>
+  <desc id="desc">En producción, Vercel tiene un proyecto por pieza: el del shell y DataIQ sirve el frontend web, el de SIVRI (por definir) sirve el frontend de SIVRI y dataiq-backend corre la API de DataIQ, que usa la base de DataIQ en Neon. En el laboratorio, el celular abre el frontend de SIVRI, que pide un token corto a la API y envía los cuadros de la cámara por Tailscale Funnel al backend de SIVRI; este corre en un portátil y pide el catálogo a la API de DataIQ. La base de SIVRI está por definir.</desc>
+
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d4752"/>
+    </marker>
+    <marker id="ft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a94a3"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1340" height="950" rx="18" fill="#ffffff"/>
+
+  <!-- Título: tipo y alcance -->
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#1f2933">Diagrama de despliegue de IQ Platform</text>
+  <text x="40" y="72" font-size="13.5" fill="#5b6573">Dónde corre cada pieza en producción · modelo C4</text>
+
+  <!-- ===== Nodos ===== -->
+  <g stroke="#9aa3ad" stroke-width="1.5" fill="#f6f7f9">
+    <rect x="40" y="110" width="220" height="735" rx="14"/>
+    <rect x="380" y="110" width="570" height="385" rx="14"/>
+    <rect x="380" y="595" width="570" height="250" rx="14"/>
+    <rect x="1060" y="110" width="240" height="735" rx="14"/>
+  </g>
+  <g fill="#1f2933">
+    <text x="58" y="138" font-size="14" font-weight="700">Dispositivos</text>
+    <text x="58" y="156" font-size="11.5" fill="#5b6573">[Nodo: de cada usuario]</text>
+
+    <text x="398" y="138" font-size="14" font-weight="700">Vercel</text>
+    <text x="398" y="156" font-size="11.5" fill="#5b6573">[Nodo: plataforma, plan Hobby]</text>
+
+    <text x="398" y="623" font-size="14" font-weight="700">Laboratorio de IQ</text>
+    <text x="398" y="641" font-size="11.5" fill="#5b6573">[Nodo: portátil o PC]</text>
+
+    <text x="1078" y="138" font-size="14" font-weight="700">Neon</text>
+    <text x="1078" y="156" font-size="11.5" fill="#5b6573">[Nodo: PostgreSQL 18, Ohio]</text>
+  </g>
+
+  <!-- Proyectos de Vercel: un nodo por pieza que se despliega aparte -->
+  <g stroke="#b3bac3" stroke-width="1.4" fill="#ffffff">
+    <rect x="394" y="172" width="220" height="144" rx="10"/>
+    <rect x="714" y="172" width="222" height="144" rx="10"/>
+    <rect x="394" y="336" width="220" height="144" rx="10" stroke-dasharray="6 4"/>
+  </g>
+  <g font-size="12.5" fill="#1f2933">
+    <text x="406" y="192"><tspan font-weight="700">Shell y DataIQ</tspan><tspan dx="6" font-size="11" fill="#5b6573">[Proyecto]</tspan></text>
+    <text x="726" y="192"><tspan font-weight="700">dataiq-backend</tspan><tspan dx="6" font-size="11" fill="#5b6573">[Proyecto · cle1]</tspan></text>
+    <text x="406" y="356"><tspan font-weight="700">SIVRI</tspan><tspan dx="6" font-size="11" fill="#5b6573">[Proyecto, por definir]</tspan></text>
+  </g>
+
+  <!-- ===== Lo que corre en cada nodo ===== -->
+  <g text-anchor="middle">
+    <!-- Dispositivos -->
+    <rect x="60" y="206" width="180" height="100" rx="12" fill="#ffffff" stroke="#5b6573" stroke-width="1.6"/>
+    <text x="150" y="242" font-size="15" font-weight="700" fill="#1f2933">Navegador web</text>
+    <text x="150" y="262" font-size="11.5" fill="#5b6573">[Nodo]</text>
+    <text x="150" y="284" font-size="12.5" fill="#3d4752">Computador o celular</text>
+
+    <rect x="60" y="675" width="180" height="100" rx="12" fill="#ffffff" stroke="#5b6573" stroke-width="1.6"/>
+    <text x="150" y="711" font-size="15" font-weight="700" fill="#1f2933">Navegador web</text>
+    <text x="150" y="731" font-size="11.5" fill="#5b6573">[Nodo]</text>
+    <text x="150" y="753" font-size="12.5" fill="#3d4752">Celular con cámara</text>
+
+    <!-- Vercel -->
+    <rect x="404" y="206" width="200" height="100" rx="12" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.8"/>
+    <text x="504" y="242" font-size="15" font-weight="700" fill="#1f2933">Frontend web</text>
+    <text x="504" y="262" font-size="11.5" fill="#5b6573">[Contenedor: Angular]</text>
+    <text x="504" y="284" font-size="12.5" fill="#3d4752">Archivos estáticos (CDN)</text>
+
+    <rect x="724" y="206" width="202" height="100" rx="12" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.8"/>
+    <text x="825" y="242" font-size="15" font-weight="700" fill="#1f2933">API de DataIQ</text>
+    <text x="825" y="262" font-size="11.5" fill="#5b6573">[Contenedor: FastAPI]</text>
+    <text x="825" y="284" font-size="12.5" fill="#3d4752">Funciones de Python</text>
+
+    <rect x="404" y="370" width="200" height="100" rx="12" fill="#fdf3e2" stroke="#c77d14" stroke-width="1.8" stroke-dasharray="7 5"/>
+    <text x="504" y="406" font-size="15" font-weight="700" fill="#1f2933">Frontend de SIVRI</text>
+    <text x="504" y="426" font-size="11.5" fill="#5b6573">[Contenedor: web, por definir]</text>
+    <text x="504" y="448" font-size="12.5" fill="#3d4752">Archivos estáticos (CDN)</text>
+
+    <!-- Laboratorio -->
+    <rect x="404" y="675" width="200" height="100" rx="12" fill="#ffffff" stroke="#5b6573" stroke-width="1.6" stroke-dasharray="2 3"/>
+    <text x="504" y="711" font-size="15" font-weight="700" fill="#1f2933">Tailscale Funnel</text>
+    <text x="504" y="731" font-size="11.5" fill="#5b6573">[Infraestructura]</text>
+    <text x="504" y="753" font-size="12.5" fill="#3d4752">HTTPS fijo · *.ts.net</text>
+
+    <rect x="724" y="675" width="202" height="100" rx="12" fill="#fdf3e2" stroke="#c77d14" stroke-width="1.8"/>
+    <text x="825" y="711" font-size="15" font-weight="700" fill="#1f2933">Backend de SIVRI</text>
+    <text x="825" y="731" font-size="11.5" fill="#5b6573">[Contenedor: FastAPI + YOLO26]</text>
+    <text x="825" y="753" font-size="12.5" fill="#3d4752">Python o Docker · CPU</text>
+
+    <!-- Neon -->
+    <path d="M1090,230 V296 C1090,309 1270,309 1270,296 V230" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.8"/>
+    <ellipse cx="1180" cy="230" rx="90" ry="12" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.8"/>
+    <text x="1180" y="268" font-size="15" font-weight="700" fill="#1f2933">Base de DataIQ</text>
+    <text x="1180" y="288" font-size="11.5" fill="#5b6573">[Proyecto: dataiq]</text>
+
+    <path d="M1090,699 V765 C1090,778 1270,778 1270,765 V699" fill="#fdf3e2" stroke="#c77d14" stroke-width="1.8" stroke-dasharray="7 5"/>
+    <ellipse cx="1180" cy="699" rx="90" ry="12" fill="#fdf3e2" stroke="#c77d14" stroke-width="1.8" stroke-dasharray="7 5"/>
+    <text x="1180" y="737" font-size="15" font-weight="700" fill="#1f2933">Base de SIVRI</text>
+    <text x="1180" y="757" font-size="11.5" fill="#5b6573">[Proyecto: por definir]</text>
+  </g>
+
+  <!-- ===== Relaciones ===== -->
+  <g fill="none" stroke="#3d4752" stroke-width="1.7">
+    <line x1="240" y1="256" x2="402" y2="256" marker-end="url(#f)"/>
+    <line x1="604" y1="256" x2="722" y2="256" marker-end="url(#f)"/>
+    <line x1="926" y1="256" x2="1088" y2="256" marker-end="url(#f)"/>
+    <line x1="240" y1="690" x2="402" y2="445" marker-end="url(#f)"/>
+    <polyline points="604,420 770,420 770,308" marker-end="url(#f)"/>
+    <line x1="580" y1="470" x2="580" y2="673" marker-end="url(#f)"/>
+    <line x1="604" y1="725" x2="722" y2="725" marker-end="url(#f)"/>
+    <line x1="870" y1="675" x2="870" y2="308" marker-end="url(#f)"/>
+  </g>
+  <line x1="926" y1="725" x2="1088" y2="725" fill="none" stroke="#8a94a3" stroke-width="1.7" stroke-dasharray="6 5" marker-end="url(#ft)"/>
+
+  <g font-size="12" fill="#3d4752" text-anchor="middle">
+    <text x="316" y="246">Carga la app</text>
+    <text x="316" y="274" fill="#8a94a3">[HTTPS]</text>
+
+    <text x="664" y="246">/api/dataiq/*</text>
+    <text x="664" y="274" fill="#8a94a3">[rewrite]</text>
+
+    <text x="1005" y="246">Lee y escribe</text>
+    <text x="1005" y="274" fill="#8a94a3">[SQL, TLS]</text>
+
+    <text x="338" y="562" text-anchor="start">Abre SIVRI</text>
+    <text x="338" y="577" text-anchor="start" fill="#8a94a3">[HTTPS]</text>
+
+    <text x="690" y="410">Token corto</text>
+    <text x="690" y="438" fill="#8a94a3">[cookie]</text>
+
+    <text x="592" y="540" text-anchor="start">Envía 2–3 cuadros/s</text>
+    <text x="592" y="555" text-anchor="start" fill="#8a94a3">[HTTPS, token]</text>
+
+    <text x="664" y="715">Reenvía</text>
+    <text x="664" y="743" fill="#8a94a3">[HTTP local]</text>
+
+    <text x="882" y="540" text-anchor="start">Pide el catálogo</text>
+    <text x="882" y="555" text-anchor="start" fill="#8a94a3">[JSON/HTTPS, Bearer]</text>
+
+    <text x="1005" y="715">Progreso</text>
+    <text x="1005" y="743" fill="#8a94a3">[SQL, TLS]</text>
+  </g>
+
+  <!-- ===== Leyenda ===== -->
+  <g font-size="12" fill="#5b6573">
+    <text x="40" y="903" font-weight="700" fill="#3d4752">Leyenda</text>
+    <rect x="110" y="889" width="18" height="18" rx="4" fill="#f6f7f9" stroke="#9aa3ad" stroke-width="1.5"/>
+    <text x="134" y="903">Nodo</text>
+    <rect x="186" y="889" width="18" height="18" rx="4" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.5"/>
+    <text x="210" y="903">DataIQ</text>
+    <rect x="272" y="889" width="18" height="18" rx="4" fill="#fdf3e2" stroke="#c77d14" stroke-width="1.5"/>
+    <text x="296" y="903">SIVRI</text>
+    <rect x="348" y="889" width="18" height="18" rx="4" fill="#ffffff" stroke="#5b6573" stroke-width="1.5" stroke-dasharray="2 3"/>
+    <text x="372" y="903">Infraestructura</text>
+    <rect x="478" y="889" width="18" height="18" rx="4" fill="#ffffff" stroke="#8a94a3" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="502" y="903">Por definir</text>
+    <line x1="590" y1="898" x2="626" y2="898" stroke="#3d4752" stroke-width="1.7" marker-end="url(#f)"/>
+    <text x="634" y="903">Relación (acción [protocolo])</text>
+  </g>
+</svg>

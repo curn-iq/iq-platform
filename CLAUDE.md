@@ -411,6 +411,7 @@ repo, el Drive y las ramas obligaba a actualizar lo mismo en varios sitios).
 |---|---|
 | Decisiones técnicas y reglas del proyecto | Este archivo (resumen) |
 | Cómo funciona y cómo se corre cada módulo | El README del módulo (p. ej. [`dataiq/README.md`](dataiq/README.md)) |
+| Arquitectura e infraestructura (diagramas) | [`docs/arquitectura.md`](docs/arquitectura.md), con los SVG en `docs/diagramas/` |
 | Esquema de la base de DataIQ | [`dataiq/docs/esquema.dbml`](dataiq/docs/esquema.dbml) y su diagrama (`diagramabd.png`, dbdiagram.io) |
 | Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
 | Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |
