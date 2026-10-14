@@ -61,13 +61,13 @@ que esa cookie sea propia y no de terceros, el frontend llama a la API por su
 mismo origen, a través de un proxy:
 
 - **Producción (Vercel):** `vercel.json` del frontend con un rewrite por
-  módulo. Vercel reenvía la cookie y el `Set-Cookie`; confirmarlo en el primer
-  despliegue.
+  módulo hacia la API de DataIQ, que también está en Vercel. Vercel reenvía la
+  cookie y el `Set-Cookie`; confirmarlo al desplegar el frontend.
 
   ```json
   {
     "rewrites": [
-      { "source": "/api/dataiq/:path*", "destination": "https://<servicio-dataiq>.run.app/:path*" }
+      { "source": "/api/dataiq/:path*", "destination": "https://dataiq-backend.vercel.app/:path*" }
     ]
   }
   ```
@@ -90,7 +90,7 @@ mismo origen, a través de un proxy:
 
 Reglas para las peticiones:
 
-1. URLs relativas (`/api/dataiq/techniques`), nunca la de Cloud Run. Así el
+1. URLs relativas (`/api/dataiq/techniques`), nunca la de la API. Así el
    navegador manda la cookie solo; no hace falta `withCredentials`.
 2. Todas las peticiones llevan el encabezado `X-IQ-Client: web` (un
    interceptor). La API lo exige en las escrituras con cookie, en el login y
@@ -119,7 +119,8 @@ uv run pytest      # crea y migra su propia base de datos, dataiq_test
 uv run ruff format . && uv run ruff check .
 ```
 
-Imagen de contenedor (la misma que va a Cloud Run; sirve con Docker o Podman):
+Imagen de contenedor (sirve con Docker o Podman, para correr el backend fuera
+de Vercel):
 
 ```sh
 podman build -t dataiq-backend .
@@ -128,8 +129,35 @@ podman run --rm --network host --env-file .env dataiq-backend alembic upgrade he
 ```
 
 La imagen lleva la API y las migraciones, no la carga inicial ni las pruebas.
-En GitHub Actions, cada PR corre el estilo y las pruebas; cada push a `main`
-publica la imagen en `ghcr.io/curn-iq/dataiq-backend` con el commit como tag.
+
+## Producción
+
+La API corre en Vercel (plan Hobby) como funciones de Python:
+**https://dataiq-backend.vercel.app** (documentación en `/docs`). La base es
+Neon (proyecto `dataiq`, PostgreSQL 18, Ohio).
+
+- **Despliegue:** en GitHub Actions, cada PR corre el estilo y las pruebas;
+  cada push a `main` despliega en Vercel con el CLI (Hobby no conecta repos de
+  una organización de GitHub) y publica la imagen en
+  `ghcr.io/curn-iq/dataiq-backend`.
+- **Configuración en Vercel:** `vercel.json` (región `cle1`, junto a Neon, y
+  lo que no entra en el paquete) y `[tool.vercel]` en `pyproject.toml` (dónde
+  está la app).
+- **Variables de entorno del proyecto en Vercel** (secretas): `DATABASE_URL`
+  (cadena directa de Neon, con `postgresql+asyncpg://` y `?ssl=require`),
+  `JWT_PRIVATE_KEY` (distinta de la de desarrollo), `DATABASE_POOL=false` y
+  `SQL_ECHO=false`.
+- **Migraciones y carga inicial en Neon:** desde un computador, con
+  `DATABASE_URL` apuntando a Neon solo en esa terminal:
+
+  ```fish
+  read -s -x -P "Cadena de Neon: " DATABASE_URL
+  uv run alembic upgrade head
+  uv run python -m seed.load
+  ```
+
+- **Desplegar a mano** (si hiciera falta), desde `dataiq/backend` con la
+  sesión de Vercel del dueño del proyecto: `npx vercel@latest deploy --prod`.
 
 ## Estructura
 

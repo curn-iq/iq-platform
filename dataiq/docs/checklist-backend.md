@@ -99,11 +99,14 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [x] `Dockerfile` (dos etapas con uv, sin root, sin `.env`) y `.dockerignore`
    - [x] GitHub Actions: estilo y pruebas en cada PR (con PostgreSQL 18); en
      `main`, la imagen a `ghcr.io/curn-iq/dataiq-backend` con un tag por commit
-   - [ ] Hacer pública la imagen en ghcr.io (Cloud Run solo baja imágenes
-     públicas de ghcr.io)
-   - [ ] Neon: proyecto, migraciones y carga inicial
-   - [ ] Cloud Run: servicio con las variables de entorno y despliegue desde
-     GitHub Actions
+   - [x] Imagen pública en ghcr.io
+   - [x] Neon: proyecto `dataiq`, migraciones y carga inicial
+   - [x] Vercel: proyecto `dataiq-backend` (región `cle1`, `NullPool`,
+     variables de entorno secretas), probado de punta a punta
+   - [ ] Despliegue automático a Vercel desde GitHub Actions en cada push a
+     `main`
+   - [ ] Previews por PR con una rama `dev` de la base en Neon (cuando haya
+     usuarios que proteger)
 10. [ ] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
     backend de SIVRI en otro dominio (el portátil del laboratorio, por
     Tailscale), así que la cookie de sesión no viaja. Un endpoint con la
