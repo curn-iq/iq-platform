@@ -13,8 +13,8 @@ web
 
 - Mockups: HTML y CSS estáticos, publicados como Artifacts de Claude. Su código
   vive en `diseno/mockups/`.
-- Frontend de producción: se decide a partir de los mockups (candidato
-  inicial: Svelte). Se despliega en Vercel (plan Hobby).
+- Frontend de producción: Angular, una sola app con el shell y DataIQ
+  (`dataiq/frontend`). Se despliega en Vercel (plan Hobby).
 - Datos: la API de DataIQ (FastAPI + PostgreSQL). Los mockups usan el dataset
   real que ya está cargado en la base local.
 
@@ -100,8 +100,8 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
   monten la suya queda para después (`docs/despues-del-mvp.md`).
 - Alcance de los mockups actuales: el shell y DataIQ. SIVRI y SIMIQ3D aparecen
   solo como módulos del ecosistema, sin pantallas propias.
-- Decisiones abiertas: el nombre del ecosistema (los mockups usan un nombre de
-  trabajo, marcado como provisional) y la tecnología del frontend.
+- Decisión abierta: el nombre del ecosistema (los mockups usan un nombre de
+  trabajo, marcado como provisional).
 
 ## Brand Commitments
 
@@ -137,9 +137,8 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
   143 instrumentos (94 normalizados y 49 por clasificar) con 149 variantes de
   nombre. Ejemplo de referencia: la mesa de Mayo de Tiroidectomía.
 - Los datos clínicos de cada técnica (anestesia, posición del paciente,
-  indicaciones, complicaciones, técnica quirúrgica) están en el documento de
-  IQ del Drive, pero todavía no en la base. Los mockups los toman de ese
-  documento.
+  indicaciones, complicaciones, técnica quirúrgica) vienen del documento de
+  IQ del Drive y ya están cargados en la base.
 - Diagramas de roles y flujos: `docs/flujos.md` y su versión visual
   <https://claude.ai/artifact/779R1z8d3pd6srkbtiohpk>.
 - No existen todavía: usuarios, testimonios, métricas de uso, instituciones

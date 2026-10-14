@@ -60,13 +60,15 @@ navegación (ver más abajo) NO se considera un módulo.
   Plataforma web (panel administrativo, uso interno por directores/docentes) +
   API que consumen SIVRI y SIMIQ3D.
 - **Equipo**: colaborativo ING + IQ (documentación de técnicas).
-- **Stack decidido** (excepto frontend):
+- **Stack decidido**:
   - Backend: **Python + FastAPI** (async nativo, tipado con Pydantic, Swagger
     automático; Python también reduce fricción con SIVRI que usa YOLO26).
   - Base de datos: **PostgreSQL** (esquema relacional, bien definido, ACID).
-  - Frontend: **por definir.** Se decide después de que Juan entregue los
-    mockups; depende también de la capa de navegación compartida — ver más
-    abajo. (Candidato inicial: Svelte, por bundle liviano.)
+  - Frontend: **Angular 22** (decidido el 2026-10-11, tras los mockups), en
+    `dataiq/frontend`. Una sola app con el shell y DataIQ (ver «Capa de
+    navegación»). **El código del frontend va en inglés**, como el del
+    backend (ver «Idioma del código»); la interfaz, la documentación y las
+    URL, en español.
   - Autenticación: **JWT + Argon2id**, implementación propia de endpoints (no
     FastAPI-Users, para control total del flujo). Argon2id se prefiere sobre
     bcrypt por ser más resistente a ataques con GPU y de canal lateral
@@ -103,6 +105,8 @@ navegación (ver más abajo) NO se considera un módulo.
 
 - **Avance del backend**: [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md).
   Leerla al empezar a trabajar en el backend y marcar cada pieza al terminarla.
+- **Avance del frontend**: [`dataiq/docs/checklist-frontend.md`](dataiq/docs/checklist-frontend.md),
+  igual que la del backend. Cómo está hecho: [`dataiq/frontend/README.md`](dataiq/frontend/README.md).
 
 - **Infraestructura de despliegue (decidida, capa gratuita, sin trampas de
   "trial" con vencimiento)**:
@@ -336,7 +340,13 @@ Se está considerando un punto de entrada único / shell de navegación con acce
 basado en rol a los tres módulos, usando el JWT emitido por DataIQ. **No se
 categoriza como "M4"** porque, a diferencia de M1/M2/M3, no tiene backend ni
 base de datos propios — es una capa de frontend/routing sobre los módulos
-existentes. Dónde vivirá exactamente en el repo está **por definir**.
+existentes. Vive en la misma app Angular que DataIQ (`dataiq/frontend`),
+aislada en `app/shell/` para poder separarla si algún día hace falta
+(decidido el 2026-10-11). La sesión es la cookie de «Sesión del navegador»:
+las APIs de los tres módulos la reciben por el proxy de Vercel. Para que los
+frontends de SIVRI y SIMIQ3D también la usen, tienen que servirse desde ese
+mismo origen (p. ej. bajo `/sivri/*` y `/simiq3d/*`); cómo se sirven está
+**por definir** con esos módulos.
 
 **Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
 mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.
@@ -368,7 +378,7 @@ iq-platform/
 │   └── frontend/
 ├── dataiq/
 │   ├── backend/
-│   ├── frontend/
+│   ├── frontend/           (Angular: shell + DataIQ)
 │   └── docs/esquema.dbml   (esquema completo, se pega en dbdiagram.io)
 ├── simiq3d/
 │   ├── backend/
@@ -376,7 +386,7 @@ iq-platform/
 └── CLAUDE.md   (este archivo)
 ```
 
-(La capa de navegación aún no tiene ubicación definitiva en esta estructura.)
+(La capa de navegación vive en `dataiq/frontend`, junto con DataIQ.)
 
 ## Dónde vive cada cosa
 

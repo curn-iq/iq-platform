@@ -23,7 +23,7 @@ flowchart LR
     V["Visitante<br/>(sin cuenta)"] -->|se registra| U[usuario]
     U -->|lo asigna un admin| C[colaborador]
     C -->|lo asigna un admin| R[revisor]
-    R -->|solo Mauricio| A[admin]
+    R -->|solo el equipo operativo| A[admin]
 ```
 
 | Acción | Visitante | usuario | colaborador | revisor | admin |

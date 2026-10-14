@@ -11,7 +11,9 @@ Es la fuente única de verdad del ecosistema: SIVRI y SIMIQ3D consumen su API.
 - Autenticación: JWT firmado con EdDSA (clave pública en
   `/.well-known/jwks.json`) + Argon2id
 - Arquitectura: hexagonal (dominio / puertos / adaptadores)
-- Frontend: por definir (se decide con los mockups)
+- Frontend: Angular, junto con el shell de navegación del ecosistema
+  ([`frontend/README.md`](frontend/README.md); avance en
+  [`docs/checklist-frontend.md`](docs/checklist-frontend.md))
 
 ## Esquema de datos
 

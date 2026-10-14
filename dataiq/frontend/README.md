@@ -1,0 +1,155 @@
+# Frontend de DataIQ y del shell de IQ Platform
+
+Aplicación web en Angular que reúne el **shell de navegación** del ecosistema
+(inicio, catálogo, cuenta) y **DataIQ** (consulta y gestión de técnicas). SIVRI
+y SIMIQ3D tienen su propio frontend; desde aquí solo se enlazan. SIVRI es
+AGPL-3.0 ([`sivri/README.md`](../../sivri/README.md)): esta app (MIT) no
+importa código de `sivri/`.
+
+Este README dice cómo está hecho y cómo se corre. El avance por fases y lo que
+falta decidir están en
+[`../docs/checklist-frontend.md`](../docs/checklist-frontend.md).
+
+Fuentes:
+
+- Producto: [`PRODUCT.md`](../../PRODUCT.md). Diseño visual: [`DESIGN.md`](../../DESIGN.md).
+- Mockups: [`diseno/mockups/`](../../diseno/mockups/) y sus briefs en
+  [`.impeccable/surfaces/`](../../.impeccable/surfaces/).
+- Roles y flujos: [`docs/flujos.md`](../../docs/flujos.md).
+- Cómo se habla con la API (sesión, proxy, encabezados):
+  [`../README.md`, «Cómo lo usa el frontend»](../README.md#cómo-lo-usa-el-frontend).
+- API: `/docs` del backend; rutas y esquemas en
+  [`../backend/app/adapters/inbound/api/`](../backend/app/adapters/inbound/api/).
+
+## Decisiones
+
+| Decisión | Detalle |
+|---|---|
+| Tecnología | Angular 22: componentes standalone, signals, sin `zone.js`, TypeScript 6, pruebas con Vitest, estilos en SCSS |
+| Alcance | Shell + DataIQ en una sola app. El shell queda aislado en `app/shell/` para poder separarlo si algún día hace falta |
+| Idioma | Código en inglés, como el backend y la API. Interfaz, documentación y URL en español |
+| Renderizado | SPA sin SSR, desplegada como sitio estático en Vercel |
+| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuestos de `angular.json` activos (principio «Liviano» de `PRODUCT.md`) |
+| Estado | Servicios con signals por funcionalidad. Sin NgRx |
+| Lecturas | `httpResource` / `resource` (estables desde 22.0) |
+| Formularios | Signal Forms (estables desde 22.0) |
+| Caché HTTP | Sin `ETag` a mano: el navegador revalida con el `ETag` y el `Cache-Control` de la API |
+| Componentes | Propios, según `DESIGN.md`. Sin Angular Material; solo Angular CDK: drag-drop (mesa del editor), overlay (desplegables y paneles) y a11y |
+| Tipos de la API | Generados del `/openapi.json` de FastAPI (`openapi-typescript`), para que no se desfasen del backend |
+| Sesión | Cookie `HttpOnly` que pone la API; el frontend nunca ve el token. La cuenta y el rol salen de `GET /auth/me`. El rol solo decide qué se muestra; quien permite o niega es la API |
+| Acceso a la API | URL relativa `/api/dataiq`, por el mismo origen: `proxy.conf.json` en desarrollo y rewrites de Vercel en producción. Sin CORS ni `withCredentials` |
+| Seguridad | Encabezado `X-IQ-Client: web` en todas las peticiones (contra CSRF). CSP estricta en Vercel; nada de `innerHTML` con datos de la API ni `bypassSecurityTrust…` |
+
+## Arquitectura
+
+Estructura por funcionalidad, con una separación ligera inspirada en la
+arquitectura hexagonal del backend: solo `data/` sabe que existe HTTP y cómo
+son las rutas de la API.
+
+```
+src/
+├── styles/                 tokens.scss (traducción literal de DESIGN.md), tipografía, base, motion
+└── app/
+    ├── core/               servicios únicos de toda la app
+    │   ├── http/           provideHttpClient(withFetch()), base /api/dataiq,
+    │   │                   interceptores: X-IQ-Client y errores
+    │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
+    │                       y transiciones, avance por sección
+    ├── data/
+    │   ├── api/            tipos generados del OpenAPI
+    │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
+    │                       auth, users)
+    ├── shared/
+    │   ├── ui/             button, tabs con raya, segmented control, status pill,
+    │   │                   progress mark (22 px), search field, demo tag, floating panel
+    │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
+    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
+    └── features/
+        ├── home/  catalog/  technique/  account/
+        └── management/
+            ├── drafts/  editor/  review/  instruments/  users/
+```
+
+**Reglas de dependencia**: `features` usa `data`, `domain`, `shared` y `core`;
+`data` usa `domain`; `domain` no usa nada de Angular ni de la API. Ninguna
+funcionalidad importa a otra.
+
+**Modelos**: la API ya habla inglés, así que los repositorios devuelven los
+tipos generados tal cual. Un repositorio solo transforma cuando la forma de la
+API no le sirve a la pantalla (p. ej. agrupar los objetos por mesa para el
+diagrama), y esa transformación vive en `data/`, no en el componente.
+
+**El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
+en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
+soltar), en la revisión (dos mesas lado a lado) y en el catálogo de
+instrumental (miniatura). Se construye una sola vez, con variantes, antes que
+las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
+`columns`); `used: false` es una mesa que la técnica no lleva.
+
+### Glosario (interfaz → código y API)
+
+| Interfaz | Código y API |
+|---|---|
+| técnica, especialidad | technique, specialty |
+| versión; borrador, en revisión, publicada, reemplazada, archivada | version; `draft`, `in_review`, `published`, `superseded`, `archived` |
+| mesa de Mayo, mesa de reserva | zone (la API trae su nombre en `zone`) |
+| celda (fila, columna) | cell (`row`, `column`) |
+| objeto de la mesa, componente | item, component |
+| número de leyenda, texto de la fuente | `legend_number`, `source_text` |
+| instrumental, alias, categoría | instrument, `aliases`, category |
+| sutura, equipo biomédico, dispositivo médico | suture, equipment, device |
+| usuario, colaborador, revisor, admin | `user`, `contributor`, `reviewer`, `admin` |
+| devolución (motivo) | rejection (`reason`) |
+
+### Rutas
+
+Las URL son parte de la interfaz: van en español. Las rutas de la API son
+relativas a `/api/dataiq`.
+
+| Ruta | Mockup | Acceso | API |
+|---|---|---|---|
+| `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
+| `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
+| `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
+| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
+| `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
+| `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
+| `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
+| `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
+| `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
+
+La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
+`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=`.
+
+### Errores de la API
+
+Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
+
+- **401**: no hay sesión o venció (dura 2 horas). Se limpia la cuenta y se
+  lleva a `/cuenta/ingresar?volver=<ruta actual>`. En una página pública, el
+  401 de `GET /auth/me` solo significa visitante.
+- **403**: el rol no alcanza (o falta `X-IQ-Client`, que sería un error del
+  frontend).
+- **409**: otro cambio llegó primero o el estado no lo permite (otro revisor
+  ya decidió, ya hay una versión en curso, la técnica tiene una versión en
+  curso). `detail` trae el texto para mostrar.
+- **422**: `detail` es una lista. Del dominio llega como lista de textos (lo
+  que no cuadra en el contenido); de la validación de FastAPI, como lista de
+  objetos con el campo que falló.
+
+## Correr el frontend
+
+Hace falta Node.js y el backend corriendo (ver [`../README.md`](../README.md)).
+Todo se corre desde `dataiq/frontend`:
+
+```sh
+npm install
+npm start      # http://localhost:4200
+npm test       # Vitest
+npm run build  # producción, con los presupuestos de angular.json
+```
+
+`npm start` llega a la API por `proxy.conf.json` (`/api/dataiq` →
+`http://127.0.0.1:8000`), que entra en la fase 0; mientras tanto no hay
+conexión con el backend.
