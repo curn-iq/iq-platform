@@ -25,7 +25,7 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 
 ![Diagrama de despliegue de IQ Platform](diagramas/despliegue.svg)
 
-Dónde corre cada pieza en producción:
+Dónde corre cada pieza en producción y cómo llega ahí:
 
 - **Vercel** (plan Hobby) tiene un proyecto por pieza que se despliega aparte:
   el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend (ambos
@@ -37,10 +37,11 @@ Dónde corre cada pieza en producción:
 - **SIVRI** corre en un portátil o PC del laboratorio durante las sesiones.
   Tailscale Funnel le da una dirección HTTPS fija y le reenvía lo que manda el
   celular; el portátil pide el catálogo a DataIQ una vez por sesión.
-
-El código llega a producción por GitHub Actions: en cada push a `main`
-despliega la API en Vercel y publica la imagen del backend en ghcr.io, que
-sirve para correrlo fuera de Vercel (por ejemplo, en el portátil).
+- **GitHub Actions** lleva el código a producción: en cada push a `main`
+  despliega en Vercel. También publica la imagen del backend de DataIQ en
+  ghcr.io, que producción no usa (Vercel construye desde el código): sirve
+  para correrlo fuera de Vercel, por ejemplo en Cloud Run si la institución
+  lo financia ([`despues-del-mvp.md`](despues-del-mvp.md)).
 
 El porqué de cada elección y lo que se descartó está en `CLAUDE.md`
 («Infraestructura de despliegue»).

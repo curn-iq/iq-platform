@@ -106,7 +106,7 @@ Entre la documentación, los mockups y la API.
 | 3 | El backend estaba en español y el frontend iba en inglés | Todo el código y la API en inglés (#11); el frontend ya no traduce |
 | 4 | El backend no tenía CORS | No hace falta: cookie `HttpOnly` y proxy de mismo origen (#12). El token ya no va en `localStorage` |
 | 5 | `PRODUCT.md` decía que los datos clínicos no estaban en la base | Sí están; `PRODUCT.md` corregido |
-| 6 | `docs/flujos.md` decía que el admin lo asigna «solo Mauricio» | Es el equipo operativo del proyecto; `docs/flujos.md` corregido. Falta su versión visual (el Artifact enlazado ahí) |
+| 6 | `docs/flujos.md` decía que el admin lo asigna «solo Mauricio» | Es el equipo operativo del proyecto; `docs/flujos.md` y su versión visual corregidos |
 | 7 | El editor cambia filas y columnas, pero el esquema no guardaba el tamaño de la mesa | `version_zones` con `rows` y `columns` (#11) |
 | 8 | No se sabía si `httpResource` y Signal Forms eran estables | Son `@publicApi 22.0` en la versión instalada (22.2.2) |
 | 9 | ¿URL en español con el código en inglés? | Sí: son parte de la interfaz |

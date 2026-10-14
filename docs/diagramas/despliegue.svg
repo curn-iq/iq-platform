@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 950" role="img" aria-labelledby="titulo desc" font-family="'Noto Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 1130" role="img" aria-labelledby="titulo desc" font-family="'Noto Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
   <title id="titulo">Diagrama de despliegue de IQ Platform</title>
-  <desc id="desc">En producción, Vercel tiene un proyecto por pieza: el del shell y DataIQ sirve el frontend web, el de SIVRI (por definir) sirve el frontend de SIVRI y dataiq-backend corre la API de DataIQ, que usa la base de DataIQ en Neon. En el laboratorio, el celular abre el frontend de SIVRI, que pide un token corto a la API y envía los cuadros de la cámara por Tailscale Funnel al backend de SIVRI; este corre en un portátil y pide el catálogo a la API de DataIQ. La base de SIVRI está por definir.</desc>
+  <desc id="desc">En producción, Vercel tiene un proyecto por pieza: el del shell y DataIQ sirve el frontend web, el de SIVRI (por definir) sirve el frontend de SIVRI y dataiq-backend corre la API de DataIQ, que usa la base de DataIQ en Neon. En el laboratorio, el celular abre el frontend de SIVRI, que pide un token corto a la API y envía los cuadros de la cámara por Tailscale Funnel al backend de SIVRI; este corre en un portátil y pide el catálogo a la API de DataIQ. La base de SIVRI está por definir. En cada push a main, GitHub Actions despliega en Vercel.</desc>
 
   <defs>
     <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -11,12 +11,30 @@
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1340" height="950" rx="18" fill="#ffffff"/>
+  <rect x="0" y="0" width="1340" height="1130" rx="18" fill="#ffffff"/>
 
   <!-- Título: tipo y alcance -->
   <text x="40" y="48" font-size="22" font-weight="700" fill="#1f2933">Diagrama de despliegue de IQ Platform</text>
-  <text x="40" y="72" font-size="13.5" fill="#5b6573">Dónde corre cada pieza en producción · modelo C4</text>
+  <text x="40" y="72" font-size="13.5" fill="#5b6573">Dónde corre cada pieza en producción y cómo llega ahí · modelo C4</text>
 
+  <!-- ===== Cómo llega el código a producción ===== -->
+  <rect x="380" y="100" width="248" height="150" rx="14" fill="#f6f7f9" stroke="#9aa3ad" stroke-width="1.5"/>
+  <text x="398" y="128" font-size="14" font-weight="700" fill="#1f2933">GitHub</text>
+  <text x="398" y="146" font-size="11.5" fill="#5b6573">[Nodo: repositorio curn-iq]</text>
+  <g text-anchor="middle">
+    <rect x="404" y="162" width="200" height="70" rx="12" fill="#ffffff" stroke="#5b6573" stroke-width="1.6" stroke-dasharray="2 3"/>
+    <text x="504" y="193" font-size="15" font-weight="700" fill="#1f2933">GitHub Actions</text>
+    <text x="504" y="213" font-size="11.5" fill="#5b6573">[Infraestructura: CI/CD]</text>
+  </g>
+  <g fill="none" stroke="#3d4752" stroke-width="1.7">
+    <line x1="504" y1="232" x2="504" y2="288" marker-end="url(#f)"/>
+  </g>
+  <g font-size="12" fill="#3d4752">
+    <text x="516" y="262">Despliega en cada push a main</text>
+    <text x="516" y="277" fill="#8a94a3">[CLI de Vercel]</text>
+  </g>
+
+  <g transform="translate(0 180)">
   <!-- ===== Nodos ===== -->
   <g stroke="#9aa3ad" stroke-width="1.5" fill="#f6f7f9">
     <rect x="40" y="110" width="220" height="735" rx="14"/>
@@ -159,5 +177,6 @@
     <text x="502" y="903">Por definir</text>
     <line x1="590" y1="898" x2="626" y2="898" stroke="#3d4752" stroke-width="1.7" marker-end="url(#f)"/>
     <text x="634" y="903">Relación (acción [protocolo])</text>
+  </g>
   </g>
 </svg>
