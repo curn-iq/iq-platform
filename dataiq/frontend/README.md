@@ -2,7 +2,9 @@
 
 Aplicación web en Angular que reúne el **shell de navegación** del ecosistema
 (inicio, catálogo, cuenta) y **DataIQ** (consulta y gestión de técnicas). SIVRI
-y SIMIQ3D tienen su propio frontend; desde aquí solo se enlazan.
+y SIMIQ3D tienen su propio frontend; desde aquí solo se enlazan. SIVRI es
+AGPL-3.0 ([`sivri/README.md`](../../sivri/README.md)): esta app (MIT) no
+importa código de `sivri/`.
 
 Este README dice cómo está hecho y cómo se corre. El avance por fases y lo que
 falta decidir están en
