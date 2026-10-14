@@ -84,9 +84,20 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 
 - **Reconocer en el celular** (YOLO exportado a ONNX en el navegador) en vez
   de en el backend: no viaja video por internet, no gasta datos móviles del
-  estudiante ni cupo de Cloud Run. En el MVP reconoce el backend: un solo
+  estudiante ni CPU del servidor. En el MVP reconoce el backend: un solo
   lenguaje (Python), el modelo evaluado es el que se usa y todos los celulares
   reciben la misma calidad.
+
+## Infraestructura
+
+- **Volver a Google Cloud Run** (o tener un servidor fijo para SIVRI) si la
+  institución financia la cuenta de facturación: en Colombia exige un prepago
+  de COP 100.000. La imagen del backend ya está en ghcr.io, así que el cambio
+  es de despliegue, no de código.
+- **Organización en Google Cloud** con un dominio propio y Cloud Identity Free
+  (gratis): los proyectos dejan de depender de una cuenta personal. El mismo
+  dominio sirve para las APIs en subdominios (ver «Cuentas e inicio de
+  sesión»).
 
 ## Opciones descartadas para el MVP
 

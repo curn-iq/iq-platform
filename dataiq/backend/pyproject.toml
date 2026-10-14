@@ -31,6 +31,10 @@ unfixable = ["F401"]
 # Migraciones generadas por Alembic: llevan SQL largo que no se puede partir.
 "migrations/versions/*" = ["E501"]
 
+# Vercel carga la app de FastAPI desde aquí
+[tool.vercel]
+entrypoint = "app.main:app"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

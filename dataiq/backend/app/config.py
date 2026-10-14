@@ -6,6 +6,10 @@ class Config(BaseSettings):
 
     database_url: str
     sql_echo: bool = False
+    # Pool de conexiones a la base. En Vercel va apagado (DATABASE_POOL=false):
+    # cada función vive poco y no comparte conexiones, así que un pool por
+    # instancia solo acumularía conexiones abiertas en Neon.
+    database_pool: bool = True
 
     # Clave privada Ed25519 (32 bytes en base64) con la que DataIQ firma los JWT.
     # Los demás módulos solo reciben la pública, por /.well-known/jwks.json.

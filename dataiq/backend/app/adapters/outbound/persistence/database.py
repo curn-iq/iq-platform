@@ -1,10 +1,16 @@
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 
 from app.config import config
 
-engine = create_async_engine(config.database_url, echo=config.sql_echo)
+engine = create_async_engine(
+    config.database_url,
+    echo=config.sql_echo,
+    # Sin pool, cada sesión abre su conexión y la cierra al terminar.
+    **({} if config.database_pool else {"poolclass": NullPool}),
+)
 
 SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 

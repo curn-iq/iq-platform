@@ -1,0 +1,10 @@
+# Lo que no se sube a Vercel. Sobre todo .env: las claves van como variables de
+# entorno del proyecto en Vercel.
+.env
+.env.*
+.venv
+.pytest_cache
+.ruff_cache
+**/__pycache__
+tests
+seed

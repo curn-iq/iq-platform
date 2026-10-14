@@ -87,7 +87,7 @@ navegación (ver más abajo) NO se considera un módulo.
     XSS no puede robarla (RFC 10017, OAuth 2.0 for Browser-Based Apps). Para
     que la cookie sea propia y no de terceros, el frontend y las APIs
     comparten origen con **rewrites de Vercel** (`/api/dataiq/*`,
-    `/api/sivri/*`, `/api/simiq3d/*` → Cloud Run); un solo login sirve para
+    `/api/sivri/*`, `/api/simiq3d/*`); un solo login sirve para
     los tres módulos. Contra CSRF, las escrituras con cookie exigen el
     encabezado `X-IQ-Client`. `POST /auth/login` deja la cookie y no devuelve
     el token; `POST /auth/token` devuelve el token (Bearer) para lo que no es
@@ -108,40 +108,52 @@ navegación (ver más abajo) NO se considera un módulo.
 - **Avance del frontend**: [`dataiq/docs/checklist-frontend.md`](dataiq/docs/checklist-frontend.md),
   igual que la del backend. Cómo está hecho: [`dataiq/frontend/README.md`](dataiq/frontend/README.md).
 
-- **Infraestructura de despliegue (decidida, capa gratuita, sin trampas de
-  "trial" con vencimiento)**:
-  - Backend → **Google Cloud Run** (Always Free: 2M requests/mes, 360K GB-seg,
-    180K vCPU-seg, 1GB egress/mes desde Norteamérica). **El cupo gratuito es
-    por cuenta de facturación, no por servicio**: los backends de los tres
-    módulos lo comparten si usan la misma cuenta. Región `us-central1`. **Nunca
-    usar `min-instances=1`** (rompe el free tier). Cold start es aceptable para
-    este caso de uso.
+- **Infraestructura de despliegue (decidida por Mauricio el 2026-10-14: gratis
+  y sin tarjeta; nadie del equipo tiene tarjeta de crédito)**:
+  - Backend de DataIQ → **Vercel Hobby, como funciones de Python**
+    (https://dataiq-backend.vercel.app). Región `cle1` (Cleveland, junto a
+    Neon en Ohio). Cupo mensual de la cuenta: 4 horas de CPU activa (la espera
+    por la base de datos no cuenta), 1M de invocaciones y 100GB de
+    transferencia. Escala a cero; el arranque en frío tarda segundos. Con
+    `DATABASE_POOL=false` usa `NullPool`: cada función abre y cierra su
+    conexión, para no acumular conexiones en Neon. Las claves
+    (`DATABASE_URL`, `JWT_PRIVATE_KEY`) son variables de entorno secretas del
+    proyecto en Vercel. *Hobby es solo para uso no comercial* (condición de
+    los términos de servicio; un proyecto de grado cumple) y es de una sola
+    persona: el proyecto está en la cuenta de Mauricio.
+  - Backend de SIVRI → **un portátil o PC del laboratorio con Tailscale
+    Funnel** (plan gratis: dirección HTTPS fija `*.ts.net`). SIVRI se usa en
+    sesiones de laboratorio; ningún servicio gratis sin tarjeta da CPU
+    sostenida para YOLO. Detalle en [`sivri/docs/checklist.md`](sivri/docs/checklist.md).
   - Base de datos → **Neon Postgres** (Free tier: 0.5GB almacenamiento, 100
     CU-hora/mes, 5GB egress/mes por proyecto, scale-to-zero). **Un proyecto Neon
     por módulo** (DataIQ, SIVRI, SIMIQ3D cada uno con el suyo). Región
-    `aws-us-east-2` (no hay región Sudamérica en Neon; es la más cercana a
-    `us-central1` de Cloud Run). Al exceder el plan gratis no se cobra: el
-    cómputo se suspende hasta el siguiente ciclo, y por encima de 0.5GB fallan
-    las escrituras.
-  - Frontend → **Vercel** (plan Hobby, 100GB bandwidth/mes). Hace de proxy
-    de las APIs (ver «Sesión del navegador»): ese tráfico también cuenta en
-    los 100GB. Si SIVRI manda video a su backend, medirlo antes. *Nota: Hobby es
-    solo para uso no comercial — condición real de los términos de servicio, no
-    solo un límite técnico.* **Ojo**: Hobby no permite conectar un proyecto a
-    un repo de una organización de GitHub (este repo es de `curn-iq`); hay que
-    desplegar de otra forma (p. ej. Vercel CLI desde GitHub Actions) — por
-    definir.
-  - Registro de imágenes de contenedor → **GitHub Container Registry (ghcr.io)**,
-    NO Artifact Registry de GCP (su free tier es solo 0.5GB). Cloud Run solo
-    despliega directo desde ghcr.io si la imagen es **pública** (una privada
-    exigiría un repositorio remoto de Artifact Registry), y cachea esas imágenes
-    hasta una hora: desplegar con un tag único por commit.
+    `aws-us-east-2` (Ohio; no hay región Sudamérica en Neon). Al exceder el
+    plan gratis no se cobra: el cómputo se suspende hasta el siguiente ciclo, y
+    por encima de 0.5GB fallan las escrituras. El de DataIQ ya existe, migrado
+    y con la carga inicial.
+  - Frontend → **Vercel** (plan Hobby, 100GB bandwidth/mes), con rewrites
+    hacia las APIs (ver «Sesión del navegador»): ese tráfico también cuenta en
+    los 100GB. **Hobby no permite conectar un proyecto a un repo de una
+    organización de GitHub** (este repo es de `curn-iq`): se despliega con el
+    CLI de Vercel desde GitHub Actions, con el secreto `VERCEL_TOKEN`.
+  - Imagen de contenedor del backend → **GitHub Container Registry (ghcr.io)**,
+    pública. Vercel no la usa (construye desde el código); sirve para correr
+    el backend en cualquier otro lado, como el portátil del laboratorio.
+  - CI/CD → **GitHub Actions**: en cada PR, estilo y pruebas; en cada push a
+    `main`, despliegue a Vercel (producción) e imagen a ghcr.io. No hay rama
+    `dev`: `main` es producción y nada entra sin PR y CI. Las previews por PR
+    (con una rama `dev` de la base en Neon) se agregan cuando haya usuarios
+    que proteger.
+  - Se descartaron: **Google Cloud Run** (en Colombia, crear la cuenta de
+    facturación exige un prepago de COP 100.000; queda como opción si la
+    institución financia, ver [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md)),
+    Azure for Students (regiones restringidas por suscripción), Render y
+    similares (512MB y 0,1 CPU, se duermen y pueden pedir tarjeta), Hugging
+    Face Spaces (el cómputo gratis no sirve para SIVRI), GCP con crédito de
+    $300/90 días (vence) y Oracle Cloud y Koyeb (piden tarjeta).
   - Límites verificados en la documentación oficial de cada proveedor en
-    sep-2026.
-  - CI/CD → **GitHub Actions** (build + push a ghcr.io + deploy a Cloud Run en
-    cada push a `main`).
-  - Se descartaron explícitamente: GCP con crédito gratis de $300/90 días (tiene
-    fecha de vencimiento) y Oracle Cloud (no convenció).
+    oct-2026.
 
 - **Esquema de datos**: la fuente es **`dataiq/docs/esquema.dbml`** (DBML,
   se pega tal cual en dbdiagram.io). Diagrama:
@@ -437,7 +449,7 @@ explícitamente. No editar el Drive por iniciativa propia.
    de `seed/tecnicas.xlsx`), para que IQ lo valide. Nunca se rellena por
    suposición sin marcarlo.
 2. **No mezclar credenciales entre módulos.** Cada módulo tiene su propio Neon
-   Postgres y su propio deploy en Cloud Run; no compartir variables de entorno
+   Postgres y su propio despliegue; no compartir variables de entorno
    de un módulo con otro.
 3. **Todo endpoint GET nuevo debe llevar `Cache-Control`/`ETag`.**
 4. **Cada cambio se documenta en su único lugar, en el mismo PR del código**
