@@ -22,9 +22,13 @@ Decidido por Mauricio el 2026-10-15:
 
 ## Modelos 3D
 
-Decidido por Mauricio el 2026-10-15: **modelos propios, hechos en Blender con
-Claude**. Blender es gratis para cualquier uso y lo que se crea con él es de
+Decidido por Mauricio el 2026-10-15: **modelos propios, modelados a mano en
+Blender**. Blender es gratis para cualquier uso y lo que se crea con él es de
 quien lo hace, así que los modelos pueden ir en el repo y servirse en la web.
+(Primero se planeó modelarlos con Claude y la skill
+[blender-image-to-3d](https://github.com/majidmanzarpour/blender-game-skills);
+se descartó el mismo día porque exige que más integrantes del equipo tengan
+Claude Pro.)
 
 Por qué no otras fuentes (revisadas el 2026-10-15):
 
@@ -47,26 +51,37 @@ Cómo se hacen:
   | Bisturí | Mangos N.° 3, 4 y 7; hojas #10, #10-11, #15 y #20 | Las medidas |
   | Separadores | Farabeuf, Senn Miller | La forma |
 
-- **Referencias:** fotos del instrumental real del programa de IQ (ver
-  «Fotos de referencia»).
-- **Herramienta** (decidida por Mauricio el 2026-10-15): la skill
-  [blender-image-to-3d](https://github.com/majidmanzarpour/blender-game-skills)
-  (MIT) en Claude Code. Construye el modelo por fases a partir de las fotos y
-  pasa cada fase solo si el render coincide con la foto en números (silueta y
-  proporciones), no a ojo; exporta GLB y lo vuelve a importar para
-  comprobarlo. Corre Blender sin ventana; [Blender
-  MCP](https://github.com/ahujasid/blender-mcp) es opcional, para retocar en
-  vivo. Sus fases de esqueleto y animación no aplican a instrumentos.
-- **Cada modelo sale de un script** de Blender guardado en el repo: se puede
-  volver a generar, revisar en un PR y corregir cambiando una medida. Cada
-  medida dice de qué foto salió, o queda marcada como inferida.
+- **Referencias:** fotos de catálogo de cada instrumento (fabricantes y
+  distribuidores de instrumental quirúrgico), puestas como imagen de fondo en
+  Blender. Las medidas salen de la ficha del fabricante (el largo total suele
+  venir en ella) o de la foto, a escala con ese largo. Las imágenes son de
+  terceros: no se suben al repo, solo su enlace.
+- **Todo queda en el repo:** el `.blend` de cada familia, el GLB de cada
+  instrumento y una tabla con sus medidas principales (largo total, largo de
+  la punta, ancho de los anillos…), cada una con su fuente (el enlace a la
+  foto o a la ficha) o marcada como inferida. Así cada modelo se puede
+  revisar en un PR y corregir.
 - **IQ valida cada modelo**, como valida los datos de DataIQ.
 
-### Fotos de referencia
+Convenciones, para que los modelos encajen en la escena (ver «Cómo se arma la
+mesa en 3D»):
 
-Se toman en la primera visita al laboratorio para el dataset de SIVRI
-([`sivri/docs/dataset.md`](../sivri/docs/dataset.md)), con el mismo pedido al
-programa de IQ, pero son otras fotos: cada instrumento solo, no la mesa.
+- **Escala real, en metros** (la unidad de glTF).
+- **El origen en el centro del instrumento:** la escena lo pone con su centro
+  en el centro de su celda.
+- **Todos orientados igual:** el eje largo sobre X, con la punta hacia +X. La
+  escena los gira según la orientación de la mesa.
+- **Pocos polígonos:** se ven en el navegador del celular.
+- **Un GLB por instrumento**, con nombre en inglés (`kelly_forceps.glb`), como
+  el resto del código.
+
+### Fotos del instrumental de IQ (opcional)
+
+Los modelos se hacen con fotos de catálogo, así que estas fotos no son
+necesarias. Si hay tiempo en la primera visita al laboratorio para el dataset
+de SIVRI ([`sivri/docs/dataset.md`](../sivri/docs/dataset.md)), sirven para
+ajustar los modelos a los instrumentos que usa el programa. Son otras fotos que
+las de SIVRI: cada instrumento solo, no la mesa.
 
 - Los 23 objetos de la lista, cada uno solo, sobre el campo liso de la mesa.
   Las hojas de bisturí, sueltas.
@@ -130,7 +145,7 @@ hacia dónde apunta:
   de SIVRI: lo que el estudiante ve en 3D es lo que SIVRI le revisa.
 - **La mesa, a su tamaño real:** el área entre los marcadores ArUco de la mesa
   del laboratorio, medida en la visita de las fotos, con su fuente anotada.
-- **Los instrumentos, a escala real** (de las fotos con regla), con **su centro
+- **Los instrumentos, a escala real** (ver «Modelos 3D»), con **su centro
   en el centro de su celda**. Un instrumento suele ser más largo que una celda:
   sobresale hacia las vecinas, como en la mesa real. SIVRI mide igual: por el
   centro.
@@ -179,8 +194,8 @@ técnica del chat; lo demás está en
     apendicectomía?») e intentos de desviarlo («ignora tus instrucciones»):
     en esas el chat dice que no tiene la respuesta. Se corre solo cada vez
     que cambian el modelo o sus instrucciones.
-  - Los controles de la skill sobre cada modelo 3D (silueta y proporciones
-    frente a la foto) y las pruebas automatizadas del backend.
+  - La comparación de cada modelo 3D con sus fotos de referencia (silueta y
+    medidas) y las pruebas automatizadas del backend.
 - **Evaluación sumativa** (al final):
   1. **Exactitud del chat:** porcentaje de preguntas convertidas en la acción
      correcta, sobre el banco y sobre el registro de las sesiones de
