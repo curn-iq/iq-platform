@@ -20,10 +20,11 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 - El **frontend de SIVRI** pide a DataIQ un token corto y con él envía 2 o 3
   cuadros por segundo de la cámara al **backend de SIVRI**, que reconoce el
   instrumental y valida la mesa.
-- El **frontend de SIMIQ3D** envía la pregunta del chat a su **backend**, que
-  le pide la acción al **modelo de lenguaje** (el modelo elige qué mostrar, no
-  responde con lo que sabe), arma la escena con el catálogo de DataIQ y guarda
-  el registro de la conversación en su base.
+- El **frontend de SIMIQ3D** (Angular y Three.js) envía la pregunta del chat a
+  su **backend**, que le pide la acción al **modelo de lenguaje** (el modelo
+  elige qué mostrar, no responde con lo que sabe) con el catálogo de DataIQ, y
+  guarda el registro de la conversación en su base. Con la acción, el frontend
+  lee la mesa directo de la **API de DataIQ** y arma la escena.
 
 ## Despliegue
 
