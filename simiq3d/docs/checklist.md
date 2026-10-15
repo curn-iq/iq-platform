@@ -21,7 +21,8 @@ porqué están en el [README](../README.md).
 - [x] Cómo se arma la mesa en 3D
 - [x] Cómo se evalúa en el MVP
 - [x] Backend: Python + FastAPI (confirmado por Guebriel)
-- [ ] Frontend y visor 3D: los decide Guebriel (sugerencia en el README)
+- [x] Frontend y visor 3D: Angular + Three.js (decidido por Juan); avance en
+  [`checklist-frontend.md`](checklist-frontend.md)
 - [ ] (Opcional) Fotos del instrumental de IQ para ajustar los modelos, si hay
   tiempo en la primera visita de SIVRI (ver la
   [checklist de SIVRI](../../sivri/docs/checklist.md))

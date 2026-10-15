@@ -358,10 +358,14 @@ navegación (ver más abajo) NO se considera un módulo.
   la pregunta en una acción y los datos salen de DataIQ, nunca del modelo.
   Alcance, por qué no se compran y avance:
   [`simiq3d/README.md`](simiq3d/README.md).
-- **Stack**: lo decide Guebriel, que lo desarrolla. Backend: **Python +
-  FastAPI**, como DataIQ y SIVRI (confirmado por Guebriel el 2026-10-15).
-  Frontend: por definir; el visor corre en el navegador (WebGL), como pide el
-  Formato 115. La sugerencia está en el README.
+- **Stack**: el backend lo decide Guebriel, que lo desarrolla; el frontend de
+  los tres módulos, Juan Caraballo. Backend: **Python + FastAPI**, como
+  DataIQ y SIVRI (confirmado por Guebriel el 2026-10-15). Frontend:
+  **Angular + Three.js** (decidido por Juan el 2026-10-15), app aparte en
+  `simiq3d/frontend` servida bajo `/simiq3d/`; el visor corre en el navegador
+  (WebGL), como pide el Formato 115. Cómo está hecho:
+  [`simiq3d/frontend/README.md`](simiq3d/frontend/README.md); avance:
+  [`simiq3d/docs/checklist-frontend.md`](simiq3d/docs/checklist-frontend.md).
 
 ## Capa de navegación (NO es un módulo)
 
@@ -412,11 +416,21 @@ iq-platform/
 │   └── docs/esquema.dbml   (esquema completo, se pega en dbdiagram.io)
 ├── simiq3d/
 │   ├── backend/
-│   └── frontend/
+│   ├── frontend/           (Angular + Three.js)
+│   └── models/             (modelos 3D: .blend, GLB y medidas)
+├── shared/design/          (tokens base de DESIGN.md para los frontends)
 └── CLAUDE.md   (este archivo)
 ```
 
 (La capa de navegación vive en `dataiq/frontend`, junto con DataIQ.)
+
+**Sistema visual compartido** (decidido por Juan el 2026-10-15): dos capas.
+`shared/design/` tiene los tokens base de `DESIGN.md` (colores, tipografía,
+espaciado, movimiento) y los nombres por uso (p. ej. `--color-accent`); cada
+frontend tiene su tema (`src/styles/theme.scss`) y puede sobrescribir lo que
+necesite sin tocar a los demás. Los componentes usan solo los nombres por uso.
+Todo color nuevo se anota en `DESIGN.md`. La carpeta la crea el primer
+frontend que llegue a su fase 0.
 
 ## Dónde vive cada cosa
 

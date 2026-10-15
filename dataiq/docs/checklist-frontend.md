@@ -13,7 +13,8 @@ y se ve bien a 1310 px y a 390 px.
 ### Fase 0 — Base del proyecto
 
 - [ ] `index.html` en español (`lang="es"`, título) y nombre del proyecto
-- [ ] `styles/`: tokens, tipografía (Host Grotesk y Martian Mono de Google Fonts), base y motion desde `DESIGN.md`, con `prefers-reduced-motion`
+- [ ] Tokens base en `shared/design/` (raíz del repo), si SIMIQ3D no la creó antes: colores, tipografía (Host Grotesk y Martian Mono de Google Fonts), espaciado y motion desde `DESIGN.md`, con `prefers-reduced-motion`
+- [ ] `styles/theme.scss`: el tema de DataIQ sobre esos tokens (ver «Sistema visual compartido» en `CLAUDE.md`)
 - [ ] `proxy.conf.json` (`/api/dataiq` → `http://127.0.0.1:8000`, sin el prefijo) y conectado a `ng serve` en `angular.json`
 - [ ] Script de npm que genera los tipos de la API desde `/openapi.json`
 - [ ] Instalar Angular CDK
