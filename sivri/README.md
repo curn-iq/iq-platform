@@ -56,11 +56,11 @@ El avance, por actividad de DSRM, está en
 - Backend: Python (por definir el framework); su propia base de datos (Neon),
   separada de la de DataIQ
 - Autenticación: valida el JWT de DataIQ con su clave pública (JWKS). La
-  cookie de sesión no llega al portátil del laboratorio (otro dominio): el
+  cookie de sesión no llega al Servidor PC1 del laboratorio (otro dominio): el
   frontend pide a DataIQ un token corto y lo manda en
   `Authorization: Bearer` (pieza 10 de la
   [checklist del backend de DataIQ](../dataiq/docs/checklist-backend.md))
-- Frontend: por definir
+- Frontend: Angular, como el shell y DataIQ
 
 ## Licencia
 
@@ -130,15 +130,19 @@ columnas de DataIQ):
    esperada del mismo instrumento, con el algoritmo húngaro (el emparejamiento
    que minimiza la distancia total). Así se resuelve qué detección corresponde
    a cuál cuando hay dos instrumentos iguales en la mesa.
-2. **Medir.** De cada pareja, qué parte de la caja del instrumento cae dentro
-   de sus celdas esperadas (un objeto puede ocupar varias celdas).
+2. **Medir.** De cada pareja, dónde cae el **centro** de la caja del
+   instrumento respecto de sus celdas esperadas (un objeto puede ocupar varias
+   celdas). Cuenta el centro y no la caja entera porque un instrumento suele
+   ser más largo que una celda: bien puesto, sobresale hacia las vecinas
+   (corregido por Mauricio el 2026-10-15; antes se medía qué parte de la caja
+   caía dentro, y un instrumento bien puesto salía mal).
 3. **Dar un estado a cada objeto:**
 
    | Estado | Cuándo | Qué ve el estudiante |
    |---|---|---|
-   | En su lugar | 60 % o más de la caja dentro de sus celdas | Marcado como correcto |
-   | Mover | Menos del 40 % | Hacia dónde moverlo («una celda a la izquierda») |
-   | Dudoso | Entre 40 % y 60 % | Nada: puede ser imprecisión de la medición (margen técnico) |
+   | En su lugar | El centro cae dentro de sus celdas, fuera del margen | Marcado como correcto |
+   | Mover | El centro cae en otra celda, fuera del margen | Hacia dónde moverlo («una celda a la izquierda») |
+   | Dudoso | El centro cae en el margen técnico: la franja junto al borde de sus celdas | Nada: puede ser imprecisión de la medición |
    | Falta | Se esperaba y no aparece | Qué instrumento falta |
    | Sobra | Aparece y no se esperaba | Qué instrumento sobra |
 
@@ -146,8 +150,9 @@ columnas de DataIQ):
    esperados. SIVRI muestra la técnica con el porcentaje más alto, o las dos
    más altas si quedan muy cerca.
 
-Los umbrales (60 % y 40 %) y la distancia que cuenta como «muy cerca» son el
-punto de partida: se ajustan con la sesión de validación.
+El ancho del margen (punto de partida: el 10 % del lado de la celda, a cada
+lado del borde) y la distancia que cuenta como «muy cerca» se ajustan con la
+sesión de validación.
 
 **Cómo se evalúa esta lógica**, además de las métricas del detector: con las
 mesas armadas con errores a propósito, que tienen anotado cuál es el error.

@@ -90,6 +90,10 @@ toma y si hace falta ajustarlas.
    tienen. De cada video se sacan unos 10 cuadros para etiquetar,
    que cuentan como imágenes de la misma sesión.
 
+En la primera visita se toman además las **fotos de referencia de SIMIQ3D**:
+cada instrumento solo, con una regla al lado (protocolo en
+[`simiq3d/README.md`](../../simiq3d/README.md)). No son parte de este dataset.
+
 **Cuántas fotos salen**
 
 Se fotografían 19 instrumentos: los 23 de la lista menos las 4 hojas de

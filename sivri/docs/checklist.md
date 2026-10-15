@@ -43,9 +43,9 @@ proyecto de grado). Se marca cada pieza al terminarla.
 - [ ] Ajustar los umbrales con la sesión de validación
 - [ ] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ)
 - [ ] Autenticación del celular ante SIVRI: la cookie de sesión no llega al
-  dominio del portátil; la página pide a DataIQ un token corto y lo manda en
+  dominio del Servidor PC1; la página pide a DataIQ un token corto y lo manda en
   `Authorization: Bearer` (depende de la pieza 10 de la checklist de DataIQ)
-- [ ] Servidor de SIVRI para las sesiones: portátil o PC del laboratorio con
+- [ ] Servidor PC1 para las sesiones: un PC del laboratorio con
   Tailscale Funnel (dirección HTTPS fija, plan gratis); SIVRI pide el catálogo
   a DataIQ una vez por sesión
 - [ ] Frontend de SIVRI
