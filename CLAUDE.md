@@ -89,7 +89,7 @@ navegación (ver más abajo) NO se considera un módulo.
     comparten origen con **rewrites de Vercel** (`/api/dataiq/*`,
     `/api/simiq3d/*`); un solo login sirve para los tres módulos. SIVRI no
     pasa por el proxy (los cuadros de la cámara irían por Vercel): su backend
-    está en el portátil del laboratorio, adonde la cookie no llega, y recibe
+    está en el Servidor PC1 del laboratorio, adonde la cookie no llega, y recibe
     un token corto de DataIQ en `Authorization: Bearer` (pieza 10 de la
     checklist del backend). Contra CSRF, las escrituras con cookie exigen el
     encabezado `X-IQ-Client`. `POST /auth/login` deja la cookie y no devuelve
@@ -111,8 +111,9 @@ navegación (ver más abajo) NO se considera un módulo.
 - **Avance del frontend**: [`dataiq/docs/checklist-frontend.md`](dataiq/docs/checklist-frontend.md),
   igual que la del backend. Cómo está hecho: [`dataiq/frontend/README.md`](dataiq/frontend/README.md).
 
-- **Infraestructura de despliegue (decidida por Mauricio el 2026-10-14: gratis
-  y sin tarjeta; nadie del equipo tiene tarjeta de crédito)**:
+- **Infraestructura de despliegue (decidida por Mauricio el 2026-10-14:
+  servicios gratuitos que no exigen tarjeta de crédito, porque el equipo no
+  dispone de recursos para prepagar un servicio en la nube)**:
   - Backend de DataIQ → **Vercel Hobby, como funciones de Python**
     (https://dataiq-backend.vercel.app). Región `cle1` (Cleveland, junto a
     Neon en Ohio). Cupo mensual de la cuenta: 4 horas de CPU activa (la espera
@@ -124,10 +125,15 @@ navegación (ver más abajo) NO se considera un módulo.
     proyecto en Vercel. *Hobby es solo para uso no comercial* (condición de
     los términos de servicio; un proyecto de grado cumple) y es de una sola
     persona: el proyecto está en la cuenta de Mauricio.
-  - Backend de SIVRI → **un portátil o PC del laboratorio con Tailscale
-    Funnel** (plan gratis: dirección HTTPS fija `*.ts.net`). SIVRI se usa en
-    sesiones de laboratorio; ningún servicio gratis sin tarjeta da CPU
+  - Backend de SIVRI → **Servidor PC1**: un PC del laboratorio con Tailscale
+    Funnel (plan gratuito: dirección HTTPS fija `*.ts.net`). SIVRI se usa en
+    sesiones de laboratorio, y ningún servicio gratuito sin tarjeta ofrece CPU
     sostenida para YOLO. Detalle en [`sivri/docs/checklist.md`](sivri/docs/checklist.md).
+  - Modelo de lenguaje de SIMIQ3D → **Servidor PC2**: un PC de escritorio con
+    GPU, con Ollama y Tailscale Funnel, detrás de un filtro con clave. El
+    backend de SIMIQ3D va en Vercel; si el Servidor PC2 se apaga, solo deja de
+    funcionar el chat. Detalle en
+    [`simiq3d/README.md`](simiq3d/README.md).
   - Base de datos → **Neon Postgres** (Free tier: 0.5GB almacenamiento, 100
     CU-hora/mes, 5GB egress/mes por proyecto, scale-to-zero). **Un proyecto Neon
     por módulo** (DataIQ, SIVRI, SIMIQ3D cada uno con el suyo). Región
@@ -142,7 +148,7 @@ navegación (ver más abajo) NO se considera un módulo.
     CLI de Vercel desde GitHub Actions, con el secreto `VERCEL_TOKEN`.
   - Imagen de contenedor del backend → **GitHub Container Registry (ghcr.io)**,
     pública. Vercel no la usa (construye desde el código); sirve para correr
-    el backend en cualquier otro lado, como el portátil del laboratorio.
+    el backend fuera de Vercel.
   - CI/CD → **GitHub Actions**: en cada PR, estilo y pruebas; en cada push a
     `main`, despliegue a Vercel (producción) e imagen a ghcr.io. No hay rama
     `dev`: `main` es producción y nada entra sin PR y CI. Las previews por PR
@@ -152,9 +158,9 @@ navegación (ver más abajo) NO se considera un módulo.
     facturación exige un prepago de COP 100.000; queda como opción si la
     institución financia, ver [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md)),
     Azure for Students (regiones restringidas por suscripción), Render y
-    similares (512MB y 0,1 CPU, se duermen y pueden pedir tarjeta), Hugging
+    similares (512MB y 0,1 CPU, se suspenden por inactividad y pueden exigir tarjeta), Hugging
     Face Spaces (el cómputo gratis no sirve para SIVRI), GCP con crédito de
-    $300/90 días (vence) y Oracle Cloud y Koyeb (piden tarjeta).
+    $300/90 días (vence) y Oracle Cloud y Koyeb (exigen tarjeta).
   - Límites verificados en la documentación oficial de cada proveedor en
     oct-2026.
 
@@ -343,11 +349,19 @@ navegación (ver más abajo) NO se considera un módulo.
   backend de DataIQ, nunca acceso directo a su base de datos).
 - **Calendario**: se desarrolla en paralelo con los otros dos módulos este
   semestre (antes se planeaba para 2027).
-- **Decisiones abiertas** (bloquean el desarrollo):
-  - Origen de la biblioteca de modelos 3D del instrumental (¿modelado propio?
-    ¿assets comprados? ¿otra vía?) — flaggeado como bloqueador real.
-  - Stack de renderizado 3D: Unity/C# vs. Three.js/Babylon.js (web) — no
-    decidido.
+- **MVP** (decidido por Mauricio el 2026-10-15): la **mesa de Mayo de las
+  cinco técnicas de Cirugía General**, el mismo alcance de SIVRI. Los modelos
+  3D son **propios, hechos en Blender con Claude**, por familias de
+  instrumentos y a partir de fotos del instrumental real de IQ; cada uno sale
+  de un script guardado en el repo. El chat usa *tool calling*: un modelo
+  local (Ollama, en el Servidor PC2, con Tailscale Funnel) convierte
+  la pregunta en una acción y los datos salen de DataIQ, nunca del modelo.
+  Alcance, por qué no se compran y avance:
+  [`simiq3d/README.md`](simiq3d/README.md).
+- **Stack**: lo decide Guebriel, que lo desarrolla. Backend: **Python +
+  FastAPI**, como DataIQ y SIVRI (confirmado por Guebriel el 2026-10-15).
+  Frontend: por definir; el visor corre en el navegador (WebGL), como pide el
+  Formato 115. La sugerencia está en el README.
 
 ## Capa de navegación (NO es un módulo)
 
