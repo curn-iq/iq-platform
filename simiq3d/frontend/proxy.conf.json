@@ -1,0 +1,10 @@
+{
+  "/api/dataiq": {
+    "target": "http://127.0.0.1:8000",
+    "pathRewrite": { "^/api/dataiq": "" }
+  },
+  "/api/simiq3d": {
+    "target": "http://127.0.0.1:8001",
+    "pathRewrite": { "^/api/simiq3d": "" }
+  }
+}
