@@ -20,6 +20,10 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 - El **frontend de SIVRI** pide a DataIQ un token corto y con él envía 2 o 3
   cuadros por segundo de la cámara al **backend de SIVRI**, que reconoce el
   instrumental y valida la mesa.
+- El **frontend de SIMIQ3D** envía la pregunta del chat a su **backend**, que
+  le pide la acción al **modelo de lenguaje** (el modelo elige qué mostrar, no
+  responde con lo que sabe), arma la escena con el catálogo de DataIQ y guarda
+  el registro de la conversación en su base.
 
 ## Despliegue
 
@@ -28,15 +32,21 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 Dónde corre cada pieza en producción y cómo llega ahí:
 
 - **Vercel** (plan Hobby) tiene un proyecto por pieza que se despliega aparte:
-  el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend (ambos
-  como archivos estáticos) y `dataiq-backend` la API como funciones de Python
-  en la región `cle1`. El navegador llega a la API por un rewrite del mismo
-  dominio (`/api/dataiq/*`), así que la cookie de sesión viaja sin CORS.
+  el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend, el de
+  SIMIQ3D su frontend y su backend, y `dataiq-backend` la API como funciones
+  de Python en la región `cle1`. El navegador llega a la API por un rewrite
+  del mismo dominio (`/api/dataiq/*`), así que la cookie de sesión viaja sin
+  CORS.
 - **Neon** guarda una base por módulo (PostgreSQL 18, Ohio), cada una en su
   propio proyecto.
-- **SIVRI** corre en un portátil o PC del laboratorio durante las sesiones.
-  Tailscale Funnel le da una dirección HTTPS fija y le reenvía lo que manda el
-  celular; el portátil pide el catálogo a DataIQ una vez por sesión.
+- **El backend de SIVRI** corre en el **Servidor PC1**, un PC del laboratorio,
+  durante las sesiones. Tailscale Funnel le da una dirección HTTPS fija y le
+  reenvía lo que manda el celular; el servidor pide el catálogo a DataIQ una
+  vez por sesión.
+- **El modelo de lenguaje de SIMIQ3D** corre con Ollama en el **Servidor
+  PC2**, un PC de escritorio con GPU, detrás de Tailscale Funnel y de un
+  filtro con clave. Si el Servidor PC2 se apaga, solo deja de funcionar el
+  chat.
 - **GitHub Actions** lleva el código a producción: en cada push a `main`
   despliega en Vercel. También publica la imagen del backend de DataIQ en
   ghcr.io, que producción no usa (Vercel construye desde el código): sirve

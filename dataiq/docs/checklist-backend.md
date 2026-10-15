@@ -108,7 +108,7 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [ ] Previews por PR con una rama `dev` de la base en Neon (cuando haya
      usuarios que proteger)
 10. [ ] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
-    backend de SIVRI en otro dominio (el portátil del laboratorio, por
+    backend de SIVRI en otro dominio (el Servidor PC1 del laboratorio, por
     Tailscale), así que la cookie de sesión no viaja. Un endpoint con la
     cookie y `X-IQ-Client` devuelve un JWT de pocos minutos, renovable, que la
     página manda a SIVRI en `Authorization: Bearer`; SIVRI lo valida con el
