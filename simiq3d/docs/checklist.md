@@ -13,8 +13,7 @@ porqué están en el [README](../README.md).
 ## 2. Objetivos de la solución (alcance)
 
 - [x] Alcance del MVP: la mesa de Mayo de las cinco técnicas de Cirugía General
-- [x] Modelos 3D propios, en Blender con Claude, con la skill
-  blender-image-to-3d
+- [x] Modelos 3D propios, modelados a mano en Blender
 - [x] Chat: el modelo elige acciones y los datos salen de DataIQ; modelo
   local con Ollama en el Servidor PC2
 - [x] Qué guarda su base: el mapeo modelo 3D → instrumento y el registro
@@ -23,8 +22,9 @@ porqué están en el [README](../README.md).
 - [x] Cómo se evalúa en el MVP
 - [x] Backend: Python + FastAPI (confirmado por Guebriel)
 - [ ] Frontend y visor 3D: los decide Guebriel (sugerencia en el README)
-- [ ] Fotos de referencia de cada instrumento, en el mismo pedido de fotos de
-  SIVRI (ver la [checklist de SIVRI](../../sivri/docs/checklist.md))
+- [ ] (Opcional) Fotos del instrumental de IQ para ajustar los modelos, si hay
+  tiempo en la primera visita de SIVRI (ver la
+  [checklist de SIVRI](../../sivri/docs/checklist.md))
 - [ ] Medir la mesa de Mayo del laboratorio (el área entre los marcadores
   ArUco), en la misma visita
 - [ ] Hacia dónde apunta cada instrumento, según las fotos de las mesas bien
@@ -40,8 +40,9 @@ porqué están en el [README](../README.md).
 
 - [ ] Banco de preguntas con su acción correcta (ING con ayuda de IQ), antes
   de programar el chat
-- [ ] Modelos 3D por familias (cinco bases), con un script por modelo en el
-  repo
+- [ ] Fotos de catálogo y medidas de cada instrumento, con su fuente
+- [ ] Modelos 3D por familias (cinco bases): el `.blend` de cada familia, el
+  GLB de cada instrumento y la tabla de medidas, en el repo
 - [ ] Visto bueno del programa de IQ a cada modelo (formativo: se corrige y se
   vuelve a pedir)
 - [ ] Ollama en el Servidor PC2: que use la GPU (Vulkan o

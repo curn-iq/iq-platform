@@ -351,10 +351,10 @@ navegación (ver más abajo) NO se considera un módulo.
   semestre (antes se planeaba para 2027).
 - **MVP** (decidido por Mauricio el 2026-10-15): la **mesa de Mayo de las
   cinco técnicas de Cirugía General**, el mismo alcance de SIVRI. Los modelos
-  3D son **propios, hechos en Blender con Claude**, por familias de
-  instrumentos y a partir de fotos del instrumental real de IQ; cada uno sale
-  de un script guardado en el repo. El chat usa *tool calling*: un modelo
-  local (Ollama, en el Servidor PC2, con Tailscale Funnel) convierte
+  3D son **propios, modelados a mano en Blender**, por familias de
+  instrumentos y a partir de fotos de catálogo de cada instrumento; cada uno
+  queda en el repo con sus medidas y sus fuentes. El chat usa *tool calling*:
+  un modelo local (Ollama, en el Servidor PC2, con Tailscale Funnel) convierte
   la pregunta en una acción y los datos salen de DataIQ, nunca del modelo.
   Alcance, por qué no se compran y avance:
   [`simiq3d/README.md`](simiq3d/README.md).
