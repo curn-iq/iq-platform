@@ -83,11 +83,13 @@ iq-platform/
 
 ## Stack
 
-- Backend: Python (DataIQ con FastAPI; detalles de SIVRI y SIMIQ3D por definir)
+- Backend: Python (DataIQ y SIMIQ3D con FastAPI; el framework de SIVRI, por
+  definir)
 - Base de datos: PostgreSQL, una por módulo
 - Autenticación: JWT firmado por DataIQ con EdDSA (los demás módulos lo validan
   con la clave pública que DataIQ publica), contraseñas con Argon2id
-- Frontend: Angular (el shell de navegación y DataIQ, en `dataiq/frontend`)
+- Frontend: Angular (el shell de navegación y DataIQ, en `dataiq/frontend`;
+  SIMIQ3D, con Three.js para el visor 3D, en `simiq3d/frontend`)
 
 ## Licencia
 

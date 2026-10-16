@@ -168,7 +168,8 @@ tiene su propia base en Neon, en un proyecto aparte, como cada módulo:
 | Mapeo de cada modelo 3D a su instrumento de DataIQ (`instruments.id`) | Base de SIMIQ3D | Ese mapeo es de SIMIQ3D, no de DataIQ, como las clases de YOLO en SIVRI |
 | Registro de las conversaciones: pregunta, acción elegida por el modelo y fecha | Base de SIMIQ3D | Sin él no hay cómo demostrar con números que el chat funciona (ver abajo) |
 | Archivos de los modelos (GLB) | Archivos estáticos del frontend, en Vercel | Se descargan una vez y quedan en caché; en Neon gastarían su medio GB |
-| Técnicas, mesas e instrumentos | DataIQ, por `/catalog/full`, una vez por sesión | DataIQ es la única fuente de verdad |
+| Técnicas e instrumentos que el chat le ofrece al modelo | DataIQ, por `/catalog/full`, que el backend cachea por sesión | DataIQ es la única fuente de verdad |
+| La mesa que dibuja el visor y la descripción de cada instrumento | DataIQ, que el frontend lee directo (`GET /techniques/{id}/instruments`, `GET /instruments`) | No pasa por el backend de SIMIQ3D: sería un salto más sin aportar nada, y el visor sigue funcionando sin el chat |
 
 El registro de conversaciones:
 
@@ -211,9 +212,10 @@ El avance, por actividad de DSRM, está en
 
 ## Stack
 
-Lo decide Guebriel, que desarrolla SIMIQ3D, con un requisito: **el visor corre
-en el navegador, sin instalar nada** (WebGL), como lo fundamenta el Formato 115
-en su marco teórico.
+El backend lo decide Guebriel, que lo desarrolla; el frontend, Juan
+Caraballo, que lleva el frontend de los tres módulos. Requisito: **el visor
+corre en el navegador, sin instalar nada** (WebGL), como lo fundamenta el
+Formato 115 en su marco teórico.
 
 - **Backend: Python + FastAPI**, como DataIQ y SIVRI (confirmado por Guebriel
   el 2026-10-15). Reutiliza lo que ya funciona: la validación del JWT de DataIQ con su clave pública (JWKS), la
@@ -221,24 +223,27 @@ en su marco teórico.
   despliegue en Vercel como funciones de Python (detrás de `/api/simiq3d/*`,
   donde le llega la cookie de sesión) y el flujo de GitHub Actions. Un backend
   en otro lenguaje obligaría a rehacer todo eso.
+- **Frontend: Angular**, como el shell, DataIQ y SIVRI, en una app aparte
+  servida bajo `/simiq3d/` (decidido por Juan el 2026-10-15).
+- **Visor 3D: Three.js** (decidido por Juan el 2026-10-15). Lee GLB, el
+  formato que exportan los modelos; es liviano y modular (se descarga solo al
+  abrir el visor), corre en el navegador del celular sin instalar nada y se
+  sirve desde el mismo origen que el shell. Se descartaron Babylon.js (más
+  pesado de lo que pide una mesa estática) y Unity exportado a la web (carga
+  su propio motor, varios MB antes de mostrar nada, y queda aislado del
+  shell).
 
-Por definir, con esta sugerencia por compatibilidad con el resto del
-ecosistema:
-
-- **Visor 3D: Three.js** (o Babylon.js), en la web. Lee GLB, el formato que
-  exportan los modelos; corre en el navegador del celular sin instalar nada; y
-  se sirve desde el mismo origen que el shell, para usar la misma sesión. Unity
-  exportado a la web carga su propio motor (varios MB antes de mostrar nada),
-  tarda más en un celular y queda aislado del shell.
-- **Frontend: Angular**, como el shell, si se quieren reutilizar sus
-  componentes y su sistema visual; Three.js funciona con cualquier framework.
+Arquitectura, rutas y cómo se corre el frontend:
+[`frontend/README.md`](frontend/README.md).
 
 ## Estructura
 
 ```
 simiq3d/
 ├── backend/
-├── frontend/
+├── frontend/                  Angular + Three.js
+├── models/                    .blend por familia, GLB por instrumento y sus medidas
 └── docs/
-    └── checklist.md   avance por actividad de DSRM
+    ├── checklist.md           avance por actividad de DSRM
+    └── checklist-frontend.md  avance del frontend, por fases
 ```

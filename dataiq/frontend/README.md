@@ -34,6 +34,7 @@ Fuentes:
 | Lecturas | `httpResource` / `resource` (estables desde 22.0) |
 | Formularios | Signal Forms (estables desde 22.0) |
 | Caché HTTP | Sin `ETag` a mano: el navegador revalida con el `ETag` y el `Cache-Control` de la API |
+| Sistema visual | Tokens base compartidos en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss` (ver «Sistema visual compartido» en `CLAUDE.md`) |
 | Componentes | Propios, según `DESIGN.md`. Sin Angular Material; solo Angular CDK: drag-drop (mesa del editor), overlay (desplegables y paneles) y a11y |
 | Tipos de la API | Generados del `/openapi.json` de FastAPI (`openapi-typescript`), para que no se desfasen del backend |
 | Sesión | Cookie `HttpOnly` que pone la API; el frontend nunca ve el token. La cuenta y el rol salen de `GET /auth/me`. El rol solo decide qué se muestra; quien permite o niega es la API |
@@ -48,7 +49,7 @@ son las rutas de la API.
 
 ```
 src/
-├── styles/                 tokens.scss (traducción literal de DESIGN.md), tipografía, base, motion
+├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
     │   ├── http/           provideHttpClient(withFetch()), base /api/dataiq,

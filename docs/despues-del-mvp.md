@@ -90,6 +90,11 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 
 ## SIMIQ3D
 
+- **Usarlo sin conexión** (PWA con service worker): precargar la app y los
+  modelos, e instalarla en el celular. En el MVP basta la caché HTTP, que
+  guarda la app y los modelos después de la primera visita; el chat necesita
+  conexión de todas formas (decidido por Juan el 2026-10-15).
+
 Formas de evaluarlo que van más allá de lo que pide el MVP (revisadas el
 2026-10-15; lo del MVP está en [`simiq3d/README.md`](../simiq3d/README.md)):
 
