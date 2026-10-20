@@ -1,0 +1,1509 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIMIQ3D · IQ Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Martian+Mono:wght@400..600&display=swap">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<style>
+:root {
+  /* SIMIQ3D: el mismo mundo con su color de módulo, el azul de quirófano.
+     El verde queda en el logo del shell y en la funda de la mesa. */
+  --fondo: #f1f5f8;
+  --superficie: #ffffff;
+  --filete: #d8e2e9;
+  --filete-2: #c1cfd9;
+  --tinta: #0a1b22;
+  --tinta-2: #344a57;
+  --tinta-3: #4e6470;
+  --marca: #1b5f86;
+  --marca-hondo: #113f5a;
+  --marca-claro: #e0ecf4;
+  --marca-claro-hover: #d0e2ee;
+  --hover-neutro: #e3ebf1;
+  --pano: #1d7564;
+  --letra: "Host Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --datos: "Martian Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --lado: clamp(20px, 4.4vw, 64px);
+  --barra: 72px;
+  --panel: 380px;
+  --expo: cubic-bezier(.16, 1, .3, 1);
+  --cuarta: cubic-bezier(.25, 1, .5, 1);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--letra);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--marca);
+}
+::selection { background: var(--marca); color: #fff; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { line-height: 1.4; }
+:focus-visible { outline: 2.5px solid var(--marca); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3, p { margin: 0; }
+.demo-corta { display: none; }
+.demo { font-family: var(--datos); font-size: 12px; line-height: 1.4; color: var(--tinta-3); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+* { scrollbar-width: thin; scrollbar-color: var(--filete-2) transparent; }
+
+/* ---------- Barra del shell ---------- */
+.barra {
+  position: relative; z-index: 50;
+  height: var(--barra);
+  display: flex; align-items: center; gap: 44px;
+  padding-inline: var(--lado);
+  background: var(--fondo);
+  border-bottom: 1px solid var(--filete);
+}
+.marca-iq { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
+.modulo { margin-left: -30px; padding: 3px 10px; border-radius: 999px; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.nav { display: flex; gap: 2px; }
+.nav > a {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  height: 40px; padding: 0 14px; border-radius: 8px;
+  color: var(--tinta-2); font-size: 15.5px; font-weight: 550;
+  transition: background .2s var(--cuarta), color .2s var(--cuarta);
+}
+.nav > a:hover { background: var(--hover-neutro); color: var(--tinta); }
+.nav > a[aria-current="page"] { color: var(--tinta); }
+.derecha { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.cuenta { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 6px; border: 0; border-radius: 10px; background: transparent; color: var(--tinta-2); font-size: 15.5px; font-weight: 600; cursor: default; }
+.avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--marca-claro); color: var(--marca-hondo); font-size: 13px; font-weight: 700; }
+
+/* ---------- Banco de trabajo: chat a la izquierda, lienzo a la derecha ---------- */
+.ide {
+  height: calc(100svh - var(--barra));
+  display: grid;
+  grid-template-columns: var(--panel) 6px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+/* Panel del chat */
+.chat {
+  grid-column: 1; grid-row: 1;
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; grid-template-columns: minmax(0, 1fr);
+  min-height: 0; min-width: 0;
+  background: var(--superficie);
+}
+.chat-cabeza {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 56px; padding: 10px 16px 10px 20px;
+  border-bottom: 1px solid var(--filete);
+}
+.chat-titulo { font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.conexion { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; color: var(--tinta-3); font-size: 13px; font-weight: 550; }
+.conexion::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 0 3px var(--marca-claro); }
+[data-chat="caido"] .conexion::before { background: var(--tinta-3); box-shadow: 0 0 0 3px var(--hover-neutro); }
+.cerrar-chat { display: none; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; place-items: center; }
+.cerrar-chat:hover { background: var(--hover-neutro); }
+
+.mensajes { list-style: none; margin: 0; padding: 20px 20px 8px; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 20px; }
+.msj > * { min-width: 0; }
+.msj { display: grid; gap: 6px; animation: entrar .45s var(--expo); }
+@keyframes entrar { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.msj-quien { display: flex; align-items: center; gap: 8px; color: var(--tinta-3); font-size: 13px; font-weight: 600; }
+.msj-quien i { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; font-style: normal; font-size: 11px; font-weight: 700; }
+.msj-tu .msj-quien i { background: var(--marca-claro); color: var(--marca-hondo); border-radius: 50%; }
+.msj-sim .msj-quien i { background: var(--marca); color: #fff; }
+.msj-texto { font-size: 15px; line-height: 1.55; color: var(--tinta); }
+.msj-titulo { font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
+.msj-campos { margin: 2px 0 0; display: grid; gap: 8px; }
+.msj-campos div { display: grid; gap: 1px; }
+.msj-campos dt { color: var(--tinta-3); font-size: 13px; font-weight: 600; }
+.msj-campos dd { margin: 0; font-size: 15px; line-height: 1.5; }
+.msj-lista { list-style: none; margin: 2px 0 0; padding: 0; border-top: 1px solid var(--filete); }
+.msj-lista button { width: 100%; display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; align-items: center; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--filete); background: transparent; text-align: left; font-size: 14.5px; cursor: pointer; transition: background .2s var(--cuarta); }
+.msj-lista button:hover { background: var(--fondo); }
+.msj-lista .num { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 12px; font-weight: 700; }
+.msj-tu .msj-texto { padding: 10px 14px; border-radius: 12px; background: var(--fondo); color: var(--tinta-2); }
+.msj-accion {
+  display: inline-flex; align-items: center; gap: 8px; justify-self: start;
+  padding: 4px 10px 4px 8px; border-radius: 8px;
+  background: var(--fondo); color: var(--tinta-3); font-family: var(--datos); font-size: 12px;
+}
+.msj-accion svg { color: var(--marca); flex: none; }
+.msj-opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.opcion {
+  height: 34px; padding: 0 14px; border: 0; border-radius: 999px;
+  background: var(--marca-claro); color: var(--marca-hondo); font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background .2s var(--cuarta);
+}
+.opcion:hover { background: var(--marca-claro-hover); }
+
+.aviso-chat {
+  margin: 0 20px 12px; padding: 12px 14px;
+  display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px;
+  border-radius: 12px; background: var(--fondo); box-shadow: inset 0 0 0 1px var(--filete-2);
+  font-size: 14px; color: var(--tinta-2);
+}
+.aviso-chat strong { display: block; color: var(--tinta); font-weight: 650; }
+.aviso-chat svg { margin-top: 2px; color: var(--tinta-3); }
+.aviso-chat[hidden] { display: none; }
+
+.sugerencias { display: flex; gap: 8px; padding: 4px 20px 12px; overflow-x: auto; scrollbar-width: none; mask-image: linear-gradient(90deg, #000 85%, transparent); }
+.sugerencias::-webkit-scrollbar { display: none; }
+.sugerencias[hidden] { display: none; }
+.sugerencia {
+  height: 32px; padding: 0 12px; border: 0; border-radius: 999px;
+  flex: none; white-space: nowrap;
+  background: var(--fondo); color: var(--tinta-2); font-size: 13px; font-weight: 550; cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--filete);
+  transition: background .2s var(--cuarta), color .2s var(--cuarta);
+}
+.sugerencia:hover { background: var(--hover-neutro); color: var(--tinta); }
+
+/* Campo de pregunta */
+.campo {
+  grid-column: 1; grid-row: 2;
+  padding: 12px 20px 16px;
+  background: var(--superficie);
+  border-top: 1px solid var(--filete);
+}
+.caja {
+  display: grid; grid-template-columns: minmax(0, 1fr) 40px; align-items: end; gap: 8px;
+  padding: 8px 8px 8px 14px; border-radius: 14px;
+  background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2);
+  transition: box-shadow .2s var(--cuarta);
+}
+.caja:focus-within { box-shadow: inset 0 0 0 2px var(--marca); }
+.caja textarea {
+  resize: none; border: 0; outline: 0; background: transparent;
+  min-height: 24px; max-height: 120px; padding: 7px 0; font-size: 15px; line-height: 1.5;
+}
+.caja textarea::placeholder { color: var(--tinta-3); }
+.caja textarea:disabled { color: var(--tinta-3); }
+.enviar {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; border-radius: 10px; background: var(--marca); color: #fff; cursor: pointer;
+  transition: background .2s var(--cuarta), transform .35s var(--expo);
+}
+.enviar:hover { background: var(--marca-hondo); }
+.enviar:disabled { background: var(--filete); color: var(--tinta-3); cursor: not-allowed; }
+.campo-pie { margin-top: 8px; color: var(--tinta-3); font-size: 12.5px; }
+
+/* Chat vacío: título fijo y el campo al centro del panel, como al abrir un chat nuevo */
+.bienvenida, .bienvenida-opciones { display: none; }
+.ide.vacio .campo { grid-row: 1; align-self: center; z-index: 2; border-top: 0; background: transparent; padding-bottom: 72px; }
+.ide.vacio .bienvenida { display: grid; justify-items: center; gap: 14px; margin-bottom: 22px; text-align: center; color: var(--marca); }
+.ide.vacio .bienvenida h2 { max-width: 15ch; color: var(--tinta); font-size: 30px; line-height: 1.12; font-weight: 650; letter-spacing: -.03em; text-wrap: balance; }
+.ide.vacio .bienvenida-opciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
+.ide.vacio .campo-pie { text-align: center; }
+.ide.vacio .sugerencias, .ide.vacio .mensajes { visibility: hidden; }
+
+/* Divisor arrastrable, como en un IDE */
+.divisor {
+  grid-column: 2; grid-row: 1 / 3;
+  position: relative; cursor: col-resize;
+  background: var(--superficie);
+  border-left: 1px solid var(--filete);
+}
+.divisor::after { content: ""; position: absolute; top: 50%; left: 1px; width: 3px; height: 32px; margin-top: -16px; border-radius: 2px; background: var(--filete-2); opacity: 0; transition: opacity .2s var(--cuarta); }
+.divisor:hover::after, .divisor:focus-visible::after, .divisor.arrastrando::after { opacity: 1; }
+
+/* ---------- Lienzo ---------- */
+.lienzo {
+  grid-column: 3; grid-row: 1 / 3;
+  position: relative; min-width: 0; overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 38%, #f7fafc 0%, #e8eff4 60%, #dce5ec 100%);
+}
+#escena { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#escena:active { cursor: grabbing; }
+
+.lienzo-cabeza { position: absolute; top: 24px; left: 28px; z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; max-width: min(520px, 60%); }
+.tec-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
+.tec-meta { color: var(--tinta-3); font-size: 15px; }
+.tec-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.selector { position: relative; display: inline-flex; align-items: center; }
+.selector select {
+  appearance: none; -webkit-appearance: none; height: 38px; padding: 0 36px 0 14px; border: 0; border-radius: 10px;
+  background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete-2), 0 1px 2px rgba(10, 27, 34, .06);
+  font-size: 14.5px; font-weight: 600; color: var(--tinta); cursor: pointer;
+}
+.selector svg { position: absolute; right: 12px; pointer-events: none; color: var(--tinta-2); }
+.provisional { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+.escala {
+  display: inline-flex; padding: 3px; border-radius: 9px; background: rgba(255, 255, 255, .7);
+  box-shadow: inset 0 0 0 1px var(--filete);
+}
+.escala button { white-space: nowrap; height: 26px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--tinta-3); font-size: 13px; font-weight: 600; cursor: pointer; }
+.escala button[aria-pressed="true"] { background: var(--superficie); color: var(--tinta); box-shadow: 0 1px 2px rgba(10, 27, 34, .12); }
+
+/* Controles de vista */
+.vista { position: absolute; right: 24px; bottom: 24px; z-index: 3; display: flex; gap: 8px; }
+.grupo { display: inline-flex; padding: 4px; gap: 2px; border-radius: 12px; background: var(--superficie); box-shadow: inset 0 0 0 1px var(--filete), 0 10px 24px -18px rgba(10, 27, 34, .45); }
+.grupo button { height: 36px; min-width: 36px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 9px; background: transparent; color: var(--tinta-2); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s var(--cuarta), color .2s var(--cuarta); }
+.grupo button:hover { background: var(--hover-neutro); color: var(--tinta); }
+.grupo button[aria-pressed="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
+.grupo.iconos button { padding: 0; width: 36px; }
+.opciones-vista {
+  position: absolute; right: 24px; bottom: 76px; z-index: 6;
+  width: 300px; padding: 14px 16px 12px; border-radius: 14px; background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10, 27, 34, .45);
+  animation: subir .3s var(--expo);
+}
+.opciones-vista[hidden] { display: none; }
+.op-titulo { margin-bottom: 6px; font-size: 14.5px; font-weight: 650; }
+.op-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--filete); font-size: 14px; color: var(--tinta-2); cursor: pointer; }
+.op-fila input { width: 18px; height: 18px; accent-color: var(--marca); cursor: pointer; }
+.opciones-vista .demo { margin-top: 6px; }
+.grupo button[aria-expanded="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
+.pie-lienzo { position: absolute; left: 28px; bottom: 24px; z-index: 3; display: grid; gap: 6px; }
+.pista { justify-self: start; padding: 4px 10px; border-radius: 8px; background: rgba(255, 255, 255, .82); color: var(--tinta-2); font-size: 13px; transition: opacity .4s var(--cuarta); }
+.pista.oculta { opacity: 0; }
+
+/* Número sobre la pieza señalada */
+.insignia {
+  position: absolute; z-index: 2; left: 0; top: 0;
+  width: 26px; height: 26px; margin: -13px 0 0 -13px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--marca); color: #fff; font-size: 13px; font-weight: 700;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .9), 0 6px 14px -6px rgba(10, 27, 34, .5);
+  pointer-events: none; opacity: 0; transition: opacity .25s var(--cuarta);
+}
+.insignia.visible { opacity: 1; }
+
+/* Leyenda plegable */
+.leyenda-boton {
+  position: absolute; top: 24px; right: 24px; z-index: 6;
+  height: 38px; padding: 0 12px 0 14px; display: inline-flex; align-items: center; gap: 8px;
+  border: 0; border-radius: 10px; background: var(--superficie); color: var(--tinta); font-size: 14.5px; font-weight: 600; cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--filete-2), 0 1px 2px rgba(10, 27, 34, .06);
+}
+.leyenda-boton:disabled { color: var(--tinta-3); cursor: default; box-shadow: inset 0 0 0 1px var(--filete); }
+.leyenda-boton .cifra { min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; border-radius: 999px; background: var(--fondo); color: var(--tinta-2); font-size: 12px; font-weight: 700; }
+.leyenda-boton svg { transition: transform .35s var(--expo); }
+.leyenda-boton[aria-expanded="true"] svg { transform: rotate(180deg); }
+.leyenda {
+  position: absolute; top: 72px; right: 24px; bottom: 84px; z-index: 6;
+  width: 300px; display: grid; grid-template-rows: auto minmax(0, 1fr);
+  border-radius: 16px; background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10, 27, 34, .45);
+  animation: bajar .35s var(--expo);
+}
+.leyenda[hidden] { display: none; }
+@keyframes bajar { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.leyenda-cabeza { padding: 16px 18px 10px; border-bottom: 1px solid var(--filete); }
+.leyenda-cabeza h2 { font-size: 15px; font-weight: 650; }
+.leyenda-cabeza p { color: var(--tinta-3); font-size: 13px; }
+.leyenda ol { list-style: none; margin: 0; padding: 6px; overflow-y: auto; }
+.pieza {
+  width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 9px 10px; border: 0; border-radius: 10px; background: transparent; text-align: left; cursor: pointer;
+  transition: background .2s var(--cuarta);
+}
+.pieza:hover { background: var(--fondo); }
+.pieza .num { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--filete-2); color: var(--tinta-2); font-size: 12.5px; font-weight: 700; transition: background .2s var(--cuarta), color .2s var(--cuarta), box-shadow .2s var(--cuarta); }
+.pieza strong { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.3; }
+.pieza span span { display: block; margin-top: 2px; color: var(--tinta-3); font-family: var(--datos); font-size: 12px; }
+.pieza[aria-current="true"] { background: var(--marca-claro); }
+.pieza[aria-current="true"] .num { background: var(--marca); color: #fff; box-shadow: none; }
+.pieza[aria-current="true"] strong { color: var(--marca-hondo); }
+
+/* Ficha del instrumento */
+.ficha {
+  position: absolute; left: 28px; bottom: 84px; z-index: 4;
+  width: min(360px, calc(100% - 56px));
+  padding: 18px 18px 16px; border-radius: 16px; background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--filete), 0 28px 48px -30px rgba(10, 27, 34, .55);
+  animation: subir .4s var(--expo);
+}
+.ficha[hidden] { display: none; }
+@keyframes subir { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.ficha-cabeza { display: grid; grid-template-columns: 28px minmax(0, 1fr) 32px; gap: 12px; align-items: start; }
+.ficha-cabeza .num { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--marca); color: #fff; font-size: 13px; font-weight: 700; }
+.ficha h2 { font-size: 19px; line-height: 1.25; font-weight: 650; letter-spacing: -.015em; }
+.ficha .lugar { margin-top: 3px; color: var(--tinta-3); font-family: var(--datos); font-size: 12px; }
+.ficha-cerrar { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--tinta-3); cursor: pointer; }
+.ficha-cerrar:hover { background: var(--hover-neutro); color: var(--tinta); }
+.ficha-texto { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--filete); color: var(--tinta-2); font-size: 14.5px; line-height: 1.55; }
+.ficha-texto .demo { display: block; margin-bottom: 4px; }
+.ficha-pie { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.enlace { display: inline-flex; align-items: center; gap: 8px; color: var(--marca); font-size: 14.5px; font-weight: 650; }
+.enlace svg { transition: transform .35s var(--expo); }
+.enlace:hover svg { transform: translateX(3px); }
+
+/* Carga y navegador sin 3D */
+.capa {
+  position: absolute; inset: 0; z-index: 5;
+  display: grid; place-items: center; padding: 24px;
+  background: rgba(243, 246, 246, .82);
+}
+.capa[hidden] { display: none; }
+@media (min-width: 821px) { .lienzo.con-leyenda .capa:not(.sin3d) { padding-right: 348px; } }
+.capa-caja { display: grid; justify-items: center; gap: 14px; max-width: 420px; text-align: center; }
+.giro { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--marca-claro); border-top-color: var(--marca); animation: girar 1s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.capa-caja h2 { font-size: 20px; font-weight: 650; letter-spacing: -.015em; }
+.capa-caja p { color: var(--tinta-2); font-size: 15px; }
+.sin3d { background: var(--fondo); }
+.sin3d .icono3d { display: block; color: var(--marca); }
+.boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 44px; padding: 0 18px; border: 0; border-radius: 10px;
+  background: var(--marca); color: #fff; font-size: 15px; font-weight: 650; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 1px 2px rgba(10, 27, 34, .25);
+  transition: background .2s var(--cuarta), transform .35s var(--expo);
+}
+.boton:hover { background: var(--marca-hondo); transform: translateY(-1px); }
+
+/* Estado del prototipo */
+.prototipo { display: inline-flex; align-items: center; gap: 6px; justify-self: start; padding: 5px 10px; border-radius: 8px; background: rgba(255, 255, 255, .88); box-shadow: inset 0 0 0 1px var(--filete); }
+.prototipo select { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: var(--tinta-2); font-family: var(--datos); font-size: 12px; cursor: pointer; text-decoration: underline; text-decoration-color: var(--filete-2); text-underline-offset: 3px; padding: 0; }
+
+/* Celular: el lienzo ocupa todo, el historial se abre desde la izquierda */
+.abrir-chat, .ultima, .ultima-opciones, .velo { display: none; }
+@media (max-width: 820px) {
+  :root { --barra: 60px; }
+  .nav, .cuenta-txt { display: none; }
+  .modulo { margin-left: -6px; }
+  .barra { gap: 14px; }
+  .ide { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .divisor { display: none; }
+  .lienzo { grid-column: 1; grid-row: 1; }
+  .chat {
+    position: fixed; z-index: 30; top: var(--barra); bottom: var(--alto-campo, 150px); left: 0;
+    width: min(88vw, 380px);
+    box-shadow: 24px 0 48px -32px rgba(10, 27, 34, .55);
+    transform: translateX(-104%); transition: transform .45s var(--expo);
+    visibility: hidden;
+  }
+  .ide.historial .chat { transform: none; visibility: visible; }
+  .velo { position: fixed; inset: var(--barra) 0 0 0; z-index: 25; background: rgba(10, 27, 34, .28); }
+  .ide.historial .velo { display: block; }
+  .cerrar-chat { display: grid; }
+  .chat { border-bottom-right-radius: 16px; }
+  .ide.historial .ultima, .ide.historial .ultima-opciones,
+  .ide.con-ficha .ultima, .ide.con-ficha .ultima-opciones { display: none; }
+  .campo {
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, .94);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  .campo-pie .leyenda-campo { display: none; }
+  .ide.vacio .campo { align-self: auto; padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .94); }
+  .ide.vacio .bienvenida { grid-template-columns: auto auto; align-items: center; justify-content: center; gap: 10px; margin: 4px 0 12px; }
+  .ide.vacio .bienvenida svg { width: 26px; height: 26px; }
+  .ide.vacio .bienvenida h2 { max-width: none; font-size: 20px; }
+  .ide.vacio .bienvenida-opciones { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin: 10px 0 0; }
+  .ide.vacio .bienvenida-opciones .opcion { flex: none; white-space: nowrap; }
+  .ide.vacio .abrir-chat { display: none; }
+  .campo { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; }
+  .campo > * { grid-column: 1 / -1; }
+  .campo > .campo-fila { grid-column: 1; align-self: stretch; }
+  .campo > .caja { grid-column: 2; }
+  .ide.vacio .campo > .campo-fila { display: none; }
+  .ide.vacio .campo > .caja { grid-column: 1 / -1; }
+  .campo-pie { display: none; }
+  .abrir-chat {
+    display: grid; place-items: center; width: 52px; height: 100%; min-height: 52px; padding: 0;
+    border: 0; border-radius: 14px; background: var(--fondo); color: var(--tinta-2); cursor: pointer;
+  }
+  .abrir-chat svg { width: 20px; height: 20px; }
+  .abrir-txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ultima {
+    display: block; margin: 0 0 8px; padding: 10px 12px; border: 0; width: 100%; text-align: left;
+    border-radius: 12px; background: var(--fondo); color: var(--tinta-2); font-size: 14px; line-height: 1.45; cursor: pointer;
+  }
+  .ultima-texto { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  .ultima[hidden], .ultima-opciones[hidden] { display: none; }
+  .ultima-opciones { mask-image: linear-gradient(90deg, #000 82%, transparent); }
+  .ultima-opciones { display: flex; gap: 8px; margin: -2px 0 8px; overflow-x: auto; scrollbar-width: none; }
+  .ultima-opciones .opcion { flex: none; white-space: nowrap; }
+  .ultima b { color: var(--tinta); font-weight: 650; }
+  .campo-fila { display: flex; }
+  .lienzo-cabeza { top: 14px; left: 16px; max-width: calc(100% - 150px); }
+  .tec-acciones { position: absolute; inset: 0; margin: 0; }
+  .tec-acciones .selector { position: absolute; inset: 0; }
+  .tec-acciones .selector select { width: 100%; height: 100%; opacity: 0; }
+  .tec-acciones .selector svg { display: none; }
+  .tec-nombre { display: flex; align-items: center; gap: 8px; }
+  .tec-nombre::after {
+    content: ""; flex: none; width: 22px; height: 22px; border-radius: 8px;
+    background: var(--superficie) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23344a57' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+    box-shadow: inset 0 0 0 1px var(--filete-2);
+  }
+  .lienzo-cabeza:focus-within .tec-nombre::after { box-shadow: inset 0 0 0 2px var(--marca); }
+  .tec-nombre { font-size: 24px; letter-spacing: -.03em; }
+  .tec-meta { font-size: 13.5px; }
+  .provisional .demo { display: none; }
+  .provisional .demo-corta { display: inline; }
+  .leyenda-boton { top: 16px; right: 16px; }
+  .leyenda { top: 64px; right: 12px; left: 12px; bottom: auto; max-height: 52svh; width: auto; }
+  .vista { right: 12px; bottom: calc(var(--alto-campo, 150px) + 4px); }
+  .opciones-vista { right: 12px; left: 12px; width: auto; bottom: calc(var(--alto-campo, 150px) + 56px); }
+  .grupo.vistas button { padding: 0 8px; font-size: 12.5px; }
+  .pie-lienzo { left: 12px; right: auto; top: 190px; bottom: auto; }
+  .prototipo > .demo { display: none; }
+  .proto-movil { padding: 12px 20px 16px; border-top: 1px solid var(--filete); }
+  .proto-movil .prototipo > .demo { display: inline; }
+  .pista { display: none; }
+  .ficha { left: 12px; right: 12px; width: auto; bottom: var(--alto-campo, 150px); }
+}
+/* Hoja inferior: en celular, las listas (técnica, estado del prototipo) se eligen aquí y no en el desplegable nativo */
+.sobre-select, .hoja, .hoja-velo { display: none; }
+@media (max-width: 820px) {
+  .selector, .prototipo { position: relative; }
+  .sobre-select { display: block; position: absolute; inset: 0; z-index: 1; border: 0; padding: 0; background: transparent; cursor: pointer; border-radius: inherit; }
+  .hoja-velo { display: block; position: fixed; inset: 0; z-index: 60; background: rgba(10, 27, 34, .32); opacity: 0; visibility: hidden; transition: opacity .3s var(--cuarta), visibility .3s; }
+  .hoja {
+    display: block; position: fixed; z-index: 61; left: 0; right: 0; bottom: 0; max-height: 72svh; overflow-y: auto;
+    padding: 8px 12px calc(16px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0;
+    background: var(--superficie); box-shadow: 0 -24px 48px -32px rgba(10, 27, 34, .55);
+    transform: translateY(104%); visibility: hidden; transition: transform .45s var(--expo), visibility .45s;
+  }
+  .hoja-abierta .hoja-velo { opacity: 1; visibility: visible; }
+  .hoja-abierta .hoja { transform: none; visibility: visible; }
+  .hoja-asa { width: 40px; height: 4px; margin: 4px auto 12px; border-radius: 2px; background: var(--filete-2); }
+  .hoja-cabeza { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 8px 10px; border-bottom: 1px solid var(--filete); }
+  .hoja-cabeza h2 { font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+  .hoja-cabeza p { color: var(--tinta-3); font-size: 13.5px; }
+  .hoja-lista { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px; }
+  .hoja-op {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 0 12px;
+    border: 0; border-radius: 12px; background: transparent; color: var(--tinta); font-size: 16px; font-weight: 500; text-align: left; cursor: pointer;
+  }
+  .hoja-op:active { background: var(--hover-neutro); }
+  .hoja-op[aria-current="true"] { background: var(--marca-claro); color: var(--marca-hondo); font-weight: 650; }
+  .hoja-op svg { flex: none; color: var(--marca); visibility: hidden; }
+  .hoja-op[aria-current="true"] svg { visibility: visible; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="marca-iq" href="inicio.html" aria-label="IQ Platform, inicio">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#0d6a5e"/><path d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/><circle cx="15" cy="15" r="3.2" fill="#fff"/><circle cx="21" cy="9" r="2" fill="#ddefeb"/></svg>
+    IQ Platform
+  </a>
+  <span class="modulo">SIMIQ3D</span>
+  <nav class="nav" aria-label="Principal">
+    <a href="catalogo.html">Técnicas</a>
+    <a href="simiq3d.html" aria-current="page">Explorar en 3D</a>
+    <a href="inicio.html#herramientas">Herramientas</a>
+  </nav>
+  <div class="derecha">
+    <span class="cuenta"><span class="avatar" aria-hidden="true">DO</span><span class="cuenta-txt">Mi cuenta</span></span>
+  </div>
+</header>
+
+<div class="ide" id="ide">
+  <aside class="chat" id="chat" aria-label="Chat de SIMIQ3D">
+    <div class="chat-cabeza">
+      <span class="chat-titulo">Preguntar</span>
+      <span class="conexion" id="conexion">Conectado</span>
+      <button type="button" class="cerrar-chat" id="cerrar-chat" aria-label="Cerrar historial">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ol class="mensajes" id="mensajes" aria-live="polite"></ol>
+    <div>
+      <div class="aviso-chat" id="aviso-chat" hidden>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4.6M10 13.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><strong>El chat no está disponible en este momento.</strong>La mesa, la leyenda y la ficha de cada instrumento siguen funcionando.</div>
+      </div>
+      <div class="sugerencias" id="sugerencias"></div>
+    </div>
+  </aside>
+  <div class="velo" id="velo"></div>
+
+  <form class="campo" id="campo" autocomplete="off">
+    <div class="bienvenida" aria-hidden="false">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4l12 6.6v12.8L17 30 5 23.4V10.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 10.6L17 17l12-6.4M17 17v13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M29 10.6V23.4L17 30V17z" fill="currentColor" fill-opacity=".14"/></svg>
+      <h2>Elige una técnica para verla en 3D</h2>
+    </div>
+    <button type="button" class="ultima" id="ultima" hidden></button>
+    <div class="ultima-opciones" id="ultima-opciones" hidden></div>
+    <div class="campo-fila">
+      <button type="button" class="abrir-chat" id="abrir-chat" aria-controls="chat" aria-expanded="false" aria-label="Historial de la conversación">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="abrir-txt">Historial</span>
+      </button>
+    </div>
+    <label class="caja">
+      <span class="sr-only">Pregunta</span>
+      <textarea id="pregunta" rows="1" placeholder="Pregunta por una técnica o un instrumento"></textarea>
+      <button type="submit" class="enviar" id="enviar" aria-label="Enviar pregunta">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 14V4M4.5 8.5L9 4l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </label>
+    <div class="campo-pie">
+      <span class="leyenda-campo">Las respuestas solo muestran lo que está en DataIQ.</span>
+    </div>
+    <div class="bienvenida-opciones" id="tecnicas-inicio"></div>
+  </form>
+  <template id="tpl-prototipo">
+      <span class="prototipo"><span class="demo">Prototipo:</span>
+        <select id="estado" aria-label="Estado del prototipo">
+          <option value="inicio">al entrar</option>
+          <option value="normal">conversación</option>
+          <option value="ficha">ficha del instrumento</option>
+          <option value="ambigua">pregunta ambigua</option>
+          <option value="sin-respuesta">sin respuesta</option>
+          <option value="sin-chat">chat no disponible</option>
+          <option value="cargando">cargando</option>
+          <option value="sin-webgl">sin 3D</option>
+        </select>
+      </span>
+  </template>
+
+  <div class="divisor" id="divisor" role="separator" aria-orientation="vertical" aria-label="Ancho del chat" tabindex="0"></div>
+
+  <main class="lienzo" id="lienzo">
+    <canvas id="escena" role="img" aria-label="Mesa de Mayo en 3D"></canvas>
+
+    <div class="lienzo-cabeza">
+      <h1 class="tec-nombre" id="tec-nombre">Mastectomía</h1>
+      <p class="tec-meta" id="tec-meta">Mesa de Mayo · Cirugía general</p>
+      <div class="tec-acciones">
+        <span class="selector">
+          <label class="sr-only" for="tecnica">Técnica</label>
+          <select id="tecnica"></select>
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <button type="button" class="leyenda-boton" id="leyenda-boton" aria-expanded="false" aria-controls="leyenda">
+      Leyenda <span class="cifra" id="cifra">9</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <aside class="leyenda" id="leyenda" aria-label="Leyenda de la mesa" hidden>
+      <div class="leyenda-cabeza">
+        <h2>Mesa de Mayo</h2>
+        <p id="leyenda-linea">Toca un número para ubicarlo.</p>
+      </div>
+      <ol id="lista"></ol>
+    </aside>
+
+    <div class="insignia" id="insignia" aria-hidden="true">1</div>
+
+    <section class="ficha" id="ficha" aria-live="polite" hidden>
+      <div class="ficha-cabeza">
+        <span class="num" id="ficha-num">9</span>
+        <div><h2 id="ficha-nombre">Pinza Kelly</h2><p class="lugar" id="ficha-lugar">Fila 3 · Columna 4</p></div>
+        <button type="button" class="ficha-cerrar" id="ficha-cerrar" aria-label="Cerrar ficha">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="ficha-texto"><span class="demo">demostración · no viene de DataIQ</span><span id="ficha-texto">Aquí va la descripción breve del instrumento, con su fuente, tal como está en DataIQ.</span></p>
+      <div class="ficha-pie">
+        <a class="enlace" id="ficha-enlace" href="tecnica.html#mastectomia">Ver la técnica en DataIQ <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3.5L11 7l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </section>
+
+    <div class="vista" role="toolbar" aria-label="Vista de la escena">
+      <span class="grupo vistas">
+        <button type="button" data-vista="3d" aria-pressed="true">3D</button>
+        <button type="button" data-vista="arriba" aria-pressed="false">Arriba</button>
+      </span>
+      <span class="grupo iconos">
+        <button type="button" data-zoom="1" aria-label="Acercar"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <button type="button" data-zoom="-1" aria-label="Alejar"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <button type="button" id="opciones-boton" aria-label="Opciones de vista" aria-expanded="false" aria-controls="opciones-vista"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h6M11.5 4.5h2M2.5 11.5h2M7.5 11.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="4.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="11.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <button type="button" data-centrar aria-label="Centrar la mesa"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </span>
+    </div>
+    <div class="opciones-vista" id="opciones-vista" role="group" aria-label="Opciones de vista" hidden>
+      <p class="op-titulo">Opciones de vista</p>
+      <div class="op-fila"><span>Escala de los instrumentos</span>
+        <span class="escala" role="group" aria-label="Escala de los instrumentos">
+          <button type="button" data-escala="celda" aria-pressed="true">a la celda</button>
+          <button type="button" data-escala="real" aria-pressed="false">real</button>
+        </span>
+      </div>
+      <label class="op-fila"><span>Números en las celdas</span><input type="checkbox" id="op-numeros" checked></label>
+      <label class="op-fila"><span>Cuadrícula</span><input type="checkbox" id="op-rejilla" checked></label>
+      <p class="demo">Mesa, escala y orientación provisionales.</p>
+    </div>
+    <div class="pie-lienzo"><p class="pista" id="pista">Arrastra para girar · rueda o pellizco para acercar</p><span id="hueco-prototipo"></span></div>
+
+    <div class="capa" id="capa-carga" hidden>
+      <div class="capa-caja">
+        <div class="giro" aria-hidden="true"></div>
+        <h2>Cargando la mesa de Mayo</h2>
+        <p>Los modelos se descargan una vez y quedan guardados para la próxima.</p>
+      </div>
+    </div>
+    <div class="capa sin3d" id="capa-sin3d" hidden>
+      <div class="capa-caja">
+        <span class="icono3d"><svg width="40" height="40" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 4l10 5.5v11L15 26 5 20.5v-11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 9.5L15 15l10-5.5M15 15v11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 26L26 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <h2>Este navegador no puede mostrar la escena 3D</h2>
+        <p id="sin3d-texto">La mesa de Mayo de Mastectomía se puede ver en DataIQ, con cada instrumento en su celda. La leyenda sigue disponible.</p>
+        <a class="boton" id="sin3d-enlace" href="tecnica.html#mastectomia">Ver la mesa en DataIQ</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+/* ---------- Datos reales: mesas de Mayo de Cirugía general (DataIQ) ----------
+   [número, fila, columna, nombre, piezas]. Las piezas dicen qué se dibuja. */
+const TECNICAS = {
+  mastectomia: { nombre: "Mastectomía", filas: 6, cols: 4, items: [
+    [1, 1, 3, "Pinza de Allis", ["allis"]],
+    [2, 2, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
+    [3, 2, 2, "Separador de Farabeuf", ["farabeuf"]],
+    [4, 2, 4, "Pinza Rochester", ["rochester"]],
+    [5, 3, 2, "Tijera de Mayo", ["mayo"]],
+    [6, 4, 2, "Tijera de Metzenbaum", ["metzenbaum"]],
+    [7, 5, 2, "Mango de bisturí N.° 3 y hoja #10-11", ["bisturi3"]],
+    [8, 6, 2, "Mango de bisturí N.° 4 y hoja #20", ["bisturi4"]],
+    [9, 3, 4, "Pinza Kelly", ["kelly"]] ] },
+  tiroidectomia: { nombre: "Tiroidectomía", filas: 7, cols: 7, items: [
+    [1, 7, 5, "Mango de bisturí N.° 3 y hoja #15", ["bisturi3"]],
+    [2, 6, 5, "Tijera de Metzenbaum", ["metzenbaum"]],
+    [3, 5, 5, "Tijera de Mayo", ["mayo"]],
+    [4, 4, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
+    [5, 4, 2, "Separador de Farabeuf", ["farabeuf"]],
+    [6, 4, 4, "Separador de Senn Miller", ["senn"]],
+    [7, 1, 3, "Pinza de Allis", ["allis"]],
+    [8, 1, 6, "Pinza Lahey", ["lahey"]],
+    [9, 2, 7, "Pinza Rochester", ["rochester"]],
+    [10, 3, 7, "Pinza Mosquito curva", ["mosquito"]] ] },
+  colecistectomia: { nombre: "Colecistectomía", filas: 7, cols: 6, items: [
+    [1, 7, 3, "Mango de bisturí N.° 4 y hoja #20", ["bisturi4"]],
+    [2, 6, 3, "Mango de bisturí N.° 3 y hoja #10", ["bisturi3"]],
+    [3, 5, 3, "Tijera de Metzenbaum", ["metzenbaum"]],
+    [4, 4, 3, "Tijera de Mayo", ["mayo"]],
+    [5, 1, 1, "Pinza de Allis", ["allis"]],
+    [6, 4, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
+    [7, 4, 2, "Separador de Farabeuf", ["farabeuf"]],
+    [8, 1, 5, "Pinza Moninjan", ["moninjan"]],
+    [9, 2, 6, "Pinza Rochester", ["rochester"]],
+    [10, 3, 4, "Pinza Kelly", ["kelly"]] ] },
+  hemicolectomia: { nombre: "Hemicolectomía derecha", filas: 7, cols: 6, propuesta: true, items: [
+    [1, 7, 3, "Mango de bisturí N.° 4 y hoja #20", ["bisturi4"]],
+    [2, 6, 3, "Mango de bisturí N.° 3 y hoja #15", ["bisturi3"]],
+    [3, 5, 3, "Tijera de Metzenbaum", ["metzenbaum"]],
+    [4, 4, 3, "Tijera de Mayo", ["mayo"]],
+    [5, 4, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
+    [6, 4, 2, "Separador de Farabeuf", ["farabeuf"]],
+    [7, 1, 1, "Pinza de Babcock", ["babcock"]],
+    [8, 1, 3, "Pinza de Allis", ["allis"]],
+    [9, 1, 5, "Pinza Kocher", ["kocher"]],
+    [10, 2, 6, "Pinza Rochester", ["rochester"]],
+    [11, 3, 4, "Pinza Kelly", ["kelly"]],
+    [12, 3, 6, "Portaagujas largo", ["portaagujas"]] ] },
+  eventrorrafia: { nombre: "Eventrorrafia", filas: 8, cols: 7, items: [
+    [1, 8, 3, "Mango de bisturí N.° 4 y hoja #20", ["bisturi4"]],
+    [2, 7, 3, "Mango de bisturí N.° 7 y hoja #15", ["bisturi7"]],
+    [3, 6, 3, "Tijera de Metzenbaum", ["metzenbaum"]],
+    [4, 5, 3, "Tijera de Mayo", ["mayo"]],
+    [5, 4, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
+    [6, 4, 2, "Separador de Farabeuf", ["farabeuf"]],
+    [7, 1, 2, "Pinza de Allis", ["allis"]],
+    [8, 1, 4, "Pinza de Babcock", ["babcock"]],
+    [9, 1, 7, "Pinza Rochester", ["rochester"]],
+    [10, 2, 5, "Pinza Kelly Adson", ["adson"]],
+    [11, 3, 6, "Pinza Kelly", ["kelly"]] ] }
+};
+
+/* Datos clínicos reales de cada técnica (DataIQ, seed/tecnicas.xlsx) */
+const CLINICOS = {
+ "colecistectomia": {
+  "para": "Extirpación quirúrgica de la vesícula biliar por vía abierta (incisión subcostal derecha de Kocher).",
+  "indicaciones": "Colelitiasis sintomática y colecistitis aguda o crónica cuando la vía laparoscópica no es posible o no es segura: inflamación extensa, adherencias por cirugías previas, anatomía dudosa, sospecha de cáncer de vesícula o cirrosis. También la conversión desde laparoscopia por lesión de la vía biliar o sangrado no controlado.",
+  "complicaciones": "Hemorragia, perforación de la vesícula, lesión de la vía biliar, fuga biliar o biloma, cálculos residuales, absceso e infección de la herida.",
+  "anestesia": "General con intubación orotraqueal",
+  "posicion": "Decúbito dorsal (supino)"
+ },
+ "eventrorrafia": {
+  "para": "Reparación de una hernia incisional (eventración) de la pared abdominal, por lo general con colocación de malla.",
+  "indicaciones": "Hernia incisional sintomática (dolor, limitación de las actividades diarias), riesgo de encarcelación o estrangulación, y eventración que afecta la calidad de vida.",
+  "complicaciones": "Seroma, infección de la herida o de la malla, hematoma, recurrencia de la hernia y dolor crónico.",
+  "anestesia": "Regional (peridural o raquídea) o general",
+  "posicion": "Decúbito dorsal (supino)"
+ },
+ "hemicolectomia": {
+  "para": "Resección del íleon terminal, el ciego, el colon ascendente, el ángulo hepático y parte del colon transverso por vía abierta, con anastomosis ileocólica.",
+  "indicaciones": "Cáncer del ciego, del colon ascendente o del ángulo hepático. Enfermedad de Crohn del íleon terminal o del ciego. Apendicitis complicada con absceso o perforación que compromete el ciego. Obstrucción intestinal por tumor o adherencias. Colitis isquémica del colon derecho y trauma del colon derecho.",
+  "complicaciones": "Fuga de la anastomosis (peritonitis, sepsis), sangrado, absceso intraabdominal, íleo, infección de la herida, lesión del uréter o del duodeno, estenosis de la anastomosis, obstrucción por adherencias y hernia incisional.",
+  "anestesia": "General con intubación orotraqueal (puede asociarse peridural para el dolor posoperatorio)",
+  "posicion": "Decúbito supino"
+ },
+ "mastectomia": {
+  "para": "Extirpación quirúrgica de la glándula mamaria. En la mastectomía simple (total) se retira la mama con el complejo areola-pezón, sin vaciamiento axilar.",
+  "indicaciones": "Cáncer de mama (ductal in situ o invasor) multifocal o multicéntrico; tumor grande en relación con la mama, que impide la cirugía conservadora; márgenes positivos persistentes tras varias resecciones; radioterapia previa en la mama o la pared torácica; mastectomía profiláctica para reducir el riesgo; preferencia de la paciente de evitar la radioterapia; paliación del cáncer localmente avanzado.",
+  "complicaciones": "Seroma, hematoma, infección de la herida, necrosis de los colgajos de piel y dolor crónico.",
+  "anestesia": "General con intubación orotraqueal",
+  "posicion": "Decúbito supino, con el lado operado cerca del borde de la mesa y el brazo de ese lado extendido a menos de 90° sobre un apoyabrazos acolchado"
+ },
+ "tiroidectomia": {
+  "para": "Extirpación quirúrgica total o parcial de la glándula tiroides.",
+  "indicaciones": "Cáncer de tiroides o nódulo sospechoso de malignidad. Hipertiroidismo (enfermedad de Graves, nódulo tóxico, bocio multinodular tóxico). Bocio grande o subesternal con compresión (disfagia, disnea, disfonía).",
+  "complicaciones": "Sangrado o hematoma cervical. Lesión del nervio laríngeo recurrente (disfonía, parálisis de cuerda vocal). Hipoparatiroidismo con hipocalcemia, sobre todo en la tiroidectomía total.",
+  "anestesia": "General con intubación orotraqueal (local en casos seleccionados)",
+  "posicion": "Decúbito supino con hiperextensión del cuello (realce bajo los hombros), brazos a los lados y anti-Trendelenburg de unos 30°"
+ }
+};
+
+/* Descripciones de muestra para el mockup; en producción salen de DataIQ */
+const DESCRIPCION = {
+  kelly: "Pinza hemostática de anillos y cremallera, con la mordida estriada; sirve para pinzar vasos y tejidos.",
+  adson: "Pinza hemostática de anillos y cremallera.",
+  mosquito: "Pinza hemostática pequeña, fina y curva; sirve para pinzar vasos de calibre pequeño.",
+  allis: "Pinza de tejido con dientes finos en la punta; sujeta el tejido sin que se deslice.",
+  babcock: "Pinza de tejido con la punta en anillo y sin dientes; sujeta estructuras delicadas sin lesionarlas.",
+  rochester: "Pinza hemostática larga, de anillos y cremallera.",
+  kocher: "Pinza de anillos y cremallera con dientes en la punta; sujeta tejidos firmes.",
+  lahey: "Pinza de anillos y cremallera.",
+  moninjan: "Pinza de anillos y cremallera.",
+  portaagujas: "Sostiene la aguja de sutura con firmeza mientras se sutura; tiene mordida corta y cremallera.",
+  mayo: "Tijera fuerte, de hojas gruesas; corta tejidos firmes y suturas.",
+  metzenbaum: "Tijera larga, de hojas finas; corta y diseca tejidos delicados.",
+  diseccion: "Pinzas de disección: la sin garra, para tejidos delicados; la con garra, con dientes en la punta para tejidos firmes como la piel.",
+  bisturi: "Mango de bisturí con su hoja montada; la hoja hace la incisión y el número del mango dice qué hojas recibe.",
+  farabeuf: "Separador manual de doble extremo; separa los bordes de la herida en los planos superficiales.",
+  senn: "Separador pequeño de doble extremo, con un lado en rastrillo y el otro en hoja; separa tejidos superficiales."
+};
+const descripcion = (tipos) => DESCRIPCION[tipos[0].replace(/-garra$/, "").replace(/^bisturi\d$/, "bisturi")];
+
+/* Palabras con las que el chat de este prototipo reconoce cada cosa (las respuestas son plantillas) */
+const NOMBRES_TECNICA = { mastectomia: ["mastectom"], tiroidectomia: ["tiroid"], colecistectomia: ["colecist", "vesicula"], hemicolectomia: ["hemicolect", "colectom"], eventrorrafia: ["eventro", "hernia incisional"] };
+const NOMBRES_PIEZA = [
+  ["adson", ["adson"]], ["mosquito", ["mosquito"]], ["kelly", ["kelly"]], ["allis", ["allis"]], ["babcock", ["babcock"]],
+  ["rochester", ["rochester"]], ["kocher", ["kocher"]], ["lahey", ["lahey"]], ["moninjan", ["moninjan", "moynihan"]],
+  ["portaagujas", ["portaaguja", "porta aguja"]], ["farabeuf", ["farabeuf", "farabeauf"]], ["senn", ["senn", "miller"]],
+  ["metzenbaum", ["metzenbaum", "metzembaum", "metz"]], ["mayo", ["tijera de mayo", "tijeras de mayo", "tijera mayo"]],
+  ["diseccion", ["diseccion", "garra"]], ["bisturi", ["bisturi", "mango", "hoja"]]
+];
+
+/* ---------- Estado ---------- */
+const $ = (s) => document.querySelector(s);
+const ide = $("#ide"), lienzo = $("#lienzo"), canvas = $("#escena");
+let tecnicaActual = "mastectomia";
+let seleccion = null;
+let escala = "celda";
+let chatCaido = false;
+const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Escena ---------- */
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+} catch (e) { renderer = null; }
+
+const scene = new THREE.Scene();
+const camara = new THREE.PerspectiveCamera(34, 1, 0.01, 20);
+let controles;
+const MESA = { ancho: 0.56, fondo: 0.40, alto: 0.92 };   // provisional: falta medir la mesa del laboratorio
+const raiz = new THREE.Group(); scene.add(raiz);
+const piezasGrupo = new THREE.Group(); raiz.add(piezasGrupo);
+let celdaHalo, rejilla;
+const objetos = [];   // { item, grupo, base, materiales }
+
+function texturaTela() {
+  const c = document.createElement("canvas"); c.width = c.height = 256;
+  const g = c.getContext("2d");
+  g.fillStyle = "#1d7564"; g.fillRect(0, 0, 256, 256);
+  const img = g.getImageData(0, 0, 256, 256);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const n = (Math.random() - .5) * 22;
+    img.data[i] += n; img.data[i + 1] += n; img.data[i + 2] += n;
+  }
+  g.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 2);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+function texturaSombra() {
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const g = c.getContext("2d");
+  const r = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+  r.addColorStop(0, "rgba(10,27,34,.42)"); r.addColorStop(1, "rgba(10,27,34,0)");
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+
+const acero = () => new THREE.MeshStandardMaterial({ color: 0xb4bec3, metalness: 1, roughness: 0.22, envMapIntensity: 1.35, transparent: true, opacity: 1 });
+const aceroOscuro = () => new THREE.MeshStandardMaterial({ color: 0x7d8a90, metalness: 1, roughness: 0.32, envMapIntensity: 1.2, transparent: true, opacity: 1 });
+const sombraTex = texturaSombra();
+
+function construirMesa() {
+  const inox = new THREE.MeshStandardMaterial({ color: 0xb9c3c7, metalness: 0.85, roughness: 0.35 });
+  const tela = new THREE.MeshStandardMaterial({ map: texturaTela(), roughness: 0.95, metalness: 0, envMapIntensity: .35 });
+  // Bandeja y funda
+  const bandeja = new THREE.Mesh(new THREE.BoxGeometry(MESA.ancho + .02, .012, MESA.fondo + .02), inox);
+  bandeja.position.y = -0.008; raiz.add(bandeja);
+  const funda = new THREE.Mesh(new THREE.BoxGeometry(MESA.ancho + .03, .004, MESA.fondo + .03), tela);
+  raiz.add(funda);
+  // La funda cae por los costados
+  const canto = new THREE.MeshStandardMaterial({ color: 0x0e463c, roughness: .95, metalness: 0, envMapIntensity: .3 });
+  const caida = (w, h, x, z, ry) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, .003), canto); m.position.set(x, -h / 2, z); m.rotation.y = ry; raiz.add(m); };
+  caida(MESA.ancho + .03, .06, 0, (MESA.fondo + .03) / 2, 0);
+  caida(MESA.ancho + .03, .06, 0, -(MESA.fondo + .03) / 2, 0);
+  caida(MESA.fondo + .03, .06, (MESA.ancho + .03) / 2, 0, Math.PI / 2);
+  caida(MESA.fondo + .03, .06, -(MESA.ancho + .03) / 2, 0, Math.PI / 2);
+  // Pie de la mesa de Mayo
+  const poste = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, MESA.alto - .1, 24), inox);
+  poste.position.set(-MESA.ancho / 2 + .06, -(MESA.alto) / 2 - .06, -MESA.fondo / 2 + .08); raiz.add(poste);
+  const base = new THREE.Mesh(new THREE.BoxGeometry(.5, .02, .07), inox);
+  base.position.set(-MESA.ancho / 2 + .06, -MESA.alto + .01, -MESA.fondo / 2 + .08); raiz.add(base);
+  // Sombra de contacto en el piso
+  const piso = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.2), new THREE.MeshBasicMaterial({ map: sombraTex, transparent: true, depthWrite: false }));
+  piso.rotation.x = -Math.PI / 2; piso.position.y = -MESA.alto; raiz.add(piso);
+  // Celda señalada
+  celdaHalo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xd3e6f2, transparent: true, opacity: 0, depthWrite: false }));
+  celdaHalo.rotation.x = -Math.PI / 2; celdaHalo.position.y = .0026; raiz.add(celdaHalo);
+}
+
+function construirRejilla(filas, cols) {
+  if (rejilla) { raiz.remove(rejilla); rejilla.geometry.dispose(); }
+  const p = [], w = MESA.ancho, d = MESA.fondo, y = .0024;
+  for (let c = 0; c <= cols; c++) { const x = -w / 2 + c * w / cols; p.push(x, y, -d / 2, x, y, d / 2); }
+  for (let f = 0; f <= filas; f++) { const z = -d / 2 + f * d / filas; p.push(-w / 2, y, z, w / 2, y, z); }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
+  rejilla = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x4c9a88, transparent: true, opacity: .55 }));
+  rejilla.visible = $("#op-rejilla") ? $("#op-rejilla").checked : true;
+  raiz.add(rejilla);
+}
+
+/* ---------- Instrumentos armados con formas simples (los GLB reales los modela Guebriel) ----------
+   Convención de los modelos: metros, origen en el centro, eje largo sobre X, punta hacia +X. */
+function caja(g, mat, l, w, h, x, z, ry = 0, y = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(l, h, w), mat); m.position.set(x, y + h / 2, z); m.rotation.y = ry; g.add(m); return m;
+}
+function anillos(g, mat, x, sep = .0102, r = .0092) {
+  for (const s of [-1, 1]) {
+    const t = new THREE.Mesh(new THREE.TorusGeometry(r, .0016, 10, 28), mat);
+    t.rotation.x = Math.PI / 2; t.position.set(x, .0016, s * sep); g.add(t);
+  }
+}
+function pinza(L, punta) {
+  const g = new THREE.Group(), m = acero(), o = aceroOscuro();
+  const xa = -L / 2 + .0095, xc = -L / 2 + L * .56, larg = L / 2 - xc;
+  anillos(g, m, xa);
+  for (const s of [-1, 1]) {   // ramas hasta la articulación
+    const z0 = s * .0085, dx = xc - (xa + .009), ang = Math.atan2(-z0, dx);
+    caja(g, m, Math.hypot(dx, z0), .0024, .0028, (xa + .009 + xc) / 2, z0 / 2, ang);
+  }
+  caja(g, o, .009, .0024, .0012, xa + .016, .0021, 0, .0028);   // cremallera
+  caja(g, m, .006, .006, .0036, xc, 0);                          // articulación
+  const mordida = (z, cur) => {
+    const lr = larg * (cur ? .66 : 1);
+    caja(g, m, lr, .0019, .0026, xc + lr / 2, z);
+    if (cur) { const lc = larg * .38, a = -.42; const mm = caja(g, m, lc, .0018, .0024, 0, 0, a); mm.position.set(xc + lr + Math.cos(a) * lc / 2 - .001, .0012, z - Math.sin(a) * lc / 2); }
+  };
+  const curva = punta === "curva";
+  mordida(.0011, curva); mordida(-.0011, curva);
+  if (punta === "allis") caja(g, m, .0018, .0085, .0026, L / 2 - .001, 0);
+  if (punta === "babcock") { const t = new THREE.Mesh(new THREE.TorusGeometry(.0042, .0011, 8, 20), m); t.position.set(L / 2 - .004, .0045, 0); t.rotation.y = Math.PI / 2; g.add(t); }
+  if (punta === "porta") caja(g, m, larg * .5, .005, .003, L / 2 - larg * .25, 0);
+  return { g, mats: [m, o] };
+}
+function tijera(L, tipo) {
+  const g = new THREE.Group(), m = acero(), o = aceroOscuro();
+  const xa = -L / 2 + .0095, xt = -L / 2 + L * (tipo === "metzenbaum" ? .66 : .55);
+  anillos(g, m, xa, .0105, tipo === "metzenbaum" ? .0085 : .0095);
+  for (const s of [-1, 1]) { const z0 = s * .009, dx = xt - (xa + .009); caja(g, m, Math.hypot(dx, z0), .0028, .0026, (xa + .009 + xt) / 2, z0 / 2, Math.atan2(-z0, dx)); }
+  const tornillo = new THREE.Mesh(new THREE.CylinderGeometry(.0032, .0032, .0048, 16), o); tornillo.position.set(xt, .0026, 0); g.add(tornillo);
+  const lh = L / 2 - xt, ancho = tipo === "metzenbaum" ? .0034 : .0052;
+  for (const s of [-1, 1]) { const h = caja(g, m, lh, ancho, .0017, xt + lh / 2, s * ancho * .32, s * .03); h.scale.z = 1; }
+  return { g, mats: [m, o] };
+}
+function diseccion(L, garra) {
+  const g = new THREE.Group(), m = acero();
+  for (const s of [-1, 1]) {
+    const dz = s * .0045, ang = Math.atan2(-dz, L);
+    caja(g, m, L, .0062, .0016, 0, dz / 2, ang);
+  }
+  if (garra) caja(g, m, .0025, .003, .0034, L / 2 - .0015, 0);
+  caja(g, m, .01, .012, .0018, -L / 2 + .005, 0);
+  return { g, mats: [m] };
+}
+function bisturi(L, hoja) {
+  const g = new THREE.Group(), m = acero(), o = aceroOscuro();
+  const lm = L * .8;
+  caja(g, m, lm, hoja === "7" ? .0068 : .0098, .0028, -L / 2 + lm / 2, 0);
+  for (let i = 0; i < 7; i++) caja(g, o, .0012, .0072, .0006, -L / 2 + .02 + i * .0045, 0, 0, .0028);   // estrías
+  const forma = new THREE.Shape();
+  const lb = L - lm, hb = hoja === "20" ? .0105 : .0075;
+  forma.moveTo(0, -.002); forma.lineTo(lb * .55, -.002); forma.quadraticCurveTo(lb, -.001, lb, hb * .25); forma.quadraticCurveTo(lb * .7, hb, 0, hb * .55); forma.lineTo(0, -.002);
+  const geo = new THREE.ExtrudeGeometry(forma, { depth: .0006, bevelEnabled: false });
+  const hm = new THREE.MeshStandardMaterial({ color: 0xdde4e6, metalness: 1, roughness: .18, transparent: true });
+  const h = new THREE.Mesh(geo, hm); h.rotation.x = -Math.PI / 2; h.position.set(-L / 2 + lm - .002, .0014, .002); g.add(h);
+  return { g, mats: [m, o, hm] };
+}
+function farabeuf(L) {
+  const g = new THREE.Group(), m = acero();
+  caja(g, m, L, .011, .0018, 0, 0);
+  for (const s of [-1, 1]) { const p = caja(g, m, .0018, .014, .022, s * (L / 2 - .0009), 0); p.position.y = -.009; }
+  return { g, mats: [m] };
+}
+function senn(L) {
+  const g = new THREE.Group(), m = acero();
+  caja(g, m, L * .8, .0075, .003, 0, 0);
+  for (const dz of [-.004, 0, .004]) { const d = caja(g, m, .002, .0012, .014, -L / 2 + .002, dz); d.position.y = -.005; }
+  const p = caja(g, m, .002, .01, .016, L / 2 - .002, 0); p.position.y = -.006;
+  caja(g, m, L * .12, .003, .002, -L / 2 + L * .08, 0); caja(g, m, L * .12, .003, .002, L / 2 - L * .08, 0);
+  return { g, mats: [m] };
+}
+const LARGO = { kelly: .14, adson: .14, mosquito: .125, allis: .15, babcock: .16, rochester: .18, kocher: .16, lahey: .18, moninjan: .2, portaagujas: .2, mayo: .15, metzenbaum: .18, diseccion: .145, "diseccion-garra": .145, bisturi3: .15, bisturi4: .155, bisturi7: .16, farabeuf: .15, senn: .16 };
+function crearPieza(tipo) {
+  const L = LARGO[tipo];
+  switch (tipo) {
+    case "kelly": case "mosquito": case "adson": return pinza(L, "curva");
+    case "allis": return pinza(L, "allis");
+    case "babcock": return pinza(L, "babcock");
+    case "portaagujas": return pinza(L, "porta");
+    case "rochester": case "kocher": case "lahey": case "moninjan": return pinza(L, "recta");
+    case "mayo": case "metzenbaum": return tijera(L, tipo);
+    case "diseccion": return diseccion(L, false);
+    case "diseccion-garra": return diseccion(L, true);
+    case "bisturi3": return bisturi(L, "10");
+    case "bisturi4": return bisturi(L, "20");
+    case "bisturi7": return bisturi(L, "7");
+    case "farabeuf": return farabeuf(L);
+    case "senn": return senn(L);
+  }
+}
+
+const numeros = new Map();
+function texturaNumero(n) {
+  if (numeros.has(n)) return numeros.get(n);
+  const c = document.createElement("canvas"); c.width = c.height = 96;
+  const g = c.getContext("2d");
+  g.fillStyle = "rgba(255,255,255,.94)"; g.beginPath(); g.arc(48, 48, 44, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#0a1b22"; g.font = "700 46px 'Host Grotesk', Arial, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(n), 48, 51);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; numeros.set(n, t); return t;
+}
+function celda(t, fila, col) {
+  const w = MESA.ancho / t.cols, d = MESA.fondo / t.filas;
+  return { x: -MESA.ancho / 2 + (col - .5) * w, z: -MESA.fondo / 2 + (fila - .5) * d, w, d };
+}
+
+function armarMesa(clave) {
+  const t = TECNICAS[clave];
+  for (const o of objetos) { o.grupo.traverse((n) => { if (n.geometry) n.geometry.dispose(); }); o.materiales.forEach((mm) => mm.dispose()); }
+  piezasGrupo.children.forEach((ch) => { if (ch.isSprite) ch.material.dispose(); });
+  piezasGrupo.clear(); objetos.length = 0;
+  construirRejilla(t.filas, t.cols);
+  for (const item of t.items) {
+    const [num, fila, col, nombre, tipos] = item;
+    const c = celda(t, fila, col);
+    const grupo = new THREE.Group(), materiales = [];
+    tipos.forEach((tipo, i) => {
+      const { g, mats } = crearPieza(tipo);
+      const L = LARGO[tipo];
+      const s = escala === "celda" ? Math.min(1, (c.w * .9) / L) : 1;
+      g.scale.setScalar(s);
+      if (tipos.length > 1) g.position.z = (i - (tipos.length - 1) / 2) * Math.min(.012, c.d * .32);
+      g.position.y = .0026;
+      grupo.add(g); materiales.push(...mats);
+    });
+    const sombra = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: sombraTex, transparent: true, opacity: .55, depthWrite: false }));
+    const lmax = Math.max(...tipos.map((tp) => LARGO[tp] * (escala === "celda" ? Math.min(1, (c.w * .9) / LARGO[tp]) : 1)));
+    sombra.scale.set(lmax * 1.15, Math.max(.03, c.d * .6), 1); sombra.rotation.x = -Math.PI / 2; sombra.position.y = .0025;
+    grupo.add(sombra); materiales.push(sombra.material);
+    grupo.position.set(c.x, 0, c.z);
+    grupo.userData.item = item;
+    piezasGrupo.add(grupo);
+    // Número en la esquina libre de la celda, como en el diagrama de DataIQ
+    const num3d = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaNumero(num), transparent: true, depthWrite: false, depthTest: false, sizeAttenuation: false }));
+    num3d.renderOrder = 5;
+    const esquina = Math.min(.012, c.w * .16, c.d * .26);
+    num3d.position.set(c.x - c.w / 2 + esquina, .006, c.z - c.d / 2 + esquina);
+    num3d.userData.numero = true;
+    num3d.visible = $("#op-numeros").checked;
+    piezasGrupo.add(num3d);
+    objetos.push({ item, grupo, base: c, materiales, sombra });
+  }
+  $("#cifra").textContent = t.items.length;
+  escalarNumeros();
+  pintarLeyenda(t);
+  pintarCabeza(clave);
+  seleccion = null; marcar(null, false);
+  pedirCuadro();
+}
+
+/* ---------- Cámara y cuadro bajo demanda ---------- */
+let pendiente = false, viaje = null;
+function pedirCuadro() { if (!renderer || pendiente) return; pendiente = true; requestAnimationFrame(cuadro); }
+function cuadro(t) {
+  pendiente = false;
+  if (viaje) {
+    const k = Math.min(1, (t - viaje.t0) / viaje.dur), e = 1 - Math.pow(1 - k, 4);
+    camara.position.lerpVectors(viaje.p0, viaje.p1, e);
+    controles.target.lerpVectors(viaje.o0, viaje.o1, e);
+    if (k >= 1) viaje = null;
+  }
+  for (const o of objetos) {   // la pieza señalada sube; las demás vuelven
+    const meta = o === seleccion ? .014 : 0;
+    o.grupo.position.y += (meta - o.grupo.position.y) * (reducido ? 1 : .22);
+    if (Math.abs(meta - o.grupo.position.y) > .0002) pendiente || (pendiente = true, requestAnimationFrame(cuadro));
+  }
+  controles.update();
+  renderer.render(scene, camara);
+  ubicarInsignia();
+  if (viaje) pedirCuadro();
+}
+function viajar(pos, obj, dur = 900) {
+  if (reducido) { camara.position.copy(pos); controles.target.copy(obj); pedirCuadro(); return; }
+  viaje = { t0: performance.now(), dur, p0: camara.position.clone(), p1: pos.clone(), o0: controles.target.clone(), o1: obj.clone() };
+  pedirCuadro();
+}
+function marcarLeyenda() { lienzo.classList.toggle("con-leyenda", !$("#leyenda").hidden); }
+function espacioLibre() {
+  marcarLeyenda();
+  const w = lienzo.clientWidth, h = lienzo.clientHeight;
+  const ley = escritorio() && !$("#leyenda").hidden ? 324 : 0;
+  const arriba = escritorio() ? 150 : 84, abajo = escritorio() ? 70 : (($("#campo").offsetHeight || 150) + 56);
+  return { w, h, ley, arriba, abajo, util: Math.max(.3, (w - ley) / w), utilV: Math.max(.3, (h - arriba - abajo) / h) };
+}
+function encuadre(vista, factor = 1) {
+  const e = espacioLibre();
+  const v = THREE.MathUtils.degToRad(camara.fov), hf = 2 * Math.atan(Math.tan(v / 2) * camara.aspect);
+  const dW = ((MESA.ancho + (escritorio() ? .06 : .22)) / 2) / (Math.tan(hf / 2) * e.util);
+  const dH = ((MESA.fondo + .06) / 2) / (Math.tan(v / 2) * e.utilV);
+  const d = Math.max(dW, dH) * (vista === "arriba" ? 1.12 : 1.32) * factor;
+  const anchoVisto = 2 * d * Math.tan(hf / 2), altoVisto = 2 * d * Math.tan(v / 2);
+  const dx = (e.ley / 2 / e.w) * anchoVisto, dz = ((e.arriba - e.abajo) / 2 / e.h) * altoVisto;
+  const obj = new THREE.Vector3(dx, 0, vista === "arriba" || !escritorio() ? -dz : -dz * .6);
+  if (vista === "arriba") return [obj.clone().add(new THREE.Vector3(0, d, .0001)), obj];
+  const dir = (escritorio() ? new THREE.Vector3(0, .68, .73) : new THREE.Vector3(0, .9, .45)).normalize();
+  return [obj.clone().add(dir.multiplyScalar(d)), obj];
+}
+const escritorio = () => innerWidth > 820;
+
+function ubicarInsignia() {
+  const ins = $("#insignia");
+  if (!seleccion) { ins.classList.remove("visible"); return; }
+  const p = new THREE.Vector3(); seleccion.grupo.getWorldPosition(p); p.y += .03;
+  p.project(camara);
+  const r = canvas.getBoundingClientRect(), lr = lienzo.getBoundingClientRect();
+  ins.style.transform = `translate(${(p.x * .5 + .5) * r.width + (r.left - lr.left)}px, ${(-p.y * .5 + .5) * r.height + (r.top - lr.top)}px)`;
+  ins.textContent = seleccion.item[0];
+  ins.classList.add("visible");
+}
+
+/* ---------- Señalar una pieza: escena, leyenda y ficha dicen lo mismo ---------- */
+function marcar(obj, mover = true, ficha = false) {
+  seleccion = obj;
+  for (const o of objetos) {
+    const tenue = obj && o !== obj;
+    o.materiales.forEach((mm) => { if (mm.map === sombraTex) return; mm.opacity = tenue ? .38 : 1; mm.emissive && mm.emissive.setHex(o === obj ? 0x1b5f86 : 0x000000); mm.emissiveIntensity = o === obj ? .22 : 0; });
+  }
+  if (obj) {
+    celdaHalo.position.x = obj.base.x; celdaHalo.position.z = obj.base.z;
+    celdaHalo.scale.set(obj.base.w * .96, obj.base.d * .96, 1);
+    celdaHalo.material.opacity = .55;
+  } else celdaHalo.material.opacity = 0;
+  document.querySelectorAll(".pieza").forEach((b) => b.setAttribute("aria-current", obj && +b.dataset.num === obj.item[0] ? "true" : "false"));
+  const fila = document.querySelector('.pieza[aria-current="true"]');
+  if (fila && !$("#leyenda").hidden) fila.scrollIntoView({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
+  if (obj && mover) {
+    // Se acerca un poco hacia la pieza, pero la mesa entera sigue en el espacio libre
+    const [p0, o0] = encuadre(vistaActual, 1);
+    const hacia = new THREE.Vector3(obj.base.x * .1, 0, obj.base.z * .14);
+    viajar(p0.add(hacia), o0.add(hacia));
+  }
+  if (obj && ficha) abrirFicha(obj); else if (!obj) cerrarFicha();
+  pedirCuadro();
+}
+
+/* ---------- Leyenda, cabeza y ficha ---------- */
+function pintarLeyenda(t) {
+  const ol = $("#lista"); ol.innerHTML = "";
+  for (const [num, fila, col, nombre] of t.items) {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "pieza"; b.dataset.num = num; b.setAttribute("aria-current", "false");
+    b.innerHTML = `<span class="num">${num}</span><span><strong></strong><span>Fila ${fila} · Columna ${col}</span></span>`;
+    b.querySelector("strong").textContent = nombre;
+    b.addEventListener("click", () => marcar(objetos.find((o) => o.item[0] === num), true, true));
+    li.appendChild(b); ol.appendChild(li);
+  }
+}
+function pintarCabeza(clave) {
+  const t = TECNICAS[clave];
+  $("#tec-nombre").textContent = t.nombre;
+  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía general";
+  $("#tecnica").value = clave;
+  $("#leyenda-linea").textContent = `${t.items.length} objetos. Toca uno para ubicarlo.`;
+  $("#ficha-enlace").href = `tecnica.html#${clave}`;
+  $("#sin3d-enlace").href = `tecnica.html#${clave}`;
+  $("#sin3d-texto").textContent = `La mesa de Mayo de ${t.nombre} se puede ver en DataIQ, con cada instrumento en su celda. La leyenda sigue disponible.`;
+  canvas.setAttribute("aria-label", `Mesa de Mayo de ${t.nombre} en 3D`);
+}
+function abrirFicha(obj) {
+  const [num, fila, col, nombre] = obj.item;
+  $("#ficha-num").textContent = num;
+  $("#ficha-nombre").textContent = nombre;
+  $("#ficha-lugar").textContent = `Fila ${fila} · Columna ${col}`;
+  $("#ficha-texto").textContent = descripcion(obj.item[4]);
+  $("#ficha").hidden = false; ide.classList.add("con-ficha");
+}
+function cerrarFicha() { $("#ficha").hidden = true; ide.classList.remove("con-ficha"); }
+$("#ficha-cerrar").addEventListener("click", () => marcar(null, false));
+
+/* ---------- Chat del prototipo: respuestas de plantilla, nunca redactadas por el modelo ---------- */
+const sinTildes = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+function entender(texto) {
+  const s = sinTildes(texto);
+  let tecnica = null, pieza = null;
+  for (const [clave, ps] of Object.entries(NOMBRES_TECNICA)) if (ps.some((p) => s.includes(p))) tecnica = clave;
+  const sinMesa = s.replace(/mesa de mayo/g, "");
+  for (const [tipo, ps] of NOMBRES_PIEZA) if (ps.some((p) => sinMesa.includes(p))) { pieza = tipo; break; }
+  const describe = /\b(que es|qu[eé] es|para que|como es|describe|sirve)\b/.test(s);
+  const mostrar = /(muestr|ver |mesa|abr|arma|ensena)/.test(s) || s.trim().split(/\s+/).length <= 2;
+  let dato = null;
+  if (/indicac|cuando se (hace|indica|realiza)/.test(s)) dato = "indicaciones";
+  else if (/complicac|riesgo/.test(s)) dato = "complicaciones";
+  else if (/anestesi/.test(s)) dato = "anestesia";
+  else if (/posici/.test(s)) dato = "posicion";
+  else if (/instrumental|que lleva|instrumentos|que va en/.test(s)) dato = "instrumental";
+  else if (/para que sirve|que es la|en que consiste|de que se trata/.test(s)) dato = "para";
+  return { tecnica, pieza, describe, mostrar, dato };
+}
+function buscarPieza(clave, tipo) {
+  return TECNICAS[clave].items.find(([, , , , tipos]) => tipos.some((tp) => tp === tipo || tp.startsWith(tipo)));
+}
+function responder(texto) {
+  const { tecnica, pieza, describe, mostrar, dato } = entender(texto);
+  const abierta = tecnicaActual;
+  if (dato && !pieza) {
+    const clave = tecnica || abierta;
+    if (!clave) return { texto: "¿De cuál técnica?", accion: "Aclarar · falta la técnica", opciones: Object.keys(TECNICAS).map((k) => [TECNICAS[k].nombre, () => { abrirTecnica(k); responderCon(responder(texto + " " + TECNICAS[k].nombre)); }]) };
+    if (clave !== tecnicaActual) abrirTecnica(clave);
+    return datoTecnica(clave, dato);
+  }
+  if (pieza) {
+    const enClave = tecnica || abierta;
+    if (!enClave) {
+      const donde = Object.keys(TECNICAS).filter((k) => buscarPieza(k, pieza));
+      const cuantas = donde.length === Object.keys(TECNICAS).length ? "las cinco mesas de Mayo de Cirugía general" : `${donde.length} de las mesas de Mayo de Cirugía general`;
+      return { texto: `Ese instrumento está en ${cuantas}. ¿En cuál de estas técnicas?`, accion: "Aclarar · falta la técnica", opciones: donde.map((k) => [TECNICAS[k].nombre, () => { abrirTecnica(k); responderCon(responder(texto)); }]) };
+    }
+    const item = buscarPieza(enClave, pieza);
+    if (!item) {
+      const donde = Object.keys(TECNICAS).filter((k) => buscarPieza(k, pieza));
+      const nombre = buscarPieza(donde[0], pieza)[3];
+      return { texto: `La ${nombre} no va en la mesa de Mayo de ${TECNICAS[enClave].nombre}. Está en ${donde.map((k) => TECNICAS[k].nombre).join(", ")}.`, accion: "Sin ese instrumento en esta mesa", opciones: donde.map((k) => [`Ver ${TECNICAS[k].nombre}`, () => abrirTecnica(k)]) };
+    }
+    if (enClave !== tecnicaActual) abrirTecnica(enClave);
+    const obj = objetos.find((o) => o.item === item);
+    setTimeout(() => marcar(obj, true, describe), 60);
+    return describe
+      ? { titulo: item[3], texto: `${descripcion(item[4])} En la mesa de Mayo de ${TECNICAS[enClave].nombre} es el número ${item[0]}: fila ${item[1]}, columna ${item[2]}.`, accion: `Describir · ${item[3]} · descripción de muestra` }
+      : { texto: `La ${item[3]} es el número ${item[0]} de la mesa de Mayo de ${TECNICAS[enClave].nombre}: fila ${item[1]}, columna ${item[2]}.`, accion: `Resaltar · ${item[3]}`, opciones: [["¿Qué es?", () => enviar(`¿Qué es la ${item[3].toLowerCase()}?`)]] };
+  }
+  if (tecnica && !mostrar) {
+    return { texto: `Esa información no está en DataIQ. De ${TECNICAS[tecnica].nombre} se puede consultar para qué sirve, sus indicaciones, complicaciones, anestesia y posición del paciente, y el instrumental de su mesa de Mayo.`, accion: "Sin respuesta", opciones: opcionesTecnica(tecnica) };
+  }
+  if (tecnica) {
+    abrirTecnica(tecnica);
+    return datoTecnica(tecnica, "para");
+  }
+  return { texto: "Esa información no está en DataIQ. Aquí se pueden ver las mesas de Mayo de Colecistectomía, Eventrorrafia, Hemicolectomía derecha, Mastectomía y Tiroidectomía, y ubicar o describir cualquiera de sus instrumentos.", accion: "Sin respuesta", opciones: [["Ver Mastectomía", () => enviar("Muéstrame la mesa de mastectomía")], ["¿Dónde va la Kelly?", () => enviar("¿Dónde va la Kelly?")]] };
+}
+
+const iconoInfo = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 6.3v3.4M7 4.4v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+/* Respuestas con los datos de la técnica: plantilla + campo de DataIQ */
+const ETIQUETA = { indicaciones: "Indicaciones", complicaciones: "Complicaciones", anestesia: "Anestesia", posicion: "Posición del paciente" };
+function opcionesTecnica(clave, salvo) {
+  const n = TECNICAS[clave].nombre.toLowerCase();
+  return [["Indicaciones", `¿Cuáles son las indicaciones de la ${n}?`], ["Complicaciones", `¿Qué complicaciones tiene la ${n}?`], ["Anestesia y posición", `¿Qué anestesia y posición lleva la ${n}?`], ["Instrumental de la mesa", `¿Qué instrumental lleva la ${n}?`]]
+    .filter(([et]) => et !== salvo).map(([et, q]) => [et, () => enviar(q)]);
+}
+function datoTecnica(clave, dato) {
+  const t = TECNICAS[clave], c = CLINICOS[clave];
+  if (dato === "para") return { titulo: t.nombre, texto: c.para, accion: `Mostrar técnica · ${t.nombre}`, opciones: opcionesTecnica(clave) };
+  if (dato === "instrumental") return { titulo: `Mesa de Mayo de ${t.nombre}`, texto: `Lleva ${t.items.length} objetos. Toca uno en la lista o en la escena para ubicarlo.`, lista: t.items.map(([num, , , nombre]) => [num, nombre]), accion: `Instrumental · ${t.nombre}`, opciones: opcionesTecnica(clave, "Instrumental de la mesa") };
+  if (dato === "anestesia" || dato === "posicion") return { titulo: t.nombre, campos: [["Anestesia", c.anestesia], ["Posición del paciente", c.posicion]], accion: `Datos clínicos · ${t.nombre}`, opciones: opcionesTecnica(clave, "Anestesia y posición") };
+  return { titulo: `${ETIQUETA[dato]} · ${t.nombre}`, texto: c[dato], accion: `Datos clínicos · ${t.nombre}`, opciones: opcionesTecnica(clave, ETIQUETA[dato]) };
+}
+
+const icono = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.2l3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function agregar(quien, texto, accion, opciones, extra = {}) {
+  const li = document.createElement("li");
+  li.className = `msj ${quien === "tu" ? "msj-tu" : "msj-sim"}`;
+  li.innerHTML = `<span class="msj-quien"><i>${quien === "tu" ? "DO" : "S"}</i>${quien === "tu" ? "Tú" : "SIMIQ3D"}</span>`;
+  if (extra.titulo) { const h = document.createElement("p"); h.className = "msj-titulo"; h.textContent = extra.titulo; li.appendChild(h); }
+  if (texto) { const pt = document.createElement("p"); pt.className = "msj-texto"; pt.textContent = texto; li.appendChild(pt); }
+  if (extra.campos) { const dl = document.createElement("dl"); dl.className = "msj-campos"; for (const [k, v] of extra.campos) { const dd = document.createElement("div"); dd.innerHTML = "<dt></dt><dd></dd>"; dd.querySelector("dt").textContent = k; dd.querySelector("dd").textContent = v; dl.appendChild(dd); } li.appendChild(dl); }
+  if (extra.lista) { const ol = document.createElement("ol"); ol.className = "msj-lista"; for (const [num, nombre] of extra.lista) { const it = document.createElement("li"); const b = document.createElement("button"); b.type = "button"; b.innerHTML = `<span class="num">${num}</span><span></span>`; b.lastChild.textContent = nombre; b.addEventListener("click", () => marcar(objetos.find((o) => o.item[0] === num), true, true)); it.appendChild(b); ol.appendChild(it); } li.appendChild(ol); }
+  if (accion) { const a = document.createElement("span"); a.className = "msj-accion"; a.innerHTML = (/^(Sin|Aclarar)/.test(accion) ? iconoInfo : icono) + "<span></span>"; a.querySelector("span").textContent = accion; li.appendChild(a); }
+  if (opciones && opciones.length) {
+    const d = document.createElement("div"); d.className = "msj-opciones";
+    for (const [et, fn] of opciones) { const b = document.createElement("button"); b.type = "button"; b.className = "opcion"; b.textContent = et; b.addEventListener("click", fn); d.appendChild(b); }
+    li.appendChild(d);
+  }
+  $("#mensajes").appendChild(li);
+  $("#mensajes").scrollTop = $("#mensajes").scrollHeight;
+  if (quien !== "tu") {
+    const u = $("#ultima"), ut = document.createElement("span"); ut.className = "ultima-texto"; ut.innerHTML = "<b>SIMIQ3D:</b> "; ut.append(extra.titulo && !texto ? extra.titulo : (extra.titulo ? extra.titulo + ". " : "") + (texto || "")); u.replaceChildren(ut); u.hidden = false;
+    const uo = $("#ultima-opciones"); uo.innerHTML = "";
+    for (const [et, fn] of opciones || []) { const b = document.createElement("button"); b.type = "button"; b.className = "opcion"; b.textContent = et; b.addEventListener("click", fn); uo.appendChild(b); }
+    uo.hidden = !(opciones && opciones.length);
+  }
+}
+function responderCon(r) { agregar("sim", r.texto, r.accion, r.opciones, r); }
+function enviar(texto) {
+  if (!texto.trim() || chatCaido) return;
+  ide.classList.remove("vacio");
+  agregar("tu", texto.trim());
+  $("#sugerencias").hidden = true;
+  setTimeout(() => responderCon(responder(texto)), reducido ? 0 : 380);
+}
+$("#campo").addEventListener("submit", (e) => { e.preventDefault(); const t = $("#pregunta"); enviar(t.value); t.value = ""; ajustarCampo(); });
+$("#pregunta").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#campo").requestSubmit(); } });
+function ajustarCampo() { const t = $("#pregunta"); t.style.height = "auto"; t.style.height = Math.min(120, t.scrollHeight) + "px"; document.documentElement.style.setProperty("--alto-campo", ($("#campo").offsetHeight + 12) + "px"); }
+$("#pregunta").addEventListener("input", ajustarCampo);
+
+function pintarSugerencias(lista) {
+  const d = $("#sugerencias"); d.innerHTML = "";
+  for (const s of lista) { const b = document.createElement("button"); b.type = "button"; b.className = "sugerencia"; b.textContent = s; b.addEventListener("click", () => enviar(s)); d.appendChild(b); }
+  d.hidden = false;
+  $("#mensajes").scrollTop = $("#mensajes").scrollHeight;
+}
+
+/* ---------- Técnicas ---------- */
+const selector = $("#tecnica");
+{ const o = document.createElement("option"); o.value = ""; o.textContent = "Elegir técnica"; o.disabled = true; selector.appendChild(o); }
+for (const [k, t] of Object.entries(TECNICAS).sort(([, a], [, b]) => a.nombre.localeCompare(b.nombre, "es"))) { const o = document.createElement("option"); o.value = k; o.textContent = t.nombre; selector.appendChild(o); }
+selector.addEventListener("change", () => { if (ide.classList.contains("vacio")) enviar(TECNICAS[selector.value].nombre); else abrirTecnica(selector.value); });
+function abrirTecnica(clave) {
+  tecnicaActual = clave; armarMesa(clave);
+  $("#leyenda-boton").disabled = false;
+  const [p, o] = encuadre(vistaActual); viajar(p, o, 700);
+}
+
+/* ---------- Controles de vista ---------- */
+let vistaActual = "3d";
+document.querySelectorAll("[data-vista]").forEach((b) => b.addEventListener("click", () => {
+  vistaActual = b.dataset.vista;
+  document.querySelectorAll("[data-vista]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const [p, o] = encuadre(vistaActual); viajar(p, o);
+}));
+document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("click", () => {
+  const dir = camara.position.clone().sub(controles.target), k = +b.dataset.zoom > 0 ? .8 : 1.25;
+  const largo = THREE.MathUtils.clamp(dir.length() * k, controles.minDistance, controles.maxDistance);
+  viajar(controles.target.clone().add(dir.setLength(largo)), controles.target.clone(), 350);
+}));
+$("[data-centrar]").addEventListener("click", () => { marcar(null, false); const [p, o] = encuadre(vistaActual); viajar(p, o); });
+document.querySelectorAll("[data-escala]").forEach((b) => b.addEventListener("click", () => {
+  escala = b.dataset.escala;
+  document.querySelectorAll("[data-escala]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const num = seleccion && seleccion.item[0];
+  armarMesa(tecnicaActual);
+  if (num) marcar(objetos.find((o) => o.item[0] === num), false, !$("#ficha").hidden);
+}));
+
+/* Opciones de vista */
+$("#opciones-boton").addEventListener("click", () => {
+  const abrir = $("#opciones-vista").hidden;
+  $("#opciones-vista").hidden = !abrir; $("#opciones-boton").setAttribute("aria-expanded", String(abrir));
+});
+$("#op-numeros").addEventListener("change", () => { piezasGrupo.children.forEach((ch) => { if (ch.userData.numero) ch.visible = $("#op-numeros").checked; }); pedirCuadro(); });
+$("#op-rejilla").addEventListener("change", () => { if (rejilla) rejilla.visible = $("#op-rejilla").checked; pedirCuadro(); });
+
+/* Leyenda plegable */
+$("#leyenda-boton").addEventListener("click", () => {
+  const abierta = $("#leyenda").hidden;
+  $("#leyenda").hidden = !abierta; $("#leyenda-boton").setAttribute("aria-expanded", String(abierta));
+  if (!seleccion) { const [p, o] = encuadre(vistaActual); viajar(p, o, 600); }
+});
+
+/* Historial en celular */
+function historial(abrir) { ide.classList.toggle("historial", abrir); $("#abrir-chat").setAttribute("aria-expanded", String(abrir)); }
+$("#abrir-chat").addEventListener("click", () => historial(true));
+$("#ultima").addEventListener("click", () => historial(true));
+$("#cerrar-chat").addEventListener("click", () => historial(false));
+$("#velo").addEventListener("click", () => historial(false));
+
+/* Divisor: el chat se ensancha o se angosta, como el panel de un IDE */
+(() => {
+  const d = $("#divisor"); let x0, w0;
+  const fijar = (w) => { document.documentElement.style.setProperty("--panel", THREE.MathUtils.clamp(w, 300, 560) + "px"); ajustarTamano(); };
+  d.addEventListener("pointerdown", (e) => { x0 = e.clientX; w0 = $("#chat").offsetWidth; d.setPointerCapture(e.pointerId); d.classList.add("arrastrando"); });
+  d.addEventListener("pointermove", (e) => { if (x0 != null) fijar(w0 + e.clientX - x0); });
+  d.addEventListener("pointerup", () => { x0 = null; d.classList.remove("arrastrando"); });
+  d.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); fijar($("#chat").offsetWidth + (e.key === "ArrowRight" ? 24 : -24)); } });
+})();
+
+/* ---------- Tocar una pieza en la escena ---------- */
+const rayo = new THREE.Raycaster(), puntero = new THREE.Vector2();
+let abajo = null;
+canvas.addEventListener("pointerdown", (e) => { abajo = [e.clientX, e.clientY]; });
+canvas.addEventListener("pointerup", (e) => {
+  if (!abajo || Math.hypot(e.clientX - abajo[0], e.clientY - abajo[1]) > 6) return;
+  const r = canvas.getBoundingClientRect();
+  puntero.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  rayo.setFromCamera(puntero, camara);
+  const toque = rayo.intersectObjects(piezasGrupo.children, true).find((h) => h.object.material.map !== sombraTex && !h.object.userData.numero);
+  if (!toque) { marcar(null, false); return; }
+  let n = toque.object; while (n && !n.userData.item) n = n.parent;
+  marcar(objetos.find((o) => o.grupo === n), true, true);
+});
+
+/* ---------- Tamaño ---------- */
+function escalarNumeros() {
+  const k = 2 * Math.tan(THREE.MathUtils.degToRad(camara.fov) / 2) / Math.max(1, lienzo.clientHeight);
+  piezasGrupo.children.forEach((ch) => { if (ch.userData.numero) ch.scale.set(20 * k, 20 * k, 1); });
+}
+function ajustarTamano() {
+  if (!renderer) return;
+  const w = lienzo.clientWidth, h = lienzo.clientHeight;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(w, h, false);
+  camara.aspect = w / h; camara.updateProjectionMatrix();
+  escalarNumeros();
+  pedirCuadro();
+}
+new ResizeObserver(ajustarTamano).observe(lienzo);
+let altoPrevio = 0;
+new ResizeObserver(() => {
+  const alto = $("#campo").offsetHeight;
+  document.documentElement.style.setProperty("--alto-campo", (alto + 12) + "px");
+  if (!escritorio() && controles && controles.target && renderer && Math.abs(alto - altoPrevio) > 8 && !seleccion) { const [q, o] = encuadre(vistaActual); viajar(q, o, 300); }
+  altoPrevio = alto;
+}).observe($("#campo"));
+
+/* ---------- Estados del prototipo (#estado=…) ---------- */
+function reiniciarChat() { $("#mensajes").innerHTML = ""; $("#ultima").hidden = true; $("#ultima-opciones").hidden = true; }
+function aplicarEstado(estado) {
+  chatCaido = estado === "sin-chat";
+  ide.dataset.chat = chatCaido ? "caido" : "ok";
+  $("#conexion").textContent = chatCaido ? "No disponible" : "Conectado";
+  $("#aviso-chat").hidden = !chatCaido;
+  $("#pregunta").disabled = chatCaido; $("#enviar").disabled = chatCaido;
+  $("#pregunta").placeholder = chatCaido ? "El chat no está disponible" : escritorio() ? "Pregunta por una técnica o un instrumento" : "Pregunta por una técnica";
+  ajustarCampo();
+  $("#capa-carga").hidden = estado !== "cargando";
+  $("#capa-sin3d").hidden = estado !== "sin-webgl" && !!renderer;
+  $("#estado").value = estado;
+  reiniciarChat();
+  ide.classList.remove("vacio");
+  if (estado === "inicio" || estado === "ambigua") {
+    tecnicaActual = null;
+    armarVacia();
+    const ti = $("#tecnicas-inicio"); ti.innerHTML = "";
+    for (const t of Object.values(TECNICAS).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"))) { const b = document.createElement("button"); b.type = "button"; b.className = "opcion"; b.textContent = t.nombre; b.addEventListener("click", () => enviar(t.nombre)); ti.appendChild(b); }
+    $("#sugerencias").hidden = true;
+    ide.classList.toggle("vacio", estado === "inicio");
+    if (estado === "ambigua") { agregar("tu", "¿Dónde va la pinza de Allis?"); responderCon(responder("¿Dónde va la pinza de Allis?")); }
+    return;
+  }
+  if (!tecnicaActual) tecnicaActual = "mastectomia";
+  abrirTecnica(tecnicaActual);
+  if (estado === "sin-chat" || estado === "cargando" || estado === "sin-webgl") {
+    agregar("tu", "Muéstrame la mesa de mastectomía");
+    responderCon(datoTecnica("mastectomia", "para"));
+    $("#sugerencias").hidden = true;
+    return;
+  }
+  agregar("tu", "Muéstrame la mesa de mastectomía");
+  responderCon(datoTecnica("mastectomia", "para"));
+  if (estado === "sin-respuesta") { agregar("tu", "¿Cuánto dura una mastectomía?"); responderCon(responder("¿Cuánto dura una mastectomía?")); $("#sugerencias").hidden = true; return; }
+  if (estado === "ficha") { agregar("tu", "¿Qué es una pinza Kelly?"); responderCon(responder("¿Qué es una pinza Kelly?")); $("#sugerencias").hidden = true; return; }
+  agregar("tu", "¿Dónde va la Kelly?");
+  responderCon(responder("¿Dónde va la Kelly?"));
+  pintarSugerencias(["¿Qué es una pinza de Allis?", "¿Dónde va la tijera de Metzenbaum?", "Muéstrame la tiroidectomía"]);
+}
+function armarVacia() {
+  for (const o of objetos) o.grupo.traverse((n) => { if (n.geometry) n.geometry.dispose(); });
+  piezasGrupo.clear(); objetos.length = 0; seleccion = null;
+  construirRejilla(1, 1); celdaHalo.material.opacity = 0; cerrarFicha();
+  $("#tec-nombre").textContent = "Explorar en 3D";
+  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía general";
+  $("#tecnica").value = ""; $("#cifra").textContent = "0";
+  $("#lista").innerHTML = ""; $("#leyenda-linea").textContent = "Abre una técnica para ver su leyenda.";
+  $("#leyenda").hidden = true; $("#leyenda-boton").setAttribute("aria-expanded", "false"); $("#leyenda-boton").disabled = true;
+  const [p, o] = encuadre("3d"); viajar(p, o, 1); pedirCuadro();
+}
+addEventListener("hashchange", () => aplicarEstado(leerEstado()));
+function leerEstado() { const m = location.hash.match(/estado=([\w-]+)/); return m ? m[1] : "inicio"; }
+
+/* ---------- Arranque ---------- */
+if (renderer) {
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .92;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+  scene.add(new THREE.HemisphereLight(0xf4f8fc, 0xb4c3cd, .45));
+  const sol = new THREE.DirectionalLight(0xffffff, .95); sol.position.set(.4, 1.2, .6); scene.add(sol);
+  controles = new OrbitControls(camara, canvas);
+  controles.enableDamping = false; controles.enablePan = false;
+  controles.minDistance = .22; controles.maxDistance = 2.2; controles.maxPolarAngle = 1.32;
+  controles.addEventListener("change", () => { pedirCuadro(); $("#pista").classList.add("oculta"); });
+  construirMesa();
+  ajustarTamano();
+  const [p, o] = encuadre("3d"); camara.position.copy(p); controles.target.copy(o);
+} else {
+  controles = { target: new THREE.Vector3(), update() {}, minDistance: 0, maxDistance: 1 };
+  celdaHalo = { material: { opacity: 0 }, position: {}, scale: { set() {} } };
+}
+$("#hueco-prototipo").replaceWith($("#tpl-prototipo").content.cloneNode(true));
+if (!escritorio()) { const caja = document.createElement("div"); caja.className = "proto-movil"; caja.appendChild($(".prototipo")); $("#chat").appendChild(caja); }
+$("#estado").addEventListener("change", () => { location.hash = "estado=" + $("#estado").value; });
+
+/* ---------- Hoja inferior (celular) ---------- */
+const VISTO = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 9.5l3.2 3.2L14 5.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+let hojaOrigen = null;
+function abrirHoja(select, titulo, sub, boton) {
+  $("#hoja-titulo").textContent = titulo; $("#hoja-sub").textContent = sub;
+  const lista = $("#hoja-lista"); lista.innerHTML = "";
+  for (const o of select.options) {
+    if (o.disabled) continue;
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button"; b.className = "hoja-op"; b.innerHTML = VISTO; b.prepend(o.textContent);
+    b.setAttribute("aria-current", String(o.value === select.value));
+    b.addEventListener("click", () => { cerrarHoja(); if (select.value !== o.value) { select.value = o.value; select.dispatchEvent(new Event("change")); } });
+    li.appendChild(b); lista.appendChild(li);
+  }
+  hojaOrigen = boton; document.body.classList.add("hoja-abierta");
+  (lista.querySelector('[aria-current="true"]') || lista.querySelector("button")).focus({ preventScroll: true });
+}
+function cerrarHoja() {
+  if (!document.body.classList.contains("hoja-abierta")) return;
+  document.body.classList.remove("hoja-abierta"); if (hojaOrigen) hojaOrigen.focus({ preventScroll: true });
+}
+$("#hoja-velo").addEventListener("click", cerrarHoja);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarHoja(); });
+for (const [select, titulo, sub, etiqueta] of [
+  [$("#tecnica"), "Técnica", "Mesa de Mayo · Cirugía general", "Cambiar técnica"],
+  [$("#estado"), "Estado del prototipo", "Solo para el mockup", "Cambiar estado del prototipo"],
+]) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "sobre-select"; b.setAttribute("aria-haspopup", "dialog"); b.setAttribute("aria-label", etiqueta);
+  b.addEventListener("click", () => abrirHoja(select, titulo, sub, b));
+  select.after(b);
+}
+ajustarCampo();
+aplicarEstado(leerEstado());
+</script>
+<div class="hoja-velo" id="hoja-velo"></div>
+<section class="hoja" id="hoja" role="dialog" aria-modal="true" aria-labelledby="hoja-titulo">
+  <div class="hoja-asa" aria-hidden="true"></div>
+  <div class="hoja-cabeza"><h2 id="hoja-titulo">Técnica</h2><p id="hoja-sub"></p></div>
+  <ul class="hoja-lista" id="hoja-lista"></ul>
+</section>
+</body>
+</html>

@@ -8,9 +8,10 @@ paths:
 
 # Método de diseño (mockups)
 
-Aplica a todo el trabajo de diseño visual del ecosistema: el shell y las
-pantallas de DataIQ (SIMIQ3D y SIVRI solo aparecen como módulos, con vistas
-ilustrativas marcadas como tales).
+Aplica a todo el trabajo de diseño visual del ecosistema: el shell, las
+pantallas de DataIQ y las de cada módulo (SIMIQ3D desde el 2026-10-20). Donde
+una pantalla muestra otro módulo sin ser suya, lo hace con vistas ilustrativas
+marcadas como tales.
 
 ## Antes de tocar una pantalla
 
@@ -26,7 +27,9 @@ ilustrativas marcadas como tales).
 ## Reglas
 
 - **Un archivo por pantalla**: `diseno/mockups/<pantalla>.html`, HTML y CSS
-  autocontenidos. Fuentes solo de Google Fonts; nada de otras dependencias.
+  autocontenidos. Fuentes solo de Google Fonts; nada de otras dependencias,
+  salvo Three.js (versión fija, desde cdn.jsdelivr.net) en las escenas 3D de
+  SIMIQ3D (decidido por Mauricio el 2026-10-20).
 - **El mundo es uno solo**: colores, cuadrícula de 24 px, tipografía y
   componentes salen de `DESIGN.md`. No crear tokens nuevos sin anotarlos ahí.
 - **Toda decisión visual nueva se anota en `DESIGN.md`**, en la misma sesión
@@ -48,7 +51,10 @@ brave-browser --headless=new --no-sandbox --hide-scrollbars \
   --screenshot=.impeccable/review/desktop.png "file://$PWD/diseno/mockups/<pantalla>.html"
 ```
 
-(Igual con `--window-size=390,9400` para `mobile.png`.) Las capturas viven en
+(Igual con `--window-size=390,9400` para `mobile.png`.) Una pantalla con
+WebGL (SIMIQ3D) no termina con `--screenshot`: se captura por DevTools,
+lanzando el navegador como pide la regla 7 de `CLAUDE.md`, con
+`--use-angle=swiftshader --enable-unsafe-swiftshader`. Las capturas viven en
 `.impeccable/review/`, que no se versiona. Máximo dos rondas de revisión
 propias; después, el revisor final de impeccable y su veredicto.
 

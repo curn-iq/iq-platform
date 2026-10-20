@@ -32,6 +32,23 @@ colors:
   acero-raya: "#66737a"
   acero-linea: "#4f5c63"
   acero-filo: "#3f4b52"
+  canto-pano: "#0e463c"
+  quirofano: "#1b5f86"
+  quirofano-hondo: "#113f5a"
+  quirofano-claro: "#e0ecf4"
+  quirofano-claro-hover: "#d0e2ee"
+  fondo-quirofano: "#f1f5f8"
+  filete-quirofano: "#d8e2e9"
+  filete-2-quirofano: "#c1cfd9"
+  tinta-2-quirofano: "#344a57"
+  tinta-3-quirofano: "#4e6470"
+  hover-quirofano: "#e3ebf1"
+  celda-quirofano: "#d3e6f2"
+  rejilla-escena: "#4c9a88"
+  celda-escena: "#bfe3d9"
+  lienzo-centro: "#f7fafc"
+  lienzo-medio: "#e8eff4"
+  lienzo-borde: "#dce5ec"
 typography:
   display:
     fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
@@ -128,6 +145,17 @@ typography:
     fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
     fontSize: "14px"
     fontWeight: 600
+  data-escena:
+    fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.4
+  title-lienzo:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "19px"
+    fontWeight: 650
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
 rounded:
   trazo-fino: "2px"
   trazo: "3px"
@@ -315,6 +343,114 @@ components:
     backgroundColor: "{colors.alerta-noche}"
     textColor: "{colors.noche}"
     typography: "{typography.data-detection}"
+  modulo-etiqueta:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.pill}"
+    padding: "3px 10px"
+  chat-mensaje-propio:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.lg}"
+    padding: "10px 14px"
+  chat-accion:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-3}"
+    typography: "{typography.data-escena}"
+    rounded: "{rounded.sm}"
+    padding: "4px 10px 4px 8px"
+  chat-opcion:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.pill}"
+    padding: "0 14px"
+    height: "34px"
+  chat-opcion-hover:
+    backgroundColor: "{colors.marca-claro-hover}"
+    textColor: "{colors.marca-hondo}"
+  chat-sugerencia:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.pill}"
+    padding: "0 12px"
+    height: "32px"
+  chat-sugerencia-hover:
+    backgroundColor: "{colors.hover-neutro}"
+    textColor: "{colors.tinta}"
+  campo-pregunta:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.xl}"
+    padding: "8px 8px 8px 14px"
+  boton-enviar:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.md}"
+    size: "40px"
+  boton-enviar-disabled:
+    backgroundColor: "{colors.filete}"
+    textColor: "{colors.tinta-3}"
+  boton-historial:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.control-sm}"
+    padding: "0 10px"
+    height: "34px"
+  ultima-respuesta:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.lg}"
+    padding: "10px 12px"
+  selector-tecnica:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "0 36px 0 14px"
+    height: "38px"
+  selector-escala-opcion:
+    textColor: "{colors.tinta-3}"
+    rounded: "{rounded.xs}"
+    padding: "0 10px"
+    height: "26px"
+  selector-escala-opcion-elegida:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+  leyenda-lienzo-boton:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "0 12px 0 14px"
+    height: "38px"
+  leyenda-lienzo:
+    backgroundColor: "{colors.superficie}"
+    rounded: "{rounded.ventana}"
+    width: "300px"
+  leyenda-lienzo-pieza:
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "9px 10px"
+  leyenda-lienzo-pieza-actual:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  ficha-instrumento:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.ventana}"
+    padding: "18px 18px 16px"
+    width: "360px"
+  control-vista:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.control-sm}"
+    padding: "0 12px"
+    height: "36px"
+  control-vista-activo:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  insignia-pieza:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.pill}"
+    size: "26px"
 ---
 
 # Design System: IQ Platform
@@ -355,6 +491,7 @@ Paleta fría y contenida: neutros clínicos con matiz petróleo, un verde de pa�
 
 ### Tertiary
 - **Acero satinado** (`acero-brillo`, `acero`, `acero-caja`, `acero-sombra`, `acero-raya`, `acero-linea`, `acero-filo`): el instrumental. Se aplica como degradado lateral (gradiente `#acero` de cinco paradas, de `#e4eaed` a `acero-brillo`, `acero`, `acero-sombra` y `#d3dbdf`) con contorno `acero-filo` de 0.6 px. Las hojas usan el degradado `#hoja` (blanco a `#aab5bb`) con contorno `acero-linea`; las cajas y cierres, relleno `acero-caja` con contorno `acero-linea`; las estrías y ranuras son trazos `acero-raya` de 0.5 px. En el diagrama de la mesa de reserva, lo que no es instrumental (compresas, riñonera, bandeja) va plano: relleno `#eef3f3` o `#dde4e7` con contorno `acero-sombra`.
+- **Escena 3D de SIMIQ3D** (`canto-pano`, `rejilla-escena`, `celda-escena`): el mismo paño y el mismo acero, ahora como materiales de Three.js (ver «Escena 3D de SIMIQ3D (material)» en Components). `canto-pano` es la caída de la funda por los costados, el mismo canto de la funda en CSS; `rejilla-escena` es la rejilla de celdas sobre el paño (al 55 %); `celda-escena` pinta la celda de la pieza señalada (al 55 %). Solo existen dentro del lienzo 3D.
 
 ### Neutral
 - **Blanco clínico** (`fondo`): fondo de página, barra superior, desplegables de la barra, fondos de ventanas de maqueta, encabezados fijos de la lista del catálogo y panel de la técnica en el detalle.
@@ -363,6 +500,7 @@ Paleta fría y contenida: neutros clínicos con matiz petróleo, un verde de pa�
 - **Filete** (`filete`) y **filete fuerte** (`filete-2`): líneas de 1 px que separan, ordenan listas y bordean ventanas; `filete-2` para puntos de ventana, la barra de desplazamiento, el borde del buscador, el recuadro «Sin mesa» y los huecos «Sin dato» de la leyenda.
 - **Tinta petróleo** (`tinta`), **tinta media** (`tinta-2`), **tinta suave** (`tinta-3`): titulares, texto de cuerpo y texto secundario, en ese orden.
 - **Noche** (`noche`), **noche 2** (`noche-2`), **filete noche** (`filete-noche`), **niebla** (`niebla-noche`): capítulos oscuros, sus paneles, sus líneas y su texto secundario.
+- **Lienzo frío** (`lienzo-centro`, `lienzo-medio`, `lienzo-borde`): el fondo del lienzo de SIMIQ3D, un degradado radial `radial-gradient(120% 90% at 50% 40%, lienzo-centro 0%, lienzo-medio 62%, lienzo-borde 100%)` que aclara el centro donde está la mesa y enfría los bordes, como la luz de un quirófano. Es fondo de escena, no de sección: no se usa en páginas ni tarjetas.
 - **Niebla de marca** (`niebla-marca`) y **niebla de paño** (`niebla-pano`): texto secundario sobre `marca-hondo` y sobre `pano`. Ninguna pantalla actual tiene esos fondos; quedan reservadas para cuando vuelvan.
 
 ### Named Rules
@@ -402,11 +540,13 @@ Paleta fría y contenida: neutros clínicos con matiz petróleo, un verde de pa�
 - **Label** (550-650, 14-16px): navegación (15.5px 550), botones (15.5px 650), selector, pestañas y filtro del catálogo (16px, 550; 650 el elegido).
 - **Label de ventana** (650, 11.5px): solo encabezados de grupo dentro de las maquetas de producto, que son interfaces a escala reducida; 13-14.5px para su texto. A 13px 650 en `tinta-3`, los encabezados de especialidad de la columna de técnicas; a 13px 500, la etiqueta de módulo dentro de los botones del detalle.
 - **Data** (Martian Mono 400, 12.5px): etiquetas «demostración»; 600 a 14px en etiquetas de detección y «Va aquí» (26px en celular, dentro del SVG escalado).
+- **Data de escena** (Martian Mono 400, 12px): en SIMIQ3D, la acción que eligió el modelo bajo cada respuesta («Resaltar · Pinza Kelly»), el «Fila 3 · Columna 4» de la leyenda del lienzo y de la ficha, y las marcas «demostración» y «mesa, escala y orientación provisionales».
+- **Title de lienzo** (650, 19px, 1.25, -0.015em): el nombre del instrumento en la ficha de SIMIQ3D; 20px para los títulos de las capas de carga y sin 3D.
 
 ### Named Rules
 **The -0.04em Rule.** Los titulares de 38px o más van a 650 con -0.04em; nunca más apretado. Los de 24-30px van a -0.03em, los de 17-20px a -0.01/-0.02em.
 
-**The Voz De La Máquina Rule.** Martian Mono solo para lo que dice la máquina: etiquetas de detección con su confianza, «Va aquí» y la marca «demostración». Nunca en titulares, botones, citas ni cuerpo.
+**The Voz De La Máquina Rule.** Martian Mono solo para lo que dice la máquina: etiquetas de detección con su confianza, «Va aquí» y la marca «demostración». En SIMIQ3D también la acción que eligió el modelo y la celda «Fila · Columna» de la escena. Nunca en titulares, botones, citas ni cuerpo, ni en el texto de la respuesta del chat.
 
 **The Un Solo Gigante Rule.** En cada pantalla hay a lo sumo un momento tipográfico extremo; en el inicio es el titular de la portada y ningún otro texto compite con él.
 
@@ -421,6 +561,8 @@ Las cabeceras son anchas y asimétricas: «Tres formas de recorrer una técnica.
 Las listas paralelas del mismo tipo van en columnas iguales, sin tarjeta, separadas por filete vertical: cinco especialidades (tres en tableta), el instrumental del detalle (tres columnas) y las columnas del pie (marca a 1.6 fracciones más cuatro columnas). Los desplegables de la barra usan la rejilla de 12: nombre en 1-3, opciones en 4-8, vista previa en 9-12. En celular las especialidades pasan a una fila horizontal con `scroll-snap` de 74vw.
 
 Puntos de corte: **960 px** (los menús de la barra pasan al botón de menú y al panel a pantalla completa, porque los cuatro menús, Ingresar y Crear cuenta ya no caben en una línea), **1100 px** (tableta: todo a columna completa, escenario cuadrado, herramienta en una columna de hasta 760px, filtro del catálogo en 1-4 y lista en 5-12, leyenda del detalle bajo la mesa) y **760 px** (celular: barra de 64px con menú a pantalla completa, selector a tres botones iguales, riel bajo la mesa, leyenda a una columna, carriles con `scroll-snap`, filtro del catálogo en chips, columna de técnicas plegada, pie a dos columnas).
+
+SIMIQ3D es un banco de trabajo tipo IDE, no una página que se desplaza: bajo la barra, el alto completo de la ventana (`100svh` menos la barra, sin scroll de página) se reparte en tres columnas: el panel del chat (380px, ajustable entre 300 y 560px con el divisor), el divisor de 6px y el lienzo, que toma todo el resto. El lienzo no tiene márgenes `lado`: sus piezas flotan a 24-28px de los bordes (cabeza arriba a la izquierda, leyenda arriba a la derecha, controles de vista abajo a la derecha, ficha abajo a la izquierda) y la cámara encuadra la mesa en el área que dejan libre. Su punto de corte es **820 px**: por debajo, el lienzo ocupa toda la pantalla, el campo de pregunta queda fijo abajo con la última respuesta encima y el historial se abre como un panel desde la izquierda; las piezas flotantes pasan a 12-16px del borde.
 
 **The Titular Lateral Rule.** Cuando el titular va al costado del contenido, ocupa las columnas 1-5, la 6 queda libre como respiro y el contenido va en 7-12 (la espiral, por ser figura, puede empezar en la 6). La misma línea vertical se repite en toda la página, como en las páginas de producto de Apple.
 
@@ -442,6 +584,13 @@ Sistema plano con objetos que sí tienen cuerpo. La interfaz se ordena con filet
 - **Pieza de acero** (`filter: drop-shadow(0 2px 1.4px rgba(3,20,28,.6)) drop-shadow(0 6px 8px rgba(3,20,28,.22))`): cada instrumento; al marcarla sube a `drop-shadow(0 12px 8px rgba(3,20,28,.4))` con `translate(-2px, -6px)`.
 - **Pieza en diagrama** (`filter: drop-shadow(0 1px 1px rgba(3,20,28,.22)) drop-shadow(0 4px 6px rgba(3,20,28,.08))`): el instrumental en la mesa del detalle; al señalarla, `drop-shadow(0 18px 10px rgba(3,20,28,.45))` con `translate(-3px, -12px)`.
 - **Panel flotante** (`box-shadow: 0 12px 30px -16px rgba(10,27,34,.45)`): la leyenda «Ver las 10 piezas».
+- **Leyenda del lienzo** (`box-shadow: inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10,27,34,.45)`): la leyenda plegable de SIMIQ3D.
+- **Ficha del instrumento** (`box-shadow: inset 0 0 0 1px var(--filete), 0 28px 48px -30px rgba(10,27,34,.55)`): la ficha que sube sobre el lienzo.
+- **Controles del lienzo** (`box-shadow: inset 0 0 0 1px var(--filete), 0 10px 24px -18px rgba(10,27,34,.45)`): los grupos de controles de vista; el selector de técnica y el botón «Leyenda» llevan solo `inset 0 0 0 1px var(--filete-2), 0 1px 2px rgba(10,27,34,.06)`.
+- **Insignia de la pieza** (`box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 6px 14px -6px rgba(10,27,34,.5)`): el número `marca` que flota sobre la pieza señalada; el anillo blanco la despega del paño.
+- **Historial en celular** (`box-shadow: 24px 0 48px -32px rgba(10,27,34,.55)`): el panel del chat que entra desde la izquierda, sobre un velo `rgba(10,27,34,.28)`.
+
+La escena 3D de SIMIQ3D sigue la misma doctrina con luz: sin sombras en tiempo real; la profundidad la dan el canto de la funda, el pie de la mesa y sombras de contacto dibujadas (un degradado radial de `rgba(10,27,34,.42)` a transparente) bajo la mesa y bajo cada pieza.
 
 ### Named Rules
 **The Sombra Neutra Rule.** Toda sombra es tinta neutra difusa. Sin sombras de color, sin brillos (`glow`), sin sombras duras desplazadas. El barrido de la cámara es un instrumento de escaneo, no un brillo decorativo.
@@ -450,7 +599,7 @@ Sistema plano con objetos que sí tienen cuerpo. La interfaz se ordena con filet
 
 ## Shapes
 
-Esquinas suaves y técnicas, escaladas por tamaño del contenedor: 6px en filas de la maqueta, 8px en ítems de la barra, filas de leyenda y técnicas de la columna lateral, 9px en controles pequeños de 30-34px (cerrar, enviar, botón del pie de cámara), 10px en botones, pestañas del selector, opciones del filtro y su placa, 12px en botón grande, funda y botón de cuenta, 14px en el selector, el buscador del catálogo, la leyenda flotante, el diagrama de mesa, la tarjeta «Para qué sirve» y el recuadro «Sin mesa», 16px en ventanas de producto, vistas previas de los desplegables y la tarjeta de la puerta de cuenta, 20px en el escenario en celular, 24px en el escenario y en los pictogramas de perfiles; píldora (99px) en sugerencias del chat, logros de la espiral y chips del filtro en celular. Los trazos de progreso redondean a la mitad de su grosor: 2px en el del selector, 3px en los del recorrido. Las líneas son filetes de 1 px; las listas se ordenan con filete arriba de cada fila y uno al cierre, y las listas del catálogo abren con un filete de 2px en `tinta` (las preguntas, con uno de 1px). Las pestañas del detalle se marcan con una raya de 2px en `tinta`. Los números de la mesa van en círculos `rgba(6,18,23,.72)`. Los visores de cámara son esquinas en L de 30px con trazo de 2px. Las burbujas de chat recortan a 4px la esquina del lado que habla.
+Esquinas suaves y técnicas, escaladas por tamaño del contenedor: 6px en filas de la maqueta, 8px en ítems de la barra, filas de leyenda y técnicas de la columna lateral, 9px en controles pequeños de 30-34px (cerrar, enviar, botón del pie de cámara), 10px en botones, pestañas del selector, opciones del filtro y su placa, 12px en botón grande, funda y botón de cuenta, 14px en el selector, el buscador del catálogo, la leyenda flotante, el diagrama de mesa, la tarjeta «Para qué sirve» y el recuadro «Sin mesa», 16px en ventanas de producto, vistas previas de los desplegables y la tarjeta de la puerta de cuenta, 20px en el escenario en celular, 24px en el escenario y en los pictogramas de perfiles; píldora (99px) en sugerencias del chat, logros de la espiral y chips del filtro en celular. Los trazos de progreso redondean a la mitad de su grosor: 2px en el del selector, 3px en los del recorrido. Las líneas son filetes de 1 px; las listas se ordenan con filete arriba de cada fila y uno al cierre, y las listas del catálogo abren con un filete de 2px en `tinta` (las preguntas, con uno de 1px). Las pestañas del detalle se marcan con una raya de 2px en `tinta`. Los números de la mesa van en círculos `rgba(6,18,23,.72)`. Los visores de cámara son esquinas en L de 30px con trazo de 2px. Las burbujas de chat recortan a 4px la esquina del lado que habla (en las ventanas de producto del inicio). En SIMIQ3D el chat no lleva burbujas con pico: la pregunta propia va en un bloque `fondo` de 12px, la respuesta sin fondo; opciones, sugerencias, etiqueta de módulo e insignia de la pieza son píldoras; ficha y leyenda del lienzo, 16px; campo de pregunta, 14px; selector de técnica, botón «Leyenda» y botón enviar, 10px; grupos de controles de vista, 12px con botones de 9px; el selector de escala, 9px con opciones de 6px.
 
 ## Components
 
@@ -469,7 +618,7 @@ Firmes y clínicos: verde lleno, sin adornos, con una flecha que avanza al pasar
 ### Chips
 - **Etiqueta «demostración»:** Martian Mono 12.5px en `tinta-3` (`niebla-noche` sobre noche), sin fondo ni borde. Marca todo dato ilustrativo; junto al nombre de una técnica plantilla va en línea tras el titular.
 - **Filtro en celular:** píldoras de 40px con filete interior `filete-2`, 15px; la elegida en `marca` lleno con texto blanco.
-- **Sugerencias del chat:** píldora `fondo`, 13px, solo dentro de la maqueta de SIMIQ3D.
+- **Sugerencias del chat:** píldora `fondo`, 13px, en la maqueta de SIMIQ3D del inicio; en la página de SIMIQ3D, 32px de alto, 13px 550 en `tinta-2` con filete interior `filete` (ver «Chat de SIMIQ3D»).
 
 ### Cards / Containers
 - **Corner Style:** 14px (diagrama, «Para qué sirve», «Sin mesa»), 16px (ventanas, vistas previas, aviso), 24px (escenario).
@@ -541,6 +690,66 @@ Herramienta de consulta para el revisor, no galería ni tabla de administración
 Pantalla del admin, con la forma «personas por rol»: los pocos con permisos se ven completos y los muchos usuarios se buscan. Cabecera con el título a 40px, «demostración» y una línea de cifras por rol en `tinta-2`, y a la derecha el control de dos vistas «Personas / Historial de cambios» (placa `marca-claro`). Debajo, un buscador grande (52px, hasta 640px) por nombre o correo en cualquier rol; los resultados salen en un desplegable `superficie` con el tramo que coincide en `mark` `marca-claro` y la pastilla del rol a la derecha. El tablero va en dos partes: cuatro columnas iguales regladas por filete bajo una cabecera de 2px en `tinta` (Admin, Revisores, Colaboradores, Usuarios), cada una con su nombre, su cifra en `tinta-3` y una línea de lo que puede el rol; Admin, Revisores y Colaboradores listan a todos, y Usuarios muestra la cifra a 40px («cuentas con rol Usuario»), su propio buscador, «Rol cambiado ahora» si alguien acaba de llegar y «Registrados recientemente» (cinco, por fecha). Cada persona es una fila con avatar de iniciales `marca-claro`, nombre que puede partirse en dos renglones y correo en `tinta-3` del que solo se recorta la parte local (el dominio siempre se lee); la elegida en `marca-claro`. Una cuenta suspendida no se tacha: el avatar cambia a un ícono de pausa en anillo `filete-2` sobre `fondo` y el nombre pasa a `tinta-3`. A la derecha, la ficha `superficie` fija al desplazar (radio 16, anillo `filete`): avatar de 52px, nombre a 24px, correo; «Rol» como selector segmentado de cuatro con placa `marca-claro` que se desliza; la confirmación aparece en un panel `fondo` debajo del selector, dice qué podrá hacer con el rol nuevo y, para Revisor o Admin, exige una casilla («Verifiqué que es docente o instrumentador titulado.» / «Es parte del equipo operativo del proyecto.») antes de habilitar el botón; «Cuenta» con registro, política de datos aceptada (versión y fecha) y actividad en DataIQ; su historial; y «Suspender la cuenta» (o «Reactivar») con anillo `filete-2` en `tinta`, nunca rojo, y la nota de que suspender no borra datos ni lo publicado. La cuenta propia no puede cambiarse el rol ni suspenderse, y siempre queda al menos un admin. Al cambiar el rol, la fila sale de su columna (opacidad y 16px a la derecha, 280ms `expo`) y entra en la nueva desde 24px arriba con un lavado `marca-claro` que se apaga en 1,2s. El historial ocupa todo el ancho, agrupado por día («Hoy», «Semana pasada»): hora, el cambio con los roles en pastilla y «Por …» en `tinta-3` alineado a la derecha. A ≤1100px las columnas van de a dos y la ficha baja debajo, con «Volver a la lista»; al elegir a alguien la página se desplaza hasta ella. A ≤760px, una columna, y en el historial el autor pasa debajo del cambio.
 En la ficha, junto al nombre de una cuenta suspendida va la pastilla «Suspendida» (11.5px 650, `tinta-2`, anillo `filete-2`).
 
+### Chat de SIMIQ3D
+El chat es el panel lateral de un banco de trabajo, no una conversación en burbujas. Panel `superficie` con filete a la derecha (el del divisor).
+- **Cabeza:** 56px con filete inferior: «Preguntar» en 15px 650 y, a la derecha, el estado de conexión en 13px 550 `tinta-3` con un punto de 7px en `marca` y aro `marca-claro` («Conectado»); sin chat, el punto pasa a `tinta-3` con aro `hover-neutro` y dice «No disponible».
+- **Mensaje:** cada mensaje lleva arriba quién habla en 13px 600 `tinta-3` con un distintivo de 22px: la persona, círculo `marca-claro` con sus iniciales en `marca-hondo`; SIMIQ3D, cuadrado de 6px de radio en `marca` con «S» blanca. La pregunta propia va en un bloque `fondo` de 12px de radio con texto `tinta-2`; la respuesta, sin fondo, en `tinta`, 15px 1.55. Entran subiendo 6px (`.45s expo`); 20px entre mensajes.
+- **Chip de acción:** bajo cada respuesta, la acción que eligió el modelo, en Martian Mono 12px `tinta-3` sobre `fondo`, 8px de radio («Mostrar técnica · Mastectomía», «Resaltar · Pinza Kelly», «Describir · Pinza Kelly»). Lleva un ícono SVG de 14px en `marca`: un visto cuando la acción se hizo, un círculo con «i» cuando no hubo acción («Sin respuesta», «Sin ese instrumento en esta mesa») o falta un dato («Aclarar · falta la técnica»).
+- **Opciones:** respuestas que piden elegir (la técnica de un instrumento ambiguo, «Ver la ficha», «Ver Mastectomía») ofrecen píldoras de 34px en `marca-claro` con texto `marca-hondo` 600 a 14px; hover `marca-claro-hover`.
+- **Sugerencias:** píldoras de 32px en una sola fila que se desliza en horizontal, sin barra visible y con el borde derecho desvanecido (máscara al 85 %); `fondo` con filete interior `filete`, 13px 550 `tinta-2`, hover `hover-neutro` y `tinta`. Desaparecen al enviar la primera pregunta.
+- **Campo de pregunta:** franja `superficie` con filete superior; dentro, una caja de 14px de radio con filete interior `filete-2` y un área de texto de 15px que crece hasta 120px; foco: filete interior de 2px en `marca`. Enter envía, Mayúsculas + Enter salta de línea. Botón enviar de 40px, 10px de radio, `marca` con flecha arriba blanca (hover `marca-hondo`; desactivado, `filete` con `tinta-3`). Debajo, una línea de 12.5px `tinta-3`: «Las respuestas solo muestran lo que está en DataIQ.»
+- **Chat no disponible:** sobre las sugerencias, un aviso `fondo` de 12px de radio con filete interior `filete-2` y un círculo de alerta `tinta-3`: título 650 en `tinta` y la línea de que la mesa, la leyenda y la ficha siguen funcionando. El campo queda desactivado con «El chat no está disponible». Nunca rojo.
+- **Divisor:** 6px `superficie` con filete a la izquierda y cursor de redimensionar; al pasar, al enfocar o al arrastrar aparece en el centro un asa de 3 × 32px en `filete-2`. Se arrastra o se mueve con las flechas (24px por pulsación), entre 300 y 560px.
+- **Celular:** el campo queda fijo abajo (`superficie` al 94 % con desenfoque de 10px, como la barra fija del editor) y encima lleva el botón «Historial» (34px, `fondo`, 9px de radio, ícono de líneas y 13.5px 600 `tinta-2`) y la última respuesta en un bloque `fondo` de 12px con «SIMIQ3D:» en `tinta` 650, que al tocarse abre el historial. El historial es el mismo panel, de hasta 380px (88vw), que entra desde la izquierda (`.45s expo`) sobre un velo y se cierra con su botón de 36px.
+
+**The El Modelo Elige, La Plantilla Habla Rule.** El modelo del chat solo elige una acción (mostrar técnica, resaltar, describir, aclarar, sin respuesta); el texto de cada respuesta sale de plantillas llenadas con datos de DataIQ, nunca redactado por el modelo. Por eso cada respuesta lleva su chip de acción, y lo que no está en DataIQ se dice («Esa información no está en DataIQ.») con opciones para seguir, sin inventar.
+
+### Lienzo de SIMIQ3D
+Todo lo que flota sobre la escena es interfaz plana del sistema; la escena es lo único con cuerpo.
+- **Cabeza:** arriba a la izquierda, el nombre de la técnica a 40px 650 (-0.04em; 26px y -0.03em en celular), la línea «Mesa de Mayo · Cirugía general · 6 × 4» en 15px `tinta-3` y debajo el selector de técnica y el selector de escala.
+- **Selector de técnica:** 38px, `superficie`, 10px de radio, filete interior `filete-2`, 14.5px 600 y la flecha de la casa en `tinta-2` (sin la nativa); sin técnica dice «Elegir técnica».
+- **Selector de escala:** control segmentado de 3px de relleno sobre blanco al 70 % con filete interior `filete` y 9px de radio; opciones de 26px en 13px 600 `tinta-3` («a la celda», «escala real»), la elegida en `superficie` con `tinta` y sombra `0 1px 2px rgba(10,27,34,.12)`. A su lado, la marca «mesa, escala y orientación provisionales» en Martian Mono (en celular, solo «provisional»), porque la fuente no trae esos datos.
+- **Leyenda plegable:** botón «Leyenda» de 38px arriba a la derecha con la cifra de objetos en un círculo `fondo` de 22px y una flecha que gira 180° al abrir (`.35s expo`); desactivado sin técnica. El panel, de 300px y 16px de radio, baja 6px al abrir (`.35s expo`) y ocupa el alto libre: cabeza con «Mesa de Mayo» 15px 650 y la línea en 13px `tinta-3`, y debajo las piezas: número en círculo de 26px con anillo `filete-2`, nombre en 14.5px 600 y «Fila · Columna» en Martian Mono 12px `tinta-3`. Hover `fondo`; la actual en `marca-claro`, su número en círculo `marca` lleno y su nombre en `marca-hondo`, y la lista se desplaza hasta ella. En escritorio abre abierta; en celular, plegada, a todo el ancho con alto máximo del 52 % de la pantalla.
+- **Ficha del instrumento:** abajo a la izquierda, 360px y 16px de radio, sube 10px al abrir (`.4s expo`). Cabeza con el número en círculo `marca` de 28px, el nombre (title de lienzo) con su «Fila · Columna» en Martian Mono y un botón cerrar de 32px; bajo un filete, la descripción en 14.5px `tinta-2` con la marca «demostración» encima mientras no haya descripción con fuente; al pie, el enlace con flecha «Ver la técnica en DataIQ». En celular ocupa el ancho sobre el campo de pregunta.
+- **Controles de vista:** abajo a la derecha, dos grupos `superficie` de 12px de radio con 4px de relleno: «3D · Arriba» (botones de 36px en 14px 600, el elegido en `marca-claro` con `marca-hondo`) y acercar, alejar y centrar la mesa (36 × 36px, íconos SVG de 16px). Hover `hover-neutro`.
+- **Insignia de la pieza:** un círculo `marca` de 26px con el número en blanco 700 que sigue a la pieza señalada en pantalla, despegado del paño por un anillo blanco; aparece en `.25s`.
+- **Pista:** abajo a la izquierda en escritorio, «Arrastra para girar · rueda o pellizco para acercar» en 13px `tinta-2` sobre blanco al 82 %, 8px de radio; se apaga al primer gesto.
+- **Capas de estado:** cargando, un velo `fondo` al 82 % con un giro de 40px (aro `marca-claro`, tramo `marca`), «Cargando la mesa de Mayo» (20px 650) y una línea `tinta-2`; sin 3D, `fondo` lleno con un cubo tachado en `marca`, «Este navegador no puede mostrar la escena 3D», la línea de que la mesa se ve en DataIQ y «Ver la mesa en DataIQ» (`boton`). Ambas se centran en el área libre, nunca debajo de la leyenda.
+
+### Escena 3D de SIMIQ3D (material)
+La mesa de Mayo en Three.js (versión fija 0.160.0 desde cdn.jsdelivr.net), con el mismo paño y el mismo acero del objeto firma.
+- **Funda:** caja delgada en `pano` con grano: textura de ruido generada en un lienzo de 256px (±11 de luminancia por píxel, repetida 3 × 2), rugosidad .95, sin metal; cae por los cuatro costados 6cm en `canto-pano`. Debajo, la bandeja, el poste y la base en inoxidable mate (`#b9c3c7`, metal .85, rugosidad .35).
+- **Acero:** `MeshStandardMaterial` metálico satinado (`#b4bec3`, rugosidad .22; las cajas y anillas en `#7d8a90`, rugosidad .32; las hojas en `#dde4e6`, rugosidad .18), iluminado por un entorno `RoomEnvironment` (PMREM) para que el reflejo sea de sala clara, con tono ACES Filmic a .92 de exposición. Mientras no estén los modelos GLB, las piezas se arman con formas simples.
+- **Luz:** una hemisférica (blanco sobre `#b8c6c8`, .45) y una direccional blanca (.95) desde arriba y adelante; sin sombras en tiempo real.
+- **Sombras de contacto:** dibujadas, un degradado radial de `rgba(10,27,34,.42)` a transparente en un plano bajo la mesa y otro bajo cada pieza (al 55 %).
+- **Rejilla y celda:** la rejilla de celdas en `rejilla-escena` al 55 % sobre el paño; la celda de la pieza señalada se pinta en `celda-escena` al 55 % y la pieza sube 14mm con un leve tinte `marca` (emisivo .22) mientras las demás bajan al 38 %, nunca sus números.
+- **Números:** cada pieza lleva su número en un círculo blanco al 94 % con la cifra en `tinta` 700, en la esquina de su celda, a tamaño fijo en pantalla (20px a cualquier distancia o ancho) y siempre por encima de la escena. La pieza señalada suma la insignia `marca`.
+- **Cámara:** encuadra la mesa entera dentro del área que dejan libre la cabeza, la leyenda, los controles y, en celular, el campo de pregunta. Al señalar una pieza (desde el chat, la leyenda o tocándola) viaja hacia ella en 900ms con una curva de salida de cuarta potencia, acercándose apenas, sin perder de vista la mesa entera; al cambiar de técnica, 700ms. Arrastrar gira (sin bajar del borde de la mesa), rueda o pellizco acercan. Solo dibuja cuadros cuando algo cambia. Con movimiento reducido, la cámara salta.
+
+**The Una Sola Escena Rule.** Three.js es la única dependencia fuera de Google Fonts y solo vive en las escenas 3D de SIMIQ3D, con versión fija. El resto del sistema dibuja la mesa en SVG y CSS; la escena 3D no se reutiliza como decoración en otras páginas.
+
+**The Chat Escena Y Leyenda Dicen Lo Mismo Rule.** Señalar una pieza desde cualquier lado la marca a la vez en la escena (sube, celda pintada, insignia), en la leyenda (fila `marca-claro`) y, si se pidió, en la ficha. Nunca uno sin los otros.
+
+### SIMIQ3D: explorar en 3D (página)
+**Color de módulo** (decidido por Mauricio el 2026-10-20): SIMIQ3D conserva el mundo (tipografía, rejilla, componentes, filetes) pero cambia el verde de interfaz por el **azul de quirófano**, para que se sienta otro módulo y un entorno más clínico. En esta página los papeles de `marca`, `marca-hondo`, `marca-claro`, `marca-claro-hover`, `fondo`, `filete`, `filete-2`, `tinta-2`, `tinta-3` y `hover-neutro` los toman `quirofano`, `quirofano-hondo`, `quirofano-claro`, `quirofano-claro-hover`, `fondo-quirofano`, `filete-quirofano`, `filete-2-quirofano`, `tinta-2-quirofano`, `tinta-3-quirofano` y `hover-quirofano`; la celda señalada en la escena es `celda-quirofano` y el resaltado de la pieza tira a `quirofano`. El verde se queda en el logo del shell y en la funda de la mesa, porque así es la mesa real.
+
+**Al entrar** a `/simiq3d` no hay técnica abierta: la cabeza dice «Explorar en 3D», el lienzo muestra la mesa vacía, la leyenda está desactivada y el chat está vacío: como al abrir un chat nuevo, el panel muestra al centro el pictograma del cubo en el azul del módulo, el título fijo «Elige una técnica para verla en 3D» (30px 650, -0.03em, en dos líneas balanceadas), el campo de pregunta justo debajo y una opción por técnica bajo el campo. Con la primera pregunta o al tocar una técnica, el título se va y el campo vuelve abajo. En celular el título va en una línea (20px) sobre el campo fijo, con las técnicas en una fila que se desliza. Nada viene señalado de entrada. Lo secundario se esconde para dejar ver la mesa: la leyenda abre plegada y no se abre sola, y la escala de los instrumentos, los números de las celdas, la cuadrícula y la marca «provisional» viven en el panel **Opciones de vista** (botón de deslizadores en los controles de vista; panel `superficie` de 300px con filete, radio 14, filas con filete y casillas en el azul del módulo). El selector «Prototipo» es solo del mockup y no existe en producción. Las descripciones de la ficha son de muestra, marcadas «demostración · no viene de DataIQ».
+
+La herramienta de exploración: un banco de trabajo con el chat como panel lateral de IDE y la mesa de Mayo en 3D como lienzo. La barra es la del shell (72px) con la etiqueta de módulo «SIMIQ3D» junto a la marca: píldora `marca-claro` con texto `marca-hondo` 600 a 13px; en la barra van «Técnicas», «Explorar en 3D» (actual, en `tinta`) y «Herramientas», y a la derecha «Mi cuenta». Debajo, a todo el alto: el chat de 380px a la izquierda (cabeza, conversación, sugerencias y el campo de pregunta abajo como acción principal), el divisor y el lienzo sobre el fondo radial frío, con la cabeza (nombre de la técnica, selector de técnica, selector de escala con la marca «provisional»), la leyenda plegable abierta a la derecha, la ficha del instrumento abajo a la izquierda, los controles de vista abajo a la derecha y la insignia del número sobre la pieza señalada. Abre en Mastectomía.
+
+Estados:
+- **Conversación:** «Muéstrame la mesa de mastectomía» → el nombre de la técnica como título y su «para qué sirve» de DataIQ con «Mostrar técnica · Mastectomía»; «¿Dónde va la Kelly?» → número, fila y columna, «Resaltar · Pinza Kelly» y la opción «Ver la ficha». La cámara viaja a la pieza, la celda se pinta y la leyenda la marca. Debajo, tres sugerencias para seguir.
+- **Al entrar (sin técnica):** el estado por defecto, descrito arriba.
+- **Datos de la técnica:** el chat informa, no solo ubica. Al abrir una técnica responde con su nombre y su «para qué sirve», y ofrece opciones para sus indicaciones, complicaciones, anestesia y posición del paciente, e instrumental de la mesa; cada respuesta es una plantilla llenada con el campo de DataIQ (título del mensaje a 16px 650, campos como pares etiqueta `tinta-3` 13px y valor 15px, y el instrumental como lista numerada que señala la pieza al tocarla). Nunca se dan medidas de la cuadrícula. Lo que DataIQ no tiene («¿Cuánto dura?») va a «Sin respuesta» con las mismas opciones.
+- **Pregunta ambigua:** un instrumento sin técnica abierta: «Ese instrumento está en N técnicas. ¿En cuál de estas técnicas?», chip «Aclarar · falta la técnica» con el ícono de aclaración y una opción por técnica, que abre su mesa y responde.
+- **Sin respuesta:** lo que no está en DataIQ («¿Cuánto dura una mastectomía?») se dice tal cual, con el chip «Sin respuesta» y una opción para volver a la mesa; nunca una respuesta inventada.
+- **Chat no disponible:** el aviso del chat y el campo desactivado; la mesa, la leyenda y la ficha siguen funcionando.
+- **Cargando:** la capa de carga sobre el lienzo, centrada en el área libre.
+- **Sin 3D:** la capa sin 3D, que lleva a la mesa en DataIQ.
+- **Ficha:** «¿Qué es una pinza Kelly?» o tocar la pieza abre la ficha con su número, su celda y la descripción marcada «demostración».
+
+En celular (≤820px) la barra mide 60px y deja la marca, la etiqueta de módulo y el avatar. El lienzo ocupa toda la pantalla y la mesa es la protagonista: la cabeza es una sola línea, porque el nombre de la técnica (24px) es el selector, con una flecha en un cuadro `superficie` de 22px; deja libre la esquina de la leyenda, que abre plegada. La cámara mira la mesa más desde arriba (unos 63°) para que llene más alto de la pantalla vertical, con margen a los lados, centrada entre la cabeza y los controles de vista, que quedan justo sobre el campo. El campo queda fijo abajo: la última respuesta en dos líneas como máximo (al tocarla se abre el historial), sus opciones en una fila que se desplaza y se desvanece en el borde, y la caja de pregunta con el botón de historial a su izquierda, un cuadro `fondo` de 52px con el ícono de líneas; el texto de ayuda se acorta a «Pregunta por una técnica» para no partirse. El historial entra desde la izquierda y termina sobre el campo, sin taparse con él; mientras está abierto, o mientras la ficha está abierta, la última respuesta no se repite abajo. La ficha ocupa el ancho sobre el campo. El selector del prototipo va al final del historial, no sobre el lienzo; si el campo cambia de alto, la mesa se vuelve a encuadrar. En celular ninguna lista usa el desplegable nativo: la técnica y el estado del prototipo se eligen en una **hoja inferior** `superficie` (radio 16 arriba, asa de 40 × 4px en `filete-2`, título 650 a 18px con su contexto en `tinta-3`, filas de 52px a 16px; la elegida en `marca-claro` con texto `marca-hondo` 650 y un visto `marca`), que sube en .45s `expo` sobre un velo `rgba(10,27,34,.32)` y se cierra al tocar el velo o con Escape. Las técnicas van en orden alfabético en el selector, la hoja y las opciones de bienvenida; al entrar, elegir una en el selector hace lo mismo que tocarla bajo el título.
+
 ### Investigación
 Sección `superficie`. A la izquierda, el titular y tres conclusiones (ícono de línea `marca`, texto `tinta-2` con el inicio en `tinta` 600) separadas por filete, y el enlace con flecha en `marca`. A la derecha, la espiral, sin marco: un pulso `marca-hondo` sube en tres vueltas cada vez más rápidas (velocidad que crece de forma exponencial), los puntos de cada vuelta se encienden en `marca`, el anillo del nivel destella al cerrarla y aparece un logro en píldora `superficie` con filete (Instrumental reconocido, Posiciones memorizadas, Mesa completa, sin errores); al final sale un haz hacia arriba con el logro «Un paso adelante» en `marca`. El pulso lleva un anillo `marca` sin desenfoque y una estela corta translúcida; la espiral completa lleva solo sombra neutra. Detrás, un resplandor verde muy tenue que crece con el avance y motas `marca` que suben. Solo corre en pantalla; con movimiento reducido queda el estado final. En celular los logros van como lista debajo de la espiral.
 
@@ -551,7 +760,7 @@ Secciones expandibles en columnas 7-12, abiertas por un filete de 1px en `tinta`
 Estudiantes y Docentes como dos filas de lista en columnas 7-12, reguladas por filete arriba de cada una y uno al cierre, con 24px de padding vertical. Cada fila lleva un pictograma de 120px (96px en celular) a la izquierda y, a la derecha, el nombre (24px 650) y una línea `tinta-2` de 16px. El pictograma es un cuadrado `marca-claro` de 24px de radio con hojas blancas trazadas en `tinta` o `marca` y un sello `marca`; al pasar sobre la fila las hojas se abren y el sello gira (`.6s expo`).
 
 ### Motion
-Curvas propias: `expo` (`cubic-bezier(.16,1,.3,1)`) para entradas, desplazamientos y giros de flechas, `cuarta` (`cubic-bezier(.25,1,.5,1)`) para color y opacidad, `vaiven` (`cubic-bezier(.87,0,.13,1)`) para el barrido y el giro 3D. Una sola coreografía de carga: las líneas del titular suben desde su máscara (escalonadas 70ms), luego entradilla, acciones y escenario, y por último las piezas se colocan sobre la funda una a una (70ms). Fuera de la carga solo se anima lo que responde a una acción: desplegables, puerta de cuenta, placa del filtro, raya de las pestañas, reordenamiento FLIP de la lista, cambio de lado de la página de cuenta, `+` y flechas. Con `prefers-reduced-motion` todo se reduce a un instante y el ciclo automático y el carril fijo se desactivan.
+Curvas propias: `expo` (`cubic-bezier(.16,1,.3,1)`) para entradas, desplazamientos y giros de flechas, `cuarta` (`cubic-bezier(.25,1,.5,1)`) para color y opacidad, `vaiven` (`cubic-bezier(.87,0,.13,1)`) para el barrido y el giro 3D. Una sola coreografía de carga: las líneas del titular suben desde su máscara (escalonadas 70ms), luego entradilla, acciones y escenario, y por último las piezas se colocan sobre la funda una a una (70ms). Fuera de la carga solo se anima lo que responde a una acción (en SIMIQ3D, el viaje de la cámara a la pieza, la pieza que sube, la ficha y la leyenda): desplegables, puerta de cuenta, placa del filtro, raya de las pestañas, reordenamiento FLIP de la lista, cambio de lado de la página de cuenta, `+` y flechas. Con `prefers-reduced-motion` todo se reduce a un instante y el ciclo automático y el carril fijo se desactivan.
 
 ## Do's and Don'ts
 
@@ -568,6 +777,8 @@ Curvas propias: `expo` (`cubic-bezier(.16,1,.3,1)`) para entradas, desplazamient
 - **Do** mantener titulares a 650 y -0.04em, nunca más apretados.
 - **Do** convertir en celular las filas de columnas paralelas en carriles horizontales con `scroll-snap`.
 - **Do** probar en 1100px y 760px y respetar `prefers-reduced-motion`.
+- **Do** en SIMIQ3D, encuadrar siempre la mesa entera en el área que dejan libre los paneles, y señalar la misma pieza a la vez en escena, leyenda y ficha.
+- **Do** marcar en la escena lo que la fuente no trae (tamaño de la mesa, escala, orientación) como «provisional» y la descripción sin fuente como «demostración».
 
 ### Don't:
 - **Don't** dar a cada sección un color distinto; los fondos son neutros.
@@ -581,3 +792,6 @@ Curvas propias: `expo` (`cubic-bezier(.16,1,.3,1)`) para entradas, desplazamient
 - **Don't** usar menta o rojo fuera de la cámara (la menta, salvo enlaces sobre oscuro).
 - **Don't** usar entradas genéricas de aparecer al hacer scroll; la carga tiene una sola coreografía.
 - **Don't** volver a texturas artesanales o rústicas.
+- **Don't** usar Three.js fuera de las escenas 3D de SIMIQ3D ni sin versión fija.
+- **Don't** activar sombras en tiempo real en la escena 3D; las sombras de contacto van dibujadas.
+- **Don't** dejar que el modelo del chat redacte respuestas; elige una acción y el texto sale de plantillas con datos de DataIQ.
