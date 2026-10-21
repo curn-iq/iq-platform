@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["cle1"],
+  "functions": {
+    "app.main:app": {
+      "excludeFiles": "{tests/**,migrations/**,.venv/**,.pytest_cache/**,.ruff_cache/**,Dockerfile,.dockerignore,alembic.ini}"
+    }
+  }
+}
