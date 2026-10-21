@@ -172,10 +172,15 @@ navegación (ver más abajo) NO se considera un módulo.
   Notas de diseño clave:
   - **Ids: UUIDv7** en todas las tablas, generados por la BD con `uuidv7()`
     (requiere **PostgreSQL 18**, también en Neon). Motivo: DataIQ es open
-    source y cada institución puede tener su instancia; con UUID el catálogo
-    base tiene la misma identidad en todas, y los mapeos que guardan SIVRI
-    (clases YOLO) y SIMIQ3D (modelos 3D) contra `instruments.id` sirven en
-    cualquier instancia. Costo aceptado: un UUIDv7 revela su fecha de creación.
+    source y cada institución puede tener su instancia, y un UUID no se repite
+    entre instancias. Costo aceptado: un UUIDv7 revela su fecha de creación.
+    **Los ids del catálogo no son iguales entre instalaciones**: la carga
+    inicial los genera al cargar (la Pinza Kelly tiene un id en local y otro
+    en Neon). Por eso SIVRI (clases YOLO) y SIMIQ3D (modelos 3D) guardan su
+    mapeo en el repo por nombre del instrumento (o un alias) y lo traducen a
+    `instruments.id` en cada entorno con la API de DataIQ (decidido por
+    Mauricio el 2026-10-21). Fijar los ids del catálogo base queda para
+    después del MVP ([`docs/despues-del-mvp.md`](docs/despues-del-mvp.md)).
   - **Fechas: `timestamptz`** (instante exacto, se guarda en UTC). El
     servidor, la BD y los usuarios están en zonas horarias distintas.
     `created_at` y `updated_at` tienen `now()` por defecto.

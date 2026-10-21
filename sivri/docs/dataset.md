@@ -172,7 +172,9 @@ Según los arreglos publicados en DataIQ:
 
 Cada clase del modelo es un instrumento del catálogo, así que el mapeo a
 `instruments.id` es directo. Ese mapeo vive en la base de datos de SIVRI, no en
-DataIQ.
+DataIQ. Como los ids del catálogo cambian de una instalación a otra, el repo
+guarda el mapeo por nombre del instrumento (o un alias) y se traduce a ids en
+cada entorno con la API de DataIQ.
 
 ## Fuentes públicas revisadas
 

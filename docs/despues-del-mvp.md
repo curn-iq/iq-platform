@@ -38,12 +38,15 @@ Fuentes: [Moodle](https://edzlms.com/moodle-deployment-options-self-hosted-vs-cl
   instrumental de la CURN y otra institución podría necesitar reentrenarlo.
 - Cada institución responde por los datos personales de sus usuarios
   (Ley 1581 de 2012) y necesita su propia política de datos.
+- Que el catálogo base tenga los mismos ids en todas las copias: fijarlos en
+  la carga inicial (una columna de ids en `seed/tecnicas.xlsx`). Hoy la carga
+  los genera, y SIVRI y SIMIQ3D traducen su mapeo por nombre del instrumento
+  en cada copia.
 
 ### Lo que ya ayuda
 
 - El código es abierto (MIT).
-- Los ids son UUIDv7: el catálogo base tiene la misma identidad en todas las
-  copias, y los mapeos de SIVRI y SIMIQ3D sirven en cualquiera.
+- Los ids son UUIDv7: no se repiten entre copias.
 
 ## Gestión de cuentas y revisión
 
