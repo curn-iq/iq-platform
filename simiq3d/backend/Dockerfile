@@ -22,6 +22,8 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-install-project
 
+COPY alembic.ini ./
+COPY migrations ./migrations
 COPY app ./app
 
 

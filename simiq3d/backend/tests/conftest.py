@@ -1,14 +1,22 @@
+import asyncio
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from uuid import uuid4
 
 import httpx
 import jwt
 import pytest
+from alembic import command
+from alembic.config import Config as AlembicConfig
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from httpx import ASGITransport, AsyncClient
 from jwt.algorithms import OKPAlgorithm
+from sqlalchemy import make_url, text
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.adapters.outbound.security.tokens import JWKSVerifier
+from app.config import config
 from app.main import app
 
 JWKS_URL = "https://dataiq.prueba/.well-known/jwks.json"
@@ -17,6 +25,51 @@ JWKS_URL = "https://dataiq.prueba/.well-known/jwks.json"
 @pytest.fixture
 def anyio_backend():
     return "asyncio"
+
+
+# Los tests usan su propia base de datos en el mismo servidor, para no
+# depender de lo que tenga la de desarrollo.
+TEST_DATABASE_URL = make_url(config.database_url).set(database="simiq3d_test")
+
+
+async def create_test_database() -> None:
+    server = TEST_DATABASE_URL.set(database="postgres")
+    engine = create_async_engine(server, isolation_level="AUTOCOMMIT")
+    async with engine.connect() as connection_:
+        exists = await connection_.scalar(
+            text("SELECT 1 FROM pg_database WHERE datname = :name"),
+            {"name": TEST_DATABASE_URL.database},
+        )
+        if not exists:
+            await connection_.execute(
+                text(f'CREATE DATABASE "{TEST_DATABASE_URL.database}"')
+            )
+    await engine.dispose()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def test_database():
+    asyncio.run(create_test_database())
+    alembic = AlembicConfig(Path(__file__).parent.parent / "alembic.ini")
+    alembic.attributes["database_url"] = TEST_DATABASE_URL.render_as_string(
+        hide_password=False
+    )
+    command.upgrade(alembic, "head")
+
+
+@pytest.fixture
+async def session():
+    engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool)
+    async with engine.connect() as connection_:
+        transaction = await connection_.begin()
+        async with AsyncSession(
+            bind=connection_,
+            join_transaction_mode="create_savepoint",
+            expire_on_commit=False,
+        ) as s:
+            yield s
+        await transaction.rollback()
+    await engine.dispose()
 
 
 @pytest.fixture
