@@ -6,8 +6,10 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.adapters.inbound.api.session import session_token
+from app.adapters.outbound.dataiq.catalog import DataIQCatalogSource
 from app.adapters.outbound.security.tokens import JWKSVerifier
 from app.config import config
+from app.ports.catalog import CatalogSource
 from app.ports.security import InvalidToken, KeysUnavailable, TokenVerifier
 
 _verifier = JWKSVerifier(config.jwks_url, config.jwt_issuer, config.jwt_audience)
@@ -65,3 +67,15 @@ async def get_caller(
 
 
 CurrentCaller = Annotated[Caller, Depends(get_caller)]
+
+
+# --- Catálogo de DataIQ ----------------------------------------------------
+
+_catalog_source = DataIQCatalogSource(config.dataiq_url)
+
+
+def get_catalog_source() -> CatalogSource:
+    return _catalog_source
+
+
+Catalogs = Annotated[CatalogSource, Depends(get_catalog_source)]
