@@ -40,6 +40,15 @@ def unsupported(text: str, results: list[dict], catalog: Catalog) -> list[str]:
             problems.append(match.group(0))
     numbers = set(re.findall(r"\d+", facts))
     problems += [n for n in re.findall(r"\d+", text) if n not in numbers]
+    # Un conteo («7 objetos», «cinco técnicas») tiene que ser uno de los totales
+    # que devolvieron las consultas, no cualquier número que aparezca en ellas
+    # (el 7 puede ser el número de un objeto en el diagrama).
+    totals = set(_totals_in(results))
+    for match in _COUNT.finditer(said):
+        amount = match.group(1)
+        value = int(amount) if amount.isdigit() else _NUMBER_WORDS[amount]
+        if value not in totals:
+            problems.append(match.group(0))
     # La cuadrícula es interna: en la mesa real no hay filas ni columnas.
     if _GRID_WORDS.search(said):
         problems.append("habla de la cuadrícula")
@@ -67,4 +76,35 @@ def _places_in(value) -> list[str]:
         return own + [p for v in value.values() for p in _places_in(v)]
     if isinstance(value, list):
         return [p for v in value for p in _places_in(v)]
+    return []
+
+
+_NUMBER_WORDS = {
+    w: i
+    for i, w in enumerate(
+        "cero uno dos tres cuatro cinco seis siete ocho nueve diez once doce trece "
+        "catorce quince dieciseis diecisiete dieciocho diecinueve veinte".split()
+    )
+} | {"una": 1}
+_COUNT = re.compile(
+    rf"\b(\d+|{'|'.join(_NUMBER_WORDS)})\s+"
+    r"(?:objetos?|instrumentos?|instrumentales|tecnicas?|piezas?|elementos?)\b"
+)
+_TOTAL_KEYS = {"total", "total_objetos", "total_tecnicas", "objetos_en_la_mesa"}
+
+
+def _totals_in(value, key: str = "") -> list[int]:
+    """Los conteos que traen los resultados: los campos total…, cuantos_… y
+    objetos_en_la_mesa (que puede venir por técnica)."""
+    is_total = key in _TOTAL_KEYS or key.startswith("cuantos_")
+    if isinstance(value, bool):
+        return []
+    if isinstance(value, int):
+        return [value] if is_total else []
+    if isinstance(value, dict):
+        if is_total:
+            return [v for v in value.values() if isinstance(v, int)]
+        return [t for k, v in value.items() for t in _totals_in(v, k)]
+    if isinstance(value, list):
+        return [t for v in value for t in _totals_in(v, key if is_total else "")]
     return []

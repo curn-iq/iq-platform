@@ -62,7 +62,12 @@ def test_names_and_numbers_the_results_do_not_have_are_caught():
 
     text = "La Allis va en 7 técnicas, junto a la Pinza Kelly y la Pinza de Crile."
 
-    assert unsupported(text, results, CATALOG) == ["Pinza Kelly", "Pinza de Crile", "7"]
+    assert unsupported(text, results, CATALOG) == [
+        "Pinza Kelly",
+        "Pinza de Crile",
+        "7",
+        "7 tecnicas",
+    ]
 
 
 def test_a_technique_not_consulted_is_caught():
@@ -147,3 +152,32 @@ def test_the_tools_do_not_break_with_an_object_without_position_or_number():
     assert found["ubicacion"] == tools.NO_DATA
     assert found["numero_en_el_diagrama"] == tools.NO_DATA
     assert table["total_objetos"] == 4
+
+
+def test_a_count_must_be_one_of_the_totals():
+    # El 7 aparece (es el número del Farabeuf en el diagrama), pero la mesa
+    # lleva 4 objetos.
+    results = [tools.get_technique(CATALOG, "Colecistectomía")]
+
+    assert unsupported("La mesa lleva 4 objetos.", results, CATALOG) == []
+    assert unsupported("La mesa lleva 7 objetos.", results, CATALOG) == ["7 objetos"]
+    assert unsupported("Lleva cuatro instrumentos.", results, CATALOG) == []
+    assert unsupported("Lleva siete instrumentos.", results, CATALOG) == [
+        "siete instrumentos"
+    ]
+
+
+def test_counts_from_comparisons_and_lists_are_accepted():
+    results = [
+        tools.compare_techniques(CATALOG, "Colecistectomía", "Mastectomía"),
+        tools.list_techniques(CATALOG),
+        tools.find_instrument(CATALOG, "Allis"),
+    ]
+
+    assert unsupported("Comparten 2 instrumentos.", results, CATALOG) == []
+    assert unsupported("Hay tres técnicas.", results, CATALOG) == []
+    assert unsupported("La Allis va en dos técnicas.", results, CATALOG) == []
+    assert unsupported("Comparten 6 instrumentos.", results, CATALOG) == [
+        "6",
+        "6 instrumentos",
+    ]
