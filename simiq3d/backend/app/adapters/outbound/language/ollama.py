@@ -227,7 +227,14 @@ class OllamaAgent:
     async def _finish(
         self, text, results, scene, question, catalog, open_technique_id
     ) -> Reply:
-        text, _ = _clean(text)
+        text, trailing = _clean(text)
+        # «¿Quizás te refieres a…?» no es una sugerencia para seguir: es la
+        # respuesta. Se conserva, y la opción es la pregunta corregida.
+        did_you_mean = next(
+            (q for q in trailing if normalize(q).startswith("¿quizas")), None
+        )
+        if did_you_mean:
+            text = f"{text} {did_you_mean}".strip()
         text = _say_missing_description(text, question, results)
         if not results:
             # Respondió sin consultar nada: no hay de dónde salga lo que dice.
@@ -238,6 +245,13 @@ class OllamaAgent:
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
             scene = _implied_scene(text, catalog, open_technique_id)
+        if did_you_mean:
+            return Reply(
+                ChatAction.clarify,
+                text,
+                options=_corrected_questions(question, results),
+                answered_by=self.name,
+            )
         options = _follow_ups(results, scene)
         if scene is None:
             return Reply(
@@ -393,3 +407,23 @@ def _say_missing_description(text: str, question: str, results: list[dict]) -> s
     if asks_to_describe(question) and missing and "no tiene" not in normalize(text):
         return f"{text} DataIQ todavía no tiene su descripción.".strip()
     return text
+
+
+def _corrected_questions(question: str, results: list[dict]) -> tuple[str, ...]:
+    """La pregunta del estudiante con el nombre que no se encontró cambiado por
+    el que sugirió la consulta: «¿Dónde va la Kely rara?» → «¿Dónde va la Pinza
+    Kelly?». Si el nombre buscado no está tal cual en la pregunta, la opción es
+    el nombre sugerido."""
+    options: list[str] = []
+    for result in results:
+        searched, suggested = result.get("buscado"), result.get("quizas") or []
+        if not suggested:
+            continue
+        if searched and searched.lower() in question.lower():
+            start = question.lower().index(searched.lower())
+            options.append(
+                question[:start] + suggested[0] + question[start + len(searched) :]
+            )
+        else:
+            options.append(suggested[0])
+    return tuple(dict.fromkeys(options))[:3]

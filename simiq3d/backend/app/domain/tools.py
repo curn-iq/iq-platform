@@ -95,7 +95,11 @@ def compare_techniques(catalog: Catalog, first: str, second: str) -> dict:
     a, b = resolve_technique(catalog, first), resolve_technique(catalog, second)
     for name, found in ((first, a), (second, b)):
         if not isinstance(found, Technique):
-            return {"error": f"No hay una técnica «{name}»", "quizas": found}
+            return {
+                "error": f"No hay una técnica «{name}»",
+                "buscado": name,
+                "quizas": found,
+            }
 
     def names(t: Technique) -> set[str]:
         ids = {i for item in t.mayo_items() for i in item.instrument_ids}
@@ -125,7 +129,11 @@ def compare_techniques(catalog: Catalog, first: str, second: str) -> dict:
 def get_technique(catalog: Catalog, technique: str) -> dict:
     found = resolve_technique(catalog, technique)
     if not isinstance(found, Technique):
-        return {"error": f"No hay una técnica «{technique}»", "quizas": found}
+        return {
+            "error": f"No hay una técnica «{technique}»",
+            "buscado": technique,
+            "quizas": found,
+        }
     items = sorted(found.mayo_items(), key=lambda i: i.legend_number or 99)
     return {
         "tecnica": found.name,
@@ -143,7 +151,11 @@ def get_technique(catalog: Catalog, technique: str) -> dict:
 def find_instrument(catalog: Catalog, instrument: str) -> dict:
     found = resolve_instrument(catalog, instrument)
     if not isinstance(found, Instrument):
-        return {"error": f"No hay un instrumento «{instrument}»", "quizas": found}
+        return {
+            "error": f"No hay un instrumento «{instrument}»",
+            "buscado": instrument,
+            "quizas": found,
+        }
     tables = []
     for t in in_scope(catalog):
         item = item_with(t, found.id)
@@ -171,12 +183,20 @@ def show_in_3d(
 ) -> Scene | dict:
     found = resolve_technique(catalog, technique)
     if not isinstance(found, Technique):
-        return {"error": f"No hay una técnica «{technique}»", "quizas": found}
+        return {
+            "error": f"No hay una técnica «{technique}»",
+            "buscado": technique,
+            "quizas": found,
+        }
     if not instrument:
         return Scene(found)
     tool = resolve_instrument(catalog, instrument)
     if not isinstance(tool, Instrument):
-        return {"error": f"No hay un instrumento «{instrument}»", "quizas": tool}
+        return {
+            "error": f"No hay un instrumento «{instrument}»",
+            "buscado": instrument,
+            "quizas": tool,
+        }
     if item_with(found, tool.id) is None:
         return {"error": f"{tool.name} no va en la mesa de Mayo de {found.name}"}
     return Scene(found, tool)

@@ -245,3 +245,28 @@ async def test_asking_what_it_is_always_says_when_there_is_no_description():
         reply.reply
         == "La Pinza Kelly va en el centro. DataIQ todavía no tiene su descripción."
     )
+
+
+@pytest.mark.anyio
+async def test_the_model_did_you_mean_is_kept_with_the_corrected_question():
+    # El caso de la revisión del PR #26: antes el estudiante veía solo
+    # «No encontré la Kellyy.», sin opciones.
+    server = ScriptedOllama(
+        tool_calls(call("find_instrument", instrument="pinza kelyx")),
+        tool_calls(
+            call(
+                "reply",
+                text="No encontré la pinza kelyx. "
+                "¿Quizás te refieres a la Pinza Kelly?",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply("¿Dónde va la pinza kelyx?", CATALOG, None)
+
+    assert reply.action == ChatAction.clarify
+    assert (
+        reply.reply
+        == "No encontré la pinza kelyx. ¿Quizás te refieres a la Pinza Kelly?"
+    )
+    assert reply.options[0] == "¿Dónde va la Pinza Kelly?"
