@@ -64,9 +64,11 @@ def _where(technique: Technique, item: TableItem) -> dict:
     """Dónde va un objeto, como se dice en la práctica: la zona de la mesa, lo
     que tiene al lado y su número en el diagrama de IQ. La fila y la columna no
     se le pasan al modelo: en la mesa real no hay cuadrícula."""
+    # DataIQ permite publicar un objeto de la mesa sin número o sin posición:
+    # se dice que falta, en vez de inventarlo o de romperse.
     return {
-        "numero_en_el_diagrama": item.legend_number,
-        "ubicacion": place(technique, item),
+        "numero_en_el_diagrama": item.legend_number or NO_DATA,
+        "ubicacion": place(technique, item) or NO_DATA,
         "junto_a": [n.name for n in neighbors(technique, item)],
     }
 

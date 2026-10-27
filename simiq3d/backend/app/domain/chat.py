@@ -178,7 +178,10 @@ def _show_clinical_data(technique: Technique, field_: ClinicalField) -> Reply:
 
 def _list_instruments(technique: Technique) -> Reply:
     items = sorted(technique.mayo_items(), key=lambda i: i.legend_number or 99)
-    lines = "\n".join(f"{i.legend_number}. {i.name}" for i in items)
+    lines = "\n".join(
+        f"{i.legend_number}. {i.name}" if i.legend_number else f"- {i.name}"
+        for i in items
+    )
     return Reply(
         ChatAction.list_instruments,
         f"Mesa de Mayo de {technique.name}, {len(items)} objetos:\n{lines}",
@@ -244,11 +247,19 @@ def _highlight(
         )
     near = neighbors(technique, item)
     beside = f", junto a {_join([_the(n.name) for n in near])}" if near else ""
+    number = f" (n.º {item.legend_number} del diagrama)" if item.legend_number else ""
+    where = place(technique, item)
+    # Sin posición en DataIQ: se dice que va en la mesa, y que falta dónde.
+    text = (
+        f"{_the(instrument.name, start=True)} va {where} de la mesa de Mayo de "
+        f"{technique.name}{beside}{number}."
+        if where
+        else f"{_the(instrument.name, start=True)} va en la mesa de Mayo de "
+        f"{technique.name}{number}, pero DataIQ todavía no tiene su posición."
+    )
     return Reply(
         ChatAction.highlight_instrument,
-        f"{_the(instrument.name, start=True)} va {place(technique, item)} de la mesa "
-        f"de Mayo de {technique.name}{beside} (n.º {item.legend_number} del "
-        "diagrama).",
+        text,
         technique_id=technique.id,
         instrument_id=instrument.id,
         options=(f"¿Qué es {_the(instrument.name)}?",),

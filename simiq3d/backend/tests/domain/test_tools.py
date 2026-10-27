@@ -124,3 +124,26 @@ def test_generalizing_a_place_that_changes_is_caught():
     assert unsupported("En todas va en el mismo lugar.", results, CATALOG) == [
         "generaliza una ubicación que cambia entre técnicas"
     ]
+
+
+def test_the_tools_do_not_break_with_an_object_without_position_or_number():
+    from dataclasses import replace
+
+    from app.domain.catalog import Catalog
+
+    kelly = next(i for i in COLECISTECTOMIA.items if i.name == "Pinza Kelly")
+    broken = replace(kelly, cells=(), legend_number=None)
+    technique = replace(
+        COLECISTECTOMIA,
+        items=tuple(broken if i is kelly else i for i in COLECISTECTOMIA.items),
+    )
+    catalog = Catalog(
+        techniques=(technique, *CATALOG.techniques[1:]), instruments=CATALOG.instruments
+    )
+
+    found = tools.find_instrument(catalog, "Kelly")["en_tecnicas"][0]
+    table = tools.get_technique(catalog, "Colecistectomía")
+
+    assert found["ubicacion"] == tools.NO_DATA
+    assert found["numero_en_el_diagrama"] == tools.NO_DATA
+    assert table["total_objetos"] == 4
