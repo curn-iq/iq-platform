@@ -5,7 +5,7 @@ from uuid import UUID
 import httpx
 from pydantic import BaseModel
 
-from app.domain.catalog import Catalog, Cell, Instrument, TableItem, Technique
+from app.domain.catalog import MAYO, Catalog, Cell, Instrument, TableItem, Technique
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 
 # Lo que se lee de GET /catalog/full de DataIQ. Pydantic ignora los campos que
@@ -37,6 +37,13 @@ class _Item(BaseModel):
     cells: list[_Cell]
 
 
+class _Zone(BaseModel):
+    zone: str
+    used: bool
+    rows: int | None
+    columns: int | None
+
+
 class _Technique(BaseModel):
     id: UUID
     name: str
@@ -46,7 +53,14 @@ class _Technique(BaseModel):
     complications: str | None
     anesthesia: str | None
     patient_position: str | None
+    zones: list[_Zone]
     items: list[_Item]
+
+    def mayo_size(self) -> tuple[int, int] | None:
+        zone = next((z for z in self.zones if z.zone == MAYO and z.used), None)
+        return (
+            (zone.rows, zone.columns) if zone and zone.rows and zone.columns else None
+        )
 
 
 class _FullCatalog(BaseModel):
@@ -83,6 +97,7 @@ class _FullCatalog(BaseModel):
                         for i in t.items
                         if i.zone is not None
                     ),
+                    mayo_size=t.mayo_size(),
                 )
                 for t in self.techniques
             ),

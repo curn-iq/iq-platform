@@ -52,8 +52,8 @@ def test_where_an_instrument_goes_comes_from_the_table():
 
     assert reply.action == ChatAction.highlight_instrument
     assert reply.reply == (
-        "La Pinza Kelly es el número 10 de la mesa de Mayo de Colecistectomía: "
-        "fila 3, columna 4."
+        "La Pinza Kelly va en el centro de la mesa de Mayo de Colecistectomía, "
+        "junto a la Tijera de Mayo (n.º 10 del diagrama)."
     )
     assert (reply.technique_id, reply.instrument_id) == (COLECISTECTOMIA.id, KELLY.id)
     assert reply.options == ("¿Qué es la Pinza Kelly?",)
@@ -67,14 +67,18 @@ def test_without_naming_the_technique_the_open_one_is_used():
     )
 
     assert reply.technique_id == MASTECTOMIA.id
-    assert "número 9 de la mesa de Mayo de Mastectomía" in reply.reply
+    assert reply.reply == (
+        "La Pinza Kelly va en el centro, a la derecha de la mesa de Mayo de "
+        "Mastectomía (n.º 9 del diagrama)."
+    )
+    assert "fila" not in reply.reply
 
 
 def test_an_instrument_in_several_tables_asks_which_technique():
     # Como en el mockup: sin técnica abierta, la Allis está en dos mesas.
     reply = ask(ChatAction.highlight_instrument, instrument="Allis")
 
-    assert reply.action == ChatAction.no_answer
+    assert reply.action == ChatAction.clarify
     assert reply.reply == "¿En qué técnica? La Pinza de Allis está en 2 mesas de Mayo."
     assert reply.instrument_id == ALLIS.id
     assert reply.options == (
@@ -119,6 +123,12 @@ def test_an_empty_description_is_said_as_it_is():
         == "Pinza Kelly. DataIQ todavía no tiene la descripción de la Pinza Kelly."
     )
     assert reply.options == ("¿Dónde va la Pinza Kelly?",)
+
+
+def test_masculine_names_contract_de_el():
+    reply = ask(ChatAction.describe_instrument, instrument="Separador de Farabeuf")
+
+    assert reply.reply.endswith("la descripción del Separador de Farabeuf.")
 
 
 def test_a_description_comes_from_dataiq():
@@ -177,7 +187,7 @@ def test_the_instrument_list_follows_the_legend():
 def test_a_technique_question_without_technique_asks_which():
     reply = ask(ChatAction.show_clinical_data, field=ClinicalField.indications)
 
-    assert reply.action == ChatAction.no_answer
+    assert reply.action == ChatAction.clarify
     assert reply.reply == "¿De qué técnica?"
     assert reply.options == (
         "Indicaciones de Colecistectomía",
@@ -196,7 +206,8 @@ def test_out_of_scope_questions_offer_the_mvp_techniques():
 def test_techniques_outside_the_mvp_do_not_exist_for_the_chat():
     reply = ask(ChatAction.show_technique, "Cesárea")
 
-    assert reply.action == ChatAction.no_answer
+    assert reply.action == ChatAction.clarify
+    assert "Cesárea" not in reply.options
 
 
 def test_the_vocabulary_only_has_the_mvp_tables():

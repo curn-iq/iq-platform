@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.inbound.api.session import session_token
 from app.adapters.outbound.dataiq.catalog import DataIQCatalogSource
-from app.adapters.outbound.language.fake import FakeModel
-from app.adapters.outbound.language.ollama import OllamaModel
+from app.adapters.outbound.language.fake import TemplateChat
+from app.adapters.outbound.language.ollama import OllamaAgent
 from app.adapters.outbound.persistence.database import SessionLocal
 from app.adapters.outbound.persistence.repositories.chat_log import (
     SQLAlchemyChatLogRepository,
@@ -21,7 +21,7 @@ from app.adapters.outbound.persistence.repositories.mappings import (
 from app.adapters.outbound.security.tokens import JWKSVerifier
 from app.config import config
 from app.ports.catalog import CatalogSource
-from app.ports.chat import LanguageModel
+from app.ports.chat import ChatEngine
 from app.ports.chat_log import ChatLogRepository
 from app.ports.models3d import ModelMappingRepository
 from app.ports.security import InvalidToken, KeysUnavailable, TokenVerifier
@@ -95,22 +95,22 @@ def get_catalog_source() -> CatalogSource:
 Catalogs = Annotated[CatalogSource, Depends(get_catalog_source)]
 
 
-# --- Modelo de lenguaje ----------------------------------------------------
+# --- Motor del chat ---------------------------------------------------------
 
-_language_model: LanguageModel = (
-    OllamaModel(
+_chat_engine: ChatEngine = (
+    OllamaAgent(
         config.llm_url, config.llm_model, config.llm_api_key, config.llm_timeout
     )
     if config.language_model == "ollama"
-    else FakeModel()
+    else TemplateChat()
 )
 
 
-def get_language_model() -> LanguageModel:
-    return _language_model
+def get_chat_engine() -> ChatEngine:
+    return _chat_engine
 
 
-Model = Annotated[LanguageModel, Depends(get_language_model)]
+Engine = Annotated[ChatEngine, Depends(get_chat_engine)]
 
 
 # --- Base de datos ---------------------------------------------------------

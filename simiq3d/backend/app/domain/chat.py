@@ -4,27 +4,32 @@ from uuid import UUID
 
 from app.domain.catalog import (
     Catalog,
-    Cell,
     Instrument,
     Technique,
     find_instrument,
     find_technique,
     in_scope,
     item_with,
+    neighbors,
+    place,
     scope_instruments,
     technique_by_id,
 )
 
 
 class ChatAction(StrEnum):
-    """Lo que el chat puede hacer con una pregunta. El modelo de lenguaje solo
-    elige una de estas; los datos de la respuesta salen de DataIQ."""
+    """Lo que el chat hace con una pregunta, sobre todo lo que cambia en el visor.
+    Los datos de la respuesta salen siempre de DataIQ."""
 
     show_technique = "show_technique"
     highlight_instrument = "highlight_instrument"
     describe_instrument = "describe_instrument"
     show_clinical_data = "show_clinical_data"
     list_instruments = "list_instruments"
+    # Una respuesta en texto que no cambia la escena («¿en cuántas técnicas…?»).
+    answer = "answer"
+    # Pide precisar: en qué técnica, o si quiso decir otro nombre.
+    clarify = "clarify"
     no_answer = "no_answer"
 
 
@@ -85,6 +90,8 @@ class Reply:
     instrument_id: UUID | None = None
     field: ClinicalField | None = None
     options: tuple[str, ...] = ()
+    # Quién la armó (el modelo, o las plantillas): va al registro.
+    answered_by: str = ""
 
 
 OUT_OF_SCOPE = (
@@ -180,8 +187,9 @@ def _list_instruments(technique: Technique) -> Reply:
     )
 
 
-def _cells(cells: tuple[Cell, ...]) -> str:
-    return " y ".join(f"fila {c.row}, columna {c.column}" for c in cells)
+def _join(names: list[str]) -> str:
+    """«la Kelly», «la Kelly y la Rochester», «la Kelly, la Allis y la Rochester»."""
+    return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} y {names[-1]}"
 
 
 def _the(name: str, start: bool = False) -> str:
@@ -218,7 +226,7 @@ def _highlight(
             )
         else:
             return Reply(
-                ChatAction.no_answer,
+                ChatAction.clarify,
                 f"¿En qué técnica? {_the(instrument.name, start=True)} está en "
                 f"{len(techniques)} mesas de Mayo.",
                 instrument_id=instrument.id,
@@ -234,14 +242,23 @@ def _highlight(
             instrument_id=instrument.id,
             options=(LIST_OPTION,),
         )
+    near = neighbors(technique, item)
+    beside = f", junto a {_join([_the(n.name) for n in near])}" if near else ""
     return Reply(
         ChatAction.highlight_instrument,
-        f"{_the(instrument.name, start=True)} es el número {item.legend_number} de "
-        f"la mesa de Mayo de {technique.name}: {_cells(item.cells)}.",
+        f"{_the(instrument.name, start=True)} va {place(technique, item)} de la mesa "
+        f"de Mayo de {technique.name}{beside} (n.º {item.legend_number} del "
+        "diagrama).",
         technique_id=technique.id,
         instrument_id=instrument.id,
         options=(f"¿Qué es {_the(instrument.name)}?",),
     )
+
+
+def _of(name: str) -> str:
+    """«de la Pinza Kelly», «del Separador de Farabeuf»."""
+    the = _the(name)
+    return f"del {the[3:]}" if the.startswith("el ") else f"de {the}"
 
 
 def question_where(name: str) -> str:
@@ -251,7 +268,7 @@ def question_where(name: str) -> str:
 
 def _describe(instrument: Instrument, technique: Technique | None) -> Reply:
     text = instrument.description or (
-        f"DataIQ todavía no tiene la descripción de {_the(instrument.name)}."
+        f"DataIQ todavía no tiene la descripción {_of(instrument.name)}."
     )
     return Reply(
         ChatAction.describe_instrument,
@@ -273,7 +290,7 @@ def _which_technique(catalog: Catalog, choice: Choice) -> Reply:
         options = tuple(f"{label} de {t.name}" for t in in_scope(catalog))
     else:
         options = tuple(t.name for t in in_scope(catalog))
-    return Reply(ChatAction.no_answer, "¿De qué técnica?", options=options)
+    return Reply(ChatAction.clarify, "¿De qué técnica?", options=options)
 
 
 def _no_answer(catalog: Catalog) -> Reply:
@@ -282,3 +299,17 @@ def _no_answer(catalog: Catalog) -> Reply:
         OUT_OF_SCOPE,
         options=tuple(t.name for t in in_scope(catalog)),
     )
+
+
+def spelling_reply(corrected: str) -> Reply:
+    """«¿Quizás quisiste decir…?», con la pregunta corregida para mandarla."""
+    return Reply(
+        ChatAction.clarify,
+        f"¿Quizás quisiste decir «{corrected}»?",
+        options=(corrected,),
+    )
+
+
+def the(name: str) -> str:
+    """«la Pinza Kelly», «el Separador de Farabeuf», para otros módulos."""
+    return _the(name)

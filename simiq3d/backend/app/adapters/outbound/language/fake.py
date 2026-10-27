@@ -1,11 +1,14 @@
-from app.adapters.outbound.language.names import (
+from uuid import UUID
+
+from app.domain.catalog import Catalog, technique_by_id
+from app.domain.chat import ChatAction, Choice, Reply, Vocabulary, answer
+from app.domain.names import (
     asks_for_list,
     asks_to_describe,
     field_in,
     instrument_in,
     technique_in,
 )
-from app.domain.chat import ChatAction, Choice, Vocabulary
 
 
 class FakeModel:
@@ -43,3 +46,26 @@ class FakeModel:
             )
             return Choice(action, field=field)
         return Choice(ChatAction.no_answer)
+
+
+class TemplateChat:
+    """El chat sin modelo de lenguaje: FakeModel elige la acción y las plantillas
+    del dominio arman la respuesta. Es el motor por defecto (para desarrollar sin
+    el Servidor PC2) y el respaldo del agente cuando su respuesta no pasa la
+    verificación."""
+
+    name = "plantillas"
+
+    def __init__(self) -> None:
+        self._model = FakeModel()
+
+    async def reply(
+        self, question: str, catalog: Catalog, open_technique_id: UUID | None
+    ) -> Reply:
+        open_technique = technique_by_id(catalog, open_technique_id)
+        choice = await self._model.choose(
+            question,
+            Vocabulary.from_catalog(catalog),
+            open_technique.name if open_technique else None,
+        )
+        return answer(choice, catalog, open_technique_id)

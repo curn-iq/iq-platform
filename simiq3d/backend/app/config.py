@@ -38,9 +38,9 @@ class Config(BaseSettings):
     # Dirección del filtro con clave del Servidor PC2 (Tailscale Funnel); en local,
     # Ollama directo. La clave solo la tiene este backend.
     llm_url: str = "http://127.0.0.1:11434"
-    llm_model: str = "qwen3:8b"
+    llm_model: str = "qwen2.5:7b"
     llm_api_key: str = ""
-    llm_timeout: float = 30
+    llm_timeout: float = 60
 
     # Registro anónimo de conversaciones: solo se enciende en las sesiones de
     # evaluación y la prueba piloto, con consentimiento informado, y se borra al

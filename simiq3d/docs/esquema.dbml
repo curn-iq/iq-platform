@@ -12,6 +12,8 @@ Enum chat_action {
   describe_instrument
   show_clinical_data
   list_instruments
+  answer    // respuesta en texto que no cambia la escena
+  clarify   // pide precisar: en qué técnica, o si quiso decir otro nombre
   no_answer
 }
 

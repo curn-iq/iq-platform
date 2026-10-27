@@ -47,6 +47,7 @@ COLECISTECTOMIA = Technique(
         item(4, MAYO_SCISSORS, 4, 3),
         item(7, FARABEUF, 4, 2),
     ),
+    mayo_size=(7, 6),
 )
 MASTECTOMIA = Technique(
     uid(102),
@@ -58,6 +59,7 @@ MASTECTOMIA = Technique(
     anesthesia=None,
     patient_position=None,
     items=(item(1, ALLIS, 1, 3), item(9, KELLY, 3, 4)),
+    mayo_size=(6, 4),
 )
 TIROIDECTOMIA = Technique(
     uid(103),
@@ -69,6 +71,7 @@ TIROIDECTOMIA = Technique(
     anesthesia=None,
     patient_position=None,
     items=(item(8, LAHEY, 1, 6), item(10, KELLY_ADSON, 2, 5)),
+    mayo_size=(7, 7),
 )
 CESAREA = Technique(
     uid(104),
@@ -80,6 +83,7 @@ CESAREA = Technique(
     anesthesia=None,
     patient_position=None,
     items=(item(1, KOCHER, 1, 1),),
+    mayo_size=(1, 1),
 )
 
 CATALOG = Catalog(

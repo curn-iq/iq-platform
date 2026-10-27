@@ -3,13 +3,13 @@ from httpx import ASGITransport, AsyncClient
 
 from app.adapters.inbound.api.dependencies import (
     get_catalog_source,
+    get_chat_engine,
     get_chat_log,
-    get_language_model,
     get_session,
     get_verifier,
 )
 from app.adapters.inbound.api.session import CSRF_HEADER, cookie_name
-from app.adapters.outbound.language.fake import FakeModel
+from app.adapters.outbound.language.fake import TemplateChat
 from app.adapters.outbound.persistence.models.chat import ChatLog
 from app.adapters.outbound.persistence.models.mappings import ModelMapping
 from app.adapters.outbound.persistence.repositories.chat_log import (
@@ -34,10 +34,10 @@ class FakeCatalogs:
         return CATALOG
 
 
-class DownModel:
+class DownEngine:
     name = "caido"
 
-    async def choose(self, *args):
+    async def reply(self, *args):
         raise ModelUnavailable("Servidor PC2 apagado")
 
 
@@ -51,7 +51,7 @@ async def api(verifier, catalogs, session):
     app.dependency_overrides |= {
         get_verifier: lambda: verifier,
         get_catalog_source: lambda: catalogs,
-        get_language_model: FakeModel,
+        get_chat_engine: TemplateChat,
         get_session: lambda: session,
     }
     async with AsyncClient(
@@ -84,8 +84,8 @@ async def test_the_chat_answers_with_the_action_and_dataiq_text(api, bearer, cat
         "instrument_id": str(KELLY.id),
         "field": None,
         "reply": (
-            "La Pinza Kelly es el número 10 de la mesa de Mayo de "
-            "Colecistectomía: fila 3, columna 4."
+            "La Pinza Kelly va en el centro de la mesa de Mayo de Colecistectomía, "
+            "junto a la Tijera de Mayo (n.º 10 del diagrama)."
         ),
         "options": ["¿Qué es la Pinza Kelly?"],
     }
@@ -135,7 +135,7 @@ async def test_empty_or_huge_questions_are_rejected(api, bearer, question):
 
 @pytest.mark.anyio
 async def test_without_pc2_the_chat_is_unavailable(api, bearer):
-    app.dependency_overrides[get_language_model] = DownModel
+    app.dependency_overrides[get_chat_engine] = DownEngine
 
     response_ = await api.post("/chat", json={"question": "Hola"}, headers=bearer)
 
@@ -205,7 +205,7 @@ async def test_with_the_log_on_each_question_is_saved_without_who_asked(
     assert entry.open_technique_id == COLECISTECTOMIA.id
     assert entry.action == ChatAction.highlight_instrument
     assert (entry.technique_id, entry.instrument_id) == (COLECISTECTOMIA.id, KELLY.id)
-    assert entry.language_model == "fake"
+    assert entry.language_model == "plantillas"
     assert entry.latency_ms >= 0
     # Nada de la cuenta: ni el id ni el token.
     assert set(ChatLog.__table__.columns.keys()) == {
@@ -236,3 +236,21 @@ async def test_if_the_log_fails_the_student_still_gets_the_answer(api, bearer):
     response_ = await api.post("/chat", json={"question": "Hola"}, headers=bearer)
 
     assert response_.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_a_misspelled_name_gets_a_did_you_mean(api, bearer):
+    app.dependency_overrides[get_chat_engine] = DownEngine  # no se llega al motor
+
+    response_ = await api.post(
+        "/chat",
+        json={"question": "¿Dónde va la kely en la masectomia?"},
+        headers=bearer,
+    )
+
+    assert response_.status_code == 200
+    assert response_.json()["action"] == "clarify"
+    assert response_.json()["reply"] == (
+        "¿Quizás quisiste decir «¿Dónde va la Kelly en la Mastectomía?»?"
+    )
+    assert response_.json()["options"] == ["¿Dónde va la Kelly en la Mastectomía?"]

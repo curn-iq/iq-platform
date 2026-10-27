@@ -111,12 +111,43 @@ dataset de SIVRI.
 
 Decidido por Mauricio el 2026-10-15:
 
-- **El modelo elige acciones, los datos salen de DataIQ** (*tool calling*). El
-  modelo no responde con lo que sabe: convierte la pregunta en una acción
-  («muéstrame la mesa de mastectomía» → mostrar la técnica; «¿dónde va la
-  Kelly?» → resaltar el instrumento; «¿qué es una Babcock?» → describirlo), y
-  el texto y la escena salen de DataIQ. Si se equivoca, muestra otra técnica,
-  pero no inventa un dato. Por eso basta un modelo pequeño.
+- **Un agente que consulta DataIQ** (*tool calling*, cambio decidido por
+  Mauricio el 2026-10-27). El modelo no responde con lo que sabe: tiene
+  consultas sobre el catálogo (ver las técnicas, buscar un instrumento y en qué
+  mesas va, comparar dos mesas, mostrar algo en el visor), decide cuáles usar y
+  en cuántos pasos, y redacta la respuesta con lo que devolvieron. Así responde
+  preguntas que nadie programó («¿en cuántas técnicas se usa la Allis?», «¿qué
+  lleva la tiroidectomía que no lleve la colecistectomía?»). Antes, el modelo
+  solo elegía una de seis acciones y el texto salía de plantillas: eso no
+  justificaba usar IA, porque para cada tipo de pregunta nuevo había que
+  programar una acción.
+- **Riesgo aceptado: el texto lo redacta el modelo**, y un modelo puede
+  inventar. Se controla así:
+  - el modelo solo ve lo que devuelven las consultas;
+  - antes de responder, el backend verifica el texto: cada técnica, cada
+    instrumento, cada número y cada ubicación («arriba a la derecha») tiene que
+    estar en esos resultados; rechaza las generalizaciones falsas («en todas va
+    en el mismo lugar») y cualquier mención de filas, columnas o celdas;
+  - si no pasa la verificación, si no consultó nada o si no termina en seis
+    pasos, responden las plantillas de antes, que solo usan datos de DataIQ;
+  - lo que se ve en 3D sale de la consulta del visor, con ids reales, nunca
+    del texto.
+
+  La verificación compara nombres y números, no el sentido de las frases:
+  una afirmación falsa escrita solo con palabras puede pasar. Por eso la
+  evaluación mide las respuestas inventadas (ver «Cómo se evalúa») y el
+  registro guarda qué respondió el modelo y qué las plantillas.
+- **Dónde va cada cosa, dicho como en la práctica:** la cuadrícula de DataIQ
+  es cómo se guarda el arreglo, no cómo se habla de él (la mesa real es un
+  campo sin líneas). El chat ubica cada objeto por la zona de la mesa
+  («arriba a la derecha», «en el centro»), por lo que tiene al lado («junto a
+  la Rochester») y por su número en el diagrama de IQ. Las zonas se dicen como
+  se ven en el diagrama y en el visor.
+- **Las preguntas sugeridas las arma el backend** con lo que se consultó, para
+  que siempre tengan respuesta; las que escribe un modelo pequeño a menudo no.
+- **Errores de escritura:** si un nombre se parece mucho a una técnica o a un
+  instrumento («masectomia», «pinza allys»), el chat no adivina: responde
+  «¿Quizás quisiste decir…?» con la pregunta corregida como opción.
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB
   de RAM), con una dirección HTTPS fija de Tailscale Funnel, como el Servidor
@@ -135,9 +166,11 @@ Decidido por Mauricio el 2026-10-15:
 
 Sugerencias para quien lo implemente:
 
-- Modelo: de la familia **Qwen3** (p. ej. Qwen3 8B comprimido, unos 5 GB),
-  la más recomendada para *tool calling* en 8 GB. Se elige probando con las
-  acciones reales del chat, no por tablas de comparación.
+- Modelo: el agente se probó con **Qwen2.5 7B** (`qwen2.5:7b`, unos 5 GB) en
+  la RX 6600 XT, al 100 % en la GPU: entre 2 y 7 segundos por pregunta, porque
+  consulta varias veces. Qwen3 8B, más recomendado para *tool calling* en
+  8 GB, queda para compararlo con el banco de preguntas: el modelo se elige
+  probando con las preguntas reales, no por tablas de comparación.
 - La RX 6600 XT no está en la lista oficial de GPU AMD de Ollama: probar su
   backend Vulkan o `HSA_OVERRIDE_GFX_VERSION=10.3.0`; si ninguno funciona,
   corre en la CPU, más lento.
@@ -206,9 +239,10 @@ técnica del chat; lo demás está en
   - La comparación de cada modelo 3D con sus fotos de referencia (silueta y
     medidas) y las pruebas automatizadas del backend.
 - **Evaluación sumativa** (al final):
-  1. **Exactitud del chat:** porcentaje de preguntas convertidas en la acción
-     correcta, sobre el banco y sobre el registro de las sesiones de
-     evaluación. Meta: ninguna respuesta inventada.
+  1. **Exactitud del chat:** porcentaje de preguntas respondidas
+     correctamente, sobre el banco y sobre el registro de las sesiones de
+     evaluación; aparte, las respuestas inventadas (meta: ninguna) y cuántas
+     respondió el modelo y cuántas las plantillas de respaldo.
   2. **Tiempo de respuesta:** desde la pregunta hasta que se ve la escena.
   3. **Visto bueno del programa de IQ** a cada modelo 3D.
   4. La **Escala de Usabilidad del Sistema (SUS)** y el cuestionario de

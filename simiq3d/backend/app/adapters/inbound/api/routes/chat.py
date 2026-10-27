@@ -1,5 +1,6 @@
 import logging
 import time
+from dataclasses import replace
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -7,12 +8,12 @@ from app.adapters.inbound.api.dependencies import (
     Catalogs,
     ChatLog,
     CurrentCaller,
-    Model,
+    Engine,
 )
 from app.adapters.inbound.api.schemas import ChatIn, ChatOut
-from app.domain.catalog import technique_by_id
-from app.domain.chat import Vocabulary, answer
+from app.domain.chat import Vocabulary, spelling_reply
 from app.domain.chat_log import ChatLogEntry
+from app.domain.names import suggest_spelling
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 from app.ports.chat import ModelUnavailable
 
@@ -25,12 +26,16 @@ async def ask(
     body: ChatIn,
     caller: CurrentCaller,
     catalogs: Catalogs,
-    model: Model,
+    engine: Engine,
     chat_log: ChatLog,
 ) -> ChatOut:
-    """Convierte la pregunta en una acción del chat y arma la respuesta con datos
-    de DataIQ. El modelo de lenguaje solo elige la acción: el texto sale de
-    plantillas. `technique_id` es la técnica abierta en el visor, si hay una."""
+    """Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
+    técnica abierta en el visor, si hay una.
+
+    Si un nombre parece mal escrito («masectomia»), responde «¿Quizás quisiste
+    decir…?» con la pregunta corregida como opción, sin suponer. Con
+    LANGUAGE_MODEL=ollama responde el agente del Servidor PC2 (ver
+    OllamaAgent); si no, las plantillas."""
     started = time.perf_counter()
     try:
         catalog = await catalogs.get(caller.token)
@@ -44,22 +49,24 @@ async def ask(
             "DataIQ no aceptó la sesión",
             headers={"WWW-Authenticate": "Bearer"},
         ) from error
-    open_technique = technique_by_id(catalog, body.technique_id)
-    try:
-        choice = await model.choose(
-            body.question,
-            Vocabulary.from_catalog(catalog),
-            open_technique.name if open_technique else None,
-        )
-    except ModelUnavailable as error:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "El chat no está disponible"
-        ) from error
-    reply = answer(choice, catalog, body.technique_id)
+    corrected = suggest_spelling(body.question, Vocabulary.from_catalog(catalog))
+    if corrected:
+        reply = replace(spelling_reply(corrected), answered_by="corrector")
+    else:
+        try:
+            reply = await engine.reply(body.question, catalog, body.technique_id)
+        except ModelUnavailable as error:
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE, "El chat no está disponible"
+            ) from error
     latency_ms = round((time.perf_counter() - started) * 1000)
     if chat_log is not None:
         entry = ChatLogEntry.of(
-            body.question, body.technique_id, reply, model.name, latency_ms
+            body.question,
+            body.technique_id,
+            reply,
+            reply.answered_by or engine.name,
+            latency_ms,
         )
         try:
             await chat_log.add(entry)
