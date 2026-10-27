@@ -99,7 +99,11 @@ Catalogs = Annotated[CatalogSource, Depends(get_catalog_source)]
 
 _chat_engine: ChatEngine = (
     OllamaAgent(
-        config.llm_url, config.llm_model, config.llm_api_key, config.llm_timeout
+        config.llm_url,
+        config.llm_model,
+        config.llm_api_key,
+        config.llm_timeout,
+        config.llm_deadline,
     )
     if config.language_model == "ollama"
     else TemplateChat()

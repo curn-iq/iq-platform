@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 from dataclasses import replace
 from uuid import UUID
 
@@ -22,6 +23,11 @@ from app.domain.names import asks_to_describe, contains, instrument_in
 from app.ports.chat import ModelUnavailable
 
 logger = logging.getLogger(__name__)
+
+
+class _Busy(Exception):
+    """El modelo tardó demasiado o el Servidor PC2 está lleno (429)."""
+
 
 SYSTEM = """Eres el chat de SIMIQ3D: ayudas a estudiantes de Instrumentación \
 Quirúrgica a explorar la mesa de Mayo de las técnicas de Cirugía General, que \
@@ -138,9 +144,13 @@ class OllamaAgent:
         model: str,
         api_key: str = "",
         timeout: float = 60,
+        deadline: float = 30,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
+        # Tiempo máximo de una pregunta, sumando todos los pasos. Pasado ese
+        # tiempo responden las plantillas: el estudiante no espera minutos.
+        self._deadline = deadline
         self._model = model
         self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._timeout = timeout
@@ -163,11 +173,19 @@ class OllamaAgent:
         ]
         results: list[dict] = []
         scene: tools.Scene | None = None
-        async with httpx.AsyncClient(
-            transport=self._transport, timeout=self._timeout
-        ) as client:
+        ends = time.monotonic() + self._deadline
+        async with httpx.AsyncClient(transport=self._transport) as client:
             for _ in range(self.MAX_STEPS):
-                message = await self._ask(client, messages)
+                left = ends - time.monotonic()
+                if left <= 0:
+                    break
+                try:
+                    message = await self._ask(
+                        client, messages, min(self._timeout, left)
+                    )
+                except _Busy:
+                    # El Servidor PC2 está lento u ocupado: responden las plantillas.
+                    return await self._fall_back(question, catalog, open_technique_id)
                 calls = message.get("tool_calls") or []
                 if not calls:
                     # Respondió con texto en vez de llamar a reply.
@@ -207,10 +225,12 @@ class OllamaAgent:
                             "content": json.dumps(result, ensure_ascii=False),
                         }
                     )
-        logger.warning("El modelo no terminó en %s pasos: %r", self.MAX_STEPS, question)
+        logger.warning("El modelo no terminó a tiempo: %r", question)
         return await self._fall_back(question, catalog, open_technique_id)
 
-    async def _ask(self, client: httpx.AsyncClient, messages: list[dict]) -> dict:
+    async def _ask(
+        self, client: httpx.AsyncClient, messages: list[dict], timeout: float
+    ) -> dict:
         body = {
             "model": self._model,
             "temperature": 0,
@@ -218,7 +238,17 @@ class OllamaAgent:
             "tools": TOOLS,
         }
         try:
-            response = await client.post(self._url, json=body, headers=self._headers)
+            response = await client.post(
+                self._url, json=body, headers=self._headers, timeout=timeout
+            )
+        except httpx.TimeoutException as error:
+            raise _Busy() from error
+        except httpx.HTTPError as error:
+            # Apagado o inalcanzable: el chat queda no disponible (503).
+            raise ModelUnavailable(str(error)) from error
+        if response.status_code == 429:
+            raise _Busy()  # el filtro del Servidor PC2 está lleno
+        try:
             response.raise_for_status()
             return response.json()["choices"][0]["message"]
         except (httpx.HTTPError, ValueError, KeyError, IndexError) as error:

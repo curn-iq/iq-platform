@@ -41,6 +41,15 @@ class Config(BaseSettings):
     llm_model: str = "qwen3-vl:8b-instruct"
     llm_api_key: str = ""
     llm_timeout: float = 60
+    # Tiempo máximo de una pregunta, sumando todos los pasos del agente.
+    llm_deadline: float = 30
+
+    # Tope de preguntas por cuenta: cuántas en cuántos segundos. Se cuenta con
+    # el id de la cuenta cifrado con esta clave (HMAC), aparte del registro
+    # anónimo. Sin clave no hay tope (desarrollo).
+    chat_quota_secret: str = ""
+    chat_quota_max: int = 30
+    chat_quota_window: int = 600
 
     # Registro anónimo de conversaciones: solo se enciende en las sesiones de
     # evaluación y la prueba piloto, con consentimiento informado, y se borra al
