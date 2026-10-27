@@ -46,13 +46,13 @@ porqué están en el [README](../README.md).
   GLB de cada instrumento y la tabla de medidas, en el repo
 - [ ] Visto bueno del programa de IQ a cada modelo (formativo: se corrige y se
   vuelve a pedir)
-- [ ] Ollama en el Servidor PC2: que use la GPU (Vulkan o
-  `HSA_OVERRIDE_GFX_VERSION=10.3.0`), como servicio y sin suspensión; Tailscale
-  Funnel con el filtro con clave
-- [ ] Elegir el modelo de lenguaje con el banco de preguntas (punto de
-  partida: Qwen3 8B)
-- [ ] Backend: API, su base en Neon, validación del JWT de DataIQ, puerto del
-  modelo de lenguaje y registro de conversaciones, con pruebas automatizadas
+- [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
+- [ ] Servidor PC2 sin suspensión; Tailscale Funnel con el filtro con clave
+- [ ] Elegir el modelo de lenguaje con el banco de preguntas (probados Qwen2.5
+  7B y Qwen3-VL 8B; por defecto, Qwen3-VL 8B instruct)
+- [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
+  y plantillas de respaldo), mapeo de modelos y registro de conversaciones, con
+  pruebas automatizadas; avance en [`checklist-backend.md`](checklist-backend.md)
 - [ ] Visor 3D: la mesa armada con el arreglo publicado en DataIQ, cada modelo
   en su celda, y clic en un instrumento para ver su descripción
 - [ ] Chat en el frontend: pregunta, acción y escena

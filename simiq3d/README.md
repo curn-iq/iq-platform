@@ -285,10 +285,12 @@ Arquitectura, rutas y cómo se corre el frontend:
 
 ```
 simiq3d/
-├── backend/
+├── backend/                   FastAPI: el chat y el mapeo de modelos (ver su README)
 ├── frontend/                  Angular + Three.js
-├── models/                    .blend por familia, GLB por instrumento y sus medidas
+├── models/                    .blend por familia, GLB por instrumento y modelos.csv
 └── docs/
     ├── checklist.md           avance por actividad de DSRM
-    └── checklist-frontend.md  avance del frontend, por fases
+    ├── checklist-backend.md   avance del backend
+    ├── checklist-frontend.md  avance del frontend, por fases
+    └── esquema.dbml           base de datos de SIMIQ3D
 ```
