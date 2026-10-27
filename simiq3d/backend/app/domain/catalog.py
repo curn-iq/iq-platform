@@ -1,3 +1,4 @@
+import unicodedata
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -60,3 +61,65 @@ class Catalog:
 
     techniques: tuple[Technique, ...]
     instruments: tuple[Instrument, ...]
+
+
+# El MVP de SIMIQ3D: la mesa de Mayo de las técnicas de esta especialidad.
+SCOPE_SPECIALTY = "Cirugía General"
+
+
+def normalize(text: str) -> str:
+    """Para comparar nombres sin importar mayúsculas, tildes ni espacios."""
+    sin_tildes = unicodedata.normalize("NFD", text.lower())
+    sin_tildes = "".join(c for c in sin_tildes if unicodedata.category(c) != "Mn")
+    return " ".join(sin_tildes.split())
+
+
+def in_scope(catalog: Catalog) -> tuple[Technique, ...]:
+    """Las técnicas que SIMIQ3D muestra en 3D."""
+    return tuple(
+        t
+        for t in catalog.techniques
+        if t.specialty == SCOPE_SPECIALTY and t.mayo_items()
+    )
+
+
+def find_technique(catalog: Catalog, name: str | None) -> Technique | None:
+    if not name:
+        return None
+    wanted = normalize(name)
+    return next((t for t in in_scope(catalog) if normalize(t.name) == wanted), None)
+
+
+def technique_by_id(catalog: Catalog, technique_id: UUID | None) -> Technique | None:
+    if technique_id is None:
+        return None
+    return next((t for t in in_scope(catalog) if t.id == technique_id), None)
+
+
+def find_instrument(catalog: Catalog, name: str | None) -> Instrument | None:
+    """Por su nombre o por cualquiera de sus alias."""
+    if not name:
+        return None
+    wanted = normalize(name)
+    for instrument in catalog.instruments:
+        if wanted in (normalize(n) for n in (instrument.name, *instrument.aliases)):
+            return instrument
+    return None
+
+
+def scope_instruments(catalog: Catalog) -> tuple[Instrument, ...]:
+    """El instrumental de las mesas de Mayo del MVP."""
+    ids = {
+        i
+        for t in in_scope(catalog)
+        for item in t.mayo_items()
+        for i in item.instrument_ids
+    }
+    return tuple(i for i in catalog.instruments if i.id in ids)
+
+
+def item_with(technique: Technique, instrument_id: UUID) -> TableItem | None:
+    """El objeto de la mesa de Mayo que lleva ese instrumento."""
+    return next(
+        (i for i in technique.mayo_items() if instrument_id in i.instrument_ids), None
+    )
