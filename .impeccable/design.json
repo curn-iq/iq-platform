@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-06T20:33:29+00:00",
+  "generatedAt": "2026-10-20T00:00:00+00:00",
   "title": "Design System: IQ Platform",
   "extensions": {
     "colorMeta": {
@@ -453,6 +453,96 @@
           "oklch(83.6% 0.019 233.5)",
           "oklch(95.0% 0.019 233.5)"
         ]
+      },
+      "canto-pano": {
+        "role": "tertiary",
+        "displayName": "Canto del paño",
+        "canonical": "#0e463c",
+        "tonalRamp": [
+          "#04150f",
+          "#08261f",
+          "#0e463c",
+          "#1d5e51",
+          "#3d7d70",
+          "#6a9e93",
+          "#a3c6be",
+          "#dcebe7"
+        ]
+      },
+      "rejilla-escena": {
+        "role": "tertiary",
+        "displayName": "Rejilla de escena",
+        "canonical": "#4c9a88",
+        "tonalRamp": [
+          "#10302a",
+          "#1d4d43",
+          "#2e6c5f",
+          "#4c9a88",
+          "#6fb2a2",
+          "#96c9bc",
+          "#c0e0d7",
+          "#e6f3ef"
+        ]
+      },
+      "celda-escena": {
+        "role": "tertiary",
+        "displayName": "Celda señalada",
+        "canonical": "#bfe3d9",
+        "tonalRamp": [
+          "#153a31",
+          "#28594d",
+          "#44806f",
+          "#6ea697",
+          "#98c7ba",
+          "#bfe3d9",
+          "#d9efe9",
+          "#f0f8f6"
+        ]
+      },
+      "lienzo-centro": {
+        "role": "neutral",
+        "displayName": "Lienzo, centro",
+        "canonical": "#f6f9f9",
+        "tonalRamp": [
+          "#1c2526",
+          "#384445",
+          "#576566",
+          "#7a8889",
+          "#a0acad",
+          "#c6d0d1",
+          "#e6eced",
+          "#f6f9f9"
+        ]
+      },
+      "lienzo-medio": {
+        "role": "neutral",
+        "displayName": "Lienzo, medio",
+        "canonical": "#e9eff0",
+        "tonalRamp": [
+          "#1b2627",
+          "#374647",
+          "#566768",
+          "#798a8b",
+          "#9eaeaf",
+          "#c4d1d2",
+          "#e9eff0",
+          "#f5f8f8"
+        ]
+      },
+      "lienzo-borde": {
+        "role": "neutral",
+        "displayName": "Lienzo, borde",
+        "canonical": "#dfe7e8",
+        "tonalRamp": [
+          "#1a2627",
+          "#364647",
+          "#556768",
+          "#788b8c",
+          "#9cb0b1",
+          "#c0d0d1",
+          "#dfe7e8",
+          "#f2f6f6"
+        ]
       }
     },
     "typographyMeta": {
@@ -527,6 +617,14 @@
       "data-detection": {
         "displayName": "Data, detección",
         "purpose": "Martian Mono 600: etiquetas de detección, confianzas y «Va aquí»."
+      },
+      "data-escena": {
+        "displayName": "Data de escena",
+        "purpose": "SIMIQ3D: chip de acción del chat, «Fila · Columna» de leyenda y ficha, marcas «demostración» y «provisional»."
+      },
+      "title-lienzo": {
+        "displayName": "Title de lienzo",
+        "purpose": "Nombre del instrumento en la ficha de SIMIQ3D; 20px en las capas de carga y sin 3D."
       }
     },
     "shadows": [
@@ -594,6 +692,36 @@
         "name": "panel-gestion",
         "value": "0 0 0 1px var(--filete), 0 2px 6px rgba(10,27,34,.06), 0 16px 24px -14px rgba(10,27,34,.3)",
         "purpose": "Paneles que se abren sobre la página: Mi cuenta, «Editar una publicada», «Más acciones», «qué va aquí», selector de la mesa, resultados del buscador de usuarios, Devolver de la revisión y tarjeta de la puerta de cuenta."
+      },
+      {
+        "name": "leyenda-lienzo",
+        "value": "inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10,27,34,.45)",
+        "purpose": "Leyenda plegable de SIMIQ3D."
+      },
+      {
+        "name": "ficha-instrumento",
+        "value": "inset 0 0 0 1px var(--filete), 0 28px 48px -30px rgba(10,27,34,.55)",
+        "purpose": "Ficha del instrumento sobre el lienzo."
+      },
+      {
+        "name": "controles-lienzo",
+        "value": "inset 0 0 0 1px var(--filete), 0 10px 24px -18px rgba(10,27,34,.45)",
+        "purpose": "Grupos de controles de vista; selector y botón Leyenda llevan inset 0 0 0 1px var(--filete-2), 0 1px 2px rgba(10,27,34,.06)."
+      },
+      {
+        "name": "insignia-pieza",
+        "value": "0 0 0 3px rgba(255,255,255,.9), 0 6px 14px -6px rgba(10,27,34,.5)",
+        "purpose": "Número marca que flota sobre la pieza señalada."
+      },
+      {
+        "name": "historial-movil",
+        "value": "24px 0 48px -32px rgba(10,27,34,.55)",
+        "purpose": "Panel del chat que entra desde la izquierda en celular, sobre velo rgba(10,27,34,.28)."
+      },
+      {
+        "name": "sombra-contacto-escena",
+        "value": "radial-gradient rgba(10,27,34,.42) → transparente, en un plano bajo la mesa y otro bajo cada pieza (55 %)",
+        "purpose": "Escena 3D: sombras dibujadas, sin sombras en tiempo real."
       }
     ],
     "motion": [
@@ -711,6 +839,16 @@
         "name": "autoguardado",
         "value": "giro .7s linear infinito",
         "purpose": "«Guardando…» del editor."
+      },
+      {
+        "name": "viaje-camara",
+        "value": "900ms, salida de cuarta potencia (1-(1-k)^4); 700ms al cambiar de técnica",
+        "purpose": "La cámara de SIMIQ3D viaja hacia la pieza señalada sin perder la mesa entera."
+      },
+      {
+        "name": "historial-entra",
+        "value": "transform .45s expo",
+        "purpose": "Panel del chat en celular, desde la izquierda."
       }
     ],
     "breakpoints": [
@@ -729,6 +867,10 @@
       {
         "name": "matriz",
         "value": "1180px"
+      },
+      {
+        "name": "simiq3d-movil",
+        "value": "820px"
       }
     ],
     "materials": [
@@ -766,6 +908,41 @@
         "name": "plano-reserva",
         "value": "fill #eef3f3 (tela) o #dde4e7 (bandeja); stroke #8b979d 1.2-1.4",
         "purpose": "Objetos que no son instrumental en el diagrama de la mesa de reserva; sin tela."
+      },
+      {
+        "name": "funda-escena",
+        "value": "MeshStandardMaterial map: ruido ±11 sobre #1d7564 (256px, repetido 3×2), roughness .95, metalness 0; canto #0e463c de 6cm por los cuatro costados",
+        "purpose": "Paño de la mesa de Mayo en Three.js."
+      },
+      {
+        "name": "acero-escena",
+        "value": "MeshStandardMaterial #b4bec3 metalness 1 roughness .22 envMapIntensity 1.35; cajas #7d8a90 roughness .32; hojas #dde4e6 roughness .18; RoomEnvironment (PMREM), ACES Filmic exposición .92",
+        "purpose": "Instrumental en la escena 3D."
+      },
+      {
+        "name": "inox-mesa",
+        "value": "MeshStandardMaterial #b9c3c7 metalness .85 roughness .35",
+        "purpose": "Bandeja, poste y base de la mesa de Mayo."
+      },
+      {
+        "name": "luz-escena",
+        "value": "HemisphereLight #ffffff/#b8c6c8 .45 + DirectionalLight #ffffff .95; sin sombras en tiempo real",
+        "purpose": "Luz clara de quirófano."
+      },
+      {
+        "name": "rejilla-celda-escena",
+        "value": "rejilla #4c9a88 al 55 %; celda señalada #bfe3d9 al 55 %; pieza señalada sube 14mm con emisivo #0d6a5e .22, las demás al 38 %",
+        "purpose": "Celdas y señalamiento en la escena."
+      },
+      {
+        "name": "numero-escena",
+        "value": "Sprite: círculo blanco al 94 %, cifra #0a1b22 700, 20px fijos en pantalla, sin prueba de profundidad",
+        "purpose": "Número de cada pieza en la esquina de su celda."
+      },
+      {
+        "name": "lienzo-fondo",
+        "value": "radial-gradient(120% 90% at 50% 40%, #f6f9f9 0%, #e9eff0 62%, #dfe7e8 100%)",
+        "purpose": "Fondo del lienzo de SIMIQ3D; solo escena."
       }
     ]
   },
@@ -945,6 +1122,70 @@
       "description": "Detalle de técnica para revisor o admin: «Editar técnica» (42px, anillo filete-2) junto a «Más acciones» (42px, tres puntos) que abre un panel de 320px como el de Mi cuenta con «Archivar técnica»; bloqueada queda en tinta-3 con su motivo y sigue enfocable. La confirmación va en el mismo panel. Tras archivar, la pastilla fondo con anillo filete-2 y caja; en la columna, la pastilla «Archivada» de 12px.",
       "html": "<div class=\"ds-acc\"><a class=\"ds-editar\" href=\"#\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M10.5 2.5l3 3-8 8H2.5v-3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/></svg>Editar técnica</a><div class=\"ds-mas\"><button class=\"ds-mas-boton\" aria-expanded=\"true\" aria-label=\"Más acciones\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"3.5\" cy=\"8\" r=\"1.4\" fill=\"currentColor\"/><circle cx=\"8\" cy=\"8\" r=\"1.4\" fill=\"currentColor\"/><circle cx=\"12.5\" cy=\"8\" r=\"1.4\" fill=\"currentColor\"/></svg></button><div class=\"ds-panel\"><button class=\"ds-item\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 3.5h12v3H2zM3 6.5v6h10v-6M6.5 9h3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg><span>Archivar técnica</span></button><button class=\"ds-item\" aria-disabled=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 3.5h12v3H2zM3 6.5v6h10v-6M6.5 9h3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg><span>Archivar técnica<small>No se puede mientras tenga una versión en curso.</small></span></button></div></div></div><p><span class=\"ds-archivada\" tabindex=\"-1\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 3.5h12v3H2zM3 6.5v6h10v-6M6.5 9h3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg>Técnica archivada. Sus versiones quedan en el historial.</span></p><p><a class=\"ds-lado-arch\" href=\"#\">Colecistectomía</a> <span class=\"ds-estado en-revision\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M8 4.8V8l2.2 1.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>Ver versión en revisión</span></p>",
       "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-acc{display:flex;gap:10px;align-items:flex-start} .ds-editar{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta);font-size:15.5px;font-weight:650;text-decoration:none;transition:background .2s var(--cuarta)} .ds-editar:hover{background:var(--hover-neutro)} .ds-mas{position:relative} .ds-mas-boton{display:grid;place-items:center;width:42px;height:42px;border:0;border-radius:10px;background:none;box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta-2);cursor:pointer} .ds-mas-boton:hover,.ds-mas-boton[aria-expanded=true]{background:var(--hover-neutro);color:var(--tinta)} .ds-panel{margin-top:8px;width:320px;padding:8px;border-radius:16px;background:var(--superficie);box-shadow:0 0 0 1px var(--filete),0 2px 6px rgba(10,27,34,.06),0 16px 24px -14px rgba(10,27,34,.3);animation:ds-bajar .3s var(--expo)} @keyframes ds-bajar{from{opacity:0;transform:translateY(-8px)}} .ds-item{display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px;border:0;border-radius:10px;background:none;color:var(--tinta);font:inherit;font-size:15.5px;font-weight:550;text-align:left;cursor:pointer} .ds-item svg{flex:none;margin-top:2px;color:var(--tinta-2)} .ds-item:hover{background:var(--hover-neutro)} .ds-item[aria-disabled=true]{color:var(--tinta-3);cursor:default} .ds-item[aria-disabled=true]:hover{background:none} .ds-item[aria-disabled=true] svg{color:var(--tinta-3)} .ds-item small{display:block;margin-top:2px;color:var(--tinta-3);font-size:13.5px;font-weight:500} .ds-archivada{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 10px;border-radius:10px;background:var(--fondo);box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta-2);font-size:15px;font-weight:600} .ds-lado-arch{color:var(--tinta-3);font-size:15px;text-decoration:none} .ds-lado-arch::after{content:'Archivada';margin-left:8px;padding:0 7px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta-3);font-size:12px;font-weight:600} .ds-estado{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap} .ds-estado.borrador{box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta-2)} .ds-estado.en-revision{background:var(--marca-claro);color:var(--marca-hondo)} .ds-estado.devuelta{background:var(--tinta);color:#fff} button:focus-visible,a:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Mensaje del chat con chip de acción",
+      "kind": "custom",
+      "refersTo": "chat-accion",
+      "description": "SIMIQ3D: pregunta propia en bloque fondo de 12px; respuesta sin fondo; bajo ella, la acción que eligió el modelo en Martian Mono 12px con visto (hecha) o «i» (sin respuesta, aclarar). Opciones en píldoras marca-claro de 34px.",
+      "html": "<ol class=\"ds-msjs\"><li class=\"ds-msj ds-tu\"><span class=\"ds-quien\"><i>DO</i>Tú</span><p class=\"ds-texto\">¿Dónde va la pinza de Allis?</p></li><li class=\"ds-msj ds-sim\"><span class=\"ds-quien\"><i>S</i>SIMIQ3D</span><p class=\"ds-texto\">Ese instrumento está en 3 técnicas. ¿En cuál de estas técnicas?</p><span class=\"ds-accion\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 6.3v3.4M7 4.4v.1\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg><span>Aclarar · falta la técnica</span></span><div class=\"ds-ops\"><button class=\"ds-op\">Mastectomía</button><button class=\"ds-op\">Tiroidectomía</button></div></li><li class=\"ds-msj ds-sim\"><span class=\"ds-quien\"><i>S</i>SIMIQ3D</span><p class=\"ds-texto\">Pinza Kelly: número 9, fila 3, columna 4 de la mesa de Mayo de Mastectomía.</p><span class=\"ds-accion\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><path d=\"M2.5 7.2l3 3 6-6.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Resaltar · Pinza Kelly</span></span></li></ol>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-msjs{list-style:none;margin:0;padding:20px;display:grid;gap:20px;max-width:380px;background:var(--superficie);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-msj{display:grid;gap:6px}.ds-quien{display:flex;align-items:center;gap:8px;color:var(--tinta-3);font-size:13px;font-weight:600}.ds-quien i{width:22px;height:22px;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;border-radius:6px}.ds-tu .ds-quien i{background:var(--marca-claro);color:var(--marca-hondo);border-radius:50%}.ds-sim .ds-quien i{background:var(--marca);color:#fff}.ds-texto{margin:0;font-size:15px;line-height:1.55;color:var(--tinta)}.ds-tu .ds-texto{padding:10px 14px;border-radius:12px;background:var(--fondo);color:var(--tinta-2)}.ds-accion{display:inline-flex;align-items:center;gap:8px;justify-self:start;padding:4px 10px 4px 8px;border-radius:8px;background:var(--fondo);color:var(--tinta-3);font-family:'Martian Mono',ui-monospace,Menlo,monospace;font-size:12px}.ds-accion svg{color:var(--marca)}.ds-ops{display:flex;flex-wrap:wrap;gap:8px}.ds-op{height:34px;padding:0 14px;border:0;border-radius:999px;background:var(--marca-claro);color:var(--marca-hondo);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s cubic-bezier(.25,1,.5,1)}.ds-op:hover{background:var(--marca-claro-hover)}.ds-op:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Sugerencias y campo de pregunta",
+      "kind": "input",
+      "refersTo": "campo-pregunta",
+      "description": "SIMIQ3D: sugerencias en una fila que se desliza con el borde desvanecido; caja de 14px con filete-2 y foco de 2px en marca; enviar de 40px en marca (desactivado en filete).",
+      "html": "<div class=\"ds-pie\"><div class=\"ds-sugs\"><button class=\"ds-sug\">¿Qué es una pinza de Allis?</button><button class=\"ds-sug\">¿Dónde va la tijera de Metzenbaum?</button><button class=\"ds-sug\">Muéstrame la tiroidectomía</button></div><form class=\"ds-campo\"><label class=\"ds-caja\"><textarea rows=\"1\" placeholder=\"Pregunta por una técnica o un instrumento\"></textarea><button type=\"button\" class=\"ds-enviar\" aria-label=\"Enviar pregunta\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><path d=\"M9 14V4M4.5 8.5L9 4l4.5 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></label><p class=\"ds-nota\">Las respuestas solo muestran lo que está en DataIQ.</p></form></div>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-pie{max-width:380px;background:var(--superficie);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-sugs{display:flex;gap:8px;padding:4px 20px 12px;overflow-x:auto;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 85%,transparent)}.ds-sug{flex:none;white-space:nowrap;height:32px;padding:0 12px;border:0;border-radius:999px;background:var(--fondo);color:var(--tinta-2);box-shadow:inset 0 0 0 1px var(--filete);font:inherit;font-size:13px;font-weight:550;cursor:pointer;transition:background .2s,color .2s}.ds-sug:hover{background:var(--hover-neutro);color:var(--tinta)}.ds-campo{padding:12px 20px 16px;border-top:1px solid var(--filete)}.ds-caja{display:grid;grid-template-columns:1fr 40px;align-items:end;gap:8px;padding:8px 8px 8px 14px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--filete-2);transition:box-shadow .2s}.ds-caja:focus-within{box-shadow:inset 0 0 0 2px var(--marca)}.ds-caja textarea{resize:none;border:0;outline:0;background:transparent;font:inherit;font-size:15px;line-height:1.5;padding:7px 0;color:var(--tinta)}.ds-caja textarea::placeholder{color:var(--tinta-3)}.ds-enviar{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:10px;background:var(--marca);color:#fff;cursor:pointer;transition:background .2s}.ds-enviar:hover{background:var(--marca-hondo)}.ds-enviar:disabled{background:var(--filete);color:var(--tinta-3)}.ds-enviar:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}.ds-nota{margin:8px 0 0;color:var(--tinta-3);font-size:12.5px}"
+    },
+    {
+      "name": "Historial y última respuesta en celular",
+      "kind": "custom",
+      "refersTo": "boton-historial",
+      "description": "SIMIQ3D ≤820px: sobre el campo fijo, la última respuesta en un bloque fondo de 12px y el botón «Historial» (34px, 9px de radio) que abre el chat desde la izquierda.",
+      "html": "<div class=\"ds-movil\"><button class=\"ds-ultima\"><b>SIMIQ3D:</b> Pinza Kelly: número 9, fila 3, columna 4 de la mesa de Mayo de Mastectomía.</button><button class=\"ds-hist\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2.5 4h11M2.5 8h11M2.5 12h7\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>Historial</button></div>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-movil{max-width:390px;padding:10px 12px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--filete);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-ultima{display:block;width:100%;margin:0 0 8px;padding:10px 12px;border:0;border-radius:12px;background:var(--fondo);color:var(--tinta-2);font:inherit;font-size:14px;line-height:1.45;text-align:left;cursor:pointer}.ds-ultima b{color:var(--tinta);font-weight:650}.ds-hist{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:0;border-radius:9px;background:var(--fondo);color:var(--tinta-2);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}.ds-hist:hover,.ds-ultima:hover{background:var(--hover-neutro)}.ds-hist:focus-visible,.ds-ultima:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Cabeza del lienzo con selector de escala",
+      "kind": "custom",
+      "refersTo": "selector-escala-opcion",
+      "description": "SIMIQ3D: nombre de la técnica a 40px, línea tinta-3, selector de técnica de 38px y control segmentado «a la celda / escala real» con la marca «provisional» en Martian Mono.",
+      "html": "<div class=\"ds-cab\"><h1>Mastectomía</h1><p class=\"ds-meta\">Mesa de Mayo · Cirugía general · 6 × 4</p><div class=\"ds-acc\"><span class=\"ds-sel\"><select aria-label=\"Técnica\"><option>Mastectomía</option><option>Tiroidectomía</option></select><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2.5 4.5L6 8l3.5-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-esc\" role=\"group\" aria-label=\"Escala\"><button aria-pressed=\"true\">a la celda</button><button aria-pressed=\"false\">escala real</button></span><span class=\"ds-demo\">mesa, escala y orientación provisionales</span></div></div>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-cab{padding:24px 28px;background:radial-gradient(120% 90% at 50% 40%,#f6f9f9 0%,#e9eff0 62%,#dfe7e8 100%);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)}.ds-cab h1{margin:0;font-size:40px;line-height:1;font-weight:650;letter-spacing:-.04em}.ds-meta{margin:4px 0 0;color:var(--tinta-3);font-size:15px}.ds-acc{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:10px}.ds-sel{position:relative;display:inline-flex;align-items:center}.ds-sel select{appearance:none;height:38px;padding:0 36px 0 14px;border:0;border-radius:10px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete-2),0 1px 2px rgba(10,27,34,.06);font:inherit;font-size:14.5px;font-weight:600;color:var(--tinta);cursor:pointer}.ds-sel svg{position:absolute;right:12px;pointer-events:none;color:var(--tinta-2)}.ds-esc{display:inline-flex;padding:3px;border-radius:9px;background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px var(--filete)}.ds-esc button{height:26px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--tinta-3);font:inherit;font-size:13px;font-weight:600;cursor:pointer}.ds-esc button[aria-pressed=true]{background:var(--superficie);color:var(--tinta);box-shadow:0 1px 2px rgba(10,27,34,.12)}.ds-esc button:focus-visible,.ds-sel select:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}.ds-demo{font-family:'Martian Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--tinta-3)}"
+    },
+    {
+      "name": "Leyenda flotante del lienzo",
+      "kind": "custom",
+      "refersTo": "leyenda-lienzo",
+      "description": "SIMIQ3D: panel de 300px y 16px de radio bajo el botón «Leyenda»; cada pieza con número en círculo, nombre y «Fila · Columna» en Martian Mono; la actual en marca-claro con número marca.",
+      "html": "<aside class=\"ds-ley\"><div class=\"ds-ley-cab\"><h2>Mesa de Mayo</h2><p>9 objetos. Toca uno para ubicarlo.</p></div><ol><li><button class=\"ds-pz\"><span class=\"ds-n\">8</span><span><strong>Mango de bisturí N.° 4 y hoja #20</strong><span>Fila 6 · Columna 2</span></span></button></li><li><button class=\"ds-pz\" aria-current=\"true\"><span class=\"ds-n\">9</span><span><strong>Pinza Kelly</strong><span>Fila 3 · Columna 4</span></span></button></li></ol></aside>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-ley{width:300px;border-radius:16px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete),0 24px 48px -32px rgba(10,27,34,.45);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)}.ds-ley-cab{padding:16px 18px 10px;border-bottom:1px solid var(--filete)}.ds-ley-cab h2{margin:0;font-size:15px;font-weight:650}.ds-ley-cab p{margin:0;color:var(--tinta-3);font-size:13px}.ds-ley ol{list-style:none;margin:0;padding:6px}.ds-pz{width:100%;display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:center;padding:9px 10px;border:0;border-radius:10px;background:transparent;text-align:left;font:inherit;color:inherit;cursor:pointer;transition:background .2s}.ds-pz:hover{background:var(--fondo)}.ds-pz:focus-visible{outline:2.5px solid var(--marca);outline-offset:2px}.ds-n{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;box-shadow:inset 0 0 0 1px var(--filete-2);color:var(--tinta-2);font-size:12.5px;font-weight:700}.ds-pz strong{display:block;font-size:14.5px;font-weight:600;line-height:1.3}.ds-pz span span{display:block;margin-top:2px;color:var(--tinta-3);font-family:'Martian Mono',ui-monospace,Menlo,monospace;font-size:12px}.ds-pz[aria-current=true]{background:var(--marca-claro)}.ds-pz[aria-current=true] .ds-n{background:var(--marca);color:#fff;box-shadow:none}.ds-pz[aria-current=true] strong{color:var(--marca-hondo)}"
+    },
+    {
+      "name": "Ficha del instrumento",
+      "kind": "card",
+      "refersTo": "ficha-instrumento",
+      "description": "SIMIQ3D: abajo a la izquierda del lienzo, 360px, 16px de radio; número en círculo marca, nombre a 19px, celda en Martian Mono, descripción con «demostración» mientras no haya fuente y enlace con flecha a DataIQ.",
+      "html": "<section class=\"ds-ficha\"><div class=\"ds-fc\"><span class=\"ds-fn\">9</span><div><h2>Pinza Kelly</h2><p class=\"ds-lugar\">Fila 3 · Columna 4</p></div><button class=\"ds-x\" aria-label=\"Cerrar ficha\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"/></svg></button></div><p class=\"ds-ft\"><span class=\"ds-demo\">demostración</span>Aquí va la descripción breve del instrumento, con su fuente, tal como está en DataIQ.</p><a class=\"ds-enl\" href=\"#\">Ver la técnica en DataIQ <svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><path d=\"M2 7h9M7.5 3.5L11 7l-3.5 3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></section>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-ficha{width:360px;padding:18px 18px 16px;border-radius:16px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete),0 28px 48px -30px rgba(10,27,34,.55);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)}.ds-fc{display:grid;grid-template-columns:28px 1fr 32px;gap:12px;align-items:start}.ds-fn{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--marca);color:#fff;font-size:13px;font-weight:700}.ds-ficha h2{margin:0;font-size:19px;line-height:1.25;font-weight:650;letter-spacing:-.015em}.ds-lugar{margin:3px 0 0;color:var(--tinta-3);font-family:'Martian Mono',ui-monospace,Menlo,monospace;font-size:12px}.ds-x{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:var(--tinta-3);cursor:pointer}.ds-x:hover{background:var(--hover-neutro);color:var(--tinta)}.ds-ft{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--filete);color:var(--tinta-2);font-size:14.5px;line-height:1.55}.ds-demo{display:block;margin-bottom:4px;font-family:'Martian Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--tinta-3)}.ds-enl{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--marca);font-size:14.5px;font-weight:650;text-decoration:none}.ds-enl svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}.ds-enl:hover svg{transform:translateX(3px)}.ds-enl:focus-visible,.ds-x:focus-visible{outline:2.5px solid var(--marca);outline-offset:3px}"
+    },
+    {
+      "name": "Controles de vista e insignia de la pieza",
+      "kind": "custom",
+      "refersTo": "control-vista",
+      "description": "SIMIQ3D: grupos superficie de 12px con botones de 36px («3D · Arriba», acercar, alejar, centrar), el elegido en marca-claro; e insignia marca de 26px con anillo blanco sobre la pieza señalada.",
+      "html": "<div class=\"ds-esc3\"><span class=\"ds-ins\">9</span><div class=\"ds-vista\"><span class=\"ds-g\"><button aria-pressed=\"true\">3D</button><button aria-pressed=\"false\">Arriba</button></span><span class=\"ds-g ds-ic\"><button aria-label=\"Acercar\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M8 3v10M3 8h10\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg></button><button aria-label=\"Alejar\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h10\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg></button><button aria-label=\"Centrar la mesa\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></button></span></div></div>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-esc3{display:flex;align-items:center;gap:24px;padding:24px;background:#1d7564;font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-ins{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--marca);color:#fff;font-size:13px;font-weight:700;box-shadow:0 0 0 3px rgba(255,255,255,.9),0 6px 14px -6px rgba(10,27,34,.5)}.ds-vista{display:flex;gap:8px}.ds-g{display:inline-flex;padding:4px;gap:2px;border-radius:12px;background:var(--superficie);box-shadow:inset 0 0 0 1px var(--filete),0 10px 24px -18px rgba(10,27,34,.45)}.ds-g button{height:36px;min-width:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;background:transparent;color:var(--tinta-2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,color .2s}.ds-g button:hover{background:var(--hover-neutro);color:var(--tinta)}.ds-g button[aria-pressed=true]{background:var(--marca-claro);color:var(--marca-hondo)}.ds-g button:focus-visible{outline:2.5px solid var(--marca);outline-offset:2px}.ds-ic button{padding:0;width:36px}"
+    },
+    {
+      "name": "Etiqueta de módulo y divisor",
+      "kind": "nav",
+      "refersTo": "modulo-etiqueta",
+      "description": "Barra del shell en una herramienta: píldora marca-claro con el nombre del módulo junto a la marca. Divisor de 6px entre chat y lienzo con asa filete-2 que aparece al pasar o enfocar.",
+      "html": "<div class=\"ds-bar\"><span class=\"ds-marca\">IQ Platform</span><span class=\"ds-mod\">SIMIQ3D</span></div><div class=\"ds-split\"><div class=\"ds-panel\">Chat</div><div class=\"ds-div\" role=\"separator\" aria-orientation=\"vertical\" aria-label=\"Ancho del chat\" tabindex=\"0\"></div><div class=\"ds-lz\">Lienzo</div></div>",
+      "css": ":root{--fondo:#f3f6f6;--superficie:#fff;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--hover-neutro:#e6eded}.ds-bar{display:flex;align-items:center;gap:14px;height:72px;padding:0 24px;background:var(--fondo);border-bottom:1px solid var(--filete);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-marca{font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--tinta)}.ds-mod{padding:3px 10px;border-radius:999px;background:var(--marca-claro);color:var(--marca-hondo);font-size:13px;font-weight:600}.ds-split{display:grid;grid-template-columns:200px 6px 1fr;height:140px;font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif}.ds-panel{background:var(--superficie);padding:16px;color:var(--tinta-3)}.ds-lz{background:radial-gradient(120% 90% at 50% 40%,#f6f9f9 0%,#e9eff0 62%,#dfe7e8 100%);padding:16px;color:var(--tinta-3)}.ds-div{position:relative;cursor:col-resize;background:var(--superficie);border-left:1px solid var(--filete)}.ds-div::after{content:'';position:absolute;top:50%;left:1px;width:3px;height:32px;margin-top:-16px;border-radius:2px;background:var(--filete-2);opacity:0;transition:opacity .2s}.ds-div:hover::after,.ds-div:focus-visible::after{opacity:1}.ds-div:focus-visible{outline:none}"
     }
   ],
   "narrative": {
@@ -993,7 +1234,7 @@
       },
       {
         "name": "The Voz De La Máquina Rule",
-        "body": "Martian Mono solo para lo que dice la máquina: etiquetas de detección con su confianza, «Va aquí» y la marca «demostración». Nunca en titulares, botones, citas ni cuerpo.",
+        "body": "Martian Mono solo para lo que dice la máquina: etiquetas de detección con su confianza, «Va aquí» y la marca «demostración». En SIMIQ3D también la acción que eligió el modelo y la celda «Fila · Columna» de la escena. Nunca en titulares, botones, citas ni cuerpo, ni en el texto de la respuesta del chat.",
         "section": "typography"
       },
       {
@@ -1030,6 +1271,21 @@
         "name": "The El Objeto Pesa Rule",
         "body": "La elevación fuerte es de los objetos dibujados (funda, piezas, riel) y de lo que se superpone (desplegables, leyenda). Las tarjetas de interfaz se bordean con filete (`inset 0 0 0 1px`), no se levantan.",
         "section": "elevation"
+      },
+      {
+        "name": "The El Modelo Elige, La Plantilla Habla Rule",
+        "body": "El modelo del chat solo elige una acción (mostrar técnica, resaltar, describir, aclarar, sin respuesta); el texto de cada respuesta sale de plantillas llenadas con datos de DataIQ, nunca redactado por el modelo. Por eso cada respuesta lleva su chip de acción, y lo que no está en DataIQ se dice («Esa información no está en DataIQ.») con opciones para seguir, sin inventar.",
+        "section": "components"
+      },
+      {
+        "name": "The Una Sola Escena Rule",
+        "body": "Three.js es la única dependencia fuera de Google Fonts y solo vive en las escenas 3D de SIMIQ3D, con versión fija. El resto del sistema dibuja la mesa en SVG y CSS; la escena 3D no se reutiliza como decoración en otras páginas.",
+        "section": "components"
+      },
+      {
+        "name": "The Chat Escena Y Leyenda Dicen Lo Mismo Rule",
+        "body": "Señalar una pieza desde cualquier lado la marca a la vez en la escena (sube, celda pintada, insignia), en la leyenda (fila `marca-claro`) y, si se pidió, en la ficha. Nunca uno sin los otros.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -1044,7 +1300,9 @@
       "**Do** dar al texto secundario sobre fondos de color el tinte de su fondo (`niebla-noche`, `niebla-marca`, `niebla-pano`).",
       "**Do** mantener titulares a 650 y -0.04em, nunca más apretados.",
       "**Do** convertir en celular las filas de columnas paralelas en carriles horizontales con `scroll-snap`.",
-      "**Do** probar en 1100px y 760px y respetar `prefers-reduced-motion`."
+      "**Do** probar en 1100px y 760px y respetar `prefers-reduced-motion`.",
+      "**Do** en SIMIQ3D, encuadrar siempre la mesa entera en el área que dejan libre los paneles, y señalar la misma pieza a la vez en escena, leyenda y ficha.",
+      "**Do** marcar en la escena lo que la fuente no trae (tamaño de la mesa, escala, orientación) como «provisional» y la descripción sin fuente como «demostración»."
     ],
     "donts": [
       "**Don't** dar a cada sección un color distinto; los fondos son neutros.",
@@ -1057,7 +1315,10 @@
       "**Don't** aplicar `--tela` ni ninguna textura a superficies de página; solo a la funda.",
       "**Don't** usar menta o rojo fuera de la cámara (la menta, salvo enlaces sobre oscuro).",
       "**Don't** usar entradas genéricas de aparecer al hacer scroll; la carga tiene una sola coreografía.",
-      "**Don't** volver a texturas artesanales o rústicas."
+      "**Don't** volver a texturas artesanales o rústicas.",
+      "**Don't** usar Three.js fuera de las escenas 3D de SIMIQ3D ni sin versión fija.",
+      "**Don't** activar sombras en tiempo real en la escena 3D; las sombras de contacto van dibujadas.",
+      "**Don't** dejar que el modelo del chat redacte respuestas; elige una acción y el texto sale de plantillas con datos de DataIQ."
     ]
   }
 }
