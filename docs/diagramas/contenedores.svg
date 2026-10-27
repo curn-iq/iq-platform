@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040" role="img" aria-labelledby="titulo desc" font-family="'Noto Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
   <title id="titulo">Diagrama de contenedores de IQ Platform</title>
-  <desc id="desc">El estudiante explora las mesas por chat en el frontend de SIMIQ3D, consulta técnicas en el frontend web y practica con el frontend de SIVRI; el docente escribe, revisa y publica técnicas en el frontend web. El frontend web lee y escribe por la API de DataIQ, que usa la base de DataIQ. El frontend de SIMIQ3D envía la pregunta a su backend, que pide la acción al modelo de lenguaje y el catálogo a la API de DataIQ y guarda el registro en su base; con la acción, el frontend lee la mesa de la API de DataIQ. El frontend de SIVRI pide un token corto a la API y envía cuadros al backend de SIVRI, que pide el catálogo a la API y guarda el progreso en su base.</desc>
+  <desc id="desc">El estudiante explora las mesas por chat en el frontend de SIMIQ3D, consulta técnicas en el frontend web y practica con el frontend de SIVRI; el docente escribe, revisa y publica técnicas en el frontend web. El frontend web lee y escribe por la API de DataIQ, que usa la base de DataIQ. El frontend de SIMIQ3D envía la pregunta a su backend, que pide el catálogo a la API de DataIQ, deja que el modelo de lenguaje lo consulte y redacte la respuesta, la verifica y guarda el registro en su base; con la respuesta, el frontend lee la mesa de la API de DataIQ. El frontend de SIVRI pide un token corto a la API y envía cuadros al backend de SIVRI, que pide el catálogo a la API y guarda el progreso en su base.</desc>
 
   <defs>
     <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -77,13 +77,13 @@
     <rect x="70" y="616" width="280" height="100" rx="12" fill="#f3eefa" stroke="#7a5bb8" stroke-width="1.8"/>
     <text x="210" y="650" font-size="15" font-weight="700" fill="#1f2933">Modelo de lenguaje</text>
     <text x="210" y="670" font-size="11.5" fill="#5b6573">[Contenedor: Ollama]</text>
-    <text x="210" y="694" font-size="12.5" fill="#3d4752">Elige la acción, no responde</text>
+    <text x="210" y="694" font-size="12.5" fill="#3d4752">Consulta el catálogo y redacta</text>
 
     <!-- SIMIQ3D: backend -->
     <rect x="460" y="616" width="280" height="100" rx="12" fill="#f3eefa" stroke="#7a5bb8" stroke-width="1.8"/>
     <text x="600" y="650" font-size="15" font-weight="700" fill="#1f2933">Backend de SIMIQ3D</text>
     <text x="600" y="670" font-size="11.5" fill="#5b6573">[Contenedor: FastAPI]</text>
-    <text x="600" y="694" font-size="12.5" fill="#3d4752">Convierte la pregunta en acción</text>
+    <text x="600" y="694" font-size="12.5" fill="#3d4752">Verifica la respuesta del modelo</text>
 
     <!-- DataIQ: API -->
     <rect x="850" y="616" width="280" height="100" rx="12" fill="#eaf1fb" stroke="#1d5fae" stroke-width="1.8"/>
@@ -141,7 +141,7 @@
     <text x="822" y="548">Lee la mesa</text>
     <text x="822" y="563" fill="#8a94a3">[JSON/HTTPS, cookie]</text>
 
-    <text x="406" y="656" text-anchor="middle">Pide la acción</text>
+    <text x="406" y="656" text-anchor="middle">Pregunta y consultas</text>
     <text x="406" y="684" text-anchor="middle" fill="#8a94a3">[HTTPS, clave]</text>
 
     <text x="794" y="656" text-anchor="middle">Pide el catálogo</text>

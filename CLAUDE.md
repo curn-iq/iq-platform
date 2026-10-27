@@ -172,10 +172,15 @@ navegación (ver más abajo) NO se considera un módulo.
   Notas de diseño clave:
   - **Ids: UUIDv7** en todas las tablas, generados por la BD con `uuidv7()`
     (requiere **PostgreSQL 18**, también en Neon). Motivo: DataIQ es open
-    source y cada institución puede tener su instancia; con UUID el catálogo
-    base tiene la misma identidad en todas, y los mapeos que guardan SIVRI
-    (clases YOLO) y SIMIQ3D (modelos 3D) contra `instruments.id` sirven en
-    cualquier instancia. Costo aceptado: un UUIDv7 revela su fecha de creación.
+    source y cada institución puede tener su instancia, y un UUID no se repite
+    entre instancias. Costo aceptado: un UUIDv7 revela su fecha de creación.
+    **Los ids del catálogo no son iguales entre instalaciones**: la carga
+    inicial los genera al cargar (la Pinza Kelly tiene un id en local y otro
+    en Neon). Por eso SIVRI (clases YOLO) y SIMIQ3D (modelos 3D) guardan su
+    mapeo en el repo por nombre del instrumento (o un alias) y lo traducen a
+    `instruments.id` en cada entorno con la API de DataIQ (decidido por
+    Mauricio el 2026-10-21). Fijar los ids del catálogo base queda para
+    después del MVP ([`docs/despues-del-mvp.md`](docs/despues-del-mvp.md)).
   - **Fechas: `timestamptz`** (instante exacto, se guarda en UTC). El
     servidor, la BD y los usuarios están en zonas horarias distintas.
     `created_at` y `updated_at` tienen `now()` por defecto.
@@ -353,14 +358,21 @@ navegación (ver más abajo) NO se considera un módulo.
   cinco técnicas de Cirugía General**, el mismo alcance de SIVRI. Los modelos
   3D son **propios, modelados a mano en Blender**, por familias de
   instrumentos y a partir de fotos de catálogo de cada instrumento; cada uno
-  queda en el repo con sus medidas y sus fuentes. El chat usa *tool calling*:
-  un modelo local (Ollama, en el Servidor PC2, con Tailscale Funnel) convierte
-  la pregunta en una acción y los datos salen de DataIQ, nunca del modelo.
+  queda en el repo con sus medidas y sus fuentes. El chat es un **agente**
+  (*tool calling*, cambio decidido por Mauricio el 2026-10-27): un modelo
+  local (Ollama, en el Servidor PC2, con Tailscale Funnel) consulta el
+  catálogo de DataIQ y redacta la respuesta; el backend verifica que nombres,
+  números y ubicaciones salgan de lo consultado y, si no, responde con
+  plantillas. Riesgo aceptado: el texto lo escribe el modelo. Al estudiante
+  nunca se le habla de filas ni columnas (la mesa real no tiene cuadrícula):
+  zona de la mesa, vecinos y número del diagrama.
   Alcance, por qué no se compran y avance:
   [`simiq3d/README.md`](simiq3d/README.md).
-- **Stack**: el backend lo decide Guebriel, que lo desarrolla; el frontend de
-  los tres módulos, Juan Caraballo. Backend: **Python + FastAPI**, como
-  DataIQ y SIVRI (confirmado por Guebriel el 2026-10-15). Frontend:
+- **Stack**: el backend lo desarrolla Mauricio (reparto del 2026-10-20;
+  Guebriel hace los modelos 3D); el frontend de los tres módulos, Juan
+  Caraballo. Backend: **Python + FastAPI**, como DataIQ y SIVRI (confirmado
+  por Guebriel el 2026-10-15); avance en
+  [`simiq3d/docs/checklist-backend.md`](simiq3d/docs/checklist-backend.md). Frontend:
   **Angular + Three.js** (decidido por Juan el 2026-10-15), app aparte en
   `simiq3d/frontend` servida bajo `/simiq3d/`; el visor corre en el navegador
   (WebGL), como pide el Formato 115. Cómo está hecho:

@@ -75,6 +75,14 @@ mesa en 3D»):
 - **Un GLB por instrumento**, con nombre en inglés (`kelly_forceps.glb`), como
   el resto del código.
 
+La tabla de medidas es también el mapeo de cada modelo a su instrumento:
+`models/modelos.csv`, con las columnas `instrumento` (el nombre del instrumento
+en DataIQ, o uno de sus alias), `archivo` (su GLB) y, después, las medidas y la
+fuente de cada una. El backend carga las dos primeras columnas con
+`uv run python -m app.adapters.inbound.cli.load_models`: traduce cada nombre a
+su id en el DataIQ de ese entorno y deja la tabla `model_mappings` igual al
+archivo.
+
 ### Fotos del instrumental de IQ (opcional)
 
 Los modelos se hacen con fotos de catálogo, así que estas fotos no son
@@ -103,12 +111,43 @@ dataset de SIVRI.
 
 Decidido por Mauricio el 2026-10-15:
 
-- **El modelo elige acciones, los datos salen de DataIQ** (*tool calling*). El
-  modelo no responde con lo que sabe: convierte la pregunta en una acción
-  («muéstrame la mesa de mastectomía» → mostrar la técnica; «¿dónde va la
-  Kelly?» → resaltar el instrumento; «¿qué es una Babcock?» → describirlo), y
-  el texto y la escena salen de DataIQ. Si se equivoca, muestra otra técnica,
-  pero no inventa un dato. Por eso basta un modelo pequeño.
+- **Un agente que consulta DataIQ** (*tool calling*, cambio decidido por
+  Mauricio el 2026-10-27). El modelo no responde con lo que sabe: tiene
+  consultas sobre el catálogo (ver las técnicas, buscar un instrumento y en qué
+  mesas va, comparar dos mesas, mostrar algo en el visor), decide cuáles usar y
+  en cuántos pasos, y redacta la respuesta con lo que devolvieron. Así responde
+  preguntas que nadie programó («¿en cuántas técnicas se usa la Allis?», «¿qué
+  lleva la tiroidectomía que no lleve la colecistectomía?»). Antes, el modelo
+  solo elegía una de seis acciones y el texto salía de plantillas: eso no
+  justificaba usar IA, porque para cada tipo de pregunta nuevo había que
+  programar una acción.
+- **Riesgo aceptado: el texto lo redacta el modelo**, y un modelo puede
+  inventar. Se controla así:
+  - el modelo solo ve lo que devuelven las consultas;
+  - antes de responder, el backend verifica el texto: cada técnica, cada
+    instrumento, cada número y cada ubicación («arriba a la derecha») tiene que
+    estar en esos resultados; rechaza las generalizaciones falsas («en todas va
+    en el mismo lugar») y cualquier mención de filas, columnas o celdas;
+  - si no pasa la verificación, si no consultó nada o si no termina en seis
+    pasos, responden las plantillas de antes, que solo usan datos de DataIQ;
+  - lo que se ve en 3D sale de la consulta del visor, con ids reales, nunca
+    del texto.
+
+  La verificación compara nombres y números, no el sentido de las frases:
+  una afirmación falsa escrita solo con palabras puede pasar. Por eso la
+  evaluación mide las respuestas inventadas (ver «Cómo se evalúa») y el
+  registro guarda qué respondió el modelo y qué las plantillas.
+- **Dónde va cada cosa, dicho como en la práctica:** la cuadrícula de DataIQ
+  es cómo se guarda el arreglo, no cómo se habla de él (la mesa real es un
+  campo sin líneas). El chat ubica cada objeto por la zona de la mesa
+  («arriba a la derecha», «en el centro»), por lo que tiene al lado («junto a
+  la Rochester») y por su número en el diagrama de IQ. Las zonas se dicen como
+  se ven en el diagrama y en el visor.
+- **Las preguntas sugeridas las arma el backend** con lo que se consultó, para
+  que siempre tengan respuesta; las que escribe un modelo pequeño a menudo no.
+- **Errores de escritura:** si un nombre se parece mucho a una técnica o a un
+  instrumento («masectomia», «pinza allys»), el chat no adivina: responde
+  «¿Quizás quisiste decir…?» con la pregunta corregida como opción.
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB
   de RAM), con una dirección HTTPS fija de Tailscale Funnel, como el Servidor
@@ -127,9 +166,14 @@ Decidido por Mauricio el 2026-10-15:
 
 Sugerencias para quien lo implemente:
 
-- Modelo: de la familia **Qwen3** (p. ej. Qwen3 8B comprimido, unos 5 GB),
-  la más recomendada para *tool calling* en 8 GB. Se elige probando con las
-  acciones reales del chat, no por tablas de comparación.
+- Modelo: **Qwen3-VL 8B instruct** (`qwen3-vl:8b-instruct`, unos 6 GB), en la
+  RX 6600 XT al 100 % en la GPU. Comparado el 2026-10-27 con Qwen2.5 7B sobre
+  las mismas 18 preguntas: respondió él mismo 14 (contra 13), con respuestas
+  más completas (todas las ubicaciones de un instrumento, todos sus vecinos), y
+  ninguno de los dos dejó pasar un dato falso; a cambio tarda más (mediana de
+  3,9 s contra 2,4 s, máximo 6,7 s). La variante *instruct* y no la
+  *thinking*: razonar antes de cada paso sumaría segundos. La elección final
+  se hace con el banco de preguntas.
 - La RX 6600 XT no está en la lista oficial de GPU AMD de Ollama: probar su
   backend Vulkan o `HSA_OVERRIDE_GFX_VERSION=10.3.0`; si ninguno funciona,
   corre en la CPU, más lento.
@@ -165,8 +209,9 @@ tiene su propia base en Neon, en un proyecto aparte, como cada módulo:
 
 | Qué | Dónde | Por qué |
 |---|---|---|
-| Mapeo de cada modelo 3D a su instrumento de DataIQ (`instruments.id`) | Base de SIMIQ3D | Ese mapeo es de SIMIQ3D, no de DataIQ, como las clases de YOLO en SIVRI |
+| Mapeo de cada modelo 3D a su instrumento de DataIQ (`instruments.id`) | Base de SIMIQ3D | Ese mapeo es de SIMIQ3D, no de DataIQ, como las clases de YOLO en SIVRI. Los ids del catálogo cambian de una instalación a otra: el repo guarda el mapeo por nombre del instrumento (o un alias) y un comando lo traduce a ids en cada entorno con la API de DataIQ |
 | Registro de las conversaciones: pregunta, acción elegida por el modelo y fecha | Base de SIMIQ3D | Sin él no hay cómo demostrar con números que el chat funciona (ver abajo) |
+| Contador de preguntas por cuenta, con el id cifrado (HMAC), por unos minutos | Base de SIMIQ3D | Que nadie llene de consultas el Servidor PC2; no deja saber de quién es y se borra al día |
 | Archivos de los modelos (GLB) | Archivos estáticos del frontend, en Vercel | Se descargan una vez y quedan en caché; en Neon gastarían su medio GB |
 | Técnicas e instrumentos que el chat le ofrece al modelo | DataIQ, por `/catalog/full`, que el backend cachea por sesión | DataIQ es la única fuente de verdad |
 | La mesa que dibuja el visor y la descripción de cada instrumento | DataIQ, que el frontend lee directo (`GET /techniques/{id}/instruments`, `GET /instruments`) | No pasa por el backend de SIMIQ3D: sería un salto más sin aportar nada, y el visor sigue funcionando sin el chat |
@@ -198,9 +243,10 @@ técnica del chat; lo demás está en
   - La comparación de cada modelo 3D con sus fotos de referencia (silueta y
     medidas) y las pruebas automatizadas del backend.
 - **Evaluación sumativa** (al final):
-  1. **Exactitud del chat:** porcentaje de preguntas convertidas en la acción
-     correcta, sobre el banco y sobre el registro de las sesiones de
-     evaluación. Meta: ninguna respuesta inventada.
+  1. **Exactitud del chat:** porcentaje de preguntas respondidas
+     correctamente, sobre el banco y sobre el registro de las sesiones de
+     evaluación; aparte, las respuestas inventadas (meta: ninguna) y cuántas
+     respondió el modelo y cuántas las plantillas de respaldo.
   2. **Tiempo de respuesta:** desde la pregunta hasta que se ve la escena.
   3. **Visto bueno del programa de IQ** a cada modelo 3D.
   4. La **Escala de Usabilidad del Sistema (SUS)** y el cuestionario de
@@ -240,10 +286,12 @@ Arquitectura, rutas y cómo se corre el frontend:
 
 ```
 simiq3d/
-├── backend/
+├── backend/                   FastAPI: el chat y el mapeo de modelos (ver su README)
 ├── frontend/                  Angular + Three.js
-├── models/                    .blend por familia, GLB por instrumento y sus medidas
+├── models/                    .blend por familia, GLB por instrumento y modelos.csv
 └── docs/
     ├── checklist.md           avance por actividad de DSRM
-    └── checklist-frontend.md  avance del frontend, por fases
+    ├── checklist-backend.md   avance del backend
+    ├── checklist-frontend.md  avance del frontend, por fases
+    └── esquema.dbml           base de datos de SIMIQ3D
 ```
