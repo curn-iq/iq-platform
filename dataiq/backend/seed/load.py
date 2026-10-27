@@ -146,9 +146,10 @@ def read_file(path_: Path):
     # El catálogo base (hoja catalogo) y lo que se le agregó (catalogo_nuevo):
     # así la carga también sirve en una base de datos vacía.
     instruments = [
-        (f["nombre"], f["categoria"], None) for f in _rows(workbook, "catalogo")
+        (f["nombre"], f["categoria"], _text(f["alias"]), _text(f["descripcion"]))
+        for f in _rows(workbook, "catalogo")
     ] + [
-        (f["nombre"], f["categoria"], _text(f["alias"]))
+        (f["nombre"], f["categoria"], _text(f["alias"]), None)
         for f in _rows(workbook, "catalogo_nuevo")
     ]
     return techniques, instruments
@@ -266,25 +267,35 @@ async def load(force: bool = False) -> None:
     techniques, catalog = read_file(SOURCE_FILE)
 
     async with SessionLocal() as session, session.begin():
-        # Catálogo: los instrumentos que falten, con su categoría y sus alias. Los
-        # que ya existen no se tocan (un revisor pudo haberlos editado).
-        for name, category, alias in catalog:
+        # Catálogo: los instrumentos que falten, con su categoría y sus alias. De
+        # los que ya existen solo se llena la descripción si no tienen (un revisor
+        # pudo haberlos editado).
+        for name, category, alias, description in catalog:
             cat = await _get_or_create(session, InstrumentCategory, name=category)
+            aliases = [a.strip() for a in (alias or "").split(";") if a.strip()]
             inst = (
                 await session.scalars(select(Instrument).where(Instrument.name == name))
             ).first()
+            if inst is None and aliases:
+                # Un nombre corregido: el instrumento conserva su id y su nombre
+                # anterior queda como alias.
+                inst = (
+                    await session.scalars(
+                        select(Instrument).where(Instrument.name.in_(aliases))
+                    )
+                ).first()
+                if inst is not None:
+                    inst.name = name
             if inst is None:
                 inst = Instrument(name=name, category_id=cat.id)
                 session.add(inst)
                 await session.flush()
-            for a in (alias or "").split(";"):
-                if a.strip():
-                    await _get_or_create(
-                        session,
-                        InstrumentAlias,
-                        instrument_id=inst.id,
-                        alias=a.strip(),
-                    )
+            if description and not inst.description:
+                inst.description = description
+            for a in aliases:
+                await _get_or_create(
+                    session, InstrumentAlias, instrument_id=inst.id, alias=a
+                )
         instruments = {
             i.name: i.id for i in (await session.scalars(select(Instrument))).all()
         }
