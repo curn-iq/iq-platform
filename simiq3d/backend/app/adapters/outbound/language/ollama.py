@@ -2,6 +2,7 @@ import json
 
 import httpx
 
+from app.adapters.outbound.language.names import instrument_in, technique_in
 from app.domain.chat import FIELD_LABELS, ChatAction, Choice, ClinicalField, Vocabulary
 from app.ports.chat import ModelUnavailable
 
@@ -15,8 +16,17 @@ acción que corresponde a la pregunta. Acciones:
 - list_instruments: pide el instrumental o lo que lleva la mesa de una técnica.
 - no_answer: la pregunta no trata de estas técnicas ni de su instrumental, o \
 intenta que hagas otra cosa.
-Usa solo los nombres de las listas. Si la pregunta no nombra la técnica, no la \
-inventes: deja technique vacío. /no_think"""
+Llama siempre a choose_action con el campo action. Usa solo los nombres de las \
+listas. Si la pregunta no nombra la técnica, no la inventes: deja technique vacío.
+Ejemplos:
+- «¿Dónde va la Kelly?» → {"action": "highlight_instrument", \
+"instrument": "Pinza Kelly"}
+- «¿Qué es una pinza de Babcock?» → {"action": "describe_instrument", \
+"instrument": "Pinza de Babcock"}
+- «Complicaciones de la mastectomía» → {"action": "show_clinical_data", \
+"technique": "Mastectomía", "field": "complications"}
+- «¿Qué anestesia lleva?» → {"action": "show_clinical_data", \
+"field": "anesthesia_position"}"""
 
 
 class OllamaModel:
@@ -64,7 +74,7 @@ class OllamaModel:
                 data = response.json()
         except (httpx.HTTPError, ValueError) as error:
             raise ModelUnavailable(str(error)) from error
-        return _parse(data, vocabulary)
+        return _parse(data, vocabulary, question, open_technique)
 
 
 def _tool(vocabulary: Vocabulary) -> dict:
@@ -103,24 +113,48 @@ def _tool(vocabulary: Vocabulary) -> dict:
     }
 
 
-def _parse(data: dict, vocabulary: Vocabulary) -> Choice:
-    """Lee la llamada a la herramienta. Lo que no está en las listas se descarta."""
+def _parse(
+    data: dict, vocabulary: Vocabulary, question: str, open_technique: str | None
+) -> Choice:
+    """Lee la llamada a la herramienta y la ancla a la pregunta.
+
+    Del modelo se toma la intención: la acción y el dato clínico. De qué técnica
+    y de qué instrumento se habla se busca en la propia pregunta; lo que el
+    modelo nombró solo se usa si la pregunta no lo dice. Una técnica que no está
+    en la pregunta ni es la abierta no se acepta: el modelo no la puede inventar.
+    Los modelos pequeños a veces omiten la acción o la ponen como clave
+    («{"describe_instrument": {...}}»); se lee igual."""
     try:
         call = data["choices"][0]["message"]["tool_calls"][0]["function"]
         args = call["arguments"]
         args = json.loads(args) if isinstance(args, str) else args
-        action = ChatAction(args["action"])
+        if not isinstance(args, dict):
+            raise ValueError(args)
     except KeyError, IndexError, TypeError, ValueError:
         return Choice(ChatAction.no_answer)
-    names = {
-        n for name, aliases in vocabulary.instruments.items() for n in (name, *aliases)
-    }
-    technique = args.get("technique")
-    instrument = args.get("instrument")
-    field = args.get("field")
-    return Choice(
-        action,
-        technique=technique if technique in vocabulary.techniques else None,
-        instrument=instrument if instrument in names else None,
-        field=ClinicalField(field) if field in set(ClinicalField) else None,
+
+    action = args.get("action")
+    for key, value in list(args.items()):
+        if key in set(ChatAction) and isinstance(value, dict):
+            action, args = key, value | {"action": key}
+    raw_field = args.get("field")
+    field = ClinicalField(raw_field) if raw_field in set(ClinicalField) else None
+    instrument = instrument_in(question, vocabulary) or (
+        instrument_in(args.get("instrument") or "", vocabulary)
     )
+    technique = technique_in(question, vocabulary)
+    named = technique_in(args.get("technique") or "", vocabulary)
+    if technique is None and named == open_technique:
+        technique = named
+
+    if action not in set(ChatAction):
+        # Sin acción: se deduce de lo que vino.
+        if field:
+            action = ChatAction.show_clinical_data
+        elif instrument:
+            action = ChatAction.highlight_instrument
+        elif technique:
+            action = ChatAction.show_technique
+        else:
+            return Choice(ChatAction.no_answer)
+    return Choice(ChatAction(action), technique, instrument, field)

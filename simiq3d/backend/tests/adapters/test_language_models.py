@@ -194,3 +194,60 @@ async def test_if_pc2_does_not_answer_the_model_is_unavailable():
 
 def test_the_open_technique_name_is_in_the_sample():
     assert COLECISTECTOMIA.name in VOCABULARY.techniques
+
+
+@pytest.mark.anyio
+async def test_ollama_cannot_invent_a_technique_or_lose_the_instrument():
+    # Lo que hizo qwen2.5:7b con «¿dónde se pone la pinza de allis?»
+    server = FakeOllama(
+        ollama_reply({"technique": "Colecistectomía", "action": "highlight_instrument"})
+    )
+
+    choice = await server.model().choose(
+        "¿dónde se pone la pinza de allis?", VOCABULARY, None
+    )
+
+    assert choice == Choice(
+        ChatAction.highlight_instrument, instrument="Pinza de Allis"
+    )
+
+
+@pytest.mark.anyio
+async def test_the_action_as_a_key_and_a_close_name_are_understood():
+    # Lo que hizo con «¿Qué es una pinza Babcock?» (en DataIQ: «Pinza de Babcock»)
+    server = FakeOllama(
+        ollama_reply({"describe_instrument": {"instrument": "Pinza Kelly"}})
+    )
+
+    choice = await server.model().choose("¿Qué es esto?", VOCABULARY, None)
+
+    assert choice == Choice(ChatAction.describe_instrument, instrument="Pinza Kelly")
+
+
+@pytest.mark.anyio
+async def test_a_missing_action_is_deduced_from_the_field():
+    # Lo que hizo con «¿Qué anestesia lleva la tiroidectomía?»
+    server = FakeOllama(
+        ollama_reply({"technique": "Tiroidectomía", "field": "anesthesia_position"})
+    )
+
+    choice = await server.model().choose(
+        "¿Qué anestesia lleva la tiroidectomía?", VOCABULARY, None
+    )
+
+    assert choice == Choice(
+        ChatAction.show_clinical_data,
+        "Tiroidectomía",
+        field=ClinicalField.anesthesia_position,
+    )
+
+
+@pytest.mark.anyio
+async def test_the_open_technique_is_accepted_when_the_model_names_it():
+    server = FakeOllama(
+        ollama_reply({"action": "list_instruments", "technique": "Mastectomía"})
+    )
+
+    choice = await server.model().choose("¿Qué lleva?", VOCABULARY, "Mastectomía")
+
+    assert choice == Choice(ChatAction.list_instruments, "Mastectomía")
