@@ -42,6 +42,11 @@ class Config(BaseSettings):
     llm_api_key: str = ""
     llm_timeout: float = 30
 
+    # Registro anónimo de conversaciones: solo se enciende en las sesiones de
+    # evaluación y la prueba piloto, con consentimiento informado, y se borra al
+    # terminar (ver el README de SIMIQ3D, «Backend y base de datos»).
+    chat_log_enabled: bool = False
+
     @property
     def jwks_url(self) -> str:
         return f"{self.dataiq_url.rstrip('/')}/.well-known/jwks.json"

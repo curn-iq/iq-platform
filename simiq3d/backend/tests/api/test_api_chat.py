@@ -3,13 +3,19 @@ from httpx import ASGITransport, AsyncClient
 
 from app.adapters.inbound.api.dependencies import (
     get_catalog_source,
+    get_chat_log,
     get_language_model,
     get_session,
     get_verifier,
 )
 from app.adapters.inbound.api.session import CSRF_HEADER, cookie_name
 from app.adapters.outbound.language.fake import FakeModel
+from app.adapters.outbound.persistence.models.chat import ChatLog
 from app.adapters.outbound.persistence.models.mappings import ModelMapping
+from app.adapters.outbound.persistence.repositories.chat_log import (
+    SQLAlchemyChatLogRepository,
+)
+from app.domain.chat import ChatAction
 from app.main import app
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 from app.ports.chat import ModelUnavailable
@@ -170,3 +176,63 @@ async def test_models_list_each_instrument_with_its_glb_and_cache(api, bearer, s
 @pytest.mark.anyio
 async def test_models_ask_for_an_account(api):
     assert (await api.get("/models")).status_code == 401
+
+
+class BrokenLog:
+    async def add(self, entry):
+        raise RuntimeError("la base no responde")
+
+
+@pytest.mark.anyio
+async def test_with_the_log_on_each_question_is_saved_without_who_asked(
+    api, bearer, session
+):
+    app.dependency_overrides[get_chat_log] = lambda: SQLAlchemyChatLogRepository(
+        session
+    )
+
+    await api.post(
+        "/chat",
+        json={
+            "question": "¿Dónde va la Kelly?",
+            "technique_id": str(COLECISTECTOMIA.id),
+        },
+        headers=bearer,
+    )
+
+    [entry] = await SQLAlchemyChatLogRepository(session).list_all()
+    assert entry.question == "¿Dónde va la Kelly?"
+    assert entry.open_technique_id == COLECISTECTOMIA.id
+    assert entry.action == ChatAction.highlight_instrument
+    assert (entry.technique_id, entry.instrument_id) == (COLECISTECTOMIA.id, KELLY.id)
+    assert entry.language_model == "fake"
+    assert entry.latency_ms >= 0
+    # Nada de la cuenta: ni el id ni el token.
+    assert set(ChatLog.__table__.columns.keys()) == {
+        "id",
+        "question",
+        "open_technique_id",
+        "action",
+        "technique_id",
+        "instrument_id",
+        "field",
+        "language_model",
+        "latency_ms",
+        "created_at",
+    }
+
+
+@pytest.mark.anyio
+async def test_with_the_log_off_nothing_is_saved(api, bearer, session):
+    await api.post("/chat", json={"question": "Hola"}, headers=bearer)
+
+    assert await SQLAlchemyChatLogRepository(session).list_all() == []
+
+
+@pytest.mark.anyio
+async def test_if_the_log_fails_the_student_still_gets_the_answer(api, bearer):
+    app.dependency_overrides[get_chat_log] = BrokenLog
+
+    response_ = await api.post("/chat", json={"question": "Hola"}, headers=bearer)
+
+    assert response_.status_code == 200

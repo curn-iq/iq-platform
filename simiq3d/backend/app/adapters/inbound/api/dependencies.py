@@ -12,6 +12,9 @@ from app.adapters.outbound.dataiq.catalog import DataIQCatalogSource
 from app.adapters.outbound.language.fake import FakeModel
 from app.adapters.outbound.language.ollama import OllamaModel
 from app.adapters.outbound.persistence.database import SessionLocal
+from app.adapters.outbound.persistence.repositories.chat_log import (
+    SQLAlchemyChatLogRepository,
+)
 from app.adapters.outbound.persistence.repositories.mappings import (
     SQLAlchemyModelMappingRepository,
 )
@@ -19,6 +22,7 @@ from app.adapters.outbound.security.tokens import JWKSVerifier
 from app.config import config
 from app.ports.catalog import CatalogSource
 from app.ports.chat import LanguageModel
+from app.ports.chat_log import ChatLogRepository
 from app.ports.models3d import ModelMappingRepository
 from app.ports.security import InvalidToken, KeysUnavailable, TokenVerifier
 
@@ -125,3 +129,11 @@ def get_model_repository(session: DbSession) -> ModelMappingRepository:
 
 
 ModelRepo = Annotated[ModelMappingRepository, Depends(get_model_repository)]
+
+
+def get_chat_log(session: DbSession) -> ChatLogRepository | None:
+    """El registro, solo si está encendido (CHAT_LOG_ENABLED)."""
+    return SQLAlchemyChatLogRepository(session) if config.chat_log_enabled else None
+
+
+ChatLog = Annotated[ChatLogRepository | None, Depends(get_chat_log)]
