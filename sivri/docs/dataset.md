@@ -165,7 +165,7 @@ Según los arreglos publicados en DataIQ:
 | Pinza Kelly Adson | 1 |
 | Pinza Kocher | 1 |
 | Pinza Lahey | 1 |
-| Pinza Moninjan | 1 |
+| Pinza de Moynihan | 1 |
 | Pinza Mosquito curva | 1 |
 | Portaagujas largo | 1 |
 | Separador de Senn Miller | 1 |

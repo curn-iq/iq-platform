@@ -45,7 +45,7 @@ Cómo se hacen:
 
   | Familia | Instrumentos | Qué cambia |
   |---|---|---|
-  | Pinzas con anillos y cremallera | Kelly, Kelly Adson, Mosquito curva, Kocher, Rochester, Allis, Babcock, Lahey, Moninjan, portaagujas | La punta |
+  | Pinzas con anillos y cremallera | Kelly, Kelly Adson, Mosquito curva, Kocher, Rochester, Allis, Babcock, Lahey, Moynihan, portaagujas | La punta |
   | Tijeras | Mayo, Metzenbaum | El largo y la punta |
   | Pinzas de disección | Con garra, sin garra | Los dientes |
   | Bisturí | Mangos N.° 3, 4 y 7; hojas #10, #10-11, #15 y #20 | Las medidas |

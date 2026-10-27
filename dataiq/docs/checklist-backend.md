@@ -149,3 +149,4 @@ Criterios para los arreglos sin nombre:
 | Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | El 9 se separó en los trocares de 10-12 mm y de 5 mm (IQ corregido); la mesa de Mayo, propuesta |
 | Nefrectomía laparoscópica | No tiene arreglo de mesa | Las dos mesas, propuestas |
 | Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Varilla del Lithoclast y evacuador de Ellik (IQ corregido) |
+| Colecistectomía, Tiroidectomía | El instrumento aparece como "Moninjan", la escritura fonética de Moynihan | Pinza de Moynihan; "Pinza Moninjan" queda como alias (hoja `catalogo`, columna `alias`) |
