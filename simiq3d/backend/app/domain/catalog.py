@@ -73,9 +73,11 @@ SCOPE_SPECIALTY = "Cirugía General"
 
 def normalize(text: str) -> str:
     """Para comparar nombres sin importar mayúsculas, tildes ni espacios."""
-    sin_tildes = unicodedata.normalize("NFD", text.lower())
-    sin_tildes = "".join(c for c in sin_tildes if unicodedata.category(c) != "Mn")
-    return " ".join(sin_tildes.split())
+    without_accents = unicodedata.normalize("NFD", text.lower())
+    without_accents = "".join(
+        c for c in without_accents if unicodedata.category(c) != "Mn"
+    )
+    return " ".join(without_accents.split())
 
 
 def in_scope(catalog: Catalog) -> tuple[Technique, ...]:
@@ -150,13 +152,17 @@ def _third(position: float, size: int, low: str, high: str) -> str:
     return low if fraction < 1 / 3 else high if fraction >= 2 / 3 else "centro"
 
 
-def place(technique: Technique, item: TableItem) -> str:
+def place(technique: Technique, item: TableItem) -> str | None:
     """La zona de la mesa donde va el objeto, como se ve en el diagrama y en el
     visor (la fila 1 arriba): «arriba a la derecha», «abajo, al centro». Se usa
-    en vez de la fila y la columna."""
+    en vez de la fila y la columna. None si DataIQ no tiene sus celdas: DataIQ
+    permite publicar un objeto de la mesa sin posición."""
+    if not item.cells:
+        return None
+    all_cells = [c for i in technique.mayo_items() for c in i.cells]
     rows, columns = technique.mayo_size or (
-        max(c.row for i in technique.mayo_items() for c in i.cells),
-        max(c.column for i in technique.mayo_items() for c in i.cells),
+        max(c.row for c in all_cells),
+        max(c.column for c in all_cells),
     )
     row = sum(c.row for c in item.cells) / len(item.cells)
     column = sum(c.column for c in item.cells) / len(item.cells)

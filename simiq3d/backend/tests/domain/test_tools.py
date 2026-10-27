@@ -62,7 +62,12 @@ def test_names_and_numbers_the_results_do_not_have_are_caught():
 
     text = "La Allis va en 7 técnicas, junto a la Pinza Kelly y la Pinza de Crile."
 
-    assert unsupported(text, results, CATALOG) == ["Pinza Kelly", "Pinza de Crile", "7"]
+    assert unsupported(text, results, CATALOG) == [
+        "Pinza Kelly",
+        "Pinza de Crile",
+        "7",
+        "7 tecnicas",
+    ]
 
 
 def test_a_technique_not_consulted_is_caught():
@@ -123,4 +128,56 @@ def test_generalizing_a_place_that_changes_is_caught():
 
     assert unsupported("En todas va en el mismo lugar.", results, CATALOG) == [
         "generaliza una ubicación que cambia entre técnicas"
+    ]
+
+
+def test_the_tools_do_not_break_with_an_object_without_position_or_number():
+    from dataclasses import replace
+
+    from app.domain.catalog import Catalog
+
+    kelly = next(i for i in COLECISTECTOMIA.items if i.name == "Pinza Kelly")
+    broken = replace(kelly, cells=(), legend_number=None)
+    technique = replace(
+        COLECISTECTOMIA,
+        items=tuple(broken if i is kelly else i for i in COLECISTECTOMIA.items),
+    )
+    catalog = Catalog(
+        techniques=(technique, *CATALOG.techniques[1:]), instruments=CATALOG.instruments
+    )
+
+    found = tools.find_instrument(catalog, "Kelly")["en_tecnicas"][0]
+    table = tools.get_technique(catalog, "Colecistectomía")
+
+    assert found["ubicacion"] == tools.NO_DATA
+    assert found["numero_en_el_diagrama"] == tools.NO_DATA
+    assert table["total_objetos"] == 4
+
+
+def test_a_count_must_be_one_of_the_totals():
+    # El 7 aparece (es el número del Farabeuf en el diagrama), pero la mesa
+    # lleva 4 objetos.
+    results = [tools.get_technique(CATALOG, "Colecistectomía")]
+
+    assert unsupported("La mesa lleva 4 objetos.", results, CATALOG) == []
+    assert unsupported("La mesa lleva 7 objetos.", results, CATALOG) == ["7 objetos"]
+    assert unsupported("Lleva cuatro instrumentos.", results, CATALOG) == []
+    assert unsupported("Lleva siete instrumentos.", results, CATALOG) == [
+        "siete instrumentos"
+    ]
+
+
+def test_counts_from_comparisons_and_lists_are_accepted():
+    results = [
+        tools.compare_techniques(CATALOG, "Colecistectomía", "Mastectomía"),
+        tools.list_techniques(CATALOG),
+        tools.find_instrument(CATALOG, "Allis"),
+    ]
+
+    assert unsupported("Comparten 2 instrumentos.", results, CATALOG) == []
+    assert unsupported("Hay tres técnicas.", results, CATALOG) == []
+    assert unsupported("La Allis va en dos técnicas.", results, CATALOG) == []
+    assert unsupported("Comparten 6 instrumentos.", results, CATALOG) == [
+        "6",
+        "6 instrumentos",
     ]

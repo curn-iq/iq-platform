@@ -107,10 +107,12 @@ async def fetch_instruments(base_url: str, token: str, transport=None) -> list[d
 
 async def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Carga el mapeo de modelos 3D.")
-    parser.add_argument("--archivo", type=Path, default=DEFAULT_FILE)
+    parser.add_argument(
+        "--archivo", dest="path", metavar="ARCHIVO", type=Path, default=DEFAULT_FILE
+    )
     args = parser.parse_args(argv)
     try:
-        rows = read_rows(args.archivo)
+        rows = read_rows(args.path)
         token = os.environ.get("DATAIQ_TOKEN") or await get_token(
             config.dataiq_url,
             input("Correo de DataIQ: "),
@@ -122,7 +124,7 @@ async def main(argv: list[str] | None = None) -> int:
         return 1
     async with SessionLocal() as session:
         await SQLAlchemyModelMappingRepository(session).replace_all(files)
-    print(f"Listo: {len(files)} modelos cargados desde {args.archivo}.")
+    print(f"Listo: {len(files)} modelos cargados desde {args.path}.")
     return 0
 
 

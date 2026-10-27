@@ -156,13 +156,13 @@ def _show_technique(technique: Technique) -> Reply:
 def _show_clinical_data(technique: Technique, field_: ClinicalField) -> Reply:
     label = FIELD_LABELS[field_]
     if field_ == ClinicalField.anesthesia_position:
-        partes = [
+        parts = [
             f"Anestesia: {technique.anesthesia}." if technique.anesthesia else "",
             f"Posición del paciente: {technique.patient_position}."
             if technique.patient_position
             else "",
         ]
-        text = " ".join(p for p in partes if p)
+        text = " ".join(p for p in parts if p)
     else:
         text = getattr(technique, field_.value)
     if not text:
@@ -178,7 +178,10 @@ def _show_clinical_data(technique: Technique, field_: ClinicalField) -> Reply:
 
 def _list_instruments(technique: Technique) -> Reply:
     items = sorted(technique.mayo_items(), key=lambda i: i.legend_number or 99)
-    lines = "\n".join(f"{i.legend_number}. {i.name}" for i in items)
+    lines = "\n".join(
+        f"{i.legend_number}. {i.name}" if i.legend_number else f"- {i.name}"
+        for i in items
+    )
     return Reply(
         ChatAction.list_instruments,
         f"Mesa de Mayo de {technique.name}, {len(items)} objetos:\n{lines}",
@@ -196,14 +199,14 @@ def _the(name: str, start: bool = False) -> str:
     """«la Pinza Kelly», «el Separador de Farabeuf»: el artículo por la primera
     palabra del nombre del catálogo. Con start=True, «La…», para empezar la
     frase sin tocar las mayúsculas del nombre."""
-    femenino = name.split()[0].lower() in {
+    is_feminine = name.split()[0].lower() in {
         "pinza",
         "pinzas",
         "tijera",
         "hoja",
         "cánula",
     }
-    article = "la" if femenino else "el"
+    article = "la" if is_feminine else "el"
     return f"{article.capitalize() if start else article} {name}"
 
 
@@ -244,11 +247,19 @@ def _highlight(
         )
     near = neighbors(technique, item)
     beside = f", junto a {_join([_the(n.name) for n in near])}" if near else ""
+    number = f" (n.º {item.legend_number} del diagrama)" if item.legend_number else ""
+    where = place(technique, item)
+    # Sin posición en DataIQ: se dice que va en la mesa, y que falta dónde.
+    text = (
+        f"{_the(instrument.name, start=True)} va {where} de la mesa de Mayo de "
+        f"{technique.name}{beside}{number}."
+        if where
+        else f"{_the(instrument.name, start=True)} va en la mesa de Mayo de "
+        f"{technique.name}{number}, pero DataIQ todavía no tiene su posición."
+    )
     return Reply(
         ChatAction.highlight_instrument,
-        f"{_the(instrument.name, start=True)} va {place(technique, item)} de la mesa "
-        f"de Mayo de {technique.name}{beside} (n.º {item.legend_number} del "
-        "diagrama).",
+        text,
         technique_id=technique.id,
         instrument_id=instrument.id,
         options=(f"¿Qué es {_the(instrument.name)}?",),

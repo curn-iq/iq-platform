@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 from dataclasses import replace
 from uuid import UUID
 
@@ -22,6 +23,11 @@ from app.domain.names import asks_to_describe, contains, instrument_in
 from app.ports.chat import ModelUnavailable
 
 logger = logging.getLogger(__name__)
+
+
+class _Busy(Exception):
+    """El modelo tardó demasiado o el Servidor PC2 está lleno (429)."""
+
 
 SYSTEM = """Eres el chat de SIMIQ3D: ayudas a estudiantes de Instrumentación \
 Quirúrgica a explorar la mesa de Mayo de las técnicas de Cirugía General, que \
@@ -138,9 +144,13 @@ class OllamaAgent:
         model: str,
         api_key: str = "",
         timeout: float = 60,
+        deadline: float = 30,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
+        # Tiempo máximo de una pregunta, sumando todos los pasos. Pasado ese
+        # tiempo responden las plantillas: el estudiante no espera minutos.
+        self._deadline = deadline
         self._model = model
         self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._timeout = timeout
@@ -163,11 +173,19 @@ class OllamaAgent:
         ]
         results: list[dict] = []
         scene: tools.Scene | None = None
-        async with httpx.AsyncClient(
-            transport=self._transport, timeout=self._timeout
-        ) as client:
+        ends = time.monotonic() + self._deadline
+        async with httpx.AsyncClient(transport=self._transport) as client:
             for _ in range(self.MAX_STEPS):
-                message = await self._ask(client, messages)
+                left = ends - time.monotonic()
+                if left <= 0:
+                    break
+                try:
+                    message = await self._ask(
+                        client, messages, min(self._timeout, left)
+                    )
+                except _Busy:
+                    # El Servidor PC2 está lento u ocupado: responden las plantillas.
+                    return await self._fall_back(question, catalog, open_technique_id)
                 calls = message.get("tool_calls") or []
                 if not calls:
                     # Respondió con texto en vez de llamar a reply.
@@ -207,10 +225,12 @@ class OllamaAgent:
                             "content": json.dumps(result, ensure_ascii=False),
                         }
                     )
-        logger.warning("El modelo no terminó en %s pasos: %r", self.MAX_STEPS, question)
+        logger.warning("El modelo no terminó a tiempo: %r", question)
         return await self._fall_back(question, catalog, open_technique_id)
 
-    async def _ask(self, client: httpx.AsyncClient, messages: list[dict]) -> dict:
+    async def _ask(
+        self, client: httpx.AsyncClient, messages: list[dict], timeout: float
+    ) -> dict:
         body = {
             "model": self._model,
             "temperature": 0,
@@ -218,7 +238,17 @@ class OllamaAgent:
             "tools": TOOLS,
         }
         try:
-            response = await client.post(self._url, json=body, headers=self._headers)
+            response = await client.post(
+                self._url, json=body, headers=self._headers, timeout=timeout
+            )
+        except httpx.TimeoutException as error:
+            raise _Busy() from error
+        except httpx.HTTPError as error:
+            # Apagado o inalcanzable: el chat queda no disponible (503).
+            raise ModelUnavailable(str(error)) from error
+        if response.status_code == 429:
+            raise _Busy()  # el filtro del Servidor PC2 está lleno
+        try:
             response.raise_for_status()
             return response.json()["choices"][0]["message"]
         except (httpx.HTTPError, ValueError, KeyError, IndexError) as error:
@@ -227,7 +257,14 @@ class OllamaAgent:
     async def _finish(
         self, text, results, scene, question, catalog, open_technique_id
     ) -> Reply:
-        text, _ = _clean(text)
+        text, trailing = _clean(text)
+        # «¿Quizás te refieres a…?» no es una sugerencia para seguir: es la
+        # respuesta. Se conserva, y la opción es la pregunta corregida.
+        did_you_mean = next(
+            (q for q in trailing if normalize(q).startswith("¿quizas")), None
+        )
+        if did_you_mean:
+            text = f"{text} {did_you_mean}".strip()
         text = _say_missing_description(text, question, results)
         if not results:
             # Respondió sin consultar nada: no hay de dónde salga lo que dice.
@@ -238,6 +275,13 @@ class OllamaAgent:
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
             scene = _implied_scene(text, catalog, open_technique_id)
+        if did_you_mean:
+            return Reply(
+                ChatAction.clarify,
+                text,
+                options=_corrected_questions(question, results),
+                answered_by=self.name,
+            )
         options = _follow_ups(results, scene)
         if scene is None:
             return Reply(
@@ -393,3 +437,23 @@ def _say_missing_description(text: str, question: str, results: list[dict]) -> s
     if asks_to_describe(question) and missing and "no tiene" not in normalize(text):
         return f"{text} DataIQ todavía no tiene su descripción.".strip()
     return text
+
+
+def _corrected_questions(question: str, results: list[dict]) -> tuple[str, ...]:
+    """La pregunta del estudiante con el nombre que no se encontró cambiado por
+    el que sugirió la consulta: «¿Dónde va la Kely rara?» → «¿Dónde va la Pinza
+    Kelly?». Si el nombre buscado no está tal cual en la pregunta, la opción es
+    el nombre sugerido."""
+    options: list[str] = []
+    for result in results:
+        searched, suggested = result.get("buscado"), result.get("quizas") or []
+        if not suggested:
+            continue
+        if searched and searched.lower() in question.lower():
+            start = question.lower().index(searched.lower())
+            options.append(
+                question[:start] + suggested[0] + question[start + len(searched) :]
+            )
+        else:
+            options.append(suggested[0])
+    return tuple(dict.fromkeys(options))[:3]

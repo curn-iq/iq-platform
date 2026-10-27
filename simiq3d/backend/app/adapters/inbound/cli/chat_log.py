@@ -33,22 +33,24 @@ def write_csv(entries: list[ChatLogEntry], path: Path) -> None:
 
 async def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Registro de conversaciones.")
-    sub = parser.add_subparsers(dest="orden", required=True)
+    sub = parser.add_subparsers(dest="command", required=True)
     exportar = sub.add_parser("exportar", help="Guardarlo en un CSV")
-    exportar.add_argument("archivo", type=Path)
+    exportar.add_argument("path", metavar="archivo", type=Path)
     borrar = sub.add_parser("borrar", help="Borrarlo todo")
-    borrar.add_argument("--si", action="store_true", help="No pedir confirmación")
+    borrar.add_argument(
+        "--si", dest="yes", action="store_true", help="No pedir confirmación"
+    )
     args = parser.parse_args(argv)
 
     async with SessionLocal() as session:
         repository = SQLAlchemyChatLogRepository(session)
-        if args.orden == "exportar":
+        if args.command == "exportar":
             entries = await repository.list_all()
-            write_csv(entries, args.archivo)
-            print(f"{len(entries)} conversaciones en {args.archivo}.")
+            write_csv(entries, args.path)
+            print(f"{len(entries)} conversaciones en {args.path}.")
             return 0
         if (
-            not args.si
+            not args.yes
             and input("¿Borrar todo el registro? Escribe «borrar»: ") != "borrar"
         ):
             print("No se borró nada.")

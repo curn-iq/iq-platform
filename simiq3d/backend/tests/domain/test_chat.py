@@ -1,3 +1,4 @@
+from app.domain.catalog import Catalog
 from app.domain.chat import (
     OUT_OF_SCOPE,
     ChatAction,
@@ -216,3 +217,53 @@ def test_the_vocabulary_only_has_the_mvp_tables():
     assert vocabulary.techniques == ("Colecistectomía", "Mastectomía", "Tiroidectomía")
     assert "Pinza Kocher" not in vocabulary.instruments
     assert vocabulary.instruments["Pinza Kelly"] == ("Pinzas Kelly", "Pinza de Kelly")
+
+
+def _without(technique, *, cells=True, number=True):
+    """La técnica con la Pinza Kelly sin celdas o sin número (DataIQ lo permite)."""
+    from dataclasses import replace
+
+    kelly = next(i for i in technique.items if i.name == "Pinza Kelly")
+    changed = replace(
+        kelly,
+        cells=kelly.cells if cells else (),
+        legend_number=kelly.legend_number if number else None,
+    )
+    items = tuple(changed if i is kelly else i for i in technique.items)
+    other = tuple(t for t in CATALOG.techniques if t is not technique)
+    return Catalog(
+        techniques=(replace(technique, items=items), *other),
+        instruments=CATALOG.instruments,
+    )
+
+
+def test_an_object_without_position_says_so_instead_of_breaking():
+    catalog = _without(COLECISTECTOMIA, cells=False)
+
+    reply = answer(
+        Choice(ChatAction.highlight_instrument, "Colecistectomía", "Pinza Kelly"),
+        catalog,
+        None,
+    )
+
+    assert reply.reply == (
+        "La Pinza Kelly va en la mesa de Mayo de Colecistectomía "
+        "(n.º 10 del diagrama), pero DataIQ todavía no tiene su posición."
+    )
+
+
+def test_an_object_without_number_does_not_say_none():
+    catalog = _without(COLECISTECTOMIA, number=False)
+
+    where = answer(
+        Choice(ChatAction.highlight_instrument, "Colecistectomía", "Pinza Kelly"),
+        catalog,
+        None,
+    )
+    listed = answer(
+        Choice(ChatAction.list_instruments, "Colecistectomía"), catalog, None
+    )
+
+    assert "None" not in where.reply and "n.º" not in where.reply
+    assert "None" not in listed.reply
+    assert "- Pinza Kelly" in listed.reply

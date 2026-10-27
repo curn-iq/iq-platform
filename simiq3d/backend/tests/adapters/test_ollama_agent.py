@@ -245,3 +245,88 @@ async def test_asking_what_it_is_always_says_when_there_is_no_description():
         reply.reply
         == "La Pinza Kelly va en el centro. DataIQ todavía no tiene su descripción."
     )
+
+
+@pytest.mark.anyio
+async def test_the_model_did_you_mean_is_kept_with_the_corrected_question():
+    # El caso de la revisión del PR #26: antes el estudiante veía solo
+    # «No encontré la Kellyy.», sin opciones.
+    server = ScriptedOllama(
+        tool_calls(call("find_instrument", instrument="pinza kelyx")),
+        tool_calls(
+            call(
+                "reply",
+                text="No encontré la pinza kelyx. "
+                "¿Quizás te refieres a la Pinza Kelly?",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply("¿Dónde va la pinza kelyx?", CATALOG, None)
+
+    assert reply.action == ChatAction.clarify
+    assert (
+        reply.reply
+        == "No encontré la pinza kelyx. ¿Quizás te refieres a la Pinza Kelly?"
+    )
+    assert reply.options[0] == "¿Dónde va la Pinza Kelly?"
+
+
+def _agent_with(handle, **options) -> OllamaAgent:
+    return OllamaAgent(
+        "https://pc2.prueba", "qwen", transport=httpx.MockTransport(handle), **options
+    )
+
+
+@pytest.mark.anyio
+async def test_a_slow_model_falls_back_to_the_templates_instead_of_failing():
+    def slow(request):
+        raise httpx.ReadTimeout("tardó demasiado", request=request)
+
+    reply = await _agent_with(slow).reply("Muéstrame la colecistectomía", CATALOG, None)
+
+    assert reply.answered_by == "plantillas (respaldo de qwen)"
+    assert reply.technique_id == COLECISTECTOMIA.id
+
+
+@pytest.mark.anyio
+async def test_a_full_pc2_falls_back_to_the_templates_at_once():
+    reply = await _agent_with(lambda r: httpx.Response(429)).reply(
+        "Muéstrame la colecistectomía", CATALOG, None
+    )
+
+    assert reply.answered_by == "plantillas (respaldo de qwen)"
+
+
+@pytest.mark.anyio
+async def test_when_the_time_is_up_the_templates_answer():
+    calls = []
+
+    def endless(request):
+        calls.append(request)
+        return httpx.Response(
+            200, json={"choices": [{"message": tool_calls(call("list_techniques"))}]}
+        )
+
+    reply = await _agent_with(endless, deadline=0).reply(
+        "Muéstrame la colecistectomía", CATALOG, None
+    )
+
+    assert reply.answered_by == "plantillas (respaldo de qwen)"
+    assert calls == []
+
+
+@pytest.mark.anyio
+async def test_each_call_waits_at_most_what_is_left_of_the_deadline():
+    timeouts = []
+
+    def handle(request):
+        timeouts.append(request.extensions["timeout"]["read"])
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": tool_calls(call("reply", text="Hola."))}]},
+        )
+
+    await _agent_with(handle, timeout=60, deadline=5).reply("Hola", CATALOG, None)
+
+    assert timeouts[0] <= 5
