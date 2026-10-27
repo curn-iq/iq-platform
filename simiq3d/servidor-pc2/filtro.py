@@ -13,10 +13,16 @@ pública no puede usar la GPU para otra cosa.
     FILTRO_CLAVE=... uv run filtro.py        # http://127.0.0.1:11435
 
 Variables: FILTRO_CLAVE (obligatoria), FILTRO_MODELOS (separados por coma; por
-defecto qwen3-vl:8b-instruct), OLLAMA_URL (por defecto http://127.0.0.1:11434),
+defecto qwen3-vl:8b-instruct), FILTRO_SIMULTANEAS (cuántas preguntas atiende a
+la vez; por defecto 2), OLLAMA_URL (por defecto http://127.0.0.1:11434),
 FILTRO_PUERTO (por defecto 11435).
+
+Si ya está atendiendo FILTRO_SIMULTANEAS, responde 429 al momento en vez de
+hacer fila: el backend responde entonces con sus plantillas, y nadie espera
+minutos a que la GPU se desocupe.
 """
 
+import asyncio
 import json
 import os
 import secrets
@@ -36,9 +42,11 @@ def create_app(
     models: set[str],
     ollama_url: str = "http://127.0.0.1:11434",
     transport: httpx.AsyncBaseTransport | None = None,
+    at_once: int = 2,
 ) -> Starlette:
     if len(key) < 32:
         raise ValueError("FILTRO_CLAVE debe tener al menos 32 caracteres")
+    slots = asyncio.Semaphore(at_once)
 
     async def health(request: Request) -> Response:
         # Para saber desde fuera si el Servidor PC2 está prendido; no revela nada.
@@ -58,7 +66,9 @@ def create_app(
         if not isinstance(data, dict) or data.get("model") not in models:
             return JSONResponse({"error": "Modelo no permitido"}, status_code=403)
         data["stream"] = False
-        async with httpx.AsyncClient(transport=transport, timeout=180) as client:
+        if slots.locked():
+            return JSONResponse({"error": "Servidor ocupado"}, status_code=429)
+        async with slots, httpx.AsyncClient(transport=transport, timeout=180) as client:
             try:
                 answer = await client.post(f"{ollama_url}/v1/chat/completions", json=data)
             except httpx.HTTPError:
@@ -82,5 +92,6 @@ if __name__ == "__main__":
         os.environ["FILTRO_CLAVE"],
         {m.strip() for m in os.environ.get("FILTRO_MODELOS", "qwen3-vl:8b-instruct").split(",")},
         os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"),
+        at_once=int(os.environ.get("FILTRO_SIMULTANEAS", "2")),
     )
     uvicorn.run(app, host="127.0.0.1", port=int(os.environ.get("FILTRO_PUERTO", "11435")))

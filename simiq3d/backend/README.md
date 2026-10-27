@@ -144,6 +144,8 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `LLM_URL` | La dirección de Tailscale Funnel del Servidor PC2 |
   | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
   | `CHAT_LOG_ENABLED` | `false`, salvo en las sesiones de evaluación |
+  | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
+  | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
 
   Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
   carpeta.

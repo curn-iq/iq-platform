@@ -4,6 +4,7 @@
 # ///
 """Pruebas del filtro: uv run --script test_filtro.py"""
 
+import asyncio
 import json
 
 import httpx
@@ -99,6 +100,31 @@ async def test_huge_requests_are_rejected(client):
 @pytest.mark.anyio
 async def test_health_answers_without_the_key(client):
     assert (await client.get("/salud")).json() == {"ok": True}
+
+
+@pytest.mark.anyio
+async def test_when_it_is_full_it_says_busy_at_once():
+    release = asyncio.Event()
+
+    def slow(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={})
+
+    class Waiting(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            await release.wait()
+            return slow(request)
+
+    app = create_app(KEY, {"qwen3-vl:8b-instruct"}, "http://ollama", Waiting(), at_once=1)
+    headers = {"Authorization": f"Bearer {KEY}"}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://pc2"
+    ) as c:
+        first = asyncio.create_task(c.post("/v1/chat/completions", json=CHAT, headers=headers))
+        await asyncio.sleep(0.05)
+        second = await c.post("/v1/chat/completions", json=CHAT, headers=headers)
+        release.set()
+        assert (await first).status_code == 200
+    assert second.status_code == 429
 
 
 def test_a_short_key_is_refused():

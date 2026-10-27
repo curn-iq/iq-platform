@@ -60,6 +60,10 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 
 - [x] Registro anónimo con `CHAT_LOG_ENABLED` (acción, ids, quién respondió,
   demora)
+- [x] Tiempo máximo por pregunta (30 s); si se acaba, responden las plantillas
+- [x] Tope de preguntas por cuenta (`chat_quota`, id cifrado con HMAC)
+- [x] Filtro del Servidor PC2 con límite de preguntas simultáneas (`429`)
+- [ ] `CHAT_QUOTA_SECRET` en Vercel y la migración del tope en Neon
 - [x] Comando `chat_log` para exportarlo a CSV y borrarlo
 
 ## Despliegue

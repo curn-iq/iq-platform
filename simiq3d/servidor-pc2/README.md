@@ -12,7 +12,9 @@ Backend de SIMIQ3D (Vercel) ──HTTPS + clave──▶ Tailscale Funnel ──
 Solo el filtro queda publicado. Ollama no tiene autenticación, así que escucha
 únicamente en `127.0.0.1`. El filtro exige la clave que solo conoce el backend y
 reenvía a Ollama solo `POST /v1/chat/completions`, con el modelo configurado y
-un tamaño máximo. Si el PC se apaga, solo deja de funcionar el chat: el visor y
+un tamaño máximo. Atiende pocas preguntas a la vez (`FILTRO_SIMULTANEAS`, por
+defecto 2): si llega otra, responde `429` al momento y el backend contesta con
+sus plantillas, en vez de que la pregunta haga fila en la GPU. Si el PC se apaga, solo deja de funcionar el chat: el visor y
 las técnicas siguen.
 
 ## Montarlo
@@ -82,5 +84,5 @@ uv run --script test_filtro.py
 ```
 
 Comprueban que sin la clave no pase nada, que solo se acepte el modelo
-configurado, que no se publiquen las demás rutas de Ollama y que se rechacen
-las peticiones demasiado grandes.
+configurado, que no se publiquen las demás rutas de Ollama, que se rechacen
+las peticiones demasiado grandes y que, lleno, responda `429` sin hacer fila.
