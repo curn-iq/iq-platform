@@ -143,7 +143,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `LANGUAGE_MODEL`, `LLM_MODEL`, `LLM_TIMEOUT` | `ollama`, `qwen3-vl:8b-instruct`, `60` |
   | `LLM_URL` | La dirección de Tailscale Funnel del Servidor PC2 |
   | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
-  | `CHAT_LOG_ENABLED` | `false`, salvo en las sesiones de evaluación |
+  | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
   | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
   | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
 
@@ -168,7 +168,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
 # Mapeo de modelos 3D: lee ../models/modelos.csv (columnas instrumento y archivo)
 uv run python -m app.adapters.inbound.cli.load_models
 
-# Registro de conversaciones (solo con CHAT_LOG_ENABLED=true)
+# Registro de conversaciones (se apaga con CHAT_LOG_ENABLED=false)
 uv run python -m app.adapters.inbound.cli.chat_log exportar registro.csv
 uv run python -m app.adapters.inbound.cli.chat_log borrar
 ```

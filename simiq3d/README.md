@@ -172,8 +172,9 @@ Sugerencias para quien lo implemente:
   más completas (todas las ubicaciones de un instrumento, todos sus vecinos), y
   ninguno de los dos dejó pasar un dato falso; a cambio tarda más (mediana de
   3,9 s contra 2,4 s, máximo 6,7 s). La variante *instruct* y no la
-  *thinking*: razonar antes de cada paso sumaría segundos. La elección final
-  se hace con el banco de preguntas.
+  *thinking*: razonar antes de cada paso sumaría segundos. Es el modelo del
+  MVP (decidido por Mauricio el 2026-10-27); el banco de preguntas mide su
+  exactitud, y un modelo más grande queda para después del MVP.
 - La RX 6600 XT no está en la lista oficial de GPU AMD de Ollama: probar su
   backend Vulkan o `HSA_OVERRIDE_GFX_VERSION=10.3.0`; si ninguno funciona,
   corre en la CPU, más lento.
@@ -220,9 +221,11 @@ El registro de conversaciones:
 
 - **Sin datos de quién pregunta**: no guarda la cuenta ni nada que identifique
   a la persona.
-- Se recoge en las sesiones de evaluación y de la prueba piloto, donde los
-  participantes dan su consentimiento informado (Resolución 8430 de 1993), y
-  se borra al terminar la evaluación.
+- Está siempre encendido (decidido por Mauricio el 2026-10-27): mide la
+  exactitud con preguntas reales, no solo con las de las sesiones de
+  evaluación. En la prueba piloto, los participantes además dan su
+  consentimiento informado (Resolución 8430 de 1993). Se borra al terminar la
+  evaluación.
 - La política de tratamiento de datos lo declara, con su finalidad
   (Ley 1581 de 2012).
 

@@ -54,7 +54,7 @@ class Config(BaseSettings):
     # Registro anónimo de conversaciones: solo se enciende en las sesiones de
     # evaluación y la prueba piloto, con consentimiento informado, y se borra al
     # terminar (ver el README de SIMIQ3D, «Backend y base de datos»).
-    chat_log_enabled: bool = False
+    chat_log_enabled: bool = True
 
     @property
     def jwks_url(self) -> str:
