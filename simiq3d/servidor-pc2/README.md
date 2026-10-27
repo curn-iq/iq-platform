@@ -65,7 +65,9 @@ las técnicas siguen.
    en la consola de Tailscale.
 
 5. **Que no se suspenda.** El PC tiene que estar prendido durante las
-   sesiones de uso:
+   sesiones de uso. Basta con apagar la suspensión automática (en GNOME:
+   Configuración → Energía → Suspensión automática, desactivada; así está el
+   Servidor PC2). Para impedir también la suspensión a mano:
 
    ```sh
    sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
@@ -76,6 +78,32 @@ las técnicas siguen.
    (ver [`../backend/README.md`](../backend/README.md), «Producción»).
 
 Para comprobar desde fuera: `curl https://<equipo>.<tailnet>.ts.net/salud`.
+
+## Antes de una sesión de uso
+
+Medido en producción el 2026-10-27: el chat tarda de 5 a 8 s por pregunta, y
+unos 11 s la primera.
+
+- **El modelo queda siempre cargado en la GPU.** Ollama lo saca de memoria a
+  los 5 minutos sin uso, y la pregunta siguiente tarda unos segundos más en
+  cargarlo. Con `OLLAMA_KEEP_ALIVE=-1` no sale nunca; a cambio, ocupa 6,3 GB
+  de la GPU todo el tiempo:
+
+  ```sh
+  sudo mkdir -p /etc/systemd/system/ollama.service.d
+  printf '[Service]\nEnvironment="OLLAMA_KEEP_ALIVE=-1"\n' | sudo tee /etc/systemd/system/ollama.service.d/keep-alive.conf
+  sudo systemctl daemon-reload && sudo systemctl restart ollama
+  ```
+
+- **Pocas aplicaciones abiertas en el PC.** El modelo (6,3 GB) tiene que
+  caber en los 8 GB de la GPU, que también usan el escritorio, el navegador y
+  el editor. Lo que no cabe corre en la CPU, más lenta: con el 20 % en la CPU,
+  cada respuesta tardó de 5 a 8 s; al 100 % en la GPU, la mediana fue de
+  3,9 s. Se comprueba con `ollama ps` (columna `PROCESSOR`).
+- **Una pregunta de prueba antes de empezar.** La primera pregunta despierta
+  las funciones de SIMIQ3D y de DataIQ en Vercel, que se apagan sin uso, y
+  trae el catálogo; por eso tarda más. Las siguientes ya los encuentran
+  despiertos.
 
 ## Pruebas del filtro
 

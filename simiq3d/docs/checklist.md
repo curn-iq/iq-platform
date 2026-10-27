@@ -48,9 +48,9 @@ porqué están en el [README](../README.md).
   vuelve a pedir)
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
 - [x] Tailscale Funnel con el filtro con clave (solo el filtro queda publicado)
-- [ ] Servidor PC2 sin suspensión durante las sesiones de uso
-- [ ] Elegir el modelo de lenguaje con el banco de preguntas (probados Qwen2.5
-  7B y Qwen3-VL 8B; por defecto, Qwen3-VL 8B instruct)
+- [x] Servidor PC2 sin suspensión por inactividad
+- [x] Modelo de lenguaje del MVP: Qwen3-VL 8B instruct (probados Qwen2.5 7B y
+  Qwen3-VL 8B)
 - [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
   y plantillas de respaldo), mapeo de modelos y registro de conversaciones, con
   pruebas automatizadas; avance en [`checklist-backend.md`](checklist-backend.md)
