@@ -119,6 +119,43 @@ Servidor PC2 no responden (el chat queda no disponible; el visor sigue).
 El riesgo de que el modelo invente y cómo se controla:
 [`../README.md`](../README.md), «Chat».
 
+## Producción
+
+La API corre en Vercel (plan Hobby) como funciones de Python, en el proyecto
+`simiq3d-backend` (región `cle1`, junto a Neon). La base es Neon (proyecto
+`simiq3d`, PostgreSQL 18, Ohio), aparte de la de DataIQ. El modelo de lenguaje
+está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.md).
+
+- **Despliegue:** en GitHub Actions (`.github/workflows/simiq3d-backend.yml`),
+  cada PR corre el estilo y las pruebas; cada push a `main` despliega en Vercel
+  con el CLI y publica la imagen en `ghcr.io/curn-iq/simiq3d-backend`.
+- **Variables de entorno del proyecto en Vercel:**
+
+  | Variable | Valor |
+  |---|---|
+  | `DATABASE_URL` (secreta) | La cadena directa de Neon, con `postgresql+asyncpg://` y `?ssl=require` en vez de `?sslmode=require&channel_binding=require` |
+  | `DATABASE_POOL`, `SQL_ECHO` | `false` |
+  | `DATAIQ_URL` | `https://dataiq-backend.vercel.app` |
+  | `LANGUAGE_MODEL`, `LLM_MODEL`, `LLM_TIMEOUT` | `ollama`, `qwen3-vl:8b-instruct`, `60` |
+  | `LLM_URL` | La dirección de Tailscale Funnel del Servidor PC2 |
+  | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
+  | `CHAT_LOG_ENABLED` | `false`, salvo en las sesiones de evaluación |
+
+  Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
+  carpeta.
+
+- **Migraciones en Neon:** desde un computador, con `DATABASE_URL` apuntando a
+  Neon solo en esa terminal:
+
+  ```fish
+  read -s -x -P "Cadena de Neon: " DATABASE_URL
+  uv run alembic upgrade head
+  ```
+
+- **El frontend** llega al backend por el rewrite `/api/simiq3d/*` →
+  `https://simiq3d-backend.vercel.app/*` de su proyecto de Vercel, para que la
+  cookie de sesión sea del mismo origen.
+
 ## Comandos
 
 ```sh

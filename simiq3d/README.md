@@ -286,6 +286,7 @@ Arquitectura, rutas y cómo se corre el frontend:
 ```
 simiq3d/
 ├── backend/                   FastAPI: el chat y el mapeo de modelos (ver su README)
+├── servidor-pc2/              filtro con clave para Ollama y cómo montar el Servidor PC2
 ├── frontend/                  Angular + Three.js
 ├── models/                    .blend por familia, GLB por instrumento y modelos.csv
 └── docs/

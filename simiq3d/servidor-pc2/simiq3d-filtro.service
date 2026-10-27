@@ -1,0 +1,17 @@
+# Servicio de usuario de systemd para el filtro con clave del Servidor PC2.
+# Se instala en ~/.config/systemd/user/ (ver README.md de esta carpeta).
+[Unit]
+Description=Filtro con clave de SIMIQ3D para Ollama (Servidor PC2)
+After=network-online.target
+
+[Service]
+# La clave va en un archivo aparte, solo legible por el dueño (chmod 600)
+EnvironmentFile=%h/.config/simiq3d/filtro.env
+WorkingDirectory=%h/Projects/iq-platform/simiq3d/servidor-pc2
+# Ruta de uv: la que da `which uv` (aquí, la de mise)
+ExecStart=%h/.local/share/mise/installs/uv/latest/.mise-bins/uv run --script filtro.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

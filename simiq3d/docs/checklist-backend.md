@@ -64,8 +64,13 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 
 ## Despliegue
 
-- [ ] Workflow de GitHub Actions (estilo y pruebas en cada PR; despliegue en
-  cada push a `main`)
-- [ ] Proyecto de Vercel `simiq3d-backend` y rewrite `/api/simiq3d/*`
-- [ ] Servidor PC2: sin suspensión y con Tailscale Funnel detrás del filtro
-  con clave
+- [x] Workflow de GitHub Actions (estilo y pruebas en cada PR; despliegue en
+  cada push a `main` e imagen en ghcr.io)
+- [x] Proyecto de Vercel `simiq3d-backend`, con las variables que no son secretas
+- [ ] `DATABASE_URL` de Neon en Vercel
+- [x] Filtro con clave del Servidor PC2 (`servidor-pc2/filtro.py`), con pruebas
+  y probado con Ollama
+- [ ] Servidor PC2: filtro como servicio, Tailscale Funnel, sin suspensión;
+  `LLM_URL` y `LLM_API_KEY` en Vercel
+- [ ] Primer despliegue en producción, probado contra DataIQ en Vercel
+- [ ] Rewrite `/api/simiq3d/*` en el proyecto de Vercel del frontend
