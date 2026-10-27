@@ -73,9 +73,11 @@ SCOPE_SPECIALTY = "Cirugía General"
 
 def normalize(text: str) -> str:
     """Para comparar nombres sin importar mayúsculas, tildes ni espacios."""
-    sin_tildes = unicodedata.normalize("NFD", text.lower())
-    sin_tildes = "".join(c for c in sin_tildes if unicodedata.category(c) != "Mn")
-    return " ".join(sin_tildes.split())
+    without_accents = unicodedata.normalize("NFD", text.lower())
+    without_accents = "".join(
+        c for c in without_accents if unicodedata.category(c) != "Mn"
+    )
+    return " ".join(without_accents.split())
 
 
 def in_scope(catalog: Catalog) -> tuple[Technique, ...]:

@@ -156,13 +156,13 @@ def _show_technique(technique: Technique) -> Reply:
 def _show_clinical_data(technique: Technique, field_: ClinicalField) -> Reply:
     label = FIELD_LABELS[field_]
     if field_ == ClinicalField.anesthesia_position:
-        partes = [
+        parts = [
             f"Anestesia: {technique.anesthesia}." if technique.anesthesia else "",
             f"Posición del paciente: {technique.patient_position}."
             if technique.patient_position
             else "",
         ]
-        text = " ".join(p for p in partes if p)
+        text = " ".join(p for p in parts if p)
     else:
         text = getattr(technique, field_.value)
     if not text:
@@ -196,14 +196,14 @@ def _the(name: str, start: bool = False) -> str:
     """«la Pinza Kelly», «el Separador de Farabeuf»: el artículo por la primera
     palabra del nombre del catálogo. Con start=True, «La…», para empezar la
     frase sin tocar las mayúsculas del nombre."""
-    femenino = name.split()[0].lower() in {
+    is_feminine = name.split()[0].lower() in {
         "pinza",
         "pinzas",
         "tijera",
         "hoja",
         "cánula",
     }
-    article = "la" if femenino else "el"
+    article = "la" if is_feminine else "el"
     return f"{article.capitalize() if start else article} {name}"
 
 
