@@ -75,6 +75,14 @@ mesa en 3D»):
 - **Un GLB por instrumento**, con nombre en inglés (`kelly_forceps.glb`), como
   el resto del código.
 
+La tabla de medidas es también el mapeo de cada modelo a su instrumento:
+`models/modelos.csv`, con las columnas `instrumento` (el nombre del instrumento
+en DataIQ, o uno de sus alias), `archivo` (su GLB) y, después, las medidas y la
+fuente de cada una. El backend carga las dos primeras columnas con
+`uv run python -m app.adapters.inbound.cli.load_models`: traduce cada nombre a
+su id en el DataIQ de ese entorno y deja la tabla `model_mappings` igual al
+archivo.
+
 ### Fotos del instrumental de IQ (opcional)
 
 Los modelos se hacen con fotos de catálogo, así que estas fotos no son

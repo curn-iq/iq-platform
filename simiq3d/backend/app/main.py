@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.adapters.inbound.api.routes import health
+from app.adapters.inbound.api.routes import chat, health, models
 from app.adapters.inbound.api.session import CSRF_HEADER
 from app.config import config
 
@@ -28,4 +28,6 @@ def cors_options(origins: list[str]) -> dict:
 
 app.add_middleware(CORSMiddleware, **cors_options(config.cors_origins))
 
+app.include_router(chat.router)
+app.include_router(models.router)
 app.include_router(health.router)

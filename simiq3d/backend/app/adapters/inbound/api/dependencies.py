@@ -1,15 +1,25 @@
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.inbound.api.session import session_token
 from app.adapters.outbound.dataiq.catalog import DataIQCatalogSource
+from app.adapters.outbound.language.fake import FakeModel
+from app.adapters.outbound.language.ollama import OllamaModel
+from app.adapters.outbound.persistence.database import SessionLocal
+from app.adapters.outbound.persistence.repositories.mappings import (
+    SQLAlchemyModelMappingRepository,
+)
 from app.adapters.outbound.security.tokens import JWKSVerifier
 from app.config import config
 from app.ports.catalog import CatalogSource
+from app.ports.chat import LanguageModel
+from app.ports.models3d import ModelMappingRepository
 from app.ports.security import InvalidToken, KeysUnavailable, TokenVerifier
 
 _verifier = JWKSVerifier(config.jwks_url, config.jwt_issuer, config.jwt_audience)
@@ -79,3 +89,39 @@ def get_catalog_source() -> CatalogSource:
 
 
 Catalogs = Annotated[CatalogSource, Depends(get_catalog_source)]
+
+
+# --- Modelo de lenguaje ----------------------------------------------------
+
+_language_model: LanguageModel = (
+    OllamaModel(
+        config.llm_url, config.llm_model, config.llm_api_key, config.llm_timeout
+    )
+    if config.language_model == "ollama"
+    else FakeModel()
+)
+
+
+def get_language_model() -> LanguageModel:
+    return _language_model
+
+
+Model = Annotated[LanguageModel, Depends(get_language_model)]
+
+
+# --- Base de datos ---------------------------------------------------------
+
+
+async def get_session() -> AsyncIterator[AsyncSession]:
+    async with SessionLocal() as session:
+        yield session
+
+
+DbSession = Annotated[AsyncSession, Depends(get_session)]
+
+
+def get_model_repository(session: DbSession) -> ModelMappingRepository:
+    return SQLAlchemyModelMappingRepository(session)
+
+
+ModelRepo = Annotated[ModelMappingRepository, Depends(get_model_repository)]
