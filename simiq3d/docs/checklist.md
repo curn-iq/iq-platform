@@ -31,9 +31,10 @@ porqué están en el [README](../README.md).
 - [ ] Hacia dónde apunta cada instrumento, según las fotos de las mesas bien
   armadas: si es una regla única queda en SIMIQ3D; si cambia por instrumento,
   va en DataIQ
-- [ ] La descripción breve de los 23 instrumentos en DataIQ
-  (`instruments.description`, hoy vacía), con fuentes citables: es lo que
-  muestra SIMIQ3D al hacer clic en un instrumento
+- [x] La descripción breve de los 23 instrumentos en DataIQ
+  (`instruments.description`), con fuentes citables (columna
+  `fuentes_descripcion` de `seed/tecnicas.xlsx`): es lo que muestra SIMIQ3D al
+  hacer clic en un instrumento
 - [ ] El registro de conversaciones en la política de tratamiento de datos,
   con su finalidad (evaluación)
 
