@@ -46,12 +46,17 @@ desde `dataiq/backend`.
    La documentación interactiva queda en http://127.0.0.1:8000/docs. Su botón
    «Authorize» pide el token a `POST /auth/token`.
 
-4. Para escribir hace falta una cuenta con rol: registrarse en
-   `POST /auth/register` y asignarse el rol por terminal:
+4. Cuentas para desarrollo, una por rol, todas con la contraseña `desarrollo`:
+   `usuario@example.com`, `colaborador@example.com`, `revisor@example.com` y
+   `admin@example.com`. Se crean con:
 
    ```sh
-   uv run python -m app.adapters.inbound.cli.assign_role <correo> admin
+   uv run python -m seed.dev_accounts
    ```
+
+   Solo funciona contra una base local; en Neon se niega. Para una cuenta
+   propia: registrarse en `POST /auth/register` y asignarse el rol por terminal
+   (`uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`).
 
 ## Cómo lo usa el frontend
 
