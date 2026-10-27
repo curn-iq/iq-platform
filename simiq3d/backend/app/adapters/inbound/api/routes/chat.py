@@ -9,6 +9,7 @@ from app.adapters.inbound.api.dependencies import (
     ChatLog,
     CurrentCaller,
     Engine,
+    Quota,
 )
 from app.adapters.inbound.api.schemas import ChatIn, ChatOut
 from app.domain.chat import Vocabulary, spelling_reply
@@ -28,6 +29,7 @@ async def ask(
     catalogs: Catalogs,
     engine: Engine,
     chat_log: ChatLog,
+    quota: Quota,
 ) -> ChatOut:
     """Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
     técnica abierta en el visor, si hay una.
@@ -53,6 +55,13 @@ async def ask(
     if corrected:
         reply = replace(spelling_reply(corrected), answered_by="corrector")
     else:
+        # El tope protege al Servidor PC2: cualquiera con una cuenta gratis podría
+        # llenarlo de preguntas. La corrección de arriba no lo gasta.
+        if quota is not None and not await quota.take(caller.account_id):
+            raise HTTPException(
+                status.HTTP_429_TOO_MANY_REQUESTS,
+                "Hiciste muchas preguntas seguidas. Espera unos minutos.",
+            )
         try:
             reply = await engine.reply(body.question, catalog, body.technique_id)
         except ModelUnavailable as error:

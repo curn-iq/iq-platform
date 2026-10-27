@@ -99,8 +99,11 @@ visor, opcional) y devuelve:
 | `no_answer` | Nada: la pregunta no trata de estas técnicas |
 
 `options` son preguntas que se pueden mandar tal cual como la siguiente.
-Errores: `401` sin sesión o si DataIQ rechaza el token, `503` si DataIQ o el
-Servidor PC2 no responden (el chat queda no disponible; el visor sigue).
+Errores: `401` sin sesión o si DataIQ rechaza el token; `429` si la cuenta pasó
+el tope de preguntas (por defecto, 30 cada 10 minutos: «Espera unos minutos»);
+`503` si DataIQ o el Servidor PC2 no responden (el chat queda no disponible; el
+visor sigue). Si el Servidor PC2 está lento u ocupado, no hay error: responden
+las plantillas.
 
 ## Cómo responde el chat
 
@@ -109,9 +112,10 @@ Servidor PC2 no responden (el chat queda no disponible; el visor sigue).
 2. Con `LANGUAGE_MODEL=ollama`, el **agente** (`adapters/outbound/language/ollama.py`)
    deja que el modelo use las consultas de `app/domain/tools.py` y redacte la
    respuesta. Antes de enviarla, `app/domain/grounding.py` verifica que cada
-   nombre, número y ubicación esté en lo consultado y que no hable de la
-   cuadrícula. Si no pasa, si no consultó nada o si no termina en seis pasos,
-   responden las plantillas.
+   nombre, número y ubicación esté en lo consultado, que los conteos («7
+   objetos») sean un total de los resultados y que no hable de la cuadrícula.
+   Si no pasa, si no consultó nada o si no termina en 30 segundos
+   (`LLM_DEADLINE`), responden las plantillas.
 3. Las **plantillas** (`app/domain/chat.py`, con las reglas de
    `adapters/outbound/language/fake.py`) arman la respuesta solo con datos de
    DataIQ. Son el motor con `LANGUAGE_MODEL=fake` y el respaldo del agente.

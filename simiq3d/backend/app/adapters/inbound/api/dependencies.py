@@ -18,11 +18,13 @@ from app.adapters.outbound.persistence.repositories.chat_log import (
 from app.adapters.outbound.persistence.repositories.mappings import (
     SQLAlchemyModelMappingRepository,
 )
+from app.adapters.outbound.persistence.repositories.quota import SQLAlchemyChatQuota
 from app.adapters.outbound.security.tokens import JWKSVerifier
 from app.config import config
 from app.ports.catalog import CatalogSource
 from app.ports.chat import ChatEngine
 from app.ports.chat_log import ChatLogRepository
+from app.ports.chat_quota import ChatQuota
 from app.ports.models3d import ModelMappingRepository
 from app.ports.security import InvalidToken, KeysUnavailable, TokenVerifier
 
@@ -141,3 +143,18 @@ def get_chat_log(session: DbSession) -> ChatLogRepository | None:
 
 
 ChatLog = Annotated[ChatLogRepository | None, Depends(get_chat_log)]
+
+
+def get_chat_quota(session: DbSession) -> ChatQuota | None:
+    """El tope de preguntas por cuenta, si hay clave (CHAT_QUOTA_SECRET)."""
+    if not config.chat_quota_secret:
+        return None
+    return SQLAlchemyChatQuota(
+        session,
+        config.chat_quota_secret,
+        config.chat_quota_max,
+        config.chat_quota_window,
+    )
+
+
+Quota = Annotated[ChatQuota | None, Depends(get_chat_quota)]

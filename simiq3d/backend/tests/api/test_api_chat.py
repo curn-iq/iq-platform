@@ -5,6 +5,7 @@ from app.adapters.inbound.api.dependencies import (
     get_catalog_source,
     get_chat_engine,
     get_chat_log,
+    get_chat_quota,
     get_session,
     get_verifier,
 )
@@ -254,3 +255,30 @@ async def test_a_misspelled_name_gets_a_did_you_mean(api, bearer):
         "¿Quizás quisiste decir «¿Dónde va la Kelly en la Mastectomía?»?"
     )
     assert response_.json()["options"] == ["¿Dónde va la Kelly en la Mastectomía?"]
+
+
+class FullQuota:
+    async def take(self, account_id):
+        return False
+
+
+@pytest.mark.anyio
+async def test_over_the_limit_the_chat_asks_to_wait(api, bearer):
+    app.dependency_overrides[get_chat_quota] = FullQuota
+
+    response_ = await api.post("/chat", json={"question": "Hola"}, headers=bearer)
+
+    assert response_.status_code == 429
+    assert "Espera unos minutos" in response_.json()["detail"]
+
+
+@pytest.mark.anyio
+async def test_the_spelling_suggestion_does_not_use_the_quota(api, bearer):
+    app.dependency_overrides[get_chat_quota] = FullQuota
+
+    response_ = await api.post(
+        "/chat", json={"question": "¿Dónde va la kely?"}, headers=bearer
+    )
+
+    assert response_.status_code == 200
+    assert response_.json()["action"] == "clarify"

@@ -59,3 +59,17 @@ Table chat_logs {
   evaluación.
   '''
 }
+
+Table chat_quota {
+  account_key Varchar [pk, note: 'HMAC-SHA256 del id de la cuenta con CHAT_QUOTA_SECRET']
+  window_start timestamptz [not null, default: `now()`]
+  questions Int [not null]
+
+  Note: '''
+  Tope de preguntas por cuenta, para que nadie llene de consultas el Servidor
+  PC2 (cualquiera puede crear una cuenta gratis). Una fila por cuenta con su
+  contador de la ventana actual (por defecto, 30 preguntas cada 10 minutos).
+  account_key no deja saber de quién es sin la clave, y no se cruza con
+  chat_logs. Las filas de quien no pregunta hace un día se borran.
+  '''
+}
