@@ -1,0 +1,99 @@
+# Backend de SIMIQ3D: pruebas en cada PR; en main, el despliegue a Vercel
+# (producción) y la imagen a ghcr.io (para correrlo en cualquier otro lado).
+
+name: SIMIQ3D backend
+
+on:
+  pull_request:
+    paths:
+      - "simiq3d/backend/**"
+      - ".github/workflows/simiq3d-backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "simiq3d/backend/**"
+      - ".github/workflows/simiq3d-backend.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: simiq3d/backend
+
+jobs:
+  test:
+    name: Estilo y pruebas
+    runs-on: ubuntu-latest
+    services:
+      # Las pruebas crean y migran su propia base, simiq3d_test, en este servidor
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: simiq3d
+          POSTGRES_PASSWORD: simiq3d
+          POSTGRES_DB: simiq3d
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U simiq3d"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://simiq3d:simiq3d@localhost:5432/simiq3d
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: "0.12.18"
+          python-version: "3.14"
+      - run: uv sync --locked
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      # Sin DataIQ ni Ollama: las pruebas usan unos falsos
+      - run: uv run pytest
+
+  image:
+    name: Imagen en ghcr.io
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: simiq3d/backend
+          push: true
+          tags: |
+            ghcr.io/curn-iq/simiq3d-backend:${{ github.sha }}
+            ghcr.io/curn-iq/simiq3d-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Despliegue en Vercel (producción)
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Un despliegue a la vez: si llegan dos pushes seguidos, el segundo espera
+    concurrency: vercel-produccion-simiq3d
+    env:
+      # No son secretos: identifican la cuenta y el proyecto de Vercel
+      # (simiq3d/backend/.vercel/project.json, que no se sube al repo)
+      VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
+      VERCEL_PROJECT_ID: prj_3qqSq6cKvTSTxyEJenXtVY0SaB1m
+    steps:
+      - uses: actions/checkout@v7
+      # Las variables de entorno (DATABASE_URL, LLM_API_KEY…) viven en el
+      # proyecto de Vercel, no aquí. El plan Hobby no conecta repos de una
+      # organización de GitHub: por eso se despliega con el CLI y un token.
+      - run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}

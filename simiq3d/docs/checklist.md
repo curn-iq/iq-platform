@@ -47,7 +47,8 @@ porqué están en el [README](../README.md).
 - [ ] Visto bueno del programa de IQ a cada modelo (formativo: se corrige y se
   vuelve a pedir)
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
-- [ ] Servidor PC2 sin suspensión; Tailscale Funnel con el filtro con clave
+- [x] Tailscale Funnel con el filtro con clave (solo el filtro queda publicado)
+- [ ] Servidor PC2 sin suspensión durante las sesiones de uso
 - [ ] Elegir el modelo de lenguaje con el banco de preguntas (probados Qwen2.5
   7B y Qwen3-VL 8B; por defecto, Qwen3-VL 8B instruct)
 - [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
