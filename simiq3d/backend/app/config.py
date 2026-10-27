@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -29,6 +31,16 @@ class Config(BaseSettings):
     # va vacío. Si la API pasa a su propio subdominio, aquí va el del frontend,
     # como lista JSON: CORS_ORIGINS=["https://app.dominio.com"]
     cors_origins: list[str] = []
+
+    # Quién elige la acción del chat: "fake" (reglas por palabras clave, para
+    # desarrollar sin Ollama) u "ollama" (el modelo del Servidor PC2).
+    language_model: Literal["fake", "ollama"] = "fake"
+    # Dirección del filtro con clave del Servidor PC2 (Tailscale Funnel); en local,
+    # Ollama directo. La clave solo la tiene este backend.
+    llm_url: str = "http://127.0.0.1:11434"
+    llm_model: str = "qwen3:8b"
+    llm_api_key: str = ""
+    llm_timeout: float = 30
 
     @property
     def jwks_url(self) -> str:
