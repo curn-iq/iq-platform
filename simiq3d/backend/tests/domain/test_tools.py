@@ -108,6 +108,7 @@ def test_two_tables_can_be_compared():
     result = tools.compare_techniques(CATALOG, "colecistectomia", "Mastectomía")
 
     assert result["en_las_dos"] == ["Pinza Kelly", "Pinza de Allis"]
+    assert result["cuantos_en_las_dos"] == 2
     assert result["solo_en_colecistectomia"] == [
         "Separador de Farabeuf",
         "Tijera de Mayo",

@@ -166,11 +166,14 @@ Decidido por Mauricio el 2026-10-15:
 
 Sugerencias para quien lo implemente:
 
-- Modelo: el agente se probó con **Qwen2.5 7B** (`qwen2.5:7b`, unos 5 GB) en
-  la RX 6600 XT, al 100 % en la GPU: entre 2 y 7 segundos por pregunta, porque
-  consulta varias veces. Qwen3 8B, más recomendado para *tool calling* en
-  8 GB, queda para compararlo con el banco de preguntas: el modelo se elige
-  probando con las preguntas reales, no por tablas de comparación.
+- Modelo: **Qwen3-VL 8B instruct** (`qwen3-vl:8b-instruct`, unos 6 GB), en la
+  RX 6600 XT al 100 % en la GPU. Comparado el 2026-10-27 con Qwen2.5 7B sobre
+  las mismas 18 preguntas: respondió él mismo 14 (contra 13), con respuestas
+  más completas (todas las ubicaciones de un instrumento, todos sus vecinos), y
+  ninguno de los dos dejó pasar un dato falso; a cambio tarda más (mediana de
+  3,9 s contra 2,4 s, máximo 6,7 s). La variante *instruct* y no la
+  *thinking*: razonar antes de cada paso sumaría segundos. La elección final
+  se hace con el banco de preguntas.
 - La RX 6600 XT no está en la lista oficial de GPU AMD de Ollama: probar su
   backend Vulkan o `HSA_OVERRIDE_GFX_VERSION=10.3.0`; si ninguno funciona,
   corre en la CPU, más lento.

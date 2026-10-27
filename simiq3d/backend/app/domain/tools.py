@@ -100,12 +100,19 @@ def compare_techniques(catalog: Catalog, first: str, second: str) -> dict:
         return {i.name for i in catalog.instruments if i.id in ids}
 
     in_a, in_b = names(a), names(b)
+    only_a = f"solo_en_{normalize(a.name).replace(' ', '_')}"
+    only_b = f"solo_en_{normalize(b.name).replace(' ', '_')}"
+    # Con los conteos ya hechos: el modelo no tiene que contar (y la
+    # verificación necesita ver el número en los resultados).
     return {
         "tecnica_1": a.name,
         "tecnica_2": b.name,
         "en_las_dos": sorted(in_a & in_b),
-        f"solo_en_{normalize(a.name).replace(' ', '_')}": sorted(in_a - in_b),
-        f"solo_en_{normalize(b.name).replace(' ', '_')}": sorted(in_b - in_a),
+        "cuantos_en_las_dos": len(in_a & in_b),
+        only_a: sorted(in_a - in_b),
+        f"cuantos_{only_a}": len(in_a - in_b),
+        only_b: sorted(in_b - in_a),
+        f"cuantos_{only_b}": len(in_b - in_a),
         "objetos_en_la_mesa": {
             a.name: len(a.mayo_items()),
             b.name: len(b.mayo_items()),
