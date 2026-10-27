@@ -24,7 +24,7 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] PostgreSQL 18 local en contenedor (`simiq3d-db`, puerto 5433)
 - [x] Esquema en [`esquema.dbml`](esquema.dbml): `model_mappings` y `chat_logs`
 - [x] Migraciones con Alembic (acciones `answer` y `clarify` en una aparte)
-- [ ] Proyecto de SIMIQ3D en Neon, migrado
+- [x] Proyecto de SIMIQ3D en Neon (`simiq3d`, PostgreSQL 18, Ohio), migrado
 
 ## Catálogo de DataIQ
 
@@ -67,10 +67,13 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] Workflow de GitHub Actions (estilo y pruebas en cada PR; despliegue en
   cada push a `main` e imagen en ghcr.io)
 - [x] Proyecto de Vercel `simiq3d-backend`, con las variables que no son secretas
-- [ ] `DATABASE_URL` de Neon en Vercel
+- [x] `DATABASE_URL` de Neon, `LLM_URL` y `LLM_API_KEY` en Vercel
 - [x] Filtro con clave del Servidor PC2 (`servidor-pc2/filtro.py`), con pruebas
   y probado con Ollama
-- [ ] Servidor PC2: filtro como servicio, Tailscale Funnel, sin suspensión;
-  `LLM_URL` y `LLM_API_KEY` en Vercel
-- [ ] Primer despliegue en producción, probado contra DataIQ en Vercel
+- [x] Servidor PC2: filtro como servicio de usuario (sigue sin sesión abierta)
+  y Tailscale Funnel (`https://fedora.tail5cf085.ts.net`, solo el filtro)
+- [ ] Servidor PC2 sin suspensión durante las sesiones de uso
+- [x] Desplegado en producción: https://simiq3d-backend.vercel.app (sesión
+  validada contra la clave pública del DataIQ de producción)
+- [ ] Chat probado de punta a punta en producción, con una cuenta de DataIQ
 - [ ] Rewrite `/api/simiq3d/*` en el proyecto de Vercel del frontend
