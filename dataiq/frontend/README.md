@@ -153,17 +153,28 @@ npm run api:types  # regenera los tipos de la API (necesita uv)
 ```
 
 `npm start` llega a la API por `proxy.conf.json`: `/api/dataiq/...` se
-reenvía a `http://127.0.0.1:8000/...`, sin el prefijo.
+reenvía a `http://127.0.0.1:8000/...`, sin el prefijo. El backend no sabe de
+ese prefijo (igual que detrás del rewrite de Vercel), así que toda URL
+absoluta que arme apunta a la raíz del sitio y no a `/api/dataiq`. Por eso:
+
+- Las rutas de la API van **sin barra final** (`/api/dataiq/techniques`, no
+  `/techniques/`): con barra, FastAPI responde un 307 hacia `/techniques`, que
+  ya es la SPA y no la API.
+- Swagger se abre directo en el backend (`http://127.0.0.1:8000/docs`), no por
+  el proxy: por `/api/dataiq/docs` pediría `/openapi.json` en la raíz.
 
 `npm run api:types` genera `src/app/data/api/schema.d.ts` con
 `openapi-typescript` (versión fija) a partir de `app.openapi()` del backend, el
 mismo documento que sirve `/openapi.json`: no hace falta que el backend esté
 corriendo, pero sí `uv` (ver [`../README.md`](../README.md)). El archivo se
 versiona, para que el build no necesite el backend; cuando cambie una ruta o un
-esquema de la API, se regenera y se sube en el mismo PR. `openapi-typescript`
+esquema de la API, se regenera y se sube en el mismo PR. El CI
+([`dataiq-frontend.yml`](../../.github/workflows/dataiq-frontend.yml)) lo
+regenera en cada PR que toque el backend o el frontend y falla si no coincide
+con el que se subió. `openapi-typescript`
 declara TypeScript 5 como peer, y el proyecto usa TypeScript 6: el `overrides` de
 `package.json` lo resuelve solo para ese paquete.
 
-Para probar cada rol hay cuentas de desarrollo (`usuario@`, `colaborador@`,
-`revisor@` y `admin@example.com`, contraseña `desarrollo`), solo en la base
-local: cómo se crean, en [`../README.md`](../README.md).
+Para probar cada rol hay una cuenta de desarrollo por rol, solo en la base
+local: cuáles son y cómo se crean, en
+[`../README.md`, «Correr el backend»](../README.md#correr-el-backend).

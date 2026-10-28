@@ -105,7 +105,7 @@ El backend ya está en Vercel (`dataiq-backend`, pieza 9 de
 
 - [ ] `vercel.json`: rewrites de `/api/dataiq/:path*` a `dataiq-backend`, de `/api/simiq3d/:path*` al backend de SIMIQ3D y de `/simiq3d/:path*` al frontend de SIMIQ3D (ver «Por confirmar» 1); el resto de rutas a `index.html`, y encabezados de seguridad (CSP)
 - [ ] Confirmar que Vercel reenvía la cookie y el `Set-Cookie`
-- [ ] GitHub Actions: build, pruebas y despliegue con Vercel CLI (el plan Hobby no conecta repos de organizaciones)
+- [ ] GitHub Actions: despliegue con Vercel CLI (el plan Hobby no conecta repos de organizaciones) en `dataiq-frontend.yml`, que ya corre el build, las pruebas y la revisión de los tipos de la API en cada PR. El build lee `../../shared/design/`, fuera de `dataiq/frontend`: construir en Actions (`vercel build`) y subir con `vercel deploy --prebuilt`, o desplegar desde la raíz del repo con `dataiq/frontend` como Root Directory; si se sube solo `dataiq/frontend`, el build falla
 
 ## Lo que no cuadraba
 
