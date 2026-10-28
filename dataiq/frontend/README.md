@@ -149,10 +149,20 @@ npm install
 npm start      # http://localhost:4200
 npm test       # Vitest
 npm run build  # producción, con los presupuestos de angular.json
+npm run api:types  # regenera los tipos de la API (necesita uv)
 ```
 
 `npm start` llega a la API por `proxy.conf.json`: `/api/dataiq/...` se
 reenvía a `http://127.0.0.1:8000/...`, sin el prefijo.
+
+`npm run api:types` genera `src/app/data/api/schema.d.ts` con
+`openapi-typescript` (versión fija) a partir de `app.openapi()` del backend, el
+mismo documento que sirve `/openapi.json`: no hace falta que el backend esté
+corriendo, pero sí `uv` (ver [`../README.md`](../README.md)). El archivo se
+versiona, para que el build no necesite el backend; cuando cambie una ruta o un
+esquema de la API, se regenera y se sube en el mismo PR. `openapi-typescript`
+declara TypeScript 5 como peer, y el proyecto usa TypeScript 6: el `overrides` de
+`package.json` lo resuelve solo para ese paquete.
 
 Para probar cada rol hay cuentas de desarrollo (`usuario@`, `colaborador@`,
 `revisor@` y `admin@example.com`, contraseña `desarrollo`), solo en la base
