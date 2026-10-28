@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "dataIq": {
+    "dataiq": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "dataIq:build:production"
+              "buildTarget": "dataiq:build:production"
             },
             "development": {
-              "buildTarget": "dataIq:build:development"
+              "buildTarget": "dataiq:build:development"
             }
           },
           "defaultConfiguration": "development"
