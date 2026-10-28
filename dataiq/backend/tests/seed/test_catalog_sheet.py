@@ -21,8 +21,8 @@ def test_every_description_has_its_sources():
 def test_a_corrected_name_keeps_the_old_one_as_alias():
     techniques, catalog = read_file(SOURCE_FILE)
 
-    aliases = {name: alias for name, _, alias, _ in catalog}
-    assert aliases["Pinza de Moynihan"] == "Pinza Moninjan"
+    aliases = {i.name: i.aliases for i in catalog}
+    assert aliases["Pinza de Moynihan"] == ("Pinza Moninjan",)
     assert "Pinza Moninjan" not in aliases
     components = {
         c for t in techniques.values() for item in t.items for c in item.components
