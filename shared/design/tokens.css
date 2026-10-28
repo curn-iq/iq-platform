@@ -1,0 +1,142 @@
+/*
+ * Tokens base de DESIGN.md, compartidos por los frontends (DataIQ y SIMIQ3D).
+ *
+ * Dos capas, ambas como propiedades CSS:
+ *   1. Tokens base: los nombres de DESIGN.md (--marca, --filete, --radio-md…).
+ *   2. Nombres por uso (--color-accent, --font-body…): lo único que usan los
+ *      componentes. Cada uno apunta a un token base; el tema de cada frontend
+ *      (src/styles/theme.scss) puede sobrescribirlos sin tocar a los demás.
+ *
+ * Solo lo común va aquí. Todo color nuevo se anota primero en DESIGN.md.
+ */
+:root {
+  /* ---------- Tokens base ---------- */
+
+  /* Neutros clínicos */
+  --fondo: #f3f6f6;
+  --superficie: #ffffff;
+  --hover-neutro: #e6eded;
+  --filete: #dbe4e6;
+  --filete-2: #c4d1d4;
+  --tinta: #0a1b22;
+  --tinta-2: #364b53;
+  --tinta-3: #566a72;
+
+  /* Marca: el verde quirúrgico del paño */
+  --marca: #0d6a5e;
+  --marca-hondo: #08463e;
+  --marca-claro: #ddefeb;
+  --marca-claro-hover: #cfe7e1;
+  --niebla-marca: #b8dcd4;
+  --pano: #1d7564;
+  --niebla-pano: #e6f3f0;
+  --brillo-pano: rgba(255, 255, 255, 0.12);
+  --sombra-pano: rgba(0, 0, 0, 0.14);
+
+  /* Cámara: la menta y el rojo solo existen dentro de la cámara */
+  --menta: #38e2b3;
+  --alerta-noche: #ff6b6b;
+
+  /* Noche: capítulos oscuros y pie */
+  --noche: #061217;
+  --noche-2: #0c1e24;
+  --filete-noche: #1d353d;
+  --niebla-noche: #a9bec5;
+
+  /* Acero satinado del instrumental */
+  --acero-brillo: #fbfdfd;
+  --acero: #b3bec4;
+  --acero-caja: #9eaab0;
+  --acero-sombra: #8b979d;
+  --acero-raya: #66737a;
+  --acero-linea: #4f5c63;
+  --acero-filo: #3f4b52;
+
+  /* Escena 3D de SIMIQ3D */
+  --canto-pano: #0e463c;
+  --rejilla-escena: #4c9a88;
+  --celda-escena: #bfe3d9;
+  --lienzo-centro: #f7fafc;
+  --lienzo-medio: #e8eff4;
+  --lienzo-borde: #dce5ec;
+
+  /* Quirófano */
+  --quirofano: #1b5f86;
+  --quirofano-hondo: #113f5a;
+  --quirofano-claro: #e0ecf4;
+  --quirofano-claro-hover: #d0e2ee;
+  --fondo-quirofano: #f1f5f8;
+  --filete-quirofano: #d8e2e9;
+  --filete-2-quirofano: #c1cfd9;
+  --tinta-2-quirofano: #344a57;
+  --tinta-3-quirofano: #4e6470;
+  --hover-quirofano: #e3ebf1;
+  --celda-quirofano: #d3e6f2;
+
+  /* Tipografía */
+  --letra: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --datos: 'Martian Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Espaciado */
+  --lado: clamp(20px, 4.4vw, 64px);
+  --medianil: 24px;
+  --barra: 72px;
+  --barra-movil: 64px;
+  --seccion: clamp(72px, 10vh, 112px);
+  --seccion-compacta: clamp(64px, 9vh, 104px);
+  --carril: 48px;
+  --columna-tecnicas: 300px;
+
+  /* Radios */
+  --radio-trazo-fino: 2px;
+  --radio-trazo: 3px;
+  --radio-xs: 6px;
+  --radio-sm: 8px;
+  --radio-control-sm: 9px;
+  --radio-md: 10px;
+  --radio-lg: 12px;
+  --radio-xl: 14px;
+  --radio-ventana: 16px;
+  --radio-panel: 20px;
+  --radio-escenario: 24px;
+  --radio-pill: 99px;
+
+  /* Movimiento (sección «Motion» de DESIGN.md) */
+  --expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --cuarta: cubic-bezier(0.25, 1, 0.5, 1);
+  --vaiven: cubic-bezier(0.87, 0, 0.13, 1);
+
+  /* ---------- Nombres por uso ---------- */
+
+  --color-bg: var(--fondo);
+  --color-surface: var(--superficie);
+  --color-hover: var(--hover-neutro);
+  --color-border: var(--filete);
+  --color-border-strong: var(--filete-2);
+  --color-text: var(--tinta);
+  --color-text-muted: var(--tinta-2);
+  --color-text-subtle: var(--tinta-3);
+  --color-accent: var(--marca);
+  --color-accent-strong: var(--marca-hondo);
+  --color-accent-soft: var(--marca-claro);
+  --color-accent-soft-hover: var(--marca-claro-hover);
+  --color-focus: var(--marca);
+  --color-dark: var(--noche);
+  --color-dark-raised: var(--noche-2);
+  --color-dark-border: var(--filete-noche);
+  --color-dark-text-muted: var(--niebla-noche);
+
+  --font-body: var(--letra);
+  --font-data: var(--datos);
+
+  --space-gutter: var(--lado);
+  --space-column-gap: var(--medianil);
+  --size-navbar: var(--barra);
+  --space-section: var(--seccion);
+
+  --ease-enter: var(--expo);
+  --ease-fade: var(--cuarta);
+  --ease-swing: var(--vaiven);
+
+  color-scheme: light;
+}
