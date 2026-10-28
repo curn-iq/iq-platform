@@ -151,9 +151,8 @@ npm test       # Vitest
 npm run build  # producción, con los presupuestos de angular.json
 ```
 
-`npm start` llega a la API por `proxy.conf.json` (`/api/dataiq` →
-`http://127.0.0.1:8000`), que entra en la fase 0; mientras tanto no hay
-conexión con el backend.
+`npm start` llega a la API por `proxy.conf.json`: `/api/dataiq/...` se
+reenvía a `http://127.0.0.1:8000/...`, sin el prefijo.
 
 Para probar cada rol hay cuentas de desarrollo (`usuario@`, `colaborador@`,
 `revisor@` y `admin@example.com`, contraseña `desarrollo`), solo en la base
