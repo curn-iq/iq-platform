@@ -19,6 +19,11 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - **Un PR por fase.** Antes de abrirlo, una sesión corta con otro modelo
   (Opus) revisa la rama con `/code-review`; lo que corrija va en commits
   nuevos, sin reescribir los anteriores.
+- **Componentes de `shared/ui/`**: cada uno se construye en la primera fase
+  que lo usa, según `DESIGN.md` y su mockup, con su prueba; las fases
+  siguientes lo reutilizan.
+- **«Por confirmar»**: cada fase dice cuáles tiene que resolver; se deciden con
+  el equipo antes de escribir el código que depende de ellos.
 
 ### Fase 0 — Base del proyecto
 
@@ -37,15 +42,20 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [ ] `domain/`: `Role` y `hasAtLeast()`, `VersionState` y transiciones permitidas
 - [ ] `data/`: un repositorio por recurso sobre los tipos generados
 - [ ] `core/http`: `provideHttpClient(withFetch())`, base `/api/dataiq`, interceptor de `X-IQ-Client: web` e interceptor de errores (401, 403, 409, 422)
+- [ ] Aviso en pantalla para los errores que traduce el interceptor (componente en `shared/ui/`)
 - [ ] `core/session`: `SessionService` (cuenta de `GET /auth/me` al arrancar, ingresar, salir), `sessionGuard` y `roleGuard(min)` con `?volver=`
 
 ### Fase 2 — Shell
 
-- [ ] Esqueleto de rutas con carga diferida
+Antes de empezar: «Por confirmar» 1 y 11.
+
+- [ ] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
+- [ ] Página «No encontrada» para una ruta que no existe
 - [ ] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
 - [ ] Menú de celular a pantalla completa (≤ 960 px)
 - [ ] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
 - [ ] Pie oscuro
+- [ ] Enlaces de la barra y del pie a páginas que aún no existen (ver «Por confirmar» 11)
 - [ ] SIVRI y SIMIQ3D como enlaces (ver «Por confirmar» 1)
 
 ### Fase 3 — Diagrama de mesa (`shared/table-diagram`)
@@ -59,14 +69,19 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 4 — Páginas públicas
 
+Antes de empezar: «Por confirmar» 5, 7 y 12.
+
 - [ ] Inicio (`inicio.html`)
 - [ ] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
-- [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva
+- [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; suturas y equipos donde diga «Por confirmar» 12; una técnica que no existe (404) muestra «No encontrada»
 - [ ] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
-- [ ] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión
+- [ ] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`); «Comprobar con la cámara», por definir con SIVRI (ver «Por confirmar» 1)
 
 ### Fase 5 — Cuenta
 
+Antes de empezar: «Por confirmar» 4 y 10.
+
+- [ ] Página de la política de tratamiento de datos, enlazada desde el registro y el pie (su texto, «Por confirmar» 10)
 - [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora
 - [ ] Registro con la aceptación de la política obligatoria (Decreto 1377); la política declara el registro anónimo del chat de SIMIQ3D (ver «Por confirmar» 10)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
@@ -74,16 +89,21 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 6 — Gestión del colaborador
 
+Antes de empezar: «Por confirmar» 6, 8, 13 y 14. El 6 frena toda la fase: se define con IQ.
+
 - [ ] Mis borradores: matriz de avance por sección, filtros, motivo de la devolución (`rejections`)
 - [ ] «Nueva técnica» (especialidad de `GET /specialties`) y «Editar una publicada» (un 409 dice que ya hay una versión en curso)
 - [ ] Descartar un borrador (`DELETE /versions/{id}`), con confirmación (ver «Por confirmar» 9)
 - [ ] Editor de 5 pasos con autoguardado (`PUT /versions/{id}` con debounce; reemplaza todo el contenido)
+- [ ] Paso de datos clínicos: los campos clínicos, la fuente de la versión (`source`, regla 1 de `CLAUDE.md`; el mockup no tiene el campo), suturas por plano (ver «Por confirmar» 14), equipos biomédicos (`equipment`) y equipo médico-quirúrgico (`devices`); nombre y especialidad, ver «Por confirmar» 13
 - [ ] Paso de instrumental: sugeridos de la especialidad y catálogo completo
 - [ ] Pasos de mesa: arrastrar a la celda (CDK drag-drop) o tocar celda → elegir objeto; filas y columnas de la mesa en `zones`; «no lleva esta mesa» es `used: false`
 - [ ] Revisar y enviar (colaborador) / Revisar y publicar (revisor o admin) con confirmación en la misma tarjeta
 - [ ] Desde el detalle: «Editar técnica» / «Continuar borrador» según el rol y la versión en curso
 
 ### Fase 7 — Gestión del revisor
+
+Antes de empezar: «Por confirmar» 2 y 3.
 
 - [ ] Por revisar: versiones `in_review` de otros
 - [ ] Revisadas por mí (`?reviewed_by_me=true`)
@@ -99,6 +119,8 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [ ] Sin suspender ni historial de roles en el MVP (`docs/despues-del-mvp.md`)
 
 ### Fase 9 — Despliegue (Corte 3)
+
+Antes de empezar: «Por confirmar» 1.
 
 El backend ya está en Vercel (`dataiq-backend`, pieza 9 de
 [`checklist-backend.md`](checklist-backend.md)).
@@ -146,3 +168,7 @@ Entre la documentación, los mockups y la API.
 | 8 | Un colaborador no sabe si otra persona tiene una versión en curso (solo ve las suyas); el mockup muestra «En curso por …» | `tecnica.html`, `routes/versions.py` | En el MVP, mostrar el 409 al intentar editar |
 | 9 | La API permite descartar un borrador, pero ningún mockup tiene la acción | `borradores.html`, `editor.html` | «Descartar borrador» en «Más acciones», con confirmación |
 | 10 | El registro exige aceptar la política de tratamiento de datos, pero su texto no está en el repo. Tiene que declarar el registro anónimo del chat de SIMIQ3D, que está encendido mientras dura el proyecto y se borra al cerrar la evaluación (#29) | `cuenta.html`, `simiq3d/README.md` («Backend y base de datos»), `POLICY_VERSION` del backend | Redactarla con el equipo antes de la fase 5; al cambiarla, subir `POLICY_VERSION` |
+| 11 | La barra y el pie enlazan páginas sin ruta ni contenido: Quiénes somos, La investigación, Guía para estudiantes, Para docentes, Preguntas frecuentes, Cómo funciona y Términos de uso | `inicio.html` (barra y pie) | En el MVP, llevar a la sección del inicio que ya trata el tema (preguntas, investigación, para quién, cómo funciona) y ocultar las demás. Los términos de uso, redactarlos con la política (10) |
+| 12 | El detalle muestra las suturas y los equipos en «Datos clínicos», que es pública, pero la API solo los entrega con cuenta (`GET /techniques/{id}/instruments`) | `tecnica.html`, `routes/techniques.py` | Pasarlos a la pestaña Instrumental, detrás de la puerta de cuenta; o hacerlos públicos en la API |
+| 13 | El paso 1 del editor deja cambiar el nombre y la especialidad, pero `PUT /versions/{id}` no los recibe (son de `techniques`) y no hay ruta para cambiarlos | `editor.html`, `routes/versions.py` | Se eligen al crear la técnica (`POST /techniques`); en las versiones siguientes, solo lectura |
+| 14 | El editor toma cada sutura como plano + un texto; la API pide `name`, `gauge`, `needle_type` y `usage` (la carga inicial pone el plano en `usage`) | `editor.html`, `routes/versions.py` | Un campo por dato, con el plano en `usage` |
