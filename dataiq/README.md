@@ -117,6 +117,11 @@ Lo que no es navegador (Swagger, pruebas, servidores, una app) pide el token a
 `POST /auth/token` (formulario OAuth2: `username` = correo, `password`) y lo
 manda en `Authorization: Bearer`; con Bearer no hace falta `X-IQ-Client`.
 
+Un cambio de la API (una ruta o un esquema) va con `npm run api:types` en el
+mismo PR: regenera los tipos del frontend
+([`frontend/README.md`](frontend/README.md#correr-el-frontend)), y el CI falla
+si no coinciden.
+
 Tests y estilo:
 
 ```sh
