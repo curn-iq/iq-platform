@@ -32,7 +32,7 @@
             "styles": [
               "../../shared/design/tokens.css",
               "../../shared/design/base.css",
-              "src/styles.scss"
+              "src/styles/theme.scss"
             ]
           },
           "configurations": {
