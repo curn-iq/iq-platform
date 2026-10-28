@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "dataIq": {
+    "dataiq": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -29,15 +29,19 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "../../shared/design/tokens.css",
+              "../../shared/design/base.css",
+              "src/styles/theme.scss"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "300kB",
+                  "maximumError": "500kB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -59,13 +63,16 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "dataIq:build:production"
+              "buildTarget": "dataiq:build:production"
             },
             "development": {
-              "buildTarget": "dataIq:build:development"
+              "buildTarget": "dataiq:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"

@@ -694,7 +694,7 @@ const TECNICAS = {
     [5, 1, 1, "Pinza de Allis", ["allis"]],
     [6, 4, 1, "Pinza de disección con garra y sin garra", ["diseccion-garra", "diseccion"]],
     [7, 4, 2, "Separador de Farabeuf", ["farabeuf"]],
-    [8, 1, 5, "Pinza Moninjan", ["moninjan"]],
+    [8, 1, 5, "Pinza de Moynihan", ["moynihan"]],
     [9, 2, 6, "Pinza Rochester", ["rochester"]],
     [10, 3, 4, "Pinza Kelly", ["kelly"]] ] },
   hemicolectomia: { nombre: "Hemicolectomía derecha", filas: 7, cols: 6, propuesta: true, items: [
@@ -773,7 +773,7 @@ const DESCRIPCION = {
   rochester: "Pinza hemostática larga, de anillos y cremallera.",
   kocher: "Pinza de anillos y cremallera con dientes en la punta; sujeta tejidos firmes.",
   lahey: "Pinza de anillos y cremallera.",
-  moninjan: "Pinza de anillos y cremallera.",
+  moynihan: "Pinza de anillos y cremallera.",
   portaagujas: "Sostiene la aguja de sutura con firmeza mientras se sutura; tiene mordida corta y cremallera.",
   mayo: "Tijera fuerte, de hojas gruesas; corta tejidos firmes y suturas.",
   metzenbaum: "Tijera larga, de hojas finas; corta y diseca tejidos delicados.",
@@ -788,7 +788,7 @@ const descripcion = (tipos) => DESCRIPCION[tipos[0].replace(/-garra$/, "").repla
 const NOMBRES_TECNICA = { mastectomia: ["mastectom"], tiroidectomia: ["tiroid"], colecistectomia: ["colecist", "vesicula"], hemicolectomia: ["hemicolect", "colectom"], eventrorrafia: ["eventro", "hernia incisional"] };
 const NOMBRES_PIEZA = [
   ["adson", ["adson"]], ["mosquito", ["mosquito"]], ["kelly", ["kelly"]], ["allis", ["allis"]], ["babcock", ["babcock"]],
-  ["rochester", ["rochester"]], ["kocher", ["kocher"]], ["lahey", ["lahey"]], ["moninjan", ["moninjan", "moynihan"]],
+  ["rochester", ["rochester"]], ["kocher", ["kocher"]], ["lahey", ["lahey"]], ["moynihan", ["moynihan", "moninjan"]],
   ["portaagujas", ["portaaguja", "porta aguja"]], ["farabeuf", ["farabeuf", "farabeauf"]], ["senn", ["senn", "miller"]],
   ["metzenbaum", ["metzenbaum", "metzembaum", "metz"]], ["mayo", ["tijera de mayo", "tijeras de mayo", "tijera mayo"]],
   ["diseccion", ["diseccion", "garra"]], ["bisturi", ["bisturi", "mango", "hoja"]]
@@ -965,7 +965,7 @@ function senn(L) {
   caja(g, m, L * .12, .003, .002, -L / 2 + L * .08, 0); caja(g, m, L * .12, .003, .002, L / 2 - L * .08, 0);
   return { g, mats: [m] };
 }
-const LARGO = { kelly: .14, adson: .14, mosquito: .125, allis: .15, babcock: .16, rochester: .18, kocher: .16, lahey: .18, moninjan: .2, portaagujas: .2, mayo: .15, metzenbaum: .18, diseccion: .145, "diseccion-garra": .145, bisturi3: .15, bisturi4: .155, bisturi7: .16, farabeuf: .15, senn: .16 };
+const LARGO = { kelly: .14, adson: .14, mosquito: .125, allis: .15, babcock: .16, rochester: .18, kocher: .16, lahey: .18, moynihan: .2, portaagujas: .2, mayo: .15, metzenbaum: .18, diseccion: .145, "diseccion-garra": .145, bisturi3: .15, bisturi4: .155, bisturi7: .16, farabeuf: .15, senn: .16 };
 function crearPieza(tipo) {
   const L = LARGO[tipo];
   switch (tipo) {
@@ -973,7 +973,7 @@ function crearPieza(tipo) {
     case "allis": return pinza(L, "allis");
     case "babcock": return pinza(L, "babcock");
     case "portaagujas": return pinza(L, "porta");
-    case "rochester": case "kocher": case "lahey": case "moninjan": return pinza(L, "recta");
+    case "rochester": case "kocher": case "lahey": case "moynihan": return pinza(L, "recta");
     case "mayo": case "metzenbaum": return tijera(L, tipo);
     case "diseccion": return diseccion(L, false);
     case "diseccion-garra": return diseccion(L, true);

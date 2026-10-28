@@ -29,12 +29,12 @@ Fuentes:
 | Alcance | Shell + DataIQ en una sola app. El shell queda aislado en `app/shell/` para poder separarlo si algún día hace falta |
 | Idioma | Código en inglés, como el backend y la API. Interfaz, documentación y URL en español |
 | Renderizado | SPA sin SSR, desplegada como sitio estático en Vercel |
-| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuestos de `angular.json` activos (principio «Liviano» de `PRODUCT.md`) |
+| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuesto del código inicial en `angular.json`: aviso a los 300 KB y error a los 500 KB, como SIMIQ3D (principio «Liviano» de `PRODUCT.md`) |
 | Estado | Servicios con signals por funcionalidad. Sin NgRx |
 | Lecturas | `httpResource` / `resource` (estables desde 22.0) |
 | Formularios | Signal Forms (estables desde 22.0) |
 | Caché HTTP | Sin `ETag` a mano: el navegador revalida con el `ETag` y el `Cache-Control` de la API |
-| Sistema visual | Tokens base compartidos en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss` (ver «Sistema visual compartido» en `CLAUDE.md`) |
+| Sistema visual | Tokens base compartidos como propiedades CSS en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss`, que solo las sobrescribe (ver «Sistema visual compartido» en `CLAUDE.md`) |
 | Componentes | Propios, según `DESIGN.md`. Sin Angular Material; solo Angular CDK: drag-drop (mesa del editor), overlay (desplegables y paneles) y a11y |
 | Tipos de la API | Generados del `/openapi.json` de FastAPI (`openapi-typescript`), para que no se desfasen del backend |
 | Sesión | Cookie `HttpOnly` que pone la API; el frontend nunca ve el token. La cuenta y el rol salen de `GET /auth/me`. El rol solo decide qué se muestra; quien permite o niega es la API |
@@ -149,8 +149,32 @@ npm install
 npm start      # http://localhost:4200
 npm test       # Vitest
 npm run build  # producción, con los presupuestos de angular.json
+npm run api:types  # regenera los tipos de la API (necesita uv)
 ```
 
-`npm start` llega a la API por `proxy.conf.json` (`/api/dataiq` →
-`http://127.0.0.1:8000`), que entra en la fase 0; mientras tanto no hay
-conexión con el backend.
+`npm start` llega a la API por `proxy.conf.json`: `/api/dataiq/...` se
+reenvía a `http://127.0.0.1:8000/...`, sin el prefijo. El backend no sabe de
+ese prefijo (igual que detrás del rewrite de Vercel), así que toda URL
+absoluta que arme apunta a la raíz del sitio y no a `/api/dataiq`. Por eso:
+
+- Las rutas de la API van **sin barra final** (`/api/dataiq/techniques`, no
+  `/techniques/`): con barra, FastAPI responde un 307 hacia `/techniques`, que
+  ya es la SPA y no la API.
+- Swagger se abre directo en el backend (`http://127.0.0.1:8000/docs`), no por
+  el proxy: por `/api/dataiq/docs` pediría `/openapi.json` en la raíz.
+
+`npm run api:types` genera `src/app/data/api/schema.d.ts` con
+`openapi-typescript` (versión fija) a partir de `app.openapi()` del backend, el
+mismo documento que sirve `/openapi.json`: no hace falta que el backend esté
+corriendo, pero sí `uv` (ver [`../README.md`](../README.md)). El archivo se
+versiona, para que el build no necesite el backend; cuando cambie una ruta o un
+esquema de la API, se regenera y se sube en el mismo PR. El CI
+([`dataiq-frontend.yml`](../../.github/workflows/dataiq-frontend.yml)) lo
+regenera en cada PR que toque el backend o el frontend y falla si no coincide
+con el que se subió. `openapi-typescript`
+declara TypeScript 5 como peer, y el proyecto usa TypeScript 6: el `overrides` de
+`package.json` lo resuelve solo para ese paquete.
+
+Para probar cada rol hay una cuenta de desarrollo por rol, solo en la base
+local: cuáles son y cómo se crean, en
+[`../README.md`, «Correr el backend»](../README.md#correr-el-backend).
