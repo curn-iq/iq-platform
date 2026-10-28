@@ -443,7 +443,10 @@ espaciado, movimiento) y los nombres por uso (p. ej. `--color-accent`); cada
 frontend tiene su tema (`src/styles/theme.scss`) y puede sobrescribir lo que
 necesite sin tocar a los demás. Los componentes usan solo los nombres por uso.
 Todo color nuevo se anota en `DESIGN.md`. La carpeta la crea el primer
-frontend que llegue a su fase 0.
+frontend que llegue a su fase 0. Los tokens son **propiedades CSS**
+(`tokens.css`), no variables de Sass (decidido por Juan el 2026-10-27): el
+navegador las resuelve en vivo, así que un tema o un modo oscuro cambia
+valores sin recompilar, y sirven a cualquier frontend, use Sass o no.
 
 ## Dónde vive cada cosa
 

@@ -29,12 +29,12 @@ Fuentes:
 | Alcance | Shell + DataIQ en una sola app. El shell queda aislado en `app/shell/` para poder separarlo si algún día hace falta |
 | Idioma | Código en inglés, como el backend y la API. Interfaz, documentación y URL en español |
 | Renderizado | SPA sin SSR, desplegada como sitio estático en Vercel |
-| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuestos de `angular.json` activos (principio «Liviano» de `PRODUCT.md`) |
+| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuesto del código inicial en `angular.json`: aviso a los 300 KB y error a los 500 KB, como SIMIQ3D (principio «Liviano» de `PRODUCT.md`) |
 | Estado | Servicios con signals por funcionalidad. Sin NgRx |
 | Lecturas | `httpResource` / `resource` (estables desde 22.0) |
 | Formularios | Signal Forms (estables desde 22.0) |
 | Caché HTTP | Sin `ETag` a mano: el navegador revalida con el `ETag` y el `Cache-Control` de la API |
-| Sistema visual | Tokens base compartidos en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss` (ver «Sistema visual compartido» en `CLAUDE.md`) |
+| Sistema visual | Tokens base compartidos como propiedades CSS en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss`, que solo las sobrescribe (ver «Sistema visual compartido» en `CLAUDE.md`) |
 | Componentes | Propios, según `DESIGN.md`. Sin Angular Material; solo Angular CDK: drag-drop (mesa del editor), overlay (desplegables y paneles) y a11y |
 | Tipos de la API | Generados del `/openapi.json` de FastAPI (`openapi-typescript`), para que no se desfasen del backend |
 | Sesión | Cookie `HttpOnly` que pone la API; el frontend nunca ve el token. La cuenta y el rol salen de `GET /auth/me`. El rol solo decide qué se muestra; quien permite o niega es la API |
@@ -154,3 +154,7 @@ npm run build  # producción, con los presupuestos de angular.json
 `npm start` llega a la API por `proxy.conf.json` (`/api/dataiq` →
 `http://127.0.0.1:8000`), que entra en la fase 0; mientras tanto no hay
 conexión con el backend.
+
+Para probar cada rol hay cuentas de desarrollo (`usuario@`, `colaborador@`,
+`revisor@` y `admin@example.com`, contraseña `desarrollo`), solo en la base
+local: cómo se crean, en [`../README.md`](../README.md).
