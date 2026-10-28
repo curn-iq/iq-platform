@@ -23,7 +23,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 ### Fase 0 — Base del proyecto
 
 - [x] Nombre del proyecto `dataiq` (`package.json` y `angular.json`); `index.html` en español (`lang="es"`, título «DataIQ»)
-- [ ] Presupuesto del código inicial: aviso a los 300 KB y error a los 500 KB, como SIMIQ3D
+- [x] Presupuesto del código inicial: aviso a los 300 KB y error a los 500 KB, como SIMIQ3D
 - [ ] Quitar la página de ejemplo de la CLI (`app.html`); queda una página mínima hasta la fase 2
 - [ ] `shared/design/` en la raíz del repo, si SIMIQ3D no la creó antes: `tokens.css` con los tokens base de `DESIGN.md` (colores, tipografía, espaciado, radios, movimiento) y los nombres por uso como propiedades CSS (`--color-accent`), y `base.css` con lo mínimo común (`box-sizing`, tipografía base, `prefers-reduced-motion`). Fuentes de Google Fonts (Host Grotesk y Martian Mono)
 - [ ] `src/styles/theme.scss`: el tema de DataIQ sobre esos tokens; solo sobrescribe propiedades (ver «Sistema visual compartido» en `CLAUDE.md`)
