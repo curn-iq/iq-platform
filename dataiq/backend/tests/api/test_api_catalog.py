@@ -49,7 +49,7 @@ async def test_reviewer_creates_and_updates_instruments(client, reviewer, instru
     )
     edited = await client.patch(
         f"/instruments/{created.json()['id']}",
-        json={"description": "Corta tejido"},
+        json={"description": "Corta tejido", "description_source": "Un libro"},
         headers=auth_headers(reviewer),
     )
 
@@ -60,8 +60,35 @@ async def test_reviewer_creates_and_updates_instruments(client, reviewer, instru
         "name": "Tijera nueva",
         "category": "Categoría de prueba",
         "description": "Corta tejido",
+        "description_source": "Un libro",
         "aliases": [],
     }
+
+
+@pytest.mark.anyio
+async def test_a_description_needs_its_source(client, reviewer, instrument):
+    headers = auth_headers(reviewer)
+
+    created = await client.post(
+        "/instruments",
+        json={
+            "name": "Tijera nueva",
+            "category_id": str(instrument.category_id),
+            "description": "Corta tejido",
+        },
+        headers=headers,
+    )
+    edited = await client.patch(
+        f"/instruments/{instrument.id}",
+        json={"description": "Sujeta tejido"},
+        headers=headers,
+    )
+
+    assert created.status_code == 422
+    assert edited.status_code == 422
+    assert edited.json()["detail"] == [
+        "La descripción necesita su fuente (description_source)"
+    ]
 
 
 @pytest.mark.anyio
@@ -98,7 +125,9 @@ async def test_patch_replaces_the_aliases(client, reviewer, instrument):
     first = await client.patch(
         url, json={"aliases": ["Pinza P", "Pinza P", "Pinzas P"]}, headers=headers
     )
-    untouched = await client.patch(url, json={"description": "D"}, headers=headers)
+    untouched = await client.patch(
+        url, json={"description": "D", "description_source": "F"}, headers=headers
+    )
     replaced = await client.patch(url, json={"aliases": ["Pinza Q"]}, headers=headers)
     emptied = await client.patch(url, json={"aliases": []}, headers=headers)
 

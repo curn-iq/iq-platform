@@ -16,7 +16,11 @@ class CatalogRepository(Protocol):
     async def get_instrument(self, instrument_id: UUID) -> CatalogInstrument | None: ...
 
     async def create_instrument(
-        self, name: str, category_id: UUID, description: str | None
+        self,
+        name: str,
+        category_id: UUID,
+        description: str | None,
+        description_source: str | None = None,
     ) -> CatalogInstrument: ...
 
     async def update_instrument(
