@@ -161,6 +161,11 @@ Neon (proyecto `dataiq`, PostgreSQL 18, Ohio).
   uv run python -m seed.load
   ```
 
+  La carga solo llena la descripción de un instrumento si está vacía, para no
+  pisar la que haya editado un revisor; las que son distintas de
+  `seed/tecnicas.xlsx` las lista. Para reemplazarlas por las del archivo:
+  `uv run python -m seed.load --descriptions`.
+
 - **Desplegar a mano** (si hiciera falta), desde `dataiq/backend` con la
   sesión de Vercel del dueño del proyecto: `npx vercel@latest deploy --prod`.
 

@@ -262,6 +262,9 @@ class InstrumentOut(OutModel):
     name: str
     category: str
     description: str | None
+    description_source: str | None = Field(
+        description="De dónde sale la descripción (enlaces o libros)"
+    )
     aliases: list[str]
 
 
@@ -289,6 +292,9 @@ class InstrumentCreateIn(BaseModel):
     name: NonEmptyStr
     category_id: UUID
     description: str | None = None
+    description_source: str | None = Field(
+        default=None, description="Obligatoria si se manda una descripción"
+    )
 
 
 class InstrumentUpdateIn(BaseModel):
@@ -297,6 +303,9 @@ class InstrumentUpdateIn(BaseModel):
     name: NonEmptyStr | None = None
     category_id: UUID | None = None
     description: str | None = None
+    description_source: str | None = Field(
+        default=None, description="Obligatoria si se manda una descripción"
+    )
     aliases: list[NonEmptyStr] | None = Field(
         default=None, description="Si se manda, reemplaza todos los alias"
     )
@@ -306,6 +315,7 @@ class InstrumentUpdateIn(BaseModel):
             name=self.name,
             category_id=self.category_id,
             description=self.description,
+            description_source=self.description_source,
             # dict.fromkeys quita repetidos y conserva el orden
             aliases=None
             if self.aliases is None

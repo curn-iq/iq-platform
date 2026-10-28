@@ -113,6 +113,7 @@ Table instruments {
   name Varchar [not null, unique]
   category_id uuid [not null, ref: > instrument_categories.id]
   description Varchar
+  description_source Text [note: 'De dónde sale la descripción (enlaces o libros)']
 }
 
 Table instrument_aliases {

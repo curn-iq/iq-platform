@@ -24,7 +24,7 @@ base de datos, backend hexagonal, CRUD, autenticación y dataset cargado.
 - [x] Tablas simples: `specialties`, `zones`, `instrument_categories`, `biomedical_equipment`, `medical_devices`
 - [x] `sutures` (UNIQUE compuesto con `NULLS NOT DISTINCT`)
 - [x] `users` (enum `user_role`, campos de consentimiento)
-- [x] `instruments` (con `description`, sin imagen), `instrument_aliases`, `techniques` (FK)
+- [x] `instruments` (con `description` y su fuente, `description_source`; sin imagen), `instrument_aliases`, `techniques` (FK)
 - [x] `technique_versions` (enum `version_state`, CHECKs, índices únicos parciales)
 - [x] `technique_items` (`zone_id`, CHECK `number_requires_zone`), `item_components` (CHECK `num_nonnulls`)
 - [x] `item_cells` (FK compuesta de 3 columnas)
@@ -67,6 +67,8 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [x] Instrumental: crear y editar, sin borrar, solo admin o revisor (editarlo
      cambia las técnicas publicadas que lo usan sin pasar por revisión). El
      `PATCH` también reemplaza los alias
+   - [x] Una descripción del instrumental va siempre con su fuente
+     (`description_source`); sin ella, la API responde 422
    - [x] Descartar un borrador (`DELETE /versions/{id}`): solo su autor o un
      admin; si la técnica nunca se publicó, se borra con él. Lo publicado no se
      borra, se archiva
@@ -149,3 +151,4 @@ Criterios para los arreglos sin nombre:
 | Histerectomía laparoscópica | "Mayo tiempo abdominal": 10 números en la grilla y 9 objetos en la leyenda | El 9 se separó en los trocares de 10-12 mm y de 5 mm (IQ corregido); la mesa de Mayo, propuesta |
 | Nefrectomía laparoscópica | No tiene arreglo de mesa | Las dos mesas, propuestas |
 | Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Varilla del Lithoclast y evacuador de Ellik (IQ corregido) |
+| Colecistectomía, Tiroidectomía | El instrumento aparece como "Moninjan", la escritura fonética de Moynihan | Pinza de Moynihan; "Pinza Moninjan" queda como alias (hoja `catalogo`, columna `alias`) |

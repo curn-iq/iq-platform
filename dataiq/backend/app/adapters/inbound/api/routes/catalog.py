@@ -16,6 +16,7 @@ from app.adapters.inbound.api.schemas import (
     InstrumentUpdateIn,
     ReferenceOut,
 )
+from app.domain.catalog import check_description
 from app.domain.users import Role, require_role
 
 router = APIRouter(tags=["Catálogo"])
@@ -84,10 +85,12 @@ async def list_instruments(
 async def create_instrument(
     data: InstrumentCreateIn, catalog: CatalogRepo, account: CurrentAccount
 ):
-    """Agrega un instrumento al catálogo. Desde revisor."""
+    """Agrega un instrumento al catálogo. Desde revisor. Si trae descripción,
+    trae también su fuente."""
     require_role(account.role, Role.reviewer)
+    check_description(data.description, data.description_source)
     return await catalog.create_instrument(
-        data.name, data.category_id, data.description
+        data.name, data.category_id, data.description, data.description_source
     )
 
 
@@ -99,10 +102,12 @@ async def update_instrument(
     account: CurrentAccount,
 ):
     """Cambia el nombre, la categoría, la descripción o los alias (la lista que
-    se manda reemplaza la anterior). Desde revisor.
+    se manda reemplaza la anterior). Desde revisor. Una descripción nueva va con
+    su fuente.
 
     No pasa por revisión: el cambio se ve de una vez en las técnicas publicadas
     que usan el instrumento. El instrumental no se borra.
     """
     require_role(account.role, Role.reviewer)
+    check_description(data.description, data.description_source)
     return await catalog.update_instrument(instrument_id, data.to_domain())

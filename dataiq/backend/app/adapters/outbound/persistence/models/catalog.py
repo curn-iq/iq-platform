@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint, text
+from sqlalchemy import ForeignKey, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.adapters.outbound.persistence.database import Base
@@ -62,6 +62,8 @@ class Instrument(Base):
         ForeignKey("instrument_categories.id")
     )
     description: Mapped[str | None] = mapped_column(String)
+    # De dónde sale la descripción (enlaces o libros), para validarla
+    description_source: Mapped[str | None] = mapped_column(Text)
 
 
 class InstrumentAlias(Base):

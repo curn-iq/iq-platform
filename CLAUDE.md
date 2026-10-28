@@ -298,7 +298,8 @@ navegación (ver más abajo) NO se considera un módulo.
     modelos 3D son de SIMIQ3D: el mapeo modelo 3D → `instruments.id` vive en
     su propia BD, igual que las clases de YOLO en SIVRI. `instruments.description`
     es la descripción breve que SIMIQ3D muestra al hacer clic; se llena con
-    fuentes citables.
+    fuentes citables, que van en `instruments.description_source` (la API no
+    acepta una descripción sin su fuente).
 
 - **Catálogo de instrumental (normalización)**:
   - Catálogo crudo: **148 variantes** (una fila por par técnica-instrumento,

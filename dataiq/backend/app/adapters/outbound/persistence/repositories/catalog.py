@@ -47,6 +47,7 @@ class SQLAlchemyCatalogRepository:
                 Instrument.name,
                 InstrumentCategory.name.label("category"),
                 Instrument.description,
+                Instrument.description_source,
             )
             .join(
                 InstrumentCategory,
@@ -63,6 +64,7 @@ class SQLAlchemyCatalogRepository:
                 category=row.category,
                 description=row.description,
                 aliases=tuple(aliases[row.id]),
+                description_source=row.description_source,
             )
             for row in await self._session.execute(query)
         ]
@@ -72,11 +74,18 @@ class SQLAlchemyCatalogRepository:
         return found[0] if found else None
 
     async def create_instrument(
-        self, name: str, category_id: UUID, description: str | None
+        self,
+        name: str,
+        category_id: UUID,
+        description: str | None,
+        description_source: str | None = None,
     ) -> CatalogInstrument:
         await self._validate_instrument(name, category_id)
         instrument = Instrument(
-            name=name, category_id=category_id, description=description
+            name=name,
+            category_id=category_id,
+            description=description,
+            description_source=description_source,
         )
         self._session.add(instrument)
         await self._session.flush()
@@ -101,6 +110,8 @@ class SQLAlchemyCatalogRepository:
             instrument.category_id = changes.category_id
         if changes.description is not None:
             instrument.description = changes.description
+        if changes.description_source is not None:
+            instrument.description_source = changes.description_source
         if changes.aliases is not None:
             await self._replace_aliases(instrument_id, changes.aliases)
         await self._session.flush()

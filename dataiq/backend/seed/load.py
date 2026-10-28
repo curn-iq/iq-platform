@@ -2,13 +2,18 @@
 
 Uso, desde dataiq/backend:
 
-    uv run python -m seed.load            # carga o recarga las técnicas
-    uv run python -m seed.load --force    # reemplaza versiones hechas por personas
+    uv run python -m seed.load                 # carga o recarga las técnicas
+    uv run python -m seed.load --force         # reemplaza versiones de personas
+    uv run python -m seed.load --descriptions  # reemplaza descripciones distintas
 
 Cada técnica del archivo queda con una sola versión, la 1, publicada. Se puede
 correr varias veces: borra las versiones anteriores de esas técnicas y las vuelve
 a cargar. Si alguna versión la creó una persona (no la carga), se detiene para no
 borrar trabajo real, salvo con --force.
+
+Del catálogo de instrumental, la descripción (y su fuente) solo se llena si el
+instrumento no tiene una: la de la base pudo cambiarla un revisor. Las que son
+distintas del archivo se listan, y se reemplazan con --descriptions.
 """
 
 import asyncio
@@ -67,6 +72,16 @@ class SeedItem:
 
 
 @dataclass
+class SeedInstrument:
+    name: str
+    category: str
+    # Nombres anteriores o variantes; si el nombre cambió, el anterior va aquí
+    aliases: tuple[str, ...] = ()
+    description: str | None = None
+    description_source: str | None = None
+
+
+@dataclass
 class SeedTechnique:
     name: str
     specialty: str
@@ -90,6 +105,10 @@ def _rows(workbook, sheet):
 
 def _text(value_):
     return None if value_ in NO_DATA else str(value_).strip()
+
+
+def _aliases(value_) -> tuple[str, ...]:
+    return tuple(a.strip() for a in (_text(value_) or "").split(";") if a.strip())
 
 
 def read_file(path_: Path):
@@ -146,9 +165,16 @@ def read_file(path_: Path):
     # El catálogo base (hoja catalogo) y lo que se le agregó (catalogo_nuevo):
     # así la carga también sirve en una base de datos vacía.
     instruments = [
-        (f["nombre"], f["categoria"], None) for f in _rows(workbook, "catalogo")
+        SeedInstrument(
+            name=f["nombre"],
+            category=f["categoria"],
+            aliases=_aliases(f["alias"]),
+            description=_text(f["descripcion"]),
+            description_source=_text(f["fuentes_descripcion"]),
+        )
+        for f in _rows(workbook, "catalogo")
     ] + [
-        (f["nombre"], f["categoria"], _text(f["alias"]))
+        SeedInstrument(f["nombre"], f["categoria"], _aliases(f["alias"]))
         for f in _rows(workbook, "catalogo_nuevo")
     ]
     return techniques, instruments
@@ -262,29 +288,57 @@ async def _delete_orphans(session: AsyncSession) -> None:
     )
 
 
-async def load(force: bool = False) -> None:
+async def load_catalog(
+    session: AsyncSession,
+    catalog: list[SeedInstrument],
+    replace_descriptions: bool = False,
+) -> list[str]:
+    """Los instrumentos que falten, con su categoría, sus alias y su descripción.
+    Devuelve los que tienen en la base una descripción distinta de la del archivo
+    y no se reemplazaron."""
+    outdated = []
+    for seed in catalog:
+        cat = await _get_or_create(session, InstrumentCategory, name=seed.category)
+        inst = (
+            await session.scalars(
+                select(Instrument).where(Instrument.name == seed.name)
+            )
+        ).first()
+        if inst is None and seed.aliases:
+            # Un nombre corregido: el instrumento conserva su id y su nombre
+            # anterior queda como alias.
+            inst = (
+                await session.scalars(
+                    select(Instrument).where(Instrument.name.in_(seed.aliases))
+                )
+            ).first()
+            if inst is not None:
+                inst.name = seed.name
+        if inst is None:
+            inst = Instrument(name=seed.name, category_id=cat.id)
+            session.add(inst)
+            await session.flush()
+        if seed.description and (
+            inst.description != seed.description
+            or inst.description_source != seed.description_source
+        ):
+            if not inst.description or replace_descriptions:
+                inst.description = seed.description
+                inst.description_source = seed.description_source
+            else:
+                outdated.append(seed.name)
+        for a in seed.aliases:
+            await _get_or_create(
+                session, InstrumentAlias, instrument_id=inst.id, alias=a
+            )
+    return outdated
+
+
+async def load(force: bool = False, descriptions: bool = False) -> None:
     techniques, catalog = read_file(SOURCE_FILE)
 
     async with SessionLocal() as session, session.begin():
-        # Catálogo: los instrumentos que falten, con su categoría y sus alias. Los
-        # que ya existen no se tocan (un revisor pudo haberlos editado).
-        for name, category, alias in catalog:
-            cat = await _get_or_create(session, InstrumentCategory, name=category)
-            inst = (
-                await session.scalars(select(Instrument).where(Instrument.name == name))
-            ).first()
-            if inst is None:
-                inst = Instrument(name=name, category_id=cat.id)
-                session.add(inst)
-                await session.flush()
-            for a in (alias or "").split(";"):
-                if a.strip():
-                    await _get_or_create(
-                        session,
-                        InstrumentAlias,
-                        instrument_id=inst.id,
-                        alias=a.strip(),
-                    )
+        outdated = await load_catalog(session, catalog, descriptions)
         instruments = {
             i.name: i.id for i in (await session.scalars(select(Instrument))).all()
         }
@@ -420,7 +474,14 @@ async def load(force: bool = False) -> None:
         await _delete_orphans(session)
 
     print(f"Cargadas {len(techniques)} técnicas desde {SOURCE_FILE.name}.")
+    if outdated:
+        print(
+            f"{len(outdated)} descripciones de la base no son las del archivo y no se "
+            "tocaron (usar --descriptions para reemplazarlas): " + ", ".join(outdated)
+        )
 
 
 if __name__ == "__main__":
-    asyncio.run(load(force="--force" in sys.argv))
+    asyncio.run(
+        load(force="--force" in sys.argv, descriptions="--descriptions" in sys.argv)
+    )
