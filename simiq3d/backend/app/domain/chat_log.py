@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from uuid import UUID
 
 from app.domain.chat import ChatAction, ClinicalField, Reply
@@ -17,6 +18,9 @@ class ChatLogEntry:
     field: ClinicalField | None
     language_model: str
     latency_ms: int
+    # Cuándo llegó la pregunta: lo pone la base al guardarla, y sirve para
+    # separar las de cada sesión de evaluación
+    created_at: datetime | None = None
 
     @classmethod
     def of(

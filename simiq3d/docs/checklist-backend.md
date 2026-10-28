@@ -44,10 +44,9 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] «¿Quizás quisiste decir…?» para nombres mal escritos
 - [x] Pregunta ambigua: pide precisar en qué técnica
 - [x] `POST /chat` con el contrato acordado con el frontend
-- [x] Probado con Qwen2.5 7B y Qwen3-VL 8B en la RX 6600 XT; por defecto,
-  Qwen3-VL 8B instruct
-- [ ] Banco de preguntas con su respuesta correcta (ING con ayuda de IQ)
-- [ ] Elegir el modelo con el banco de preguntas
+- [x] Probado con Qwen2.5 7B y Qwen3-VL 8B en la RX 6600 XT
+- [x] Modelo del MVP: Qwen3-VL 8B instruct
+- [ ] Banco de preguntas con su respuesta correcta, para medir la exactitud
 
 ## Modelos 3D
 
@@ -65,6 +64,8 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] Filtro del Servidor PC2 con límite de preguntas simultáneas (`429`)
 - [x] `CHAT_QUOTA_SECRET` en Vercel y la migración del tope en Neon
 - [x] Comando `chat_log` para exportarlo a CSV y borrarlo
+- [x] La exportación trae la fecha y hora de cada pregunta, y separa una
+  sesión de evaluación con `--desde` y `--hasta`
 
 ## Despliegue
 
@@ -76,8 +77,7 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
   y probado con Ollama
 - [x] Servidor PC2: filtro como servicio de usuario (sigue sin sesión abierta)
   y Tailscale Funnel (`https://fedora.tail5cf085.ts.net`, solo el filtro)
-- [ ] Servidor PC2 sin suspensión durante las sesiones de uso
+- [x] Servidor PC2 sin suspensión por inactividad
 - [x] Desplegado en producción: https://simiq3d-backend.vercel.app (sesión
   validada contra la clave pública del DataIQ de producción)
 - [ ] Chat probado de punta a punta en producción, con una cuenta de DataIQ
-- [ ] Rewrite `/api/simiq3d/*` en el proyecto de Vercel del frontend

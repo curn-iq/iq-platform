@@ -16,6 +16,7 @@ from app.adapters.outbound.persistence.models.mappings import ModelMapping
 from app.adapters.outbound.persistence.repositories.chat_log import (
     SQLAlchemyChatLogRepository,
 )
+from app.config import config
 from app.domain.chat import ChatAction
 from app.main import app
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
@@ -224,7 +225,9 @@ async def test_with_the_log_on_each_question_is_saved_without_who_asked(
 
 
 @pytest.mark.anyio
-async def test_with_the_log_off_nothing_is_saved(api, bearer, session):
+async def test_with_the_log_off_nothing_is_saved(api, bearer, session, monkeypatch):
+    monkeypatch.setattr(config, "chat_log_enabled", False)
+
     await api.post("/chat", json={"question": "Hola"}, headers=bearer)
 
     assert await SQLAlchemyChatLogRepository(session).list_all() == []

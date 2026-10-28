@@ -90,7 +90,7 @@ y se ve bien a 1310 px y a 390 px.
 Depende de que el backend esté en Cloud Run (pieza 9 de
 [`checklist-backend.md`](checklist-backend.md)).
 
-- [ ] `vercel.json`: rewrite de `/api/dataiq/:path*` a Cloud Run, el resto de rutas a `index.html` y encabezados de seguridad (CSP)
+- [ ] `vercel.json`: rewrite de `/api/dataiq/:path*` a Cloud Run y de `/api/simiq3d/:path*` al backend de SIMIQ3D, el resto de rutas a `index.html` y encabezados de seguridad (CSP)
 - [ ] Confirmar que Vercel reenvía la cookie y el `Set-Cookie`
 - [ ] GitHub Actions: build, pruebas y despliegue con Vercel CLI (el plan Hobby no conecta repos de organizaciones)
 

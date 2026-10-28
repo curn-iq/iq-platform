@@ -36,7 +36,8 @@ porqué están en el [README](../README.md).
   `fuentes_descripcion` de `seed/tecnicas.xlsx`): es lo que muestra SIMIQ3D al
   hacer clic en un instrumento
 - [ ] El registro de conversaciones en la política de tratamiento de datos,
-  con su finalidad (evaluación)
+  con su finalidad (evaluación): condición para abrir la plataforma a los
+  estudiantes
 
 ## 3. Diseño y desarrollo
 
@@ -49,9 +50,9 @@ porqué están en el [README](../README.md).
   vuelve a pedir)
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
 - [x] Tailscale Funnel con el filtro con clave (solo el filtro queda publicado)
-- [ ] Servidor PC2 sin suspensión durante las sesiones de uso
-- [ ] Elegir el modelo de lenguaje con el banco de preguntas (probados Qwen2.5
-  7B y Qwen3-VL 8B; por defecto, Qwen3-VL 8B instruct)
+- [x] Servidor PC2 sin suspensión por inactividad
+- [x] Modelo de lenguaje del MVP: Qwen3-VL 8B instruct (probados Qwen2.5 7B y
+  Qwen3-VL 8B)
 - [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
   y plantillas de respaldo), mapeo de modelos y registro de conversaciones, con
   pruebas automatizadas; avance en [`checklist-backend.md`](checklist-backend.md)
@@ -74,7 +75,8 @@ porqué están en el [README](../README.md).
 - [ ] Modelos con visto bueno del programa de IQ (de 23)
 - [ ] Escala de Usabilidad del Sistema (SUS) y prueba piloto, con el resto del
   ecosistema
-- [ ] Borrar el registro de conversaciones al terminar la evaluación
+- [ ] Al cerrar la evaluación: exportar el registro de conversaciones, borrarlo
+  y apagarlo (`CHAT_LOG_ENABLED=false`)
 
 ## 6. Comunicación
 
