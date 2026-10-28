@@ -93,6 +93,9 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 
 ## SIMIQ3D
 
+- **Un modelo de lenguaje más grande** que Qwen3-VL 8B, el del MVP: necesita
+  una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
+  Se elige con el mismo banco de preguntas, para comparar la exactitud.
 - **Usarlo sin conexión** (PWA con service worker): precargar la app y los
   modelos, e instalarla en el celular. En el MVP basta la caché HTTP, que
   guarda la app y los modelos después de la primera visita; el chat necesita

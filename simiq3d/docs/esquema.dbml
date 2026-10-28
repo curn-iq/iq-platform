@@ -54,9 +54,9 @@ Table chat_logs {
   Note: '''
   Registro anónimo de las conversaciones, para medir la exactitud del chat y su
   tiempo de respuesta. No guarda la cuenta ni nada que identifique a quien
-  pregunta. Solo se llena con CHAT_LOG_ENABLED=true (sesiones de evaluación y
-  prueba piloto, con consentimiento informado) y se borra al terminar la
-  evaluación.
+  pregunta. Se llena mientras CHAT_LOG_ENABLED=true (encendido durante el
+  proyecto); las preguntas de cada sesión de evaluación se separan por
+  created_at. Al cerrar la evaluación se exporta, se borra y se apaga.
   '''
 }
 

@@ -35,7 +35,8 @@ porqué están en el [README](../README.md).
   (`instruments.description`, hoy vacía), con fuentes citables: es lo que
   muestra SIMIQ3D al hacer clic en un instrumento
 - [ ] El registro de conversaciones en la política de tratamiento de datos,
-  con su finalidad (evaluación)
+  con su finalidad (evaluación): condición para abrir la plataforma a los
+  estudiantes
 
 ## 3. Diseño y desarrollo
 
@@ -73,7 +74,8 @@ porqué están en el [README](../README.md).
 - [ ] Modelos con visto bueno del programa de IQ (de 23)
 - [ ] Escala de Usabilidad del Sistema (SUS) y prueba piloto, con el resto del
   ecosistema
-- [ ] Borrar el registro de conversaciones al terminar la evaluación
+- [ ] Al cerrar la evaluación: exportar el registro de conversaciones, borrarlo
+  y apagarlo (`CHAT_LOG_ENABLED=false`)
 
 ## 6. Comunicación
 

@@ -174,7 +174,8 @@ Sugerencias para quien lo implemente:
   3,9 s contra 2,4 s, máximo 6,7 s). La variante *instruct* y no la
   *thinking*: razonar antes de cada paso sumaría segundos. Es el modelo del
   MVP (decidido por Mauricio el 2026-10-27); el banco de preguntas mide su
-  exactitud, y un modelo más grande queda para después del MVP.
+  exactitud. Un modelo más grande, en
+  [`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md).
 - La RX 6600 XT no está en la lista oficial de GPU AMD de Ollama: probar su
   backend Vulkan o `HSA_OVERRIDE_GFX_VERSION=10.3.0`; si ninguno funciona,
   corre en la CPU, más lento.
@@ -221,13 +222,20 @@ El registro de conversaciones:
 
 - **Sin datos de quién pregunta**: no guarda la cuenta ni nada que identifique
   a la persona.
-- Está siempre encendido (decidido por Mauricio el 2026-10-27): mide la
-  exactitud con preguntas reales, no solo con las de las sesiones de
-  evaluación. En la prueba piloto, los participantes además dan su
-  consentimiento informado (Resolución 8430 de 1993). Se borra al terminar la
-  evaluación.
-- La política de tratamiento de datos lo declara, con su finalidad
-  (Ley 1581 de 2012).
+- Está encendido mientras dura el proyecto (decidido por Mauricio el
+  2026-10-27): mide la exactitud con preguntas reales, no solo con las de las
+  sesiones de evaluación. En la prueba piloto, los participantes además dan su
+  consentimiento informado (Resolución 8430 de 1993).
+- Al cerrar la evaluación sumativa se exporta lo que necesita el informe, se
+  borra y se apaga (`CHAT_LOG_ENABLED=false`): los datos se guardan solo
+  mientras sirven a su finalidad (Decreto 1377 de 2013, art. 11). Se vuelve a
+  encender solo si la política declara una finalidad nueva.
+- La pregunta es texto libre y podría traer datos de un paciente, que son
+  datos sensibles (Ley 1581 de 2012, art. 5). Por eso el frontend avisa bajo el
+  campo del chat: «Tus preguntas se guardan sin tu nombre para medir el chat.
+  No escribas datos de pacientes».
+- La política de tratamiento de datos lo declara, con su finalidad (Ley 1581
+  de 2012): es condición para abrir la plataforma a los estudiantes.
 
 ## Cómo se evalúa
 
@@ -248,8 +256,10 @@ técnica del chat; lo demás está en
 - **Evaluación sumativa** (al final):
   1. **Exactitud del chat:** porcentaje de preguntas respondidas
      correctamente, sobre el banco y sobre el registro de las sesiones de
-     evaluación; aparte, las respuestas inventadas (meta: ninguna) y cuántas
-     respondió el modelo y cuántas las plantillas de respaldo.
+     evaluación (las preguntas de cada sesión se separan por su fecha y hora,
+     con `chat_log exportar --desde --hasta`); aparte, las respuestas
+     inventadas (meta: ninguna) y cuántas respondió el modelo y cuántas las
+     plantillas de respaldo.
   2. **Tiempo de respuesta:** desde la pregunta hasta que se ve la escena.
   3. **Visto bueno del programa de IQ** a cada modelo 3D.
   4. La **Escala de Usabilidad del Sistema (SUS)** y el cuestionario de
