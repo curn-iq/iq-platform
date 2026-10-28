@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,9 +26,19 @@ class SQLAlchemyChatLogRepository:
         self._session.add(ChatLog(**{f: getattr(entry, f) for f in FIELDS}))
         await self._session.commit()
 
-    async def list_all(self) -> list[ChatLogEntry]:
-        rows = await self._session.scalars(select(ChatLog).order_by(ChatLog.id))
-        return [ChatLogEntry(**{f: getattr(r, f) for f in FIELDS}) for r in rows]
+    async def list_all(
+        self, since: datetime | None = None, until: datetime | None = None
+    ) -> list[ChatLogEntry]:
+        query = select(ChatLog).order_by(ChatLog.id)
+        if since is not None:
+            query = query.where(ChatLog.created_at >= since)
+        if until is not None:
+            query = query.where(ChatLog.created_at < until)
+        rows = await self._session.scalars(query)
+        return [
+            ChatLogEntry(**{f: getattr(r, f) for f in FIELDS}, created_at=r.created_at)
+            for r in rows
+        ]
 
     async def delete_all(self) -> int:
         count = await self._session.scalar(select(func.count()).select_from(ChatLog))

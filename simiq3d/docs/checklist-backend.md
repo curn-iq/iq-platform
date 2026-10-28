@@ -64,6 +64,8 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] Filtro del Servidor PC2 con límite de preguntas simultáneas (`429`)
 - [x] `CHAT_QUOTA_SECRET` en Vercel y la migración del tope en Neon
 - [x] Comando `chat_log` para exportarlo a CSV y borrarlo
+- [x] La exportación trae la fecha y hora de cada pregunta, y separa una
+  sesión de evaluación con `--desde` y `--hasta`
 
 ## Despliegue
 

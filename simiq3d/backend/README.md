@@ -168,8 +168,11 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
 # Mapeo de modelos 3D: lee ../models/modelos.csv (columnas instrumento y archivo)
 uv run python -m app.adapters.inbound.cli.load_models
 
-# Registro de conversaciones (se apaga con CHAT_LOG_ENABLED=false)
+# Registro de conversaciones (se apaga con CHAT_LOG_ENABLED=false). Con --desde
+# y --hasta (hora de Colombia), solo las preguntas de una sesión de evaluación
 uv run python -m app.adapters.inbound.cli.chat_log exportar registro.csv
+uv run python -m app.adapters.inbound.cli.chat_log exportar sesion.csv \
+    --desde 2026-11-02T14:30 --hasta 2026-11-02T17:00
 uv run python -m app.adapters.inbound.cli.chat_log borrar
 ```
 
