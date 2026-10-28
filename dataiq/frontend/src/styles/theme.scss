@@ -1,8 +1,12 @@
 // Tema de DataIQ sobre los tokens de shared/design/ (ver «Sistema visual
 // compartido» en CLAUDE.md). Solo sobrescribe propiedades CSS, nunca define
 // estilos de componentes. DataIQ usa los tokens base tal cual; lo que necesite
-// cambiar va aquí, p. ej.:
+// cambiar va aquí. El acento es una familia: se cambia completa (el foco la
+// sigue solo), p. ej.:
 //
 // :root {
 //   --color-accent: var(--quirofano);
+//   --color-accent-strong: var(--quirofano-hondo);
+//   --color-accent-soft: var(--quirofano-claro);
+//   --color-accent-soft-hover: var(--quirofano-claro-hover);
 // }

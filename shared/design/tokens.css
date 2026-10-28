@@ -120,7 +120,8 @@
   --color-accent-strong: var(--marca-hondo);
   --color-accent-soft: var(--marca-claro);
   --color-accent-soft-hover: var(--marca-claro-hover);
-  --color-focus: var(--marca);
+  /* El foco es siempre el acento: un tema que lo cambie lo arrastra */
+  --color-focus: var(--color-accent);
   --color-dark: var(--noche);
   --color-dark-raised: var(--noche-2);
   --color-dark-border: var(--filete-noche);
@@ -132,7 +133,24 @@
   --space-gutter: var(--lado);
   --space-column-gap: var(--medianil);
   --size-navbar: var(--barra);
+  --size-navbar-mobile: var(--barra-movil);
   --space-section: var(--seccion);
+  --space-section-compact: var(--seccion-compacta);
+  --size-rail: var(--carril);
+  --size-technique-column: var(--columna-tecnicas);
+
+  --radius-hairline: var(--radio-trazo-fino);
+  --radius-stroke: var(--radio-trazo);
+  --radius-xs: var(--radio-xs);
+  --radius-sm: var(--radio-sm);
+  --radius-control-sm: var(--radio-control-sm);
+  --radius-md: var(--radio-md);
+  --radius-lg: var(--radio-lg);
+  --radius-xl: var(--radio-xl);
+  --radius-window: var(--radio-ventana);
+  --radius-panel: var(--radio-panel);
+  --radius-stage: var(--radio-escenario);
+  --radius-pill: var(--radio-pill);
 
   --ease-enter: var(--expo);
   --ease-fade: var(--cuarta);
