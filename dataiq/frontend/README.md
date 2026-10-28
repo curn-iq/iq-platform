@@ -81,6 +81,23 @@ tipos generados tal cual. Un repositorio solo transforma cuando la forma de la
 API no le sirve a la pantalla (p. ej. agrupar los objetos por mesa para el
 diagrama), y esa transformación vive en `data/`, no en el componente.
 
+**Repositorios** (`data/*.repository.ts`): uno por recurso, con un método por
+operación de la API. `techniques` incluye las especialidades; `catalog`, el
+instrumental. `POST /auth/token` y el JWKS no tienen método: no son del
+navegador.
+
+- Las **lecturas** devuelven un `httpResource` (se crean en un contexto de
+  inyección, p. ej. al declarar el campo del componente). Reciben el `id` o el
+  filtro como función (`() => id()`, normalmente una señal): si devuelve
+  `undefined`, el recurso no pide nada. `VersionsFilter` traduce `reviewedByMe`
+  a `reviewed_by_me` y manda cada estado como un parámetro repetido.
+- Las **escrituras** y `AuthRepository` (que no se muestra en una pantalla)
+  devuelven `Observable`.
+- `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
+  del token `API_BASE_URL`, que `core/http` provee con `/api/dataiq`.
+- Para probarlos: `provideRepositoryTesting()` (`data/testing.ts`) con
+  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`.
+
 **El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
 en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
 soltar), en la revisión (dos mesas lado a lado) y en el catálogo de

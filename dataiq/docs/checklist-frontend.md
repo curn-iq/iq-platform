@@ -40,7 +40,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 ### Fase 1 — Núcleo
 
 - [x] `domain/`: `Role` y `hasAtLeast()`, `VersionState` y transiciones permitidas
-- [ ] `data/`: un repositorio por recurso sobre los tipos generados
+- [x] `data/`: un repositorio por recurso sobre los tipos generados
 - [ ] `core/http`: `provideHttpClient(withFetch())`, base `/api/dataiq`, interceptor de `X-IQ-Client: web` e interceptor de errores (401, 403, 409, 422)
 - [ ] Aviso en pantalla para los errores que traduce el interceptor (componente en `shared/ui/`)
 - [ ] `core/session`: `SessionService` (cuenta de `GET /auth/me` al arrancar, ingresar, salir), `sessionGuard` y `roleGuard(min)` con `?volver=`
