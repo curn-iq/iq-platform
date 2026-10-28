@@ -28,4 +28,4 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 ## Decisiones abiertas
 
 - Cómo se muestran descripción, indicaciones, complicaciones y técnica quirúrgica cuando haya fuente.
-- Dibujos propios para Babcock, Foerster, Moninjan y valva maleable (hoy reutilizan el más parecido).
+- Dibujos propios para Babcock, Foerster, Moynihan y valva maleable (hoy reutilizan el más parecido).

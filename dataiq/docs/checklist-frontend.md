@@ -30,7 +30,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] `proxy.conf.json` (`/api/dataiq` → `http://127.0.0.1:8000`, sin el prefijo) y conectado a `ng serve` en `angular.json`
 - [x] `npm run api:types`: genera `src/app/data/api/` desde el `/openapi.json` del backend con `openapi-typescript` (versión fija). Los tipos generados se versionan, para que el build no necesite el backend
 - [x] Instalar Angular CDK (la misma versión de Angular)
-- [ ] Mockups de DataIQ (`tecnica`, `editor`, `instrumental`, `revision`): «Pinza Moninjan» pasa a «Pinza de Moynihan», como el catálogo (#28)
+- [x] Mockups de DataIQ (`tecnica`, `editor`, `instrumental`, `revision`): «Pinza Moninjan» pasa a «Pinza de Moynihan», como el catálogo (#28)
 
 ### Fase 1 — Núcleo
 
