@@ -3,30 +3,18 @@ import type { components } from './schema';
 type Role = components['schemas']['Role'];
 type VersionState = components['schemas']['VersionState'];
 
-// Un Record exige todas las claves y rechaza las que sobran: si el backend
-// agrega o quita un rol o un estado y no se corrió `npm run api:types`, o si
-// cambia lo documentado en CLAUDE.md, esta prueba deja de compilar.
-const roles: Record<Role, true> = { user: true, contributor: true, reviewer: true, admin: true };
-const states: Record<VersionState, true> = {
-  draft: true,
-  in_review: true,
-  published: true,
-  superseded: true,
-  archived: true,
-};
-
+// La comprobación es de tipos: si el backend agrega o quita un rol o un estado
+// y se regeneró schema.d.ts, esta prueba deja de compilar hasta que el frontend
+// lo tenga en cuenta. Que schema.d.ts esté al día con el backend lo revisa el CI
+// (.github/workflows/dataiq-frontend.yml).
 describe('tipos generados de la API', () => {
   it('traen los roles del modelo de roles', () => {
-    expect(Object.keys(roles)).toEqual(['user', 'contributor', 'reviewer', 'admin']);
+    expectTypeOf<Role>().toEqualTypeOf<'user' | 'contributor' | 'reviewer' | 'admin'>();
   });
 
   it('traen los estados de una versión', () => {
-    expect(Object.keys(states)).toEqual([
-      'draft',
-      'in_review',
-      'published',
-      'superseded',
-      'archived',
-    ]);
+    expectTypeOf<VersionState>().toEqualTypeOf<
+      'draft' | 'in_review' | 'published' | 'superseded' | 'archived'
+    >();
   });
 });

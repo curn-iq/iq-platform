@@ -18,7 +18,8 @@ const generator = join(frontend, 'node_modules', 'openapi-typescript', 'bin', 'c
 
 // El backend exige estas variables para cargar su configuración, pero el
 // documento OpenAPI no las usa ni abre ninguna conexión: basta con valores de
-// relleno (si ya existen, por el entorno o por el .env del backend, se respetan).
+// relleno. Si ya existen en el entorno, se respetan; los del .env del backend
+// no, porque pydantic-settings prefiere el entorno (da igual para el documento).
 const env = {
   DATABASE_URL: 'postgresql+asyncpg://openapi:openapi@localhost:5432/openapi',
   JWT_PRIVATE_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',

@@ -1,0 +1,59 @@
+# Frontend de DataIQ: build y pruebas en cada PR, y que los tipos de la API
+# (src/app/data/api/schema.d.ts) coincidan con el backend. El despliegue llega
+# en la fase 9 (dataiq/docs/checklist-frontend.md).
+
+name: DataIQ frontend
+
+on:
+  pull_request:
+    paths:
+      - "dataiq/frontend/**"
+      - "shared/design/**"
+      # Un cambio de rutas o esquemas del backend obliga a regenerar los tipos
+      - "dataiq/backend/app/**"
+      - ".github/workflows/dataiq-frontend.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: dataiq/frontend
+
+jobs:
+  test:
+    name: Build y pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: dataiq/frontend/package-lock.json
+      - run: npm ci
+      - run: npx ng build
+      - run: npx ng test --watch=false
+
+  api-types:
+    name: Tipos de la API al día
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: dataiq/frontend/package-lock.json
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: "0.12.18"
+          python-version: "3.14"
+      - run: npm ci
+      - run: npm run api:types
+      - name: schema.d.ts igual al que genera el backend
+        run: |
+          git diff --exit-code src/app/data/api || {
+            echo "::error::schema.d.ts no coincide con el backend: correr 'npm run api:types' en dataiq/frontend y subir el archivo"
+            exit 1
+          }
