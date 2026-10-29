@@ -147,7 +147,12 @@ Cada ruta carga su pantalla al visitarla (`loadComponent`, en
 pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
 en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
 editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
-«Revisar versión») hasta que su pantalla ponga el nombre real. Mientras una
+«Revisar versión») hasta que su pantalla ponga el nombre real. El router
+(`provideAppRouter`, en `core/router/`) tiene `anchorScrolling`: los enlaces de la
+barra y del pie a `/#camino`, `/#investigacion`, `/#preguntas` y `/#quien` bajan a
+esa sección del inicio, también desde otra página y al tocar de nuevo el mismo
+enlace. Cada sección del inicio lleva `scroll-margin-top: var(--size-navbar)` para
+no quedar bajo la barra fija. Mientras una
 pantalla no se construye, su ruta carga un marcador vacío. Una ruta que no
 existe (`**`, la última) abre «No encontrada»: el aviso es
 `shared/ui/not-found`, que la fase 4 reutiliza para una técnica que no existe.
