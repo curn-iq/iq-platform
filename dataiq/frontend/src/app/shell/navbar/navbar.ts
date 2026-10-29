@@ -1,17 +1,21 @@
-import type { OverlayRef } from '@angular/cdk/overlay';
-import { toSignal } from '@angular/core/rxjs-interop';
+import type { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
+  OutputRef,
   signal,
+  Type,
+  untracked,
   viewChild,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RouterLink } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { SessionService } from '../../core/session/session.service';
 import type { Account } from '../../data/api/models';
@@ -24,12 +28,22 @@ import { CATALOG_ROUTE, NAV_MENUS, NavMenu, NavMenuId } from './nav-menus';
 /** Lo que puede tener abierto la barra: uno de sus cuatro menús o «Mi cuenta». */
 type PanelId = NavMenuId | 'account';
 
+/** Por encima de este ancho la barra muestra sus cuatro menús; por debajo, el menú de celular. */
+const WIDE_QUERY = '(min-width: 961px)';
+/** Hasta este ancho la barra mide `--size-navbar-mobile` en vez de `--size-navbar` (ver `navbar.scss`). */
+const COMPACT_QUERY = '(max-width: 760px)';
+
+/** Lo que tiene todo panel de la barra: avisa cuando se eligió una opción. */
+interface PanelComponent {
+  readonly chosen: OutputRef<void>;
+}
+
 /**
  * La barra superior: la marca, cuatro menús (Herramientas, Especialidades,
  * ¿Por qué IQ Platform?, Ayuda) y, a la derecha, Ingresar y Crear cuenta o «Mi
  * cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
- * uno abierto a la vez y se cierra con Escape, con un clic fuera o al elegir una
- * opción. Ver «Navigation» en `DESIGN.md`.
+ * uno abierto a la vez y se cierra con Escape, con un clic fuera, al elegir una
+ * opción o al cambiar de página. Ver «Navigation» en `DESIGN.md`.
  */
 @Component({
   selector: 'app-navbar',
@@ -43,6 +57,7 @@ export class Navbar {
   private readonly injector = inject(Injector);
   private readonly router = inject(Router);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly mobileButton = viewChild.required<ElementRef<HTMLElement>>('mobileButton');
   private panel: OverlayRef | null = null;
   // Cuenta las aperturas y los cierres: una apertura que aún carga el overlay se cancela si pasó otra.
@@ -70,18 +85,43 @@ export class Navbar {
   });
 
   constructor() {
-    const destroyRef = inject(DestroyRef);
-    destroyRef.onDestroy(() => this.dispose());
+    this.destroyRef.onDestroy(() => this.dispose());
 
-    // Por encima de 960 px el menú de celular se esconde: que no siga abierto para cuando
-    // la ventana vuelva a angostarse.
+    // Atrás, Adelante, un guard o la sesión vencida también cambian de página, sin
+    // pasar por una opción: lo que hubiera abierto se cierra.
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationStart),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        this.close();
+        this.closeMobile();
+      });
+
+    // «Mi cuenta» muestra la cuenta que había al abrirlo: si la sesión cambia
+    // (p. ej. vence), se cierra.
+    effect(() => {
+      this.session.account();
+      untracked(() => {
+        if (this.open() === 'account') this.close();
+      });
+    });
+
     if (typeof matchMedia === 'function') {
-      const wide = matchMedia('(min-width: 961px)');
-      const onChange = (event: MediaQueryListEvent) => {
-        if (event.matches) this.mobileOpen.set(false);
-      };
-      wide.addEventListener('change', onChange);
-      destroyRef.onDestroy(() => wide.removeEventListener('change', onChange));
+      // Por encima de 960 px el menú de celular se esconde, y por debajo, los botones
+      // de los desplegables: lo que quede sin botón se cierra.
+      this.onMediaChange(WIDE_QUERY, (wide) => {
+        if (wide) {
+          this.closeMobile();
+        } else if (this.open() !== null && this.open() !== 'account') {
+          this.close();
+        }
+      });
+      // «Mi cuenta» se ancla a la altura de la barra, que cambia en 760 px.
+      this.onMediaChange(COMPACT_QUERY, () => {
+        if (this.open() === 'account') this.close();
+      });
     }
   }
 
@@ -95,9 +135,12 @@ export class Navbar {
     }
   }
 
+  /** Cierra el menú de celular; si el foco estaba en él, o con `returnFocus`, vuelve al botón. */
   protected closeMobile(options: { returnFocus?: boolean } = {}): void {
+    const menu = this.host.nativeElement.querySelector('app-mobile-menu');
+    const hadFocus = menu?.contains(document.activeElement) ?? false;
     this.mobileOpen.set(false);
-    if (options.returnFocus) this.mobileButton().nativeElement.focus();
+    if (options.returnFocus || hadFocus) this.mobileButton().nativeElement.focus();
   }
 
   // Los paneles de escritorio atienden su propio Escape (CDK); este es el del menú de celular.
@@ -112,7 +155,16 @@ export class Navbar {
    */
   protected toggle(menu: NavMenu, event: MouseEvent): void {
     if (this.open() !== menu.id) {
-      void this.showMenu(menu, isKeyboardClick(event));
+      void this.show(
+        menu.id,
+        () => import('./nav-panel').then((m) => m.NavPanel),
+        (overlay) => ({
+          positionStrategy: overlay.position().global().top('var(--size-navbar)'),
+          width: '100%',
+        }),
+        { menu },
+        isKeyboardClick(event),
+      );
     } else if (menu.destination) {
       this.close();
       void this.router.navigateByUrl(menu.destination);
@@ -125,57 +177,49 @@ export class Navbar {
   protected toggleAccount(account: Account, event: MouseEvent): void {
     if (this.open() === 'account') {
       this.close();
-    } else {
-      void this.showAccount(account, isKeyboardClick(event));
+      return;
     }
+    const compact = typeof matchMedia === 'function' && matchMedia(COMPACT_QUERY).matches;
+    const navbarHeight = compact ? 'var(--size-navbar-mobile)' : 'var(--size-navbar)';
+    void this.show(
+      'account',
+      () => import('./account-menu').then((m) => m.AccountMenu),
+      (overlay) => ({
+        // Anclado a la derecha y metido 4 px bajo el borde de la barra, como en el mockup.
+        positionStrategy: overlay
+          .position()
+          .global()
+          .top(`calc(${navbarHeight} - 4px)`)
+          .right('var(--space-gutter)'),
+      }),
+      { account },
+      isKeyboardClick(event),
+    );
   }
 
   // El overlay de CDK y los paneles se cargan al abrir el primero: la barra está en
   // todas las páginas y no deben pesar en el código inicial.
-  private async showMenu(menu: NavMenu, focusFirstLink: boolean): Promise<void> {
-    const request = this.begin(menu.id);
-    const [{ Overlay }, { ComponentPortal }, { NavPanel }] = await Promise.all([
+  private async show<T extends PanelComponent>(
+    id: PanelId,
+    load: () => Promise<Type<T>>,
+    config: (overlay: Overlay) => OverlayConfig,
+    inputs: Readonly<Record<string, unknown>>,
+    focusFirstLink: boolean,
+  ): Promise<void> {
+    const request = this.begin(id);
+    const [{ Overlay }, { ComponentPortal }, component] = await Promise.all([
       import('@angular/cdk/overlay'),
       import('@angular/cdk/portal'),
-      import('./nav-panel'),
+      load(),
     ]);
     if (request !== this.requests) return;
 
     const overlay = this.injector.get(Overlay);
-    const ref = overlay.create({
-      positionStrategy: overlay.position().global().top('var(--size-navbar)'),
-      width: '100%',
-    });
-    const panel = ref.attach(new ComponentPortal(NavPanel, null, this.injector));
-    panel.setInput('menu', menu);
-    panel.instance.chosen.subscribe(() => this.close());
+    const ref = overlay.create(config(overlay));
+    const panel = ref.attach(new ComponentPortal(component, null, this.injector));
+    for (const [name, value] of Object.entries(inputs)) panel.setInput(name, value);
     panel.changeDetectorRef.detectChanges();
-    this.watch(ref, panel.location.nativeElement, focusFirstLink);
-  }
-
-  private async showAccount(account: Account, focusFirstLink: boolean): Promise<void> {
-    const request = this.begin('account');
-    const [{ Overlay }, { ComponentPortal }, { AccountMenu }] = await Promise.all([
-      import('@angular/cdk/overlay'),
-      import('@angular/cdk/portal'),
-      import('./account-menu'),
-    ]);
-    if (request !== this.requests) return;
-
-    const overlay = this.injector.get(Overlay);
-    const ref = overlay.create({
-      // Anclado a la derecha y metido 4 px bajo el borde de la barra, como en el mockup.
-      positionStrategy: overlay
-        .position()
-        .global()
-        .top('calc(var(--size-navbar) - 4px)')
-        .right('var(--space-gutter)'),
-    });
-    const panel = ref.attach(new ComponentPortal(AccountMenu, null, this.injector));
-    panel.setInput('account', account);
-    panel.instance.chosen.subscribe(() => this.close());
-    panel.changeDetectorRef.detectChanges();
-    this.watch(ref, panel.location.nativeElement, focusFirstLink);
+    this.watch(ref, panel.location.nativeElement, panel.instance.chosen, focusFirstLink);
   }
 
   /** Cierra lo que hubiera abierto y marca `id` como abierto; devuelve el número de esta apertura. */
@@ -187,8 +231,16 @@ export class Navbar {
     return request;
   }
 
-  /** Escape y el clic fuera cierran el panel; con el teclado, el foco entra a él. */
-  private watch(ref: OverlayRef, element: HTMLElement, focusFirstLink: boolean): void {
+  /**
+   * Escape, el clic fuera y elegir una opción cierran el panel; con el teclado,
+   * el foco entra a él.
+   */
+  private watch(
+    ref: OverlayRef,
+    element: HTMLElement,
+    chosen: OutputRef<void>,
+    focusFirstLink: boolean,
+  ): void {
     ref
       .keydownEvents()
       .pipe(filter((event) => event.key === 'Escape'))
@@ -200,18 +252,36 @@ export class Navbar {
     ref.outsidePointerEvents().subscribe((event) => {
       if (!(event.target as Element).closest('[data-menu]')) this.close();
     });
+    // El panel queda al final del documento, pero con Tab se recorre como si
+    // estuviera justo después de su botón: Mayús+Tab desde el primer enlace vuelve
+    // al botón, y Tab desde el último sigue con lo que hay después del botón.
+    ref
+      .keydownEvents()
+      .pipe(filter((event) => event.key === 'Tab'))
+      .subscribe((event) => {
+        const links = element.querySelectorAll<HTMLElement>('a[href]');
+        const edge = event.shiftKey ? links[0] : links[links.length - 1];
+        if (edge === undefined || document.activeElement !== edge) return;
+        this.close({ returnFocus: true });
+        // Sin `preventDefault`, el navegador hace el Tab desde el botón, que ya tiene el foco.
+        if (event.shiftKey) event.preventDefault();
+      });
+    chosen.subscribe(() => this.close());
 
     this.panel = ref;
     // El panel queda al final del documento: con el teclado, el foco entra a él.
     if (focusFirstLink) element.querySelector('a')?.focus();
   }
 
+  /** Cierra el panel abierto; si el foco estaba en él, o con `returnFocus`, vuelve a su botón. */
   private close(options: { returnFocus?: boolean } = {}): void {
     const id = this.open();
+    // Al destruir el panel, el foco que tuviera caería en `<body>`.
+    const hadFocus = this.panel?.overlayElement.contains(document.activeElement) ?? false;
     this.requests++;
     this.dispose();
     this.open.set(null);
-    if (options.returnFocus && id) {
+    if ((options.returnFocus || hadFocus) && id) {
       this.host.nativeElement.querySelector<HTMLElement>(`[data-menu="${id}"]`)?.focus();
     }
   }
@@ -219,6 +289,14 @@ export class Navbar {
   private dispose(): void {
     this.panel?.dispose();
     this.panel = null;
+  }
+
+  /** Avisa cada vez que `query` cambia de cumplirse a no cumplirse, o al revés, mientras viva la barra. */
+  private onMediaChange(query: string, listener: (matches: boolean) => void): void {
+    const media = matchMedia(query);
+    const onChange = (event: MediaQueryListEvent) => listener(event.matches);
+    media.addEventListener('change', onChange);
+    this.destroyRef.onDestroy(() => media.removeEventListener('change', onChange));
   }
 }
 

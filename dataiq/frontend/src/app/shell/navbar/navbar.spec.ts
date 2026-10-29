@@ -24,19 +24,45 @@ describe('Navbar', () => {
     target.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
   const opened = (name: string) => vi.waitFor(() => expect(panelNames()).toEqual([name]));
 
-  /** Quienes escuchan `(min-width: 961px)`: jsdom no trae `matchMedia`. */
-  let wideListeners: ((event: { matches: boolean }) => void)[];
+  /** Quienes escuchan cada consulta de `matchMedia`, que jsdom no trae. */
+  let mediaListeners: Map<string, ((event: { matches: boolean }) => void)[]>;
+  /** Las consultas que se cumplen (ninguna al empezar: una ventana entre 761 y 960 px). */
+  let mediaMatches: Set<string>;
+  const listeners = (query: string) => mediaListeners.get(query) ?? [];
+  /** La ventana cambia de ancho y `query` pasa a cumplirse o a dejar de cumplirse. */
+  const changeMedia = (query: string, matches: boolean) => {
+    if (matches) mediaMatches.add(query);
+    else mediaMatches.delete(query);
+    listeners(query).forEach((listener) => listener({ matches }));
+  };
+  const WIDE = '(min-width: 961px)';
+  const COMPACT = '(max-width: 760px)';
+  /** Una tecla sobre lo que tiene el foco; dice si se canceló lo que haría el navegador. */
+  const press = (key: string, options: KeyboardEventInit = {}) => {
+    const event = new KeyboardEvent('keydown', {
+      key,
+      bubbles: true,
+      cancelable: true,
+      ...options,
+    });
+    (document.activeElement ?? document.body).dispatchEvent(event);
+    return event.defaultPrevented;
+  };
   const mobileButton = () => root().querySelector<HTMLButtonElement>('.mobile-button')!;
   const mobileMenu = () => document.querySelector('app-mobile-menu');
 
   beforeEach(async () => {
-    wideListeners = [];
-    vi.stubGlobal('matchMedia', () => ({
-      matches: false,
+    mediaListeners = new Map();
+    mediaMatches = new Set();
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: mediaMatches.has(query),
       addEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
-        wideListeners.push(listener),
+        mediaListeners.set(query, [...listeners(query), listener]),
       removeEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
-        (wideListeners = wideListeners.filter((l) => l !== listener)),
+        mediaListeners.set(
+          query,
+          listeners(query).filter((l) => l !== listener),
+        ),
     }));
     TestBed.configureTestingModule({
       providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
@@ -169,10 +195,69 @@ describe('Navbar', () => {
       expect(button('tools').getAttribute('aria-expanded')).toBe('false');
     });
 
+    it('cambiar de página sin pasar por él (Atrás, un guard) lo cierra', async () => {
+      await router.navigateByUrl('/otra');
+      await fixture.whenStable();
+
+      expect(panels()).toEqual([]);
+      expect(button('tools').getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('si la ventana se angosta y su botón se esconde, se cierra', async () => {
+      changeMedia(WIDE, false);
+      await fixture.whenStable();
+
+      expect(panels()).toEqual([]);
+    });
+
     it('al destruir la barra, el desplegable se va con ella', () => {
       fixture.destroy();
 
       expect(panels()).toEqual([]);
+    });
+  });
+
+  describe('foco', () => {
+    const optionLinks = () => Array.from(panels()[0].querySelectorAll<HTMLAnchorElement>('a'));
+
+    beforeEach(async () => {
+      button('help').click();
+      await opened('Ayuda');
+    });
+
+    it('Mayús+Tab desde la primera opción cierra el desplegable y vuelve a su botón', async () => {
+      expect(document.activeElement).toBe(optionLinks()[0]);
+
+      expect(press('Tab', { shiftKey: true })).toBe(true);
+      await fixture.whenStable();
+
+      expect(panels()).toEqual([]);
+      expect(document.activeElement).toBe(button('help'));
+    });
+
+    it('Tab desde la última opción lo cierra y sigue desde su botón, como si estuviera detrás de él', async () => {
+      optionLinks().at(-1)!.focus();
+
+      // El navegador hace el Tab desde el botón: la prueba solo ve que no se canceló.
+      expect(press('Tab')).toBe(false);
+      await fixture.whenStable();
+
+      expect(panels()).toEqual([]);
+      expect(document.activeElement).toBe(button('help'));
+    });
+
+    it('Tab entre opciones no lo cierra', () => {
+      expect(press('Tab')).toBe(false);
+
+      expect(panelNames()).toEqual(['Ayuda']);
+    });
+
+    it('elegir una opción con el teclado devuelve el foco a su botón', async () => {
+      optionLinks()[0].click();
+      await fixture.whenStable();
+
+      expect(panels()).toEqual([]);
+      expect(document.activeElement).toBe(button('help'));
     });
   });
 
@@ -241,6 +326,30 @@ describe('Navbar', () => {
       expect(mobileMenu()).toBeNull();
     });
 
+    it('si el foco estaba en el menú, al cerrarse vuelve al botón', async () => {
+      mobileButton().style.display = 'inline-grid';
+      mobileButton().click();
+      await settle();
+
+      const link = mobileMenu()!.querySelector<HTMLAnchorElement>('details a')!;
+      link.focus();
+      link.click();
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+      expect(document.activeElement).toBe(mobileButton());
+    });
+
+    it('cambiar de página sin pasar por él lo cierra', async () => {
+      mobileButton().click();
+      await settle();
+
+      await router.navigateByUrl('/otra');
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+    });
+
     it('al abrirlo cierra el desplegable que hubiera, y al abrir un desplegable cierra el menú', async () => {
       mouseClick(button('help'));
       await opened('Ayuda');
@@ -259,18 +368,20 @@ describe('Navbar', () => {
       mobileButton().click();
       await settle();
 
-      wideListeners.forEach((listener) => listener({ matches: true }));
+      changeMedia(WIDE, true);
       await settle();
 
       expect(mobileMenu()).toBeNull();
     });
 
     it('al destruir la barra deja de escuchar el ancho de la ventana', () => {
-      expect(wideListeners).toHaveLength(1);
+      expect(listeners(WIDE)).toHaveLength(1);
+      expect(listeners(COMPACT)).toHaveLength(1);
 
       fixture.destroy();
 
-      expect(wideListeners).toHaveLength(0);
+      expect(listeners(WIDE)).toHaveLength(0);
+      expect(listeners(COMPACT)).toHaveLength(0);
     });
   });
 
@@ -391,6 +502,47 @@ describe('Navbar', () => {
       await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
 
       expect(accountMenu()!.contains(document.activeElement)).toBe(true);
+    });
+
+    it('se ancla bajo la barra, que es más baja por debajo de 760 px', async () => {
+      const pane = () => accountMenu()!.closest<HTMLElement>('.cdk-overlay-pane')!;
+      await loadSession('contributor');
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      expect(pane().style.marginTop).toBe('calc(var(--size-navbar) - 4px)');
+
+      changeMedia(COMPACT, true);
+      await fixture.whenStable();
+      // Al cambiar la altura de la barra se cierra: al abrirlo de nuevo toma la nueva.
+      expect(accountMenu()).toBeNull();
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      expect(pane().style.marginTop).toBe('calc(var(--size-navbar-mobile) - 4px)');
+    });
+
+    it('angostar la ventana por debajo de 961 px no lo cierra: «Mi cuenta» sigue en la barra', async () => {
+      await loadSession('contributor');
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      changeMedia(WIDE, false);
+      await fixture.whenStable();
+
+      expect(accountMenu()).not.toBeNull();
+    });
+
+    it('si la sesión se pierde (p. ej. vence), el panel se cierra', async () => {
+      await loadSession('admin');
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      TestBed.inject(SessionService).clear();
+      await fixture.whenStable();
+
+      expect(accountMenu()).toBeNull();
+      expect(account()).toBeNull();
     });
 
     it('un usuario sin gestión ve su identidad y ningún acceso', async () => {
