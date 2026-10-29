@@ -1,0 +1,30 @@
+// Diagrama de mesa: ver «Detalle de técnica» en DESIGN.md. En el detalle la mesa es
+// un diagrama sereno (superficie con filete, rejilla fina, sin paño), no el objeto firma.
+
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--aspect, 1);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+// El dibujo se separa del borde de la mesa para que las piezas no queden pegadas
+svg {
+  position: absolute;
+  inset: 4.5%;
+  display: block;
+  width: 91%;
+  height: 91%;
+  overflow: visible;
+}
+
+.grid-line {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 1;
+  // 1 px en pantalla a cualquier ancho, aunque el dibujo se escale
+  vector-effect: non-scaling-stroke;
+}

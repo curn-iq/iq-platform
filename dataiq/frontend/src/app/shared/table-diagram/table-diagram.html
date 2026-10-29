@@ -1,0 +1,14 @@
+<svg
+  [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+  role="group"
+  [attr.aria-label]="table().name"
+>
+  <g class="grid" aria-hidden="true">
+    @for (x of columnLines(); track x) {
+      <path class="grid-line" data-axis="column" [attr.d]="'M' + x + ' 0V' + height()" />
+    }
+    @for (y of rowLines(); track y) {
+      <path class="grid-line" data-axis="row" [attr.d]="'M0 ' + y + 'H' + width()" />
+    }
+  </g>
+</svg>

@@ -110,6 +110,18 @@ instrumental (miniatura). Se construye una sola vez, con variantes, antes que
 las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 `columns`); `used: false` es una mesa que la técnica no lleva.
 
+- **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
+  diagrama. `toTables()` (`data/tables.ts`) la arma desde `zones` de la API y deja
+  fuera la mesa con `used: false` y la usada sin tamaño (no se inventa uno). El
+  componente (`shared/table-diagram`, `<app-table-diagram [table]>`) no importa
+  `data/`: recibe la `Table` ya armada.
+- **Grilla:** el SVG mide 100 unidades por celda (`viewBox` de
+  `columnas × 100` por `filas × 100`) y se escala al ancho que le dé quien lo use;
+  la mesa toma la proporción de su grilla (`--aspect`). Las líneas de la rejilla
+  son de 1 px a cualquier ancho (`vector-effect: non-scaling-stroke`) y solo van
+  entre celdas, sin borde. El resto (objetos, números, leyenda y variantes) llega
+  con las demás casillas de la fase 3.
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |

@@ -14,6 +14,7 @@ export type TechniqueSummary = Schemas['TechniqueSummaryOut'];
 export type TechniquePublic = Schemas['TechniquePublicOut'];
 export type TechniqueInstruments = Schemas['TechniqueInstrumentsOut'];
 export type TechniqueCreate = Schemas['TechniqueCreateIn'];
+export type ZoneLayout = Schemas['ZoneLayoutOut'];
 
 export type VersionSummary = Schemas['VersionSummaryOut'];
 export type VersionDetail = Schemas['VersionDetailOut'];
