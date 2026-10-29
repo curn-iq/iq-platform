@@ -396,9 +396,9 @@ aislada en `app/shell/` para poder separarla si algún día hace falta
 (decidido el 2026-10-11). La sesión es la cookie de «Sesión del navegador»:
 las APIs de DataIQ y SIMIQ3D la reciben por el proxy de Vercel; SIVRI, un
 token corto. Para que los frontends de SIVRI y SIMIQ3D también la usen (el de
-SIVRI, para pedir ese token), tienen que servirse desde ese mismo origen (p.
-ej. bajo `/sivri/*` y `/simiq3d/*`); cómo se sirven está **por definir** con
-esos módulos.
+SIVRI, para pedir ese token), se sirven desde ese mismo origen, bajo
+`/simiq3d/*` y `/sivri/*`: rewrites del proyecto de Vercel del shell hacia el
+de cada módulo, como los de las APIs (decidido por Juan el 2026-10-29).
 
 **Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
 mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.

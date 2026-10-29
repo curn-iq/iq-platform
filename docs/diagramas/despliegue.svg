@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 1390" role="img" aria-labelledby="titulo desc" font-family="'Noto Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
   <title id="titulo">Diagrama de despliegue de IQ Platform</title>
-  <desc id="desc">De izquierda a derecha, SIMIQ3D, DataIQ y SIVRI. Los navegadores cargan los tres frontends desde Vercel, donde también corren el backend de SIMIQ3D y la API de DataIQ; GitHub Actions despliega en Vercel en cada push a main. El backend de SIMIQ3D pide la acción al modelo de lenguaje en el Servidor PC2 y el catálogo a la API; el frontend de SIMIQ3D lee la mesa de la API por el rewrite. El frontend de SIVRI pide un token corto a la API y envía los cuadros al backend de SIVRI en el Servidor PC1, que pide el catálogo a la API. Cada módulo tiene su base en Neon.</desc>
+  <desc id="desc">De izquierda a derecha, SIMIQ3D, DataIQ y SIVRI. Los navegadores cargan los tres frontends desde Vercel, por el mismo dominio (/simiq3d/* y /sivri/* son rewrites hacia el proyecto de cada módulo), donde también corren el backend de SIMIQ3D y la API de DataIQ; GitHub Actions despliega en Vercel en cada push a main. El backend de SIMIQ3D pide la acción al modelo de lenguaje en el Servidor PC2 y el catálogo a la API; el frontend de SIMIQ3D lee la mesa de la API por el rewrite. El frontend de SIVRI pide un token corto a la API y envía los cuadros al backend de SIVRI en el Servidor PC1, que pide el catálogo a la API. Cada módulo tiene su base en Neon.</desc>
 
   <defs>
     <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -169,11 +169,11 @@
     <text x="182" y="282" fill="#8a94a3">[CLI de Vercel]</text>
 
     <text x="421" y="258" text-anchor="end">Explora las mesas</text>
-    <text x="421" y="273" text-anchor="end" fill="#8a94a3">[HTTPS]</text>
+    <text x="421" y="273" text-anchor="end" fill="#8a94a3">[/simiq3d/*]</text>
     <text x="655" y="258">Carga la app</text>
     <text x="655" y="273" fill="#8a94a3">[HTTPS]</text>
     <text x="1142" y="258">Abre SIVRI</text>
-    <text x="1142" y="273" fill="#8a94a3">[HTTPS]</text>
+    <text x="1142" y="273" fill="#8a94a3">[/sivri/*]</text>
 
     <text x="222" y="525">Envía la pregunta</text>
     <text x="222" y="540" fill="#8a94a3">[HTTPS, cookie]</text>

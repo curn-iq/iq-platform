@@ -52,8 +52,9 @@ src/
 ├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
-    │   ├── http/           provideHttpClient(withFetch()), base /api/dataiq,
+    │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
+    │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
     │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección
@@ -63,7 +64,8 @@ src/
     │                       auth, users)
     ├── shared/
     │   ├── ui/             button, tabs con raya, segmented control, status pill,
-    │   │                   progress mark (22 px), search field, demo tag, floating panel
+    │   │                   progress mark (22 px), search field, demo tag, floating panel,
+    │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
     └── features/
@@ -80,6 +82,25 @@ funcionalidad importa a otra.
 tipos generados tal cual. Un repositorio solo transforma cuando la forma de la
 API no le sirve a la pantalla (p. ej. agrupar los objetos por mesa para el
 diagrama), y esa transformación vive en `data/`, no en el componente.
+
+**Repositorios** (`data/*.repository.ts`): uno por recurso, con un método por
+operación de la API. `techniques` incluye las especialidades; `catalog`, el
+instrumental. `POST /auth/token` y el JWKS no tienen método: no son del
+navegador.
+
+- Las **lecturas** devuelven un `httpResource` (se crean en un contexto de
+  inyección, p. ej. al declarar el campo del componente). Reciben el `id` o el
+  filtro como función (`() => id()`, normalmente una señal): si devuelve
+  `undefined`, el recurso no pide nada. `VersionsFilter` traduce `reviewedByMe`
+  a `reviewed_by_me` y manda cada estado como un parámetro repetido.
+- Las **escrituras** y `AuthRepository` (que no se muestra en una pantalla)
+  devuelven `Observable`.
+- `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
+  del token `API_BASE_URL`, que `core/http` provee con `/api/dataiq`.
+- Para probarlos: `provideRepositoryTesting()` (`data/testing.ts`) con
+  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`. La base
+  de prueba (`TEST_API_BASE`) es distinta a `/api/dataiq` a propósito: así se
+  comprueba que cada repositorio usa la que recibe.
 
 **El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
 en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
@@ -121,15 +142,16 @@ relativas a `/api/dataiq`.
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
 
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
-`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=`.
+`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
+una ruta propia: ver «Sesión»).
 
 ### Errores de la API
 
 Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 
-- **401**: no hay sesión o venció (dura 2 horas). Se limpia la cuenta y se
-  lleva a `/cuenta/ingresar?volver=<ruta actual>`. En una página pública, el
-  401 de `GET /auth/me` solo significa visitante.
+- **401**: no hay sesión o venció (dura 2 horas). Si la petición salió con
+  sesión, se limpia la cuenta y se lleva a `/cuenta/ingresar?volver=<ruta
+  actual>`. Un visitante no tiene sesión que vencer: ver las excepciones abajo.
 - **403**: el rol no alcanza (o falta `X-IQ-Client`, que sería un error del
   frontend).
 - **409**: otro cambio llegó primero o el estado no lo permite (otro revisor
@@ -138,6 +160,65 @@ Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 - **422**: `detail` es una lista. Del dominio llega como lista de textos (lo
   que no cuadra en el contenido); de la validación de FastAPI, como lista de
   objetos con el campo que falló.
+
+Qué texto se muestra (`core/http/error-message.ts`): el `detail` de la API,
+que ya viene en español, si es un texto o una lista de textos. Si no lo es (la
+lista de objetos de FastAPI trae mensajes en inglés) o falta, un texto de
+respaldo con la misma voz impersonal. Sin respuesta (estado 0) dice que no hay
+conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
+servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
+manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
+
+- Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
+  cuenta; lo trata la pantalla:
+  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
+    puesta);
+  - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
+    página pública: no lo saca de ahí;
+  - el de una petición que salió antes de ingresar o salir
+    (`SessionService.generation` cambió): viene de la cookie vieja y no debe
+    borrar la sesión nueva.
+- Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
+  `/cuenta/…` no se vuelve a enviar a ingresar. Si la navegación falla, se queda
+  donde está.
+- Los demás 401 también olvidan la cuenta (`SessionService.clear()`).
+
+**Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
+`NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
+`App` los pasa a `shared/ui/notice-stack`, que solo dibuja: recibe la lista y
+avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
+neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
+sola a los 3,2 s. Un error igual a uno a la vista no se repite, y caben tres
+(`MAX_ERRORS`): si llega otro, se va el más antiguo. Una confirmación igual a
+una a la vista la reemplaza y vuelve a contar su tiempo. Un aviso sin mensajes
+no se muestra. Aspecto y razones: «Avisos» en
+[`DESIGN.md`](../../DESIGN.md).
+
+### Sesión
+
+`SessionService` (`core/session/`) guarda la cuenta en un signal. Se pide a la
+API al arrancar (`provideSession()`), pero **el arranque no espera la
+respuesta**: el backend puede tardar segundos en arrancar en frío y las páginas
+públicas no deben quedar en blanco. Hasta que llega, `loaded()` es `false` (el
+shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión), y
+si la API no responde o da 401, queda como visitante. Solo el 401 es
+definitivo: si la API no respondió (sin conexión o un 5xx en un arranque en
+frío), el próximo `load()` —el de un guard, por ejemplo— vuelve a preguntar.
+Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una respuesta
+tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
+
+- `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
+  la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
+  interceptor ante un 401).
+- `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
+  (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
+  tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
+  aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
+  403). Es solo para
+  no mostrar pantallas que no se pueden usar: la API decide en cada petición.
+- `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
+  que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
+  `//sitio`, `https://…`, `\` ni caracteres de control).
 
 ## Correr el frontend
 
