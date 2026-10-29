@@ -55,7 +55,8 @@ src/
     │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
     │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
-    │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección
     ├── data/
@@ -63,7 +64,7 @@ src/
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, tabs con raya, segmented control, status pill,
+    │   ├── ui/             button, avatar, brand mark, not-found, tabs con raya, segmented control, status pill,
     │   │                   progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
@@ -141,9 +142,94 @@ relativas a `/api/dataiq`.
 | `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
 
+Cada ruta carga su pantalla al visitarla (`loadComponent`, en
+`app/app.routes.ts`), y las de gestión llevan su `roleGuard`. El título de la
+pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
+en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
+editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
+«Revisar versión») hasta que su pantalla ponga el nombre real. El router
+(`provideAppRouter`, en `core/router/`) tiene `anchorScrolling`: los enlaces de la
+barra y del pie a `/#camino`, `/#investigacion`, `/#preguntas` y `/#quien` bajan a
+esa sección del inicio, también desde otra página y al tocar de nuevo el mismo
+enlace. Cada sección del inicio lleva `scroll-margin-top: var(--size-navbar)` para
+no quedar bajo la barra fija. Mientras una
+pantalla no se construye, su ruta carga un marcador vacío. Una ruta que no
+existe (`**`, la última) abre «No encontrada»: el aviso es
+`shared/ui/not-found`, que la fase 4 reutiliza para una técnica que no existe.
+
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
 `#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
 una ruta propia: ver «Sesión»).
+
+### Barra (`shell/navbar/`)
+
+La barra (`Navbar`) tiene la marca y cuatro menús; cada botón abre su
+desplegable (`NavPanel`), un overlay de CDK a todo el ancho bajo la barra. Solo
+hay uno abierto a la vez; se cierra con Escape (el foco vuelve a su botón), con
+un clic fuera, al elegir una opción o al cambiar de página por otro camino
+(Atrás, un guard, la sesión vencida). Si el foco estaba en el panel, al cerrarse
+vuelve a su botón. Con el teclado el foco entra al primer enlace, y aunque el
+panel queda al final del documento, Tab lo recorre como si estuviera tras su
+botón: Mayús+Tab desde la primera opción vuelve al botón y Tab desde la última
+sigue con lo que viene después. Un segundo clic sobre «Especialidades» lleva al
+catálogo. El contenido de Herramientas, ¿Por qué IQ Platform? y Ayuda está en
+`nav-menus.ts`, con el destino de cada opción (`NavTarget`): rutas de esta app
+(los fragmentos del inicio: `/#camino`, `/#investigacion`, `/#preguntas`,
+`/#quien`) y `/simiq3d/` y `/sivri/` como enlaces normales, con navegación
+completa (Resuelto 17): son otras apps, servidas en el mismo origen por los
+rewrites de Vercel (fase 9). La barra, el menú de celular y el pie dibujan esos
+enlaces con la directiva `NavLink` (`nav-link.ts`, `<a [appNavLink]>`), que abre
+las rutas con el router y deja `href` al navegador. Con `npm start` esas dos rutas no existen: el router
+las toma por una ruta desconocida y abre «No encontrada».
+
+- **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
+  dinámico la primera vez que se abre un menú: la barra está en todas las
+  páginas y no debe engordar el código inicial.
+- **Especialidades** salen de la API (`SpecialtiesNav`): las especialidades son
+  las de `Specialties`, que ya pidió el pie al cargar la app, y sus técnicas
+  (`GET /techniques`) se piden la primera vez que se abre ese desplegable. Cada
+  una lleva a `/tecnicas?especialidad=<id>`: el parámetro es el `id` de la
+  especialidad.
+- «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
+  técnica. Mientras llegan las especialidades, el desplegable dice «Cargando…»;
+  si la API falla, queda vacío (el interceptor ya avisó), y abrirlo de nuevo (o
+  abrir el menú de celular) vuelve a pedir lo que falló.
+- **Sesión:** a la derecha, un visitante ve Ingresar (`/cuenta/ingresar`) y Crear
+  cuenta (`/cuenta/crear`), sin `?volver=`: es un ingreso directo. Con sesión va
+  «Mi cuenta» (avatar con iniciales), que abre `AccountMenu`, un panel anclado a la
+  derecha con nombre, correo, rol y los accesos de gestión del rol
+  (`management-links.ts`: Mis borradores, Por revisar, Instrumental, Usuarios y
+  roles; la página actual lleva `aria-current`). Hasta que `SessionService.loaded()`
+  es `true` no se muestra ni lo uno ni lo otro. El panel se cierra si la sesión
+  cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
+  alto: al abrirlo de nuevo se ancla a la altura nueva. Todavía faltan: la cifra junto a
+  cada acceso, que llega con su pantalla (borradores, por revisar, instrumental), y
+  «Cerrar sesión», de la fase 5.
+- **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
+  menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
+  plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
+  (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
+  ventana vuelve a pasar de 960 px; abrirlo cierra el desplegable de escritorio y
+  al revés, y si la ventana baja de 961 px con un desplegable abierto, este se
+  cierra. Al
+  final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
+  mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
+  solo con el avatar.
+
+### Pie (`shell/footer/`)
+
+El pie oscuro (`Footer`) va en todas las páginas, bajo `<main>`, que crece para
+que el pie quede abajo aunque la página sea corta. Lleva la marca con su frase y
+las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
+Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
+no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
+«Preguntas frecuentes» y «Para docentes» (la opción que va solo en la barra
+lleva `inFooter: false` en `nav-menus.ts`); la política de datos se suma con su
+página (fase 5). Las especialidades las da `Specialties` (`GET /specialties`,
+una sola petición al cargar la app, porque el pie está en todas las páginas, que
+comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si
+fallaron (p. ej. un 5xx en un arranque en frío), se vuelven a pedir al cambiar
+de página.
 
 ### Errores de la API
 

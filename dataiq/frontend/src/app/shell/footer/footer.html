@@ -1,0 +1,62 @@
+<div class="grid">
+  <div class="brand">
+    <a class="brand-link" routerLink="/" aria-label="IQ Platform, inicio">
+      <app-brand-mark />
+      IQ Platform
+    </a>
+    <p>
+      Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.
+    </p>
+  </div>
+
+  <nav class="columns" aria-label="Pie de página">
+    <div>
+      <h2 class="title">Herramientas</h2>
+      <ul>
+        @for (option of columns.tools; track option.label) {
+          <li>
+            <a [appNavLink]="option.target">{{ option.label }}</a>
+          </li>
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="title">Especialidades</h2>
+      <ul>
+        @for (link of specialtyLinks(); track link.id) {
+          <li>
+            <a [appNavLink]="link.target">{{ link.label }}</a>
+          </li>
+        }
+      </ul>
+      @if (specialties.loading()) {
+        <p class="loading" role="status">Cargando…</p>
+      }
+    </div>
+    <div>
+      <h2 class="title">¿Por qué IQ Platform?</h2>
+      <ul>
+        @for (option of columns.why; track option.label) {
+          <li>
+            <a [appNavLink]="option.target">{{ option.label }}</a>
+          </li>
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="title">Ayuda</h2>
+      <ul>
+        @for (option of columns.help; track option.label) {
+          <li>
+            <a [appNavLink]="option.target">{{ option.label }}</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<div class="base">
+  <span>© {{ year }} IQ Platform</span>
+  <span>IQ Platform es un nombre provisional.</span>
+</div>

@@ -48,14 +48,14 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 2 — Shell
 
-- [ ] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
-- [ ] Página «No encontrada» para una ruta que no existe
-- [ ] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
-- [ ] Menú de celular a pantalla completa (≤ 960 px)
-- [ ] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
-- [ ] Pie oscuro
-- [ ] Enlaces de la barra y del pie a secciones del inicio (router con `anchorScrolling`): «Cómo funciona» a `/#camino`, «La investigación» a `/#investigacion`, «Preguntas frecuentes» a `/#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en «Para quién» (`/#quien`). La política de datos, a su página (fase 5). Sin «Quiénes somos» ni «Términos de uso» en el MVP: no tienen texto (Resuelto 26)
-- [ ] SIVRI y SIMIQ3D como enlaces a `/sivri/` y `/simiq3d/`, con navegación completa: son otras apps, servidas en el mismo origen (Resuelto 17)
+- [x] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
+- [x] Página «No encontrada» para una ruta que no existe
+- [x] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), que se cierra con Escape, con un clic fuera y al cambiar de página; con Tab se recorre como si estuviera tras su botón
+- [x] Menú de celular a pantalla completa (≤ 960 px)
+- [x] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
+- [x] Pie oscuro
+- [x] Enlaces de la barra y del pie a secciones del inicio (router con `anchorScrolling`): «Cómo funciona» a `/#camino`, «La investigación» a `/#investigacion`, «Preguntas frecuentes» a `/#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en «Para quién» (`/#quien`). La política de datos, a su página (fase 5). Sin «Quiénes somos» ni «Términos de uso» en el MVP: no tienen texto (Resuelto 26)
+- [x] SIVRI y SIMIQ3D como enlaces a `/sivri/` y `/simiq3d/`, con navegación completa: son otras apps, servidas en el mismo origen (Resuelto 17)
 
 ### Fase 3 — Diagrama de mesa (`shared/table-diagram`)
 
@@ -68,7 +68,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 4 — Páginas públicas
 
-- [ ] Inicio (`inicio.html`)
+- [ ] Inicio (`inicio.html`), con las secciones a las que enlazan la barra y el pie (`id` `camino`, `investigacion`, `quien` y `preguntas`), cada una con `scroll-margin-top: var(--size-navbar)` para no quedar bajo la barra fija
 - [ ] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
 - [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; una técnica que no existe (404) muestra «No encontrada»
 - [ ] Datos clínicos: «Para qué sirve» es `description`, sin la marca «demostración» (Resuelto 23); el resto de campos clínicos de `GET /techniques/{id}`

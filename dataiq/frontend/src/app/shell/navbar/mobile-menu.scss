@@ -1,0 +1,116 @@
+// Menú de celular: ver «Navigation» en DESIGN.md.
+
+:host {
+  position: fixed;
+  top: var(--size-navbar);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 45;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px var(--space-gutter) 32px;
+  background: var(--color-surface);
+  animation: drop 0.4s var(--ease-enter);
+}
+
+// Por encima de 960 px la barra muestra los menús y este panel no se usa.
+@media (min-width: 961px) {
+  :host {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  :host {
+    top: var(--size-navbar-mobile);
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+details {
+  border-bottom: 1px solid var(--color-border);
+}
+
+summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  font-size: 18px;
+  font-weight: 650;
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  svg {
+    transition: transform 0.3s var(--ease-enter);
+  }
+}
+
+details[open] summary svg {
+  transform: rotate(180deg);
+}
+
+ul {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+ul a {
+  display: block;
+  padding: 8px 0;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.loading {
+  margin: 0 0 14px;
+  color: var(--color-text-subtle);
+  font-size: 16px;
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.who {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+// Ingresar y los accesos de gestión: fantasma de 48 px enmarcado con filete.
+a.framed {
+  height: 48px;
+  padding: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 16px;
+
+  &[aria-current='page'] {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+  }
+}

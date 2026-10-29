@@ -1,0 +1,10 @@
+// El pie queda abajo aunque la página sea corta.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+main {
+  flex: 1 0 auto;
+}

@@ -1,0 +1,40 @@
+// «No encontrada»: titular de sección sobre `fondo`, a pantalla completa y
+// alineado a la izquierda (sin columna centrada; ver «Layout» en DESIGN.md).
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-column-gap);
+  padding: var(--space-section) var(--space-gutter);
+}
+
+.body {
+  grid-column: 1 / span 6;
+
+  @media (max-width: 1100px) {
+    grid-column: 1 / -1;
+  }
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 4.2vw, 68px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+p {
+  max-width: 46ch;
+  margin: 20px 0 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}

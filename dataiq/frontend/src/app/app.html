@@ -1,5 +1,6 @@
+<app-navbar />
 <main>
-  <h1>DataIQ</h1>
   <router-outlet />
 </main>
+<app-footer />
 <app-notice-stack [notices]="notices.notices()" (dismissed)="notices.dismiss($event)" />

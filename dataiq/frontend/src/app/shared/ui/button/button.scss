@@ -1,0 +1,66 @@
+// Botón: ver «Buttons» en DESIGN.md.
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-fade),
+    color 0.2s var(--ease-fade),
+    transform 0.35s var(--ease-enter),
+    box-shadow 0.35s var(--ease-enter);
+}
+
+:host([data-size='large']) {
+  height: 56px;
+  padding: 0 26px;
+  border-radius: var(--radius-lg);
+  font-size: 17px;
+}
+
+:host([data-variant='primary']) {
+  background: var(--color-accent);
+  color: var(--color-surface);
+  box-shadow: var(--shadow-button);
+
+  &:hover {
+    background: var(--color-accent-strong);
+    box-shadow: var(--shadow-button-hover);
+    transform: translateY(-1px);
+  }
+}
+
+:host([data-variant='soft']) {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+
+  &:hover {
+    background: var(--color-accent-soft-hover);
+  }
+}
+
+// Fantasma: Ingresar y «Ya tengo cuenta».
+:host([data-variant='ghost']) {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+
+  &:hover {
+    background: var(--color-hover);
+    color: var(--color-text);
+  }
+}
