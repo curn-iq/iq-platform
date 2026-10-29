@@ -111,16 +111,27 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 `columns`); `used: false` es una mesa que la técnica no lleva.
 
 - **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
-  diagrama. `toTables()` (`data/tables.ts`) la arma desde `zones` de la API y deja
-  fuera la mesa con `used: false` y la usada sin tamaño (no se inventa uno). El
-  componente (`shared/table-diagram`, `<app-table-diagram [table]>`) no importa
-  `data/`: recibe la `Table` ya armada.
+  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `cells`).
+  `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
+  API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
+  uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
+  tiene mesa es solo del listado). El componente (`shared/table-diagram`,
+  `<app-table-diagram [table]>`) no importa `data/`: recibe la `Table` ya armada.
 - **Grilla:** el SVG mide 100 unidades por celda (`viewBox` de
   `columnas × 100` por `filas × 100`) y se escala al ancho que le dé quien lo use;
   la mesa toma la proporción de su grilla (`--aspect`). Las líneas de la rejilla
   son de 1 px a cualquier ancho (`vector-effect: non-scaling-stroke`) y solo van
-  entre celdas, sin borde. El resto (objetos, números, leyenda y variantes) llega
-  con las demás casillas de la fase 3.
+  entre celdas, sin borde.
+- **Objetos:** cada objeto con celdas es **una** pieza (`.piece`, con
+  `data-n` = su número), aunque ocupe varias: una zona de clic por celda y un solo
+  número. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
+  sin número se dibuja sin número. `piece-layout.ts` pone el círculo del número:
+  en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
+  de la línea que une su primera y su última celda si ocupa varias. El círculo
+  (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
+  `ResizeObserver` mide el dibujo y fija `--number-scale`. Todavía no se dibuja el
+  instrumental; eso, la leyenda y las variantes llegan con las demás casillas de
+  la fase 3.
 
 ### Glosario (interfaz → código y API)
 

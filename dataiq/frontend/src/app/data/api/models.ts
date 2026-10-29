@@ -13,6 +13,7 @@ export type Specialty = Schemas['ReferenceOut'];
 export type TechniqueSummary = Schemas['TechniqueSummaryOut'];
 export type TechniquePublic = Schemas['TechniquePublicOut'];
 export type TechniqueInstruments = Schemas['TechniqueInstrumentsOut'];
+export type TechniqueItem = Schemas['ItemOut'];
 export type TechniqueCreate = Schemas['TechniqueCreateIn'];
 export type ZoneLayout = Schemas['ZoneLayoutOut'];
 

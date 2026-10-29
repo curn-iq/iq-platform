@@ -28,3 +28,30 @@ svg {
   // 1 px en pantalla a cualquier ancho, aunque el dibujo se escale
   vector-effect: non-scaling-stroke;
 }
+
+// La zona de clic de cada celda de un objeto: invisible, pero recibe el puntero
+.hit {
+  fill: transparent;
+}
+
+// El número: círculo `noche` al 72 % con la cifra en blanco. Se reescala (--number-scale)
+// para medir lo mismo en pantalla a cualquier ancho de la mesa.
+.number {
+  transform: scale(var(--number-scale, 1));
+  transform-box: fill-box;
+  transform-origin: center;
+
+  circle {
+    fill: color-mix(in srgb, var(--color-dark) 72%, transparent);
+  }
+
+  text {
+    fill: var(--color-surface);
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+}

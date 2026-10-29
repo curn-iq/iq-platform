@@ -1,5 +1,7 @@
 <svg
+  #svg
   [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+  [style.--number-scale]="numberScale()"
   role="group"
   [attr.aria-label]="table().name"
 >
@@ -11,4 +13,23 @@
       <path class="grid-line" data-axis="row" [attr.d]="'M0 ' + y + 'H' + width()" />
     }
   </g>
+  @for (piece of pieces(); track piece.id) {
+    <g class="piece" [attr.data-n]="piece.legendNumber">
+      @for (hit of piece.hits; track $index) {
+        <rect
+          class="hit"
+          [attr.x]="hit.x"
+          [attr.y]="hit.y"
+          [attr.width]="cell"
+          [attr.height]="cell"
+        />
+      }
+      @if (piece.number; as position) {
+        <g class="number">
+          <circle [attr.cx]="position.x" [attr.cy]="position.y" [attr.r]="numberRadius" />
+          <text [attr.x]="position.x" [attr.y]="position.y">{{ piece.legendNumber }}</text>
+        </g>
+      }
+    </g>
+  }
 </svg>
