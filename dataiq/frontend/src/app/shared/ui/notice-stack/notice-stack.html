@@ -1,0 +1,43 @@
+<div class="stack">
+  <div class="errors" role="alert" aria-atomic="false">
+    @for (notice of errors(); track notice.id) {
+      <div class="error">
+        <svg class="error-icon" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.8" />
+          <path d="M10 5.8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <circle cx="10" cy="14" r="1.2" fill="currentColor" />
+        </svg>
+        <div class="error-messages">
+          @for (message of notice.messages; track $index) {
+            <p>{{ message }}</p>
+          }
+        </div>
+        <button
+          type="button"
+          class="close"
+          aria-label="Cerrar aviso"
+          (click)="dismissed.emit(notice.id)"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              d="M4 4l8 8M12 4l-8 8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+    }
+  </div>
+  <div class="confirmations" role="status" aria-live="polite" aria-atomic="false">
+    @for (notice of confirmations(); track notice.id) {
+      <div class="confirmation">
+        @for (message of notice.messages; track $index) {
+          <p>{{ message }}</p>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -101,6 +101,17 @@
   --radio-escenario: 24px;
   --radio-pill: 99px;
 
+  /* Elevación (sección «Elevation & Depth» de DESIGN.md): las sombras de uso
+     común. Las del lienzo de SIMIQ3D y los drop-shadow del acero van en su sitio. */
+  --elevacion-boton: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(10, 27, 34, 0.25);
+  --elevacion-boton-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 16px -10px rgba(10, 27, 34, 0.5);
+  --elevacion-escenario: 0 1px 2px rgba(10, 27, 34, 0.05), 0 16px 32px -24px rgba(10, 27, 34, 0.3);
+  --elevacion-desplegable: 0 24px 40px -32px rgba(10, 27, 34, 0.4);
+  --elevacion-buscador: inset 0 0 0 1px var(--filete-2), 0 10px 24px -18px rgba(10, 27, 34, 0.35);
+  --elevacion-funda: 0 1px 2px rgba(0, 0, 0, 0.25), 0 28px 50px -22px rgba(10, 27, 34, 0.55);
+  --elevacion-panel-flotante: 0 12px 30px -16px rgba(10, 27, 34, 0.45);
+
   /* Movimiento (sección «Motion» de DESIGN.md) */
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --cuarta: cubic-bezier(0.25, 1, 0.5, 1);
@@ -151,6 +162,14 @@
   --radius-panel: var(--radio-panel);
   --radius-stage: var(--radio-escenario);
   --radius-pill: var(--radio-pill);
+
+  --shadow-button: var(--elevacion-boton);
+  --shadow-button-hover: var(--elevacion-boton-hover);
+  --shadow-stage: var(--elevacion-escenario);
+  --shadow-dropdown: var(--elevacion-desplegable);
+  --shadow-search: var(--elevacion-buscador);
+  --shadow-cover: var(--elevacion-funda);
+  --shadow-floating: var(--elevacion-panel-flotante);
 
   --ease-enter: var(--expo);
   --ease-fade: var(--cuarta);
