@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
+import { handledByRouter } from '../testing';
 import { MobileMenu } from './mobile-menu';
 
 @Component({ template: '' })
@@ -59,6 +60,12 @@ describe('MobileMenu', () => {
       'Ayuda',
     ]);
     expect(groups().every((g) => !g.open)).toBe(true);
+  });
+
+  it('DataIQ se abre por el router; SIMIQ3D y SIVRI, con navegación completa', () => {
+    const anchors = Array.from(groups()[0].querySelectorAll('a'));
+
+    expect(anchors.map(handledByRouter)).toEqual([true, false, false]);
   });
 
   it('las opciones llevan a los mismos destinos que los desplegables', () => {

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
+import { handledByRouter } from '../testing';
 import { Footer } from './footer';
 
 @Component({ template: '' })
@@ -70,6 +71,12 @@ describe('Footer', () => {
       ['SIMIQ3D', '/simiq3d/'],
       ['SIVRI', '/sivri/'],
     ]);
+  });
+
+  it('DataIQ se abre por el router; SIMIQ3D y SIVRI, con navegación completa', () => {
+    const anchors = Array.from(column('Herramientas').querySelectorAll('a'));
+
+    expect(anchors.map(handledByRouter)).toEqual([true, false, false]);
   });
 
   it('¿Por qué IQ Platform? lleva a las secciones del inicio, sin «Quiénes somos»', () => {

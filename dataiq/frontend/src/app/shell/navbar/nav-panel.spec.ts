@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { NAV_MENUS, NavMenuId } from './nav-menus';
+import { handledByRouter } from '../testing';
 import { NavPanel } from './nav-panel';
 
 @Component({ template: '' })
@@ -85,6 +86,10 @@ describe('NavPanel', () => {
       await fixture.whenStable();
 
       expect(texts('.tool-name')).toEqual(['SIMIQ3D']);
+    });
+
+    it('DataIQ se abre por el router; SIMIQ3D y SIVRI, con navegación completa', () => {
+      expect(links().map(handledByRouter)).toEqual([true, false, false]);
     });
 
     it('no pide nada a la API', () => {

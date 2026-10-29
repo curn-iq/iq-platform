@@ -171,7 +171,10 @@ enlace. Un segundo clic sobre «Especialidades» lleva al catálogo. El contenid
 de Herramientas, ¿Por qué IQ Platform? y Ayuda está en `nav-menus.ts`, con el
 destino de cada opción: rutas de esta app (los fragmentos del inicio:
 `/#camino`, `/#investigacion`, `/#preguntas`, `/#quien`) y `/simiq3d/` y
-`/sivri/` como enlaces normales, con navegación completa (Resuelto 17).
+`/sivri/` como enlaces normales (`<a href>`, no `routerLink`), con navegación
+completa (Resuelto 17): son otras apps, servidas en el mismo origen por los
+rewrites de Vercel (fase 9). Con `npm start` esas dos rutas no existen: el router
+las toma por una ruta desconocida y abre «No encontrada».
 
 - **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
   dinámico la primera vez que se abre un menú: la barra está en todas las
