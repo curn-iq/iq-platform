@@ -48,7 +48,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 2 — Shell
 
-- [ ] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
+- [x] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
 - [ ] Página «No encontrada» para una ruta que no existe
 - [ ] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
 - [ ] Menú de celular a pantalla completa (≤ 960 px)

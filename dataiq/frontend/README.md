@@ -55,7 +55,8 @@ src/
     │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
     │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
-    │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección
     ├── data/
@@ -140,6 +141,14 @@ relativas a `/api/dataiq`.
 | `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
 | `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
+
+Cada ruta carga su pantalla al visitarla (`loadComponent`, en
+`app/app.routes.ts`), y las de gestión llevan su `roleGuard`. El título de la
+pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
+en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
+editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
+«Revisar versión») hasta que su pantalla ponga el nombre real. Mientras una
+pantalla no se construye, su ruta carga un marcador vacío.
 
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
 `#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es

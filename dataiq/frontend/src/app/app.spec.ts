@@ -15,11 +15,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('deja el contenido de la ruta en su salida', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('DataIQ');
+    expect(compiled.querySelector('main router-outlet')).not.toBeNull();
   });
 
   it('muestra los avisos de NoticeService y cerrar uno lo quita del servicio', async () => {
