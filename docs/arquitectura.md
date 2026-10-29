@@ -39,7 +39,9 @@ Dónde corre cada pieza en producción y cómo llega ahí:
   SIMIQ3D su frontend y su backend, y `dataiq-backend` la API como funciones
   de Python en la región `cle1`. El navegador llega a la API por un rewrite
   del mismo dominio (`/api/dataiq/*`), así que la cookie de sesión viaja sin
-  CORS.
+  CORS. Los frontends de SIMIQ3D y SIVRI también se abren por ese dominio,
+  con rewrites del proyecto del shell (`/simiq3d/*` y `/sivri/*`) hacia el
+  de cada módulo, para que lleguen con la misma cookie.
 - **Neon** guarda una base por módulo (PostgreSQL 18, Ohio), cada una en su
   propio proyecto.
 - **El backend de SIVRI** corre en el **Servidor PC1**, un PC del laboratorio,

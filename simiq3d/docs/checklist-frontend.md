@@ -54,7 +54,7 @@ toda decisión visual nueva va a `DESIGN.md`.
 ### Fase 4 — Pantalla de exploración
 
 - [ ] `/simiq3d`: chat con sugerencias y escena vacía
-- [ ] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ)
+- [ ] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
 - [ ] Ficha del instrumento con su descripción de DataIQ
 - [ ] Barra para volver al shell
 
@@ -68,7 +68,7 @@ Depende del backend de SIMIQ3D (ver «Dependencias del backend»).
 
 ### Fase 6 — Despliegue
 
-- [ ] Servir la app bajo `/simiq3d/` en el mismo origen que el shell (ver «Por confirmar» 1)
+- [ ] Servir la app bajo `/simiq3d/` en el mismo origen que el shell: el proyecto del shell la trae con un rewrite `/simiq3d/:path*` hacia el de SIMIQ3D, con la ruta completa (ver «Resuelto»)
 - [ ] Encabezados de caché largos para `public/models/` y CSP
 - [ ] GitHub Actions: build (con `npm run models`), pruebas y despliegue con el CLI de Vercel
 
@@ -97,7 +97,12 @@ tales en el código, nunca presentados como datos.
 
 | # | Qué falta | Dónde | Propuesta |
 |---|---|---|---|
-| 1 | Ya está decidido que SIMIQ3D tenga su propio proyecto de Vercel ([`docs/arquitectura.md`](../../docs/arquitectura.md), «Despliegue»). Falta cómo llega el navegador a ese proyecto por el mismo origen que el shell, para que reciba la cookie. Es el mismo punto 1 de la [checklist de DataIQ](../../dataiq/docs/checklist-frontend.md#por-confirmar) | `CLAUDE.md`, «Capa de navegación» | Un rewrite `/simiq3d/:path*` en el proyecto del shell hacia el de SIMIQ3D, como el de `/api/dataiq/*` |
 | 2 | El contrato del chat no existe: qué recibe y qué devuelve | `simiq3d/README.md`, «Chat» | `POST /chat` con la pregunta; responde la acción (`show_technique`, `highlight_instrument`, `describe_instrument` o `no_answer`), sus ids y un texto corto. Se acuerda con el backend |
 | 3 | Si el mapeo modelo → instrumento cambia poco, podría ser un archivo estático junto a los modelos en vez de una ruta | `simiq3d/README.md`, «Backend y base de datos» (decidido: en la base de SIMIQ3D) | Mantener lo decidido; revisarlo si la ruta resulta ser solo una lista fija |
 | 4 | Conversación con contexto («¿y dónde va la Kelly?» después de abrir una técnica) | `simiq3d/README.md`, «Chat» | El frontend manda la técnica abierta junto con la pregunta |
+
+## Resuelto
+
+| # | Qué faltaba | Cómo quedó |
+|---|---|---|
+| 1 | Cómo llega el navegador al proyecto de Vercel de SIMIQ3D por el mismo origen que el shell, para que reciba la cookie | Un rewrite `/simiq3d/:path*` en el proyecto del shell hacia el de SIMIQ3D, como el de `/api/dataiq/*`; la app conserva su `baseHref` `/simiq3d/`. Es el Resuelto 17 de la [checklist de DataIQ](../../dataiq/docs/checklist-frontend.md#resuelto) (decidido por Juan el 2026-10-29) |
