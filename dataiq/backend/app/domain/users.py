@@ -51,3 +51,17 @@ class UserRecord:
     created_at: datetime
     policy_accepted_at: datetime
     policy_version: str
+
+
+class Suppression(StrEnum):
+    """Qué pasó con una cuenta al suprimirla (derecho de supresión, Ley 1581 de
+    2012, art. 8)."""
+
+    # No creó ni revisó nada: se borra la fila completa.
+    deleted = "deleted"
+    # Creó o revisó técnicas o versiones: se borran su nombre, su correo y su
+    # contraseña, y lo que hizo se conserva sin su nombre.
+    anonymized = "anonymized"
+
+
+SUPPRESSED_NAME = "Cuenta suprimida"

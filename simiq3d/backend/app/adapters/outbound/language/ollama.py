@@ -225,7 +225,9 @@ class OllamaAgent:
                             "content": json.dumps(result, ensure_ascii=False),
                         }
                     )
-        logger.warning("El modelo no terminó a tiempo: %r", question)
+        # Sin la pregunta: ya queda en el registro de conversaciones, y en los logs de
+        # Vercel sería otra copia (ver «Aviso de privacidad», docs/privacidad.md).
+        logger.warning("El modelo no terminó a tiempo")
         return await self._fall_back(question, catalog, open_technique_id)
 
     async def _ask(
@@ -271,7 +273,8 @@ class OllamaAgent:
             return await self._fall_back(question, catalog, open_technique_id)
         problems = unsupported(text, results, catalog) if text else ["respuesta vacía"]
         if problems:
-            logger.warning("Respuesta sin respaldo en DataIQ %s: %r", problems, text)
+            # Sin la respuesta: podría repetir lo que escribió quien pregunta.
+            logger.warning("Respuesta sin respaldo en DataIQ: %s", problems)
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
             scene = _implied_scene(text, catalog, open_technique_id)
