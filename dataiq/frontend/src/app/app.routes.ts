@@ -82,4 +82,9 @@ export const routes: Routes = [
     canActivate: [admin],
     loadComponent: () => import('./features/management/users/users').then((m) => m.Users),
   },
+  {
+    path: '**',
+    title: 'No encontrada',
+    loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage),
+  },
 ];

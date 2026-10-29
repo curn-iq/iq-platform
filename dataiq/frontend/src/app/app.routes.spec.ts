@@ -17,6 +17,7 @@ import { Editor } from './features/management/editor/editor';
 import { Instruments } from './features/management/instruments/instruments';
 import { Review } from './features/management/review/review';
 import { Users } from './features/management/users/users';
+import { NotFoundPage } from './features/not-found/not-found';
 import { TechniqueDetail } from './features/technique/technique';
 
 /** Cada ruta, su pantalla y el título de su pestaña. */
@@ -34,6 +35,8 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/gestion/instrumental', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/instrumental/abc', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/usuarios', Users, 'Usuarios y roles · IQ Platform'],
+  ['/no-existe', NotFoundPage, 'No encontrada · IQ Platform'],
+  ['/gestion/otra/cosa', NotFoundPage, 'No encontrada · IQ Platform'],
 ];
 
 describe('rutas', () => {

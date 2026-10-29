@@ -64,7 +64,7 @@ src/
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, tabs con raya, segmented control, status pill,
+    │   ├── ui/             button, not-found, tabs con raya, segmented control, status pill,
     │   │                   progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
@@ -148,7 +148,9 @@ pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), c
 en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
 editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
 «Revisar versión») hasta que su pantalla ponga el nombre real. Mientras una
-pantalla no se construye, su ruta carga un marcador vacío.
+pantalla no se construye, su ruta carga un marcador vacío. Una ruta que no
+existe (`**`, la última) abre «No encontrada»: el aviso es
+`shared/ui/not-found`, que la fase 4 reutiliza para una técnica que no existe.
 
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
 `#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
