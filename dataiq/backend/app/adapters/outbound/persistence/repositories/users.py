@@ -1,12 +1,23 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import exists, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.adapters.outbound.persistence.models.techniques import (
+    Technique,
+    TechniqueVersion,
+    VersionRejection,
+)
 from app.adapters.outbound.persistence.models.users import User
 from app.domain.errors import Conflict, NotFound
-from app.domain.users import Account, Role, UserRecord
+from app.domain.users import (
+    SUPPRESSED_NAME,
+    Account,
+    Role,
+    Suppression,
+    UserRecord,
+)
 
 
 def _account(user: User) -> Account:
@@ -72,3 +83,34 @@ class SQLAlchemyUserRepository:
         record = _record(user)
         await self._session.commit()
         return record
+
+    async def suppress(self, user_id: UUID) -> Suppression:
+        user = await self._session.get(User, user_id, with_for_update=True)
+        if user is None:
+            raise NotFound("La cuenta no existe")
+        authored = await self._session.scalar(
+            select(
+                or_(
+                    exists().where(Technique.created_by == user_id),
+                    exists().where(
+                        or_(
+                            TechniqueVersion.created_by == user_id,
+                            TechniqueVersion.reviewed_by == user_id,
+                        )
+                    ),
+                    exists().where(VersionRejection.rejected_by == user_id),
+                )
+            )
+        )
+        if authored:
+            user.name = SUPPRESSED_NAME
+            # .invalid es un dominio reservado (RFC 2606): no es el correo de nadie
+            user.email = f"suprimida-{user.id}@cuenta.invalid"
+            user.password_hash = "!"  # no corresponde a ninguna contraseña
+            user.role = Role.user
+            result = Suppression.anonymized
+        else:
+            await self._session.delete(user)
+            result = Suppression.deleted
+        await self._session.commit()
+        return result

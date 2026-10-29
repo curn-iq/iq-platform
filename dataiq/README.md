@@ -171,6 +171,21 @@ Neon (proyecto `dataiq`, PostgreSQL 18, Ohio).
   `seed/tecnicas.xlsx` las lista. Para reemplazarlas por las del archivo:
   `uv run python -m seed.load --descriptions`.
 
+- **Suprimir una cuenta**, cuando su titular lo pide por el canal del
+  [aviso de privacidad](../docs/privacidad.md). Desde `dataiq/backend`, con la
+  cadena de Neon solo en esa terminal; pide escribir «suprimir» para confirmar:
+
+  ```fish
+  read -s -x -P "Cadena de Neon: " DATABASE_URL
+  uv run python -m app.adapters.inbound.cli.delete_account <correo>
+  ```
+
+  Si la cuenta no creó ni revisó nada, se borra entera. Si creó o revisó
+  técnicas o versiones, se borran su nombre, su correo y su contraseña, y lo
+  que hizo se conserva sin su nombre; si tenía una sesión abierta, vence sola en
+  menos de 2 horas. La ley da 15 días hábiles para atender el pedido (Ley 1581
+  de 2012, art. 15).
+
 - **Desplegar a mano** (si hiciera falta), desde `dataiq/backend` con la
   sesión de Vercel del dueño del proyecto: `npx vercel@latest deploy --prod`.
 
