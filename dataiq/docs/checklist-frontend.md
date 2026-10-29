@@ -78,11 +78,9 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 5 — Cuenta
 
-Antes de empezar: «Por confirmar» 10.
-
-- [ ] Página de la política de tratamiento de datos, enlazada desde el registro y el pie (su texto, «Por confirmar» 10)
+- [ ] Página del aviso de privacidad, enlazada desde el registro y el pie; el texto sale de [`docs/privacidad.md`](../../docs/privacidad.md) (Resuelto 30)
 - [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20)
-- [ ] Registro con la aceptación de la política obligatoria (Decreto 1377); la política declara el registro anónimo del chat de SIMIQ3D (ver «Por confirmar» 10)
+- [ ] Registro con la aceptación obligatoria del aviso (Decreto 1377): una casilla que dice que la persona es mayor de 18 años y acepta el aviso; la API exige `accepts_policy` (Resuelto 30)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
 - [ ] Salir (`POST /auth/logout`) desde «Mi cuenta»
 
@@ -161,9 +159,8 @@ Entre la documentación, los mockups y la API.
 | 27 | El detalle mostraba las suturas y los equipos en «Datos clínicos», que es pública, pero la API solo los entrega con cuenta (`GET /techniques/{id}/instruments`) | Pasan a la pestaña Instrumental, detrás de la puerta de cuenta, sin cambiar la API: lo libre son el catálogo y los datos clínicos, y lo que se usa en la mesa (instrumental, suturas, equipos y dispositivos) pide cuenta (`docs/flujos.md`). «Datos clínicos» queda con lo de `GET /techniques/{id}` (decidido por Juan el 2026-10-29) |
 | 28 | El paso 1 del editor dejaba cambiar el nombre y la especialidad, pero `PUT /versions/{id}` no los recibe (son de `techniques`) y no hay ruta para cambiarlos | Se eligen en el primer paso de «Nueva técnica», que crea la técnica (`POST /techniques`) en cuanto tiene los dos; desde ahí son de solo lectura. Un error en el nombre de una técnica que nunca se publicó se corrige descartando el borrador y creándola otra vez. Cambiarlos en una técnica publicada queda para después del MVP (decidido por Juan el 2026-10-29) |
 | 29 | El editor tomaba cada sutura como plano + un texto; la API pide `name`, `gauge`, `needle_type` y `usage` (la carga inicial pone el plano en `usage`) | Una fila por plano con sutura, calibre y aguja. `data/` junta en una sola sutura los planos que comparten esos tres datos, con los planos en `usage` separados por «; » (como la carga inicial: la API rechaza una sutura repetida), y al leer los vuelve a separar (decidido por Juan el 2026-10-29) |
+| 30 | El registro exige aceptar la política de tratamiento de datos, pero su texto no estaba en el repo; tenía que declarar el registro anónimo del chat de SIMIQ3D (#29) | El aviso de privacidad, en [`docs/privacidad.md`](../../docs/privacidad.md) (versión 1.0, la de `POLICY_VERSION`): la responsable es la CURN, con su política (Acuerdo 02 de 2017); solo mayores de 18; declara el registro del chat y dónde se guardan los datos (#32, decidido por Mauricio el 2026-10-29) |
 
 ### Por confirmar
 
-| # | Qué no cuadra | Dónde | Propuesta |
-|---|---|---|---|
-| 10 | El registro exige aceptar la política de tratamiento de datos, pero su texto no está en el repo. Tiene que declarar el registro anónimo del chat de SIMIQ3D, que está encendido mientras dura el proyecto y se borra al cerrar la evaluación (#29) | `cuenta.html`, `simiq3d/README.md` («Backend y base de datos»), `POLICY_VERSION` del backend | Redactarla con el equipo antes de la fase 5; al cambiarla, subir `POLICY_VERSION` |
+No queda ninguno.
