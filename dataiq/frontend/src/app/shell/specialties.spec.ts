@@ -50,4 +50,35 @@ describe('Specialties', () => {
     expect(specialties.loading()).toBe(false);
     expect(specialties.list()).toEqual([]);
   });
+
+  it('si la petición falló, `retry()` la repite', async () => {
+    const specialties = TestBed.inject(Specialties);
+    TestBed.tick();
+    http
+      .expectOne(`${TEST_API_BASE}/specialties`)
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await Promise.resolve();
+    TestBed.tick();
+
+    specialties.retry();
+    TestBed.tick();
+    http.expectOne(`${TEST_API_BASE}/specialties`).flush([{ id: 'e-1', name: 'Urología' }]);
+    await Promise.resolve();
+    TestBed.tick();
+
+    expect(specialties.list().map((s) => s.name)).toEqual(['Urología']);
+  });
+
+  it('si llegaron, `retry()` no vuelve a pedirlas', async () => {
+    const specialties = TestBed.inject(Specialties);
+    TestBed.tick();
+    http.expectOne(`${TEST_API_BASE}/specialties`).flush([]);
+    await Promise.resolve();
+    TestBed.tick();
+
+    specialties.retry();
+    TestBed.tick();
+
+    http.expectNone(`${TEST_API_BASE}/specialties`);
+  });
 });

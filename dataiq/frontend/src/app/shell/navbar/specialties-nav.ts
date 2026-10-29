@@ -33,4 +33,10 @@ export class SpecialtiesNav {
       techniques: techniques.filter((t) => t.specialty === specialty.name).map((t) => t.name),
     }));
   });
+
+  /** Vuelve a pedir lo que falló la última vez (las especialidades, las técnicas o ambas). */
+  retry(): void {
+    this.specialties.retry();
+    if (this.techniques.status() === 'error') this.techniques.reload();
+  }
 }

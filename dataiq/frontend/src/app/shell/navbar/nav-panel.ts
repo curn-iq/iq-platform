@@ -6,11 +6,12 @@ import {
   inject,
   Injector,
   input,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { CATALOG_ROUTE, NavMenu, NavOption } from './nav-menus';
+import { NavLink } from './nav-link';
+import { NavMenu, NavOption, specialtyTarget } from './nav-menus';
 import { SpecialtiesNav } from './specialties-nav';
 import { ToolPictogram } from './tool-pictogram';
 
@@ -25,7 +26,7 @@ const HINT_TECHNIQUES = 2;
  */
 @Component({
   selector: 'app-nav-panel',
-  imports: [NgTemplateOutlet, RouterLink, ToolPictogram],
+  imports: [NavLink, NgTemplateOutlet, ToolPictogram],
   templateUrl: './nav-panel.html',
   styleUrl: './nav-panel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,7 +37,7 @@ const HINT_TECHNIQUES = 2;
     '(click)': 'onClick($event)',
   },
 })
-export class NavPanel {
+export class NavPanel implements OnInit {
   readonly menu = input.required<NavMenu>();
   /** Se eligió una opción (o el enlace del encabezado): el desplegable se cierra. */
   readonly chosen = output<void>();
@@ -45,7 +46,7 @@ export class NavPanel {
   /** La opción señalada (con el puntero o el teclado); sin señalar, la vista previa muestra la primera. */
   protected readonly pointed = signal<number | null>(null);
 
-  // Las especialidades se piden la primera vez que se abre ese desplegable.
+  // Las técnicas de cada especialidad se piden la primera vez que se abre ese desplegable.
   private readonly specialties = computed(() =>
     this.menu().preview.kind === 'specialties' ? this.injector.get(SpecialtiesNav).entries() : [],
   );
@@ -61,7 +62,7 @@ export class NavPanel {
     return this.specialties().map((specialty) => ({
       label: specialty.name,
       hint: this.hint(specialty.techniques),
-      target: { route: CATALOG_ROUTE, queryParams: { especialidad: specialty.id } },
+      target: specialtyTarget(specialty.id),
     }));
   });
 
@@ -84,6 +85,11 @@ export class NavPanel {
     const preview = this.menu().preview;
     return preview.kind === 'questions' ? preview : undefined;
   });
+
+  // Si la última vez las especialidades no llegaron, abrir el desplegable las vuelve a pedir.
+  ngOnInit(): void {
+    if (this.menu().preview.kind === 'specialties') this.injector.get(SpecialtiesNav).retry();
+  }
 
   protected onClick(event: Event): void {
     if ((event.target as Element).closest('a')) this.chosen.emit();

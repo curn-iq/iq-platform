@@ -223,6 +223,24 @@ describe('NavPanel', () => {
       expect(links()).toEqual([]);
     });
 
+    it('si fallaron, abrir de nuevo el desplegable las vuelve a pedir', async () => {
+      await open('specialties');
+      http
+        .expectOne(`${TEST_API_BASE}/specialties`)
+        .flush(null, { status: 503, statusText: 'Service Unavailable' });
+      http.expectOne(`${TEST_API_BASE}/techniques`).flush([]);
+      await Promise.resolve();
+      await fixture.whenStable();
+      fixture.destroy();
+
+      await open('specialties');
+      http.expectOne(`${TEST_API_BASE}/specialties`).flush([{ id: 'e-1', name: 'Urología' }]);
+      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(texts('.list strong')).toEqual(['Urología']);
+    });
+
     it('los demás menús no dicen «Cargando…»', async () => {
       await open('tools');
 

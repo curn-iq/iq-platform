@@ -1,16 +1,3 @@
-<ng-template #link let-label="label" let-target="target">
-  @if (target.href) {
-    <a [href]="target.href">{{ label }}</a>
-  } @else {
-    <a
-      [routerLink]="target.route"
-      [fragment]="target.fragment"
-      [queryParams]="target.queryParams"
-      >{{ label }}</a
-    >
-  }
-</ng-template>
-
 @for (menu of menus; track menu.id) {
   <details>
     <summary>
@@ -29,32 +16,17 @@
     <ul>
       @if (menu.id === 'specialties') {
         <li>
-          <ng-container
-            [ngTemplateOutlet]="link"
-            [ngTemplateOutletContext]="{
-              label: menu.headerLink!.label,
-              target: menu.headerLink!.target,
-            }"
-          />
+          <a [appNavLink]="menu.headerLink!.target">{{ menu.headerLink!.label }}</a>
         </li>
-        @for (specialty of specialties.entries(); track specialty.id) {
+        @for (link of specialtyLinks(); track link.id) {
           <li>
-            <ng-container
-              [ngTemplateOutlet]="link"
-              [ngTemplateOutletContext]="{
-                label: specialty.name,
-                target: { route: catalogRoute, queryParams: { especialidad: specialty.id } },
-              }"
-            />
+            <a [appNavLink]="link.target">{{ link.label }}</a>
           </li>
         }
       } @else {
         @for (option of menu.options; track option.label) {
           <li>
-            <ng-container
-              [ngTemplateOutlet]="link"
-              [ngTemplateOutletContext]="{ label: option.label, target: option.target }"
-            />
+            <a [appNavLink]="option.target">{{ option.label }}</a>
           </li>
         }
       }

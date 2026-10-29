@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { handledByRouter } from '../testing';
 import { Footer } from './footer';
@@ -115,6 +115,23 @@ describe('Footer', () => {
 
     expect(column('Especialidades').querySelector('.loading')).toBeNull();
     expect(links('Especialidades')).toEqual([]);
+  });
+
+  it('si fallaron, las vuelve a pedir al cambiar de página', async () => {
+    http
+      .expectOne(`${TEST_API_BASE}/specialties`)
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await Promise.resolve();
+    await fixture.whenStable();
+
+    await TestBed.inject(Router).navigateByUrl('/tecnicas');
+    TestBed.tick();
+    await flushSpecialties();
+
+    expect(links('Especialidades')).toEqual([
+      ['Cirugía general', '/tecnicas?especialidad=e-1'],
+      ['Urología', '/tecnicas?especialidad=e-2'],
+    ]);
   });
 
   it('cierra con el derecho de autor y la nota del nombre provisional', () => {

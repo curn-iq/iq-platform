@@ -102,6 +102,27 @@ describe('MobileMenu', () => {
     ]);
   });
 
+  it('si las especialidades fallaron, abrirlo de nuevo las vuelve a pedir', async () => {
+    http
+      .expectOne(`${TEST_API_BASE}/specialties`)
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne(`${TEST_API_BASE}/techniques`).flush([]);
+    await Promise.resolve();
+    await fixture.whenStable();
+    fixture.destroy();
+
+    fixture = TestBed.createComponent(MobileMenu);
+    fixture.detectChanges();
+    http.expectOne(`${TEST_API_BASE}/specialties`).flush([{ id: 'e-1', name: 'Urología' }]);
+    await Promise.resolve();
+    await fixture.whenStable();
+
+    expect(links(groups()[1])).toEqual([
+      ['Ver todas las técnicas', '/tecnicas'],
+      ['Urología', '/tecnicas?especialidad=e-1'],
+    ]);
+  });
+
   it('avisa con `chosen` al tocar un enlace y no al tocar un grupo', () => {
     let chosen = 0;
     fixture.componentInstance.chosen.subscribe(() => chosen++);

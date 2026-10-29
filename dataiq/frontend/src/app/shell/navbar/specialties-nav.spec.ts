@@ -57,4 +57,26 @@ describe('SpecialtiesNav', () => {
       { id: 'e-3', name: 'Ortopedia', techniques: [] },
     ]);
   });
+
+  it('`retry()` vuelve a pedir solo lo que falló', async () => {
+    const nav = TestBed.inject(SpecialtiesNav);
+    TestBed.tick();
+    http.expectOne(`${TEST_API_BASE}/specialties`).flush([{ id: 'e-1', name: 'Urología' }]);
+    http
+      .expectOne(`${TEST_API_BASE}/techniques`)
+      .flush(null, { status: 500, statusText: 'Server Error' });
+    await settle();
+
+    nav.retry();
+    TestBed.tick();
+
+    http.expectNone(`${TEST_API_BASE}/specialties`);
+    http
+      .expectOne(`${TEST_API_BASE}/techniques`)
+      .flush([{ id: 't-1', name: 'Prostatectomía', specialty: 'Urología', version_number: 1 }]);
+    await settle();
+    expect(nav.entries()).toEqual([
+      { id: 'e-1', name: 'Urología', techniques: ['Prostatectomía'] },
+    ]);
+  });
 });

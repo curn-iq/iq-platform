@@ -19,6 +19,8 @@ export interface NavOption {
   readonly target: NavTarget;
   /** Solo en Herramientas: lo que muestra la vista previa al señalar la opción. */
   readonly tool?: NavTool;
+  /** `false` si la opción va solo en la barra y no en el pie; por omisión va en los dos. */
+  readonly inFooter?: false;
 }
 
 export type ToolPictogramName = 'data' | '3d' | 'camera';
@@ -51,6 +53,11 @@ export interface NavMenu {
 
 /** Al catálogo de técnicas, o de una especialidad. */
 export const CATALOG_ROUTE = '/tecnicas';
+
+/** El catálogo filtrado por una especialidad: el parámetro es su `id`. */
+export function specialtyTarget(id: string): NavTarget {
+  return { route: CATALOG_ROUTE, queryParams: { especialidad: id } };
+}
 
 // Los textos son los de `diseno/mockups/inicio.html`. En el MVP «¿Por qué IQ
 // Platform?» no lleva «Quiénes somos» (Resuelto 26 de la checklist): no tiene
@@ -143,6 +150,7 @@ export const NAV_MENUS: readonly NavMenu[] = [
         label: 'Guía para estudiantes',
         hint: 'Por dónde empezar',
         target: { route: '/', fragment: 'quien' },
+        inFooter: false,
       },
       {
         label: 'Para docentes',
