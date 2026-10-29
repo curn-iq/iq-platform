@@ -111,7 +111,8 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 `columns`); `used: false` es una mesa que la técnica no lleva.
 
 - **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
-  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `cells`).
+  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `name`, `components`,
+  `cells`). El `name` es lo que dice la leyenda (`itemName()`, en `domain/`).
   `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
   API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
   uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
@@ -129,9 +130,28 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
   de la línea que une su primera y su última celda si ocupa varias. El círculo
   (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
-  `ResizeObserver` mide el dibujo y fija `--number-scale`. Todavía no se dibuja el
-  instrumental; eso, la leyenda y las variantes llegan con las demás casillas de
-  la fase 3.
+  `ResizeObserver` mide el dibujo y fija `--number-scale`.
+- **Formas** (decidido por Juan el 2026-10-29; ver «Detalle de técnica» en
+  `DESIGN.md`): los dibujos del mockup (16 de acero y 5 planos) están en
+  `drawings.ts` como **datos**, que la plantilla pinta como SVG: sin `innerHTML`.
+  `shape-catalog.ts` elige el dibujo de cada componente por palabras clave de su
+  nombre (sin tildes ni mayúsculas) y arma las formas del objeto: cada dibujo una
+  sola vez (mango y hoja de bisturí son un bisturí), una compresa con portaagujas
+  es la compresa con su hilo, y lo que no tiene dibujo propio es **un recuadro
+  punteado**, nunca la silueta de otro instrumento. `placeShapes()` las coloca:
+  en una celda, lo plano al centro y el acero inclinado 40° encima (si son dos,
+  a los lados); en varias, el acero a lo largo de la línea que une sus celdas.
+  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS` y a la
+  tabla de palabras clave. Cada diagrama tiene sus propios degradados de acero
+  (`id` únicos), porque puede haber dos en una página.
+- **Leyenda enlazada:** `app-table-legend` lista los objetos con número y celdas
+  (nombre = componentes unidos con «y»). Mesa y leyenda comparten
+  `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
+  o una fila lo señala; la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
+  `highlighted` por mesa, porque cada mesa tiene su propia numeración.
+  Todavía faltan, en las otras casillas de la fase 3, el hueco «Sin dato» y las
+  variantes de vista previa y miniatura.
 
 ### Glosario (interfaz → código y API)
 

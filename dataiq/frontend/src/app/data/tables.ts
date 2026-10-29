@@ -1,3 +1,4 @@
+import { itemName } from '../domain/item-name';
 import type { Table } from '../domain/table';
 import type { TechniqueItem, ZoneLayout } from './api/models';
 
@@ -19,11 +20,16 @@ export function toTables(zones: readonly ZoneLayout[], items: readonly Technique
             columns: zone.columns,
             items: items
               .filter((item) => item.zone_id === zone.zone_id)
-              .map((item) => ({
-                id: item.id,
-                legendNumber: item.legend_number,
-                cells: item.cells.map((cell) => ({ row: cell.row, column: cell.column })),
-              })),
+              .map((item) => {
+                const components = item.components.map((component) => component.name);
+                return {
+                  id: item.id,
+                  legendNumber: item.legend_number,
+                  name: itemName(components, item.source_text),
+                  components,
+                  cells: item.cells.map((cell) => ({ row: cell.row, column: cell.column })),
+                };
+              }),
           },
         ]
       : [],

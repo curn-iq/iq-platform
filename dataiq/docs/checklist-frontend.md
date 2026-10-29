@@ -61,7 +61,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 - [x] Grilla del tamaño de la mesa (`zones`: `rows` × `columns`); las mesas con `used: false` no se dibujan
 - [x] Un objeto en varias celdas es uno solo, con un número
-- [ ] Instrumental en acero y objetos planos; leyenda enlazada (señalar un número levanta la pieza y atenúa las demás)
+- [x] Instrumental en acero y objetos planos; leyenda enlazada (señalar un número levanta la pieza y atenúa las demás)
 - [ ] Hueco «Sin dato» para un número que la fuente no deja leer
 - [ ] Variante de vista previa (recortada, sin números ni leyenda) para la puerta de cuenta
 - [ ] Variante miniatura (celdas de 22 px) para el catálogo de instrumental

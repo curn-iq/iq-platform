@@ -5,10 +5,11 @@ import { TableDiagram } from './table-diagram';
 
 @Component({
   imports: [TableDiagram],
-  template: '<app-table-diagram [table]="table" />',
+  template: '<app-table-diagram [table]="table" [(highlighted)]="highlighted" />',
 })
 class Host {
   table: Table = makeTable();
+  highlighted: number | null = null;
 }
 
 function makeTable(overrides: Partial<Table> = {}): Table {
@@ -16,15 +17,27 @@ function makeTable(overrides: Partial<Table> = {}): Table {
 }
 
 function makeItem(overrides: Partial<TableItem> = {}): TableItem {
-  return { id: 'i-1', legendNumber: 1, cells: [{ row: 2, column: 3 }], ...overrides };
+  return {
+    id: 'i-1',
+    legendNumber: 1,
+    name: 'Pinza Kelly',
+    components: ['Pinza Kelly'],
+    cells: [{ row: 2, column: 3 }],
+    ...overrides,
+  };
 }
 
 describe('TableDiagram', () => {
-  async function render(table?: Table): Promise<HTMLElement> {
+  async function mount(table?: Table, highlighted: number | null = null) {
     const fixture = TestBed.createComponent(Host);
     if (table) fixture.componentInstance.table = table;
+    fixture.componentInstance.highlighted = highlighted;
     await fixture.whenStable();
-    return fixture.nativeElement;
+    return fixture;
+  }
+
+  async function render(table?: Table): Promise<HTMLElement> {
+    return (await mount(table)).nativeElement;
   }
 
   it('dibuja un SVG del tamaño de la mesa: 100 unidades por celda', async () => {
@@ -120,6 +133,111 @@ describe('TableDiagram', () => {
       const root = await render(makeTable({ items: [makeItem()] }));
       const svg = root.querySelector<SVGElement>('svg');
       expect(svg?.style.getPropertyValue('--number-scale')).toBe('1');
+    });
+
+    describe('formas', () => {
+      it('un instrumento con dibujo se pinta en acero', async () => {
+        const root = await render(makeTable({ items: [makeItem()] }));
+        const shape = root.querySelector('.piece .shape [data-drawing="kelly"]');
+        expect(shape?.getAttribute('data-kind')).toBe('steel');
+        expect(shape?.querySelectorAll('.steel').length).toBeGreaterThan(0);
+      });
+
+      it('lo que es de tela o bandeja se pinta plano', async () => {
+        const item = makeItem({ name: 'Paquete de ropa', components: ['Paquete de ropa'] });
+        const root = await render(makeTable({ items: [item] }));
+        const shape = root.querySelector('.piece .shape [data-drawing="ropa"]');
+        expect(shape?.getAttribute('data-kind')).toBe('flat');
+        expect(shape?.querySelectorAll('.cloth').length).toBeGreaterThan(0);
+      });
+
+      it('lo que no tiene dibujo es un recuadro punteado, nunca el dibujo de otro', async () => {
+        const item = makeItem({ name: 'Pinza de Babcock', components: ['Pinza de Babcock'] });
+        const root = await render(makeTable({ items: [item] }));
+        expect(root.querySelectorAll('.piece .unknown').length).toBe(1);
+        expect(root.querySelectorAll('.piece [data-drawing]').length).toBe(0);
+      });
+
+      it('un objeto de varias celdas dibuja su forma una sola vez', async () => {
+        const item = makeItem({
+          cells: [
+            { row: 4, column: 2 },
+            { row: 5, column: 1 },
+          ],
+          components: ['Pinza de Campo'],
+        });
+        const root = await render(makeTable({ items: [item] }));
+        expect(root.querySelectorAll('.piece [data-drawing="campo"]').length).toBe(1);
+      });
+
+      it('el degradado del acero es propio de cada diagrama', async () => {
+        const first = await render();
+        const second = await render();
+        const idOf = (root: HTMLElement) => root.querySelector('linearGradient.steel-gradient')?.id;
+        expect(idOf(first)).toBeTruthy();
+        expect(idOf(first)).not.toBe(idOf(second));
+      });
+    });
+
+    describe('enlace con la leyenda', () => {
+      const items = [
+        makeItem({ id: 'a', legendNumber: 1, cells: [{ row: 1, column: 1 }] }),
+        makeItem({ id: 'b', legendNumber: 2, cells: [{ row: 1, column: 2 }] }),
+      ];
+      const piece = (root: HTMLElement, n: number) =>
+        root.querySelector<SVGGElement>(`.piece[data-n="${n}"]`)!;
+
+      it('señalar un número levanta su pieza y atenúa las demás', async () => {
+        const fixture = await mount(makeTable({ items }), 2);
+        const root: HTMLElement = fixture.nativeElement;
+        expect(piece(root, 2).classList.contains('active')).toBe(true);
+        expect(piece(root, 1).classList.contains('active')).toBe(false);
+        expect(root.querySelector('svg')?.classList.contains('marking')).toBe(true);
+      });
+
+      it('sin nada señalado no se atenúa nada', async () => {
+        const root = await render(makeTable({ items }));
+        expect(root.querySelector('svg')?.classList.contains('marking')).toBe(false);
+        expect(root.querySelectorAll('.piece.active').length).toBe(0);
+      });
+
+      it('pasar el puntero por una pieza la señala, y al salir se suelta', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        piece(root, 1).dispatchEvent(new MouseEvent('mouseenter'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(1);
+        piece(root, 1).dispatchEvent(new MouseEvent('mouseleave'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBeNull();
+      });
+
+      it('enfocar una pieza con el teclado la señala, y al salir se suelta', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        piece(root, 2).dispatchEvent(new FocusEvent('focus'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(2);
+        piece(root, 2).dispatchEvent(new FocusEvent('blur'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBeNull();
+      });
+
+      it('la pieza con número se llega con el teclado y dice cuál es', async () => {
+        const root = await render(makeTable({ items }));
+        expect(piece(root, 1).getAttribute('tabindex')).toBe('0');
+        expect(piece(root, 1).getAttribute('role')).toBe('img');
+        expect(piece(root, 1).getAttribute('aria-label')).toBe('1: Pinza Kelly');
+      });
+
+      it('la pieza sin número no se señala ni se llega con el teclado', async () => {
+        const root = await render(
+          makeTable({ items: [makeItem({ legendNumber: null, cells: [{ row: 1, column: 1 }] })] }),
+        );
+        const unnumbered = root.querySelector('.piece')!;
+        expect(unnumbered.hasAttribute('tabindex')).toBe(false);
+        expect(unnumbered.hasAttribute('aria-label')).toBe(false);
+      });
     });
 
     describe('con el dibujo medido', () => {

@@ -2,9 +2,42 @@
   #svg
   [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
   [style.--number-scale]="numberScale()"
+  [style.--steel-fill]="'url(#' + steelId + ')'"
+  [style.--blade-fill]="'url(#' + bladeId + ')'"
+  [class.marking]="highlighted() !== null"
   role="group"
   [attr.aria-label]="table().name"
 >
+  <defs>
+    <linearGradient
+      class="steel-gradient"
+      [id]="steelId"
+      gradientUnits="userSpaceOnUse"
+      x1="-8"
+      y1="0"
+      x2="8"
+      y2="0"
+    >
+      <stop class="stop-light" offset="0" />
+      <stop class="stop-glint" offset=".32" />
+      <stop class="stop-steel" offset=".56" />
+      <stop class="stop-shade" offset=".74" />
+      <stop class="stop-dim" offset="1" />
+    </linearGradient>
+    <linearGradient
+      class="blade-gradient"
+      [id]="bladeId"
+      gradientUnits="userSpaceOnUse"
+      x1="-3"
+      y1="0"
+      x2="5"
+      y2="0"
+    >
+      <stop class="stop-glint" offset="0" />
+      <stop class="stop-white" offset=".5" />
+      <stop class="stop-blade" offset="1" />
+    </linearGradient>
+  </defs>
   <g class="grid" aria-hidden="true">
     @for (x of columnLines(); track x) {
       <path class="grid-line" data-axis="column" [attr.d]="'M' + x + ' 0V' + height()" />
@@ -14,7 +47,20 @@
     }
   </g>
   @for (piece of pieces(); track piece.id) {
-    <g class="piece" [attr.data-n]="piece.legendNumber">
+    <g
+      class="piece"
+      [class.flat]="piece.flat"
+      [class.active]="piece.legendNumber !== null && piece.legendNumber === highlighted()"
+      [style.--i]="$index"
+      [attr.data-n]="piece.legendNumber"
+      [attr.tabindex]="piece.legendNumber === null ? null : 0"
+      [attr.role]="piece.legendNumber === null ? null : 'img'"
+      [attr.aria-label]="piece.legendNumber === null ? null : piece.label"
+      (mouseenter)="point(piece.legendNumber)"
+      (mouseleave)="release(piece.legendNumber)"
+      (focus)="point(piece.legendNumber)"
+      (blur)="release(piece.legendNumber)"
+    >
       @for (hit of piece.hits; track $index) {
         <rect
           class="hit"
@@ -24,6 +70,60 @@
           [attr.height]="cell"
         />
       }
+      <g class="shape">
+        @for (shape of piece.shapes; track $index) {
+          @if (shape.kind === 'unknown') {
+            <rect
+              class="unknown"
+              [attr.transform]="shape.transform"
+              [attr.x]="-shape.width! / 2"
+              [attr.y]="-shape.height! / 2"
+              [attr.width]="shape.width"
+              [attr.height]="shape.height"
+              rx="8"
+            />
+          } @else {
+            <g
+              [attr.transform]="shape.transform"
+              [attr.data-drawing]="shape.key"
+              [attr.data-kind]="shape.kind"
+            >
+              @for (part of shape.parts; track $index) {
+                @switch (part.shape) {
+                  @case ('path') {
+                    <path
+                      [attr.class]="part.style"
+                      [attr.d]="part.d"
+                      [attr.fill-rule]="part.evenodd ? 'evenodd' : null"
+                      [attr.transform]="part.transform"
+                    />
+                  }
+                  @case ('rect') {
+                    <rect
+                      [attr.class]="part.style"
+                      [attr.x]="part.x"
+                      [attr.y]="part.y"
+                      [attr.width]="part.width"
+                      [attr.height]="part.height"
+                      [attr.rx]="part.rx"
+                      [attr.transform]="part.transform"
+                    />
+                  }
+                  @case ('circle') {
+                    <circle
+                      [attr.class]="part.style"
+                      [attr.cx]="part.cx"
+                      [attr.cy]="part.cy"
+                      [attr.r]="part.r"
+                      [attr.transform]="part.transform"
+                    />
+                  }
+                }
+              }
+            </g>
+          }
+        }
+      </g>
       @if (piece.number; as position) {
         <g class="number">
           <circle [attr.cx]="position.x" [attr.cy]="position.y" [attr.r]="numberRadius" />

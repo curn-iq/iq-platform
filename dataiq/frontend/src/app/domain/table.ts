@@ -12,6 +12,10 @@ export interface TableCell {
 export interface TableItem {
   id: string;
   legendNumber: number | null;
+  /** Lo que dice la leyenda: sus componentes unidos con «y» (`itemName`). */
+  name: string;
+  /** Los nombres de sus componentes del catálogo; el diagrama elige su dibujo por ellos. */
+  components: string[];
   cells: TableCell[];
 }
 

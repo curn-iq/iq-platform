@@ -1,5 +1,6 @@
-// Diagrama de mesa: ver «Detalle de técnica» en DESIGN.md. En el detalle la mesa es
-// un diagrama sereno (superficie con filete, rejilla fina, sin paño), no el objeto firma.
+// Diagrama de mesa: ver «Detalle de técnica» y «Tertiary» (acero) en DESIGN.md. En el
+// detalle la mesa es un diagrama sereno (superficie con filete, rejilla fina, sin
+// paño), no el objeto firma.
 
 :host {
   position: relative;
@@ -29,10 +30,179 @@ svg {
   vector-effect: non-scaling-stroke;
 }
 
+// ---------- Degradados del acero (sus ids son propios de cada diagrama) ----------
+
+.stop-light {
+  stop-color: var(--color-steel-light);
+}
+.stop-glint {
+  stop-color: var(--color-steel-glint);
+}
+.stop-steel {
+  stop-color: var(--color-steel);
+}
+.stop-shade {
+  stop-color: var(--color-steel-shade);
+}
+.stop-dim {
+  stop-color: var(--color-steel-dim);
+}
+.stop-white {
+  stop-color: var(--color-surface);
+}
+.stop-blade {
+  stop-color: var(--color-blade-shade);
+}
+
+// ---------- Piezas ----------
+
+.piece {
+  cursor: pointer;
+  // Entrada rápida: las piezas se colocan una tras otra
+  animation: place 0.35s var(--ease-enter) backwards;
+  animation-delay: calc(var(--i, 0) * 25ms);
+
+  // El efecto de levantarse y de atenuar las demás es el indicador de foco
+  &:focus {
+    outline: none;
+  }
+}
+
+@keyframes place {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 // La zona de clic de cada celda de un objeto: invisible, pero recibe el puntero
 .hit {
   fill: transparent;
 }
+
+// «Pieza en diagrama» de DESIGN.md: sombra suave, y al señalarla sube y se despega
+.shape {
+  filter: drop-shadow(0 1px 1px rgba(3, 20, 28, 0.22)) drop-shadow(0 4px 6px rgba(3, 20, 28, 0.08));
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.45s var(--ease-enter),
+    filter 0.45s var(--ease-enter),
+    opacity 0.3s var(--ease-fade);
+}
+
+.piece.active .shape {
+  transform: translate(-3px, -12px);
+  filter: drop-shadow(0 18px 10px rgba(3, 20, 28, 0.45));
+}
+
+// Al señalar una, las demás se atenúan (la tela clara, menos); sus números siguen legibles
+.marking .piece:not(.active) .shape {
+  opacity: 0.38;
+}
+
+.marking .piece.flat:not(.active) .shape {
+  opacity: 0.55;
+}
+
+// ---------- Instrumental en acero ----------
+
+.steel {
+  fill: var(--steel-fill);
+  stroke: var(--color-steel-edge);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.blade {
+  fill: var(--blade-fill);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.box {
+  fill: var(--color-steel-box);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.groove {
+  fill: none;
+  stroke: var(--color-steel-groove);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+}
+
+.tip {
+  fill: none;
+  stroke: var(--steel-fill);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+// ---------- Objetos planos: tela, bandeja y caucho, sin brillo ----------
+
+.cloth {
+  fill: var(--color-flat-cloth);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.fold {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.2;
+}
+
+.weave {
+  fill: none;
+  stroke: var(--color-steel);
+  stroke-width: 0.8;
+}
+
+.tray-rim {
+  fill: var(--color-flat-tray);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.tray-floor {
+  fill: var(--color-flat-tray-bottom);
+}
+
+.rubber {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.rubber-glint {
+  fill: none;
+  stroke: var(--color-surface);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.thread {
+  fill: none;
+  stroke: var(--color-text-subtle);
+  stroke-width: 1.2;
+}
+
+// Lo que no tiene dibujo propio: solo el recuadro punteado, nunca la silueta de otro instrumento
+.unknown {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+// ---------- Número ----------
 
 // El número: círculo `noche` al 72 % con la cifra en blanco. Se reescala (--number-scale)
 // para medir lo mismo en pantalla a cualquier ancho de la mesa.

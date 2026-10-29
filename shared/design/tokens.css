@@ -51,6 +51,14 @@
   --acero-raya: #66737a;
   --acero-linea: #4f5c63;
   --acero-filo: #3f4b52;
+  --acero-luz: #e4eaed;
+  --acero-cierre: #d3dbdf;
+  --hoja-sombra: #aab5bb;
+
+  /* Objetos planos del diagrama de mesa: tela, bandeja y caucho */
+  --tela-plana: #eef3f3;
+  --bandeja-fondo: #dde4e7;
+  --bandeja-borde: #c9d3d7;
 
   /* Escena 3D de SIMIQ3D */
   --canto-pano: #0e463c;
@@ -138,6 +146,21 @@
   --color-dark-raised: var(--noche-2);
   --color-dark-border: var(--filete-noche);
   --color-dark-text-muted: var(--niebla-noche);
+
+  /* El acero del instrumental y los objetos planos del diagrama de mesa */
+  --color-steel-light: var(--acero-luz);
+  --color-steel-glint: var(--acero-brillo);
+  --color-steel: var(--acero);
+  --color-steel-box: var(--acero-caja);
+  --color-steel-shade: var(--acero-sombra);
+  --color-steel-dim: var(--acero-cierre);
+  --color-steel-groove: var(--acero-raya);
+  --color-steel-line: var(--acero-linea);
+  --color-steel-edge: var(--acero-filo);
+  --color-blade-shade: var(--hoja-sombra);
+  --color-flat-cloth: var(--tela-plana);
+  --color-flat-tray: var(--bandeja-borde);
+  --color-flat-tray-bottom: var(--bandeja-fondo);
 
   --font-body: var(--letra);
   --font-data: var(--datos);

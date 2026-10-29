@@ -22,8 +22,8 @@ function item(overrides: Partial<TechniqueItem> = {}): TechniqueItem {
     zone_id: 'z-mayo',
     zone: 'Mesa de Mayo',
     legend_number: 1,
-    source_text: 'Pinza Kelly',
-    components: [],
+    source_text: 'Pinzas Kelly',
+    components: [{ instrument_id: 'x', suture_id: null, name: 'Pinza Kelly' }],
     cells: [{ row: 2, column: 3 }],
     ...overrides,
   };
@@ -55,7 +55,15 @@ describe('toTables', () => {
     const inMayo = item({ id: 'a', legend_number: 4 });
     const inReserve = item({ id: 'b', zone_id: 'z-reserva', legend_number: 2 });
     const [mayo, reserve] = toTables([MAYO, RESERVE], [inMayo, inReserve]);
-    expect(mayo.items).toEqual([{ id: 'a', legendNumber: 4, cells: [{ row: 2, column: 3 }] }]);
+    expect(mayo.items).toEqual([
+      {
+        id: 'a',
+        legendNumber: 4,
+        name: 'Pinza Kelly',
+        components: ['Pinza Kelly'],
+        cells: [{ row: 2, column: 3 }],
+      },
+    ]);
     expect(reserve.items.map((it) => it.id)).toEqual(['b']);
   });
 
@@ -73,10 +81,25 @@ describe('toTables', () => {
     const unplaced = item({ id: 'u', cells: [] });
     const unnumbered = item({ id: 'n', legend_number: null });
     const [mayo] = toTables([MAYO], [unplaced, unnumbered]);
-    expect(mayo.items).toEqual([
-      { id: 'u', legendNumber: 1, cells: [] },
-      { id: 'n', legendNumber: null, cells: [{ row: 2, column: 3 }] },
+    expect(mayo.items.map((it) => [it.id, it.legendNumber, it.cells.length])).toEqual([
+      ['u', 1, 0],
+      ['n', null, 1],
     ]);
+  });
+
+  it('el nombre del objeto son sus componentes unidos con «y»', () => {
+    const components = [
+      { instrument_id: 'a', suture_id: null, name: 'Mango de bisturí N.° 3' },
+      { instrument_id: 'b', suture_id: null, name: 'Hoja de bisturí #15' },
+    ];
+    const [mayo] = toTables([MAYO], [item({ components })]);
+    expect(mayo.items[0].name).toBe('Mango de bisturí N.° 3 y Hoja de bisturí #15');
+    expect(mayo.items[0].components).toEqual(['Mango de bisturí N.° 3', 'Hoja de bisturí #15']);
+  });
+
+  it('sin componentes, el nombre es el texto de la fuente', () => {
+    const [mayo] = toTables([MAYO], [item({ components: [], source_text: 'Cocas' })]);
+    expect(mayo.items[0].name).toBe('Cocas');
   });
 
   it('descarta el objeto sin mesa (solo del listado) y el de una mesa que no se dibuja', () => {
