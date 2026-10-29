@@ -80,4 +80,4 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] Servidor PC2 sin suspensión por inactividad
 - [x] Desplegado en producción: https://simiq3d-backend.vercel.app (sesión
   validada contra la clave pública del DataIQ de producción)
-- [ ] Chat probado de punta a punta en producción, con una cuenta de DataIQ
+- [x] Chat probado de punta a punta en producción, con una cuenta de DataIQ
