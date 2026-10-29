@@ -37,4 +37,25 @@
       </button>
     }
   </nav>
+  <button
+    #mobileButton
+    type="button"
+    class="mobile-button"
+    [attr.aria-expanded]="mobileOpen()"
+    [attr.aria-controls]="mobileOpen() ? 'mobile-menu' : null"
+    [attr.aria-label]="mobileOpen() ? 'Cerrar menú' : 'Abrir menú'"
+    (click)="toggleMobile()"
+  >
+    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+      <path
+        d="M3 6h16M3 11h16M3 16h16"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      />
+    </svg>
+  </button>
 </header>
+@if (mobileOpen()) {
+  <app-mobile-menu (chosen)="closeMobile()" />
+}

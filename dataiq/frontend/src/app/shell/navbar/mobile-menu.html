@@ -1,0 +1,66 @@
+<ng-template #link let-label="label" let-target="target">
+  @if (target.href) {
+    <a [href]="target.href">{{ label }}</a>
+  } @else {
+    <a
+      [routerLink]="target.route"
+      [fragment]="target.fragment"
+      [queryParams]="target.queryParams"
+      >{{ label }}</a
+    >
+  }
+</ng-template>
+
+@for (menu of menus; track menu.id) {
+  <details>
+    <summary>
+      {{ menu.label }}
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+        <path
+          d="M2.5 4.5L6 8l3.5-3.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </summary>
+    <ul>
+      @if (menu.id === 'specialties') {
+        <li>
+          <ng-container
+            [ngTemplateOutlet]="link"
+            [ngTemplateOutletContext]="{
+              label: menu.headerLink!.label,
+              target: menu.headerLink!.target,
+            }"
+          />
+        </li>
+        @for (specialty of specialties.entries(); track specialty.id) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="link"
+              [ngTemplateOutletContext]="{
+                label: specialty.name,
+                target: { route: catalogRoute, queryParams: { especialidad: specialty.id } },
+              }"
+            />
+          </li>
+        }
+      } @else {
+        @for (option of menu.options; track option.label) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="link"
+              [ngTemplateOutletContext]="{ label: option.label, target: option.target }"
+            />
+          </li>
+        }
+      }
+    </ul>
+    @if (menu.id === 'specialties' && specialties.loading()) {
+      <p class="loading" role="status">Cargando…</p>
+    }
+  </details>
+}

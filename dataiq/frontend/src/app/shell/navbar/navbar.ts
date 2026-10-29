@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { MobileMenu } from './mobile-menu';
 import { CATALOG_ROUTE, NAV_MENUS, NavMenu, NavMenuId } from './nav-menus';
 
 /**
@@ -24,15 +25,17 @@ import { CATALOG_ROUTE, NAV_MENUS, NavMenu, NavMenuId } from './nav-menus';
  */
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink],
+  imports: [RouterLink, MobileMenu],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'onEscape()' },
 })
 export class Navbar {
   private readonly injector = inject(Injector);
   private readonly router = inject(Router);
   private readonly nav = viewChild.required<ElementRef<HTMLElement>>('nav');
+  private readonly mobileButton = viewChild.required<ElementRef<HTMLElement>>('mobileButton');
   private panel: OverlayRef | null = null;
   // Cuenta las aperturas y los cierres: una apertura que aún carga el overlay se cancela si pasó otra.
   private requests = 0;
@@ -40,6 +43,8 @@ export class Navbar {
   protected readonly menus = NAV_MENUS;
   /** El menú abierto, si hay uno. */
   protected readonly open = signal<NavMenuId | null>(null);
+  /** El menú de celular (≤ 960 px) está abierto. */
+  protected readonly mobileOpen = signal(false);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -56,7 +61,39 @@ export class Navbar {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.dispose());
+    const destroyRef = inject(DestroyRef);
+    destroyRef.onDestroy(() => this.dispose());
+
+    // Por encima de 960 px el menú de celular se esconde: que no siga abierto para cuando
+    // la ventana vuelva a angostarse.
+    if (typeof matchMedia === 'function') {
+      const wide = matchMedia('(min-width: 961px)');
+      const onChange = (event: MediaQueryListEvent) => {
+        if (event.matches) this.mobileOpen.set(false);
+      };
+      wide.addEventListener('change', onChange);
+      destroyRef.onDestroy(() => wide.removeEventListener('change', onChange));
+    }
+  }
+
+  /** Abre o cierra el menú de celular; abrirlo cierra el desplegable que hubiera. */
+  protected toggleMobile(): void {
+    if (this.mobileOpen()) {
+      this.closeMobile();
+    } else {
+      this.close();
+      this.mobileOpen.set(true);
+    }
+  }
+
+  protected closeMobile(options: { returnFocus?: boolean } = {}): void {
+    this.mobileOpen.set(false);
+    if (options.returnFocus) this.mobileButton().nativeElement.focus();
+  }
+
+  // El desplegable de escritorio atiende su propio Escape (CDK); este es el del menú de celular.
+  protected onEscape(): void {
+    if (this.mobileOpen()) this.closeMobile({ returnFocus: true });
   }
 
   /**
@@ -81,6 +118,7 @@ export class Navbar {
   private async show(menu: NavMenu, focusFirstLink: boolean): Promise<void> {
     const request = ++this.requests;
     this.dispose();
+    this.mobileOpen.set(false);
     this.open.set(menu.id);
 
     const [{ Overlay }, { ComponentPortal }, { NavPanel }] = await Promise.all([

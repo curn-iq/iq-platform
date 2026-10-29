@@ -22,7 +22,20 @@ describe('Navbar', () => {
     target.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
   const opened = (name: string) => vi.waitFor(() => expect(panelNames()).toEqual([name]));
 
+  /** Quienes escuchan `(min-width: 961px)`: jsdom no trae `matchMedia`. */
+  let wideListeners: ((event: { matches: boolean }) => void)[];
+  const mobileButton = () => root().querySelector<HTMLButtonElement>('.mobile-button')!;
+  const mobileMenu = () => document.querySelector('app-mobile-menu');
+
   beforeEach(async () => {
+    wideListeners = [];
+    vi.stubGlobal('matchMedia', () => ({
+      matches: false,
+      addEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
+        wideListeners.push(listener),
+      removeEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
+        (wideListeners = wideListeners.filter((l) => l !== listener)),
+    }));
     TestBed.configureTestingModule({
       providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
     });
@@ -33,7 +46,10 @@ describe('Navbar', () => {
   });
 
   // Abrir «Especialidades» pide las especialidades y las técnicas; aquí no importa la respuesta.
-  afterEach(() => http.match(() => true));
+  afterEach(() => {
+    http.match(() => true);
+    vi.unstubAllGlobals();
+  });
 
   it('lleva la marca al inicio y los cuatro menús en orden', () => {
     const brand = root().querySelector<HTMLAnchorElement>('.brand')!;
@@ -167,6 +183,92 @@ describe('Navbar', () => {
       await vi.waitFor(() => expect(router.url).toBe('/tecnicas'));
 
       expect(panels()).toEqual([]);
+    });
+  });
+
+  describe('menú de celular', () => {
+    // Sin `whenStable`: al abrir el menú se piden las especialidades y la prueba no las responde.
+    const settle = async () => {
+      fixture.detectChanges();
+      await Promise.resolve();
+    };
+
+    it('el botón empieza cerrado y sin menú', () => {
+      expect(mobileButton().getAttribute('aria-label')).toBe('Abrir menú');
+      expect(mobileButton().getAttribute('aria-expanded')).toBe('false');
+      expect(mobileButton().hasAttribute('aria-controls')).toBe(false);
+      expect(mobileMenu()).toBeNull();
+    });
+
+    it('un clic abre el menú y otro lo cierra', async () => {
+      mobileButton().click();
+      await settle();
+
+      expect(mobileMenu()).not.toBeNull();
+      expect(mobileButton().getAttribute('aria-expanded')).toBe('true');
+      expect(mobileButton().getAttribute('aria-label')).toBe('Cerrar menú');
+      expect(mobileButton().getAttribute('aria-controls')).toBe('mobile-menu');
+
+      mobileButton().click();
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+      expect(mobileButton().getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('Escape lo cierra y devuelve el foco al botón', async () => {
+      // El botón solo se ve por debajo de 960 px, y jsdom no da el foco a lo que no se ve.
+      mobileButton().style.display = 'inline-grid';
+      mobileButton().click();
+      await settle();
+
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+      expect(document.activeElement).toBe(mobileButton());
+    });
+
+    it('elegir una opción lo cierra', async () => {
+      mobileButton().click();
+      await settle();
+
+      mobileMenu()!.querySelector<HTMLAnchorElement>('details a')!.click();
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+    });
+
+    it('al abrirlo cierra el desplegable que hubiera, y al abrir un desplegable cierra el menú', async () => {
+      mouseClick(button('help'));
+      await opened('Ayuda');
+
+      mobileButton().click();
+      await settle();
+      expect(panels()).toEqual([]);
+      expect(mobileMenu()).not.toBeNull();
+
+      mouseClick(button('tools'));
+      await opened('Herramientas');
+      expect(mobileMenu()).toBeNull();
+    });
+
+    it('si la ventana se ensancha por encima de 960 px, el menú se cierra', async () => {
+      mobileButton().click();
+      await settle();
+
+      wideListeners.forEach((listener) => listener({ matches: true }));
+      await settle();
+
+      expect(mobileMenu()).toBeNull();
+    });
+
+    it('al destruir la barra deja de escuchar el ancho de la ventana', () => {
+      expect(wideListeners).toHaveLength(1);
+
+      fixture.destroy();
+
+      expect(wideListeners).toHaveLength(0);
     });
   });
 

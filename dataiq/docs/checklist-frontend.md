@@ -51,7 +51,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
 - [x] Página «No encontrada» para una ruta que no existe
 - [x] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
-- [ ] Menú de celular a pantalla completa (≤ 960 px)
+- [x] Menú de celular a pantalla completa (≤ 960 px)
 - [ ] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
 - [ ] Pie oscuro
 - [ ] Enlaces de la barra y del pie a secciones del inicio (router con `anchorScrolling`): «Cómo funciona» a `/#camino`, «La investigación» a `/#investigacion`, «Preguntas frecuentes» a `/#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en «Para quién» (`/#quien`). La política de datos, a su página (fase 5). Sin «Quiénes somos» ni «Términos de uso» en el MVP: no tienen texto (Resuelto 26)

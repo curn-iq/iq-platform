@@ -176,7 +176,13 @@ destino de cada opción: rutas de esta app (los fragmentos del inicio:
   desplegable). Cada una lleva a `/tecnicas?especialidad=<id>`: el parámetro es
   el `id` de la especialidad.
 - «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
-  técnica.
+  técnica. Mientras llegan las especialidades, el desplegable dice «Cargando…»;
+  si la API falla, queda vacío (el interceptor ya avisó).
+- **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
+  menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
+  plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
+  (el foco vuelve al botón), al elegir una opción o si la ventana vuelve a
+  pasar de 960 px; abrirlo cierra el desplegable de escritorio y al revés.
 
 ### Errores de la API
 

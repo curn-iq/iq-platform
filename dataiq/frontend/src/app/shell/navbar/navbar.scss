@@ -90,11 +90,33 @@ nav {
   }
 }
 
+.mobile-button {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+
+  &[aria-expanded='true'] {
+    background: var(--color-hover);
+  }
+}
+
 // Por debajo de 960 px los cuatro menús ya no caben en una línea y pasan al
-// menú del celular.
+// botón de menú y su panel a pantalla completa.
 @media (max-width: 960px) {
   nav {
     display: none;
+  }
+
+  .mobile-button {
+    display: inline-grid;
   }
 }
 
