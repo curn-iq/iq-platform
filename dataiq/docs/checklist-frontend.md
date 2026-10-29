@@ -48,16 +48,14 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 2 — Shell
 
-Antes de empezar: «Por confirmar» 1 y 11.
-
 - [ ] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
 - [ ] Página «No encontrada» para una ruta que no existe
 - [ ] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
 - [ ] Menú de celular a pantalla completa (≤ 960 px)
 - [ ] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
 - [ ] Pie oscuro
-- [ ] Enlaces de la barra y del pie a páginas que aún no existen (ver «Por confirmar» 11)
-- [ ] SIVRI y SIMIQ3D como enlaces (ver «Por confirmar» 1)
+- [ ] Enlaces de la barra y del pie a secciones del inicio (router con `anchorScrolling`): «Cómo funciona» a `/#camino`, «La investigación» a `/#investigacion`, «Preguntas frecuentes» a `/#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en «Para quién» (`/#quien`). La política de datos, a su página (fase 5). Sin «Quiénes somos» ni «Términos de uso» en el MVP: no tienen texto (Resuelto 26)
+- [ ] SIVRI y SIMIQ3D como enlaces a `/sivri/` y `/simiq3d/`, con navegación completa: son otras apps, servidas en el mismo origen (Resuelto 17)
 
 ### Fase 3 — Diagrama de mesa (`shared/table-diagram`)
 
@@ -70,48 +68,46 @@ Antes de empezar: «Por confirmar» 1 y 11.
 
 ### Fase 4 — Páginas públicas
 
-Antes de empezar: «Por confirmar» 5, 7 y 12.
-
 - [ ] Inicio (`inicio.html`)
 - [ ] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
-- [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; suturas y equipos donde diga «Por confirmar» 12; una técnica que no existe (404) muestra «No encontrada»
+- [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; una técnica que no existe (404) muestra «No encontrada»
+- [ ] Datos clínicos: «Para qué sirve» es `description`, sin la marca «demostración» (Resuelto 23); el resto de campos clínicos de `GET /techniques/{id}`
+- [ ] Instrumental: el instrumental, las suturas por plano, los equipos biomédicos y el equipo médico-quirúrgico, todo detrás de la puerta de cuenta (Resuelto 27). Las suturas se muestran una fila por plano: `data/` separa el `usage` («Piel; Fascia») en planos
 - [ ] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
-- [ ] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`); «Comprobar con la cámara», por definir con SIVRI (ver «Por confirmar» 1)
+- [ ] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`) y «Comprobar con la cámara» a `/sivri/` (SIVRI reconoce la técnica sola). Se muestran en todas las técnicas: si el módulo no cubre una (el MVP de los dos es la mesa de Mayo de Cirugía General), su propia pantalla lo dice (Resuelto 17)
 
 ### Fase 5 — Cuenta
 
-Antes de empezar: «Por confirmar» 4 y 10.
+Antes de empezar: «Por confirmar» 10.
 
 - [ ] Página de la política de tratamiento de datos, enlazada desde el registro y el pie (su texto, «Por confirmar» 10)
-- [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora
+- [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20)
 - [ ] Registro con la aceptación de la política obligatoria (Decreto 1377); la política declara el registro anónimo del chat de SIMIQ3D (ver «Por confirmar» 10)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
 - [ ] Salir (`POST /auth/logout`) desde «Mi cuenta»
 
 ### Fase 6 — Gestión del colaborador
 
-Antes de empezar: «Por confirmar» 6, 8, 13 y 14. El 6 frena toda la fase: se define con IQ.
-
-- [ ] Mis borradores: matriz de avance por sección, filtros, motivo de la devolución (`rejections`)
-- [ ] «Nueva técnica» (especialidad de `GET /specialties`) y «Editar una publicada» (un 409 dice que ya hay una versión en curso)
-- [ ] Descartar un borrador (`DELETE /versions/{id}`), con confirmación (ver «Por confirmar» 9)
+- [ ] `domain/`: avance de cada sección de una versión (completa, en curso, pendiente o sin mesa) con la regla de Resuelto 22, con pruebas. La usan Mis borradores y el editor
+- [ ] Mis borradores: matriz de avance por sección, filtros, motivo de la devolución (`rejections`, con sus saltos de línea: ver Resuelto 18)
+- [ ] «Nueva técnica»: el editor pide primero nombre y especialidad (`GET /specialties`) y crea la técnica con `POST /techniques` en cuanto tiene los dos (un 409 dice que ya existe ese nombre en la especialidad); el autoguardado empieza después. «Editar una publicada» (un 409 dice que ya hay una versión en curso)
+- [ ] Descartar un borrador (`DELETE /versions/{id}`) desde «Más acciones» del editor, con confirmación en el mismo panel, como Archivar. Solo en borrador; si es la versión 1 de una técnica que nunca se publicó, la confirmación avisa que también se borra la técnica (Resuelto 25)
 - [ ] Editor de 5 pasos con autoguardado (`PUT /versions/{id}` con debounce; reemplaza todo el contenido)
-- [ ] Paso de datos clínicos: los campos clínicos, la fuente de la versión (`source`, regla 1 de `CLAUDE.md`; el mockup no tiene el campo), suturas por plano (ver «Por confirmar» 14), equipos biomédicos (`equipment`) y equipo médico-quirúrgico (`devices`); nombre y especialidad, ver «Por confirmar» 13
+- [ ] Paso de datos clínicos: nombre y especialidad de solo lectura (Resuelto 28), los campos clínicos, la fuente de la versión (`source`, regla 1 de `CLAUDE.md`; el mockup no tiene el campo), suturas por plano, equipos biomédicos (`equipment`) y equipo médico-quirúrgico (`devices`)
+- [ ] Suturas: una fila por plano con sutura, calibre y aguja (`name`, `gauge`, `needle_type`). `data/` junta en una sola sutura los planos que comparten esos tres datos, con los planos en `usage` separados por «; », como la carga inicial; la API rechaza una sutura repetida (Resuelto 29)
 - [ ] Paso de instrumental: sugeridos de la especialidad y catálogo completo
 - [ ] Pasos de mesa: arrastrar a la celda (CDK drag-drop) o tocar celda → elegir objeto; filas y columnas de la mesa en `zones`; «no lleva esta mesa» es `used: false`
-- [ ] Revisar y enviar (colaborador) / Revisar y publicar (revisor o admin) con confirmación en la misma tarjeta
-- [ ] Desde el detalle: «Editar técnica» / «Continuar borrador» según el rol y la versión en curso
+- [ ] Revisar y enviar (colaborador) / Revisar y publicar (revisor o admin) con confirmación en la misma tarjeta; el envío se bloquea mientras una sección no esté completa (Resuelto 22). Sin «Nota para el revisor» en el MVP (Resuelto 18)
+- [ ] Desde el detalle: «Editar técnica» / «Continuar borrador» / «Ver versión en revisión» según el rol y la versión en curso. Un revisor o un admin ve «En curso por …»; a un colaborador, la versión en curso de otra persona le llega como el 409 de «Editar técnica», y su texto se muestra en el mismo botón (Resuelto 24)
 
 ### Fase 7 — Gestión del revisor
-
-Antes de empezar: «Por confirmar» 2 y 3.
 
 - [ ] Por revisar: versiones `in_review` de otros
 - [ ] Revisadas por mí (`?reviewed_by_me=true`)
 - [ ] Revisión: publicada y propuesta lado a lado por sección, con los cambios calculados en el cliente
-- [ ] Aprobar y publicar (409 si otro revisor ya decidió) y Devolver con motivo
-- [ ] Archivar técnica desde «Más acciones» del detalle (409 con una versión en curso)
-- [ ] Catálogo de instrumental: índice por categoría, búsqueda por nombre o alias, «Dónde va», crear y editar en su sitio, alias incluidos (el `PATCH` reemplaza la lista); la descripción siempre con su fuente (`description_source`; sin ella la API responde 422)
+- [ ] Aprobar y publicar (409 si otro revisor ya decidió) y Devolver: los comentarios por sección y por objeto, y la nota general, se juntan en el `reason`, una línea por comentario (Resuelto 18)
+- [ ] Archivar técnica desde «Más acciones» del detalle (409 con una versión en curso). Al archivar, el detalle se queda con el aviso «Técnica archivada…» y sin los módulos; no hay lista de archivadas (Resuelto 21)
+- [ ] Catálogo de instrumental: índice por categoría, búsqueda por nombre o alias, «Dónde va» (calculado con `GET /catalog/full`, Resuelto 19), crear y editar en su sitio, alias incluidos (el `PATCH` reemplaza la lista); la descripción siempre con su fuente (`description_source`; sin ella la API responde 422)
 
 ### Fase 8 — Gestión del admin
 
@@ -121,12 +117,10 @@ Antes de empezar: «Por confirmar» 2 y 3.
 
 ### Fase 9 — Despliegue (Corte 3)
 
-Antes de empezar: «Por confirmar» 1.
-
 El backend ya está en Vercel (`dataiq-backend`, pieza 9 de
 [`checklist-backend.md`](checklist-backend.md)).
 
-- [ ] `vercel.json`: rewrites de `/api/dataiq/:path*` a `dataiq-backend`, de `/api/simiq3d/:path*` al backend de SIMIQ3D y de `/simiq3d/:path*` al frontend de SIMIQ3D (ver «Por confirmar» 1); el resto de rutas a `index.html`, y encabezados de seguridad (CSP)
+- [ ] `vercel.json`: rewrites de `/api/dataiq/:path*` a `dataiq-backend`, de `/api/simiq3d/:path*` al backend de SIMIQ3D, y de `/simiq3d/:path*` y `/sivri/:path*` al proyecto de Vercel de cada módulo, con la ruta completa: cada app tiene ese prefijo como `baseHref` (Resuelto 17); el resto de rutas a `index.html`, y encabezados de seguridad (CSP)
 - [ ] Confirmar que Vercel reenvía la cookie y el `Set-Cookie`
 - [ ] GitHub Actions: despliegue con Vercel CLI (el plan Hobby no conecta repos de organizaciones) en `dataiq-frontend.yml`, que ya corre el build, las pruebas y la revisión de los tipos de la API en cada PR. El build lee `../../shared/design/`, fuera de `dataiq/frontend`: construir en Actions (`vercel build`) y subir con `vercel deploy --prebuilt`, o desplegar desde la raíz del repo con `dataiq/frontend` como Root Directory; si se sube solo `dataiq/frontend`, el build falla
 
@@ -154,22 +148,22 @@ Entre la documentación, los mockups y la API.
 | 14 | El `PATCH` del instrumental no recibía alias | Recibe `aliases` y reemplaza la lista (#12) |
 | 15 | La ficha de usuario muestra registro y política, que la API no traía | `GET /users` los trae (#12); suspender e historial quedan para después del MVP |
 | 16 | No había endpoint público de especialidades | `GET /specialties` (#12) |
+| 17 | Para que los frontends de SIVRI y SIMIQ3D usen la misma cookie, tenían que servirse desde el mismo origen que este, y no estaba definido cómo | Por rewrites del proyecto de Vercel del shell hacia el de cada módulo, `/simiq3d/:path*` y `/sivri/:path*`, como el de `/api/dataiq/*`. Cada app conserva su `baseHref` (`/simiq3d/`, `/sivri/`) y el shell la enlaza con navegación completa. SIVRI manda los cuadros directo al Servidor PC1 con el token corto, así que su backend necesita CORS para el origen del shell. «Ver en 3D» y «Comprobar con la cámara» están en todas las técnicas: si el módulo no cubre una, su pantalla lo dice y ofrece las que sí (decidido por Juan el 2026-10-29) |
+| 18 | La revisión del mockup comenta por sección y por celda, y el autor deja una nota al enviar; la API solo guarda un `reason` al rechazar y `submit` no recibe cuerpo | Sin cambiar la API. Los comentarios se juntan en el `reason`, primero la nota general y después una línea por comentario con su sección y, si es de la mesa, el número y el nombre del objeto («Mesa de Mayo · 6 Separador de Senn Miller: …»). El autor lo lee en Mis borradores y en el editor, con sus saltos de línea. Sin nota del autor al enviar ni nota de la versión al publicar. Guardar los comentarios aparte queda para después del MVP (decidido por Juan el 2026-10-29) |
+| 19 | «Dónde va» (técnicas que usan un instrumento) no tenía endpoint | Se calcula en el cliente con `GET /catalog/full`, que trae las técnicas publicadas con sus objetos: el mismo recurso del editor, que la caché HTTP comparte (decidido por Juan el 2026-10-29) |
+| 20 | «Continuar con Google» no tenía endpoint ni decisión; recuperar la contraseña es de después del MVP | En el MVP no hay ninguno de los dos: `cuenta.html` los muestra, pero la pantalla no. Quien olvide la contraseña no la recupera en el MVP. Los dos quedan en `docs/despues-del-mvp.md` (decidido por Juan el 2026-10-29) |
+| 21 | El detalle mostraba técnicas archivadas a un revisor, pero `GET /techniques` solo devuelve publicadas | Sin archivadas en el MVP: la API no las expone y una archivada no vuelve a publicarse. Al archivar, el detalle se queda con el aviso «Técnica archivada…» y sin los módulos, con lo que ya tenía cargado, y la columna la marca «Archivada» mientras la página siga abierta; al volver a cargar ya no aparece, como en el catálogo. Consultar las archivadas queda para después del MVP (decidido por Juan el 2026-10-29) |
+| 22 | Mis borradores y el editor marcan cada sección completa o pendiente y bloquean el envío; el backend no define cuándo una sección está completa | La regla vive solo en el frontend (`domain/`): el backend revisa que el contenido sea coherente, y lo que llega a estudiantes lo garantiza el revisor. **Datos clínicos:** completa con «Para qué sirve» (`description`), indicaciones, anestesia, ropa, posición del paciente, la fuente (`source`, regla 1 de `CLAUDE.md`) y al menos una sutura; complicaciones, técnica quirúrgica y CUPS son opcionales. **Instrumental:** al menos un objeto. **Cada mesa:** completa si la versión dice que no la lleva (`used: false`) o si la lleva y todos sus objetos tienen celda; «sin mesa» si la versión no dice nada de ella (la fuente no trae su diagrama). Una sección en curso o pendiente bloquea enviar y publicar; «sin mesa» no bloquea. Es la regla del mockup del editor, más la fuente y «sin mesa» (decidido por Juan el 2026-10-29) |
+| 23 | «Para qué sirve» iba como texto de demostración; no estaba claro si era `description` | Es `description`: la carga inicial la llena con la columna `para_que_sirve` de `seed/tecnicas.xlsx` (las 18 técnicas). Se muestra sin la marca «demostración» (2026-10-29) |
+| 24 | Un colaborador no sabe si otra persona tiene una versión en curso (solo ve las suyas); el mockup muestra «En curso por …» | Sin cambiar la API. Un revisor o un admin ve «En curso por …»: `GET /versions` le trae todas las versiones en curso. Un colaborador ve las suyas («Continuar borrador», «Ver versión en revisión»); la de otra persona le llega como el 409 de «Editar técnica» («La técnica ya tiene una versión en curso»), que se muestra en el mismo botón (decidido por Juan el 2026-10-29) |
+| 25 | La API permite descartar un borrador, pero ningún mockup tenía la acción | «Descartar borrador» en «Más acciones» del editor, con la confirmación en el mismo panel, como Archivar en el detalle. Solo en borrador (la API responde 409 en revisión). Si es la versión 1 de una técnica que nunca se publicó, la confirmación avisa que también se borra la técnica (decidido por Juan el 2026-10-29) |
+| 26 | La barra y el pie enlazaban páginas sin ruta ni contenido: Quiénes somos, La investigación, Guía para estudiantes, Para docentes, Preguntas frecuentes, Cómo funciona y Términos de uso | Llevan a la sección del inicio que ya trata el tema: «Cómo funciona» a `#camino`, «La investigación» a `#investigacion`, «Preguntas frecuentes» a `#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en `#quien`. «Quiénes somos» y «Términos de uso» no se muestran en el MVP: no tienen texto y no se inventa (decidido por Juan el 2026-10-29) |
+| 27 | El detalle mostraba las suturas y los equipos en «Datos clínicos», que es pública, pero la API solo los entrega con cuenta (`GET /techniques/{id}/instruments`) | Pasan a la pestaña Instrumental, detrás de la puerta de cuenta, sin cambiar la API: lo libre son el catálogo y los datos clínicos, y lo que se usa en la mesa (instrumental, suturas, equipos y dispositivos) pide cuenta (`docs/flujos.md`). «Datos clínicos» queda con lo de `GET /techniques/{id}` (decidido por Juan el 2026-10-29) |
+| 28 | El paso 1 del editor dejaba cambiar el nombre y la especialidad, pero `PUT /versions/{id}` no los recibe (son de `techniques`) y no hay ruta para cambiarlos | Se eligen en el primer paso de «Nueva técnica», que crea la técnica (`POST /techniques`) en cuanto tiene los dos; desde ahí son de solo lectura. Un error en el nombre de una técnica que nunca se publicó se corrige descartando el borrador y creándola otra vez. Cambiarlos en una técnica publicada queda para después del MVP (decidido por Juan el 2026-10-29) |
+| 29 | El editor tomaba cada sutura como plano + un texto; la API pide `name`, `gauge`, `needle_type` y `usage` (la carga inicial pone el plano en `usage`) | Una fila por plano con sutura, calibre y aguja. `data/` junta en una sola sutura los planos que comparten esos tres datos, con los planos en `usage` separados por «; » (como la carga inicial: la API rechaza una sutura repetida), y al leer los vuelve a separar (decidido por Juan el 2026-10-29) |
 
 ### Por confirmar
 
 | # | Qué no cuadra | Dónde | Propuesta |
 |---|---|---|---|
-| 1 | Para que los frontends de SIVRI y SIMIQ3D usen la misma cookie, tienen que servirse desde el mismo origen que este. SIMIQ3D ya tiene su propio proyecto de Vercel ([`docs/arquitectura.md`](../../docs/arquitectura.md)); SIVRI, por definir | `CLAUDE.md`, «Capa de navegación» | Un rewrite desde este proyecto hacia el de cada módulo (`/simiq3d/:path*`, `/sivri/:path*`) |
-| 2 | La revisión del mockup comenta por sección y por celda, y el autor deja una nota al enviar; la API solo guarda un `reason` al rechazar y `submit` no recibe cuerpo | `revision.html`, `routes/versions.py` | En el MVP, juntar los comentarios en el motivo y quitar la nota del autor; o ampliar la API |
-| 3 | «Dónde va» (técnicas que usan un instrumento) no tiene endpoint | `instrumental.html` | Calcularlo en el cliente con `GET /catalog/full` |
-| 4 | «Continuar con Google» no tiene endpoint ni decisión; recuperar la contraseña es de después del MVP | `cuenta.html`, `docs/despues-del-mvp.md` | Ocultar los dos en el MVP |
-| 5 | El detalle muestra técnicas archivadas a un revisor, pero `GET /techniques` solo devuelve publicadas | `tecnica.html`, `routes/techniques.py` | No mostrar archivadas en el MVP, o ampliar la API |
-| 6 | Mis borradores y el editor marcan cada sección completa o pendiente y bloquean el envío; el backend no define cuándo una sección está completa | `borradores.html`, `editor.html`, `domain/techniques.py` | Definir la regla con IQ y decidir si vive solo en el frontend |
-| 7 | «Para qué sirve» va como texto de demostración; no está claro si es `description` | `tecnica.html` | Confirmar con IQ |
-| 8 | Un colaborador no sabe si otra persona tiene una versión en curso (solo ve las suyas); el mockup muestra «En curso por …» | `tecnica.html`, `routes/versions.py` | En el MVP, mostrar el 409 al intentar editar |
-| 9 | La API permite descartar un borrador, pero ningún mockup tiene la acción | `borradores.html`, `editor.html` | «Descartar borrador» en «Más acciones», con confirmación |
 | 10 | El registro exige aceptar la política de tratamiento de datos, pero su texto no está en el repo. Tiene que declarar el registro anónimo del chat de SIMIQ3D, que está encendido mientras dura el proyecto y se borra al cerrar la evaluación (#29) | `cuenta.html`, `simiq3d/README.md` («Backend y base de datos»), `POLICY_VERSION` del backend | Redactarla con el equipo antes de la fase 5; al cambiarla, subir `POLICY_VERSION` |
-| 11 | La barra y el pie enlazan páginas sin ruta ni contenido: Quiénes somos, La investigación, Guía para estudiantes, Para docentes, Preguntas frecuentes, Cómo funciona y Términos de uso | `inicio.html` (barra y pie) | En el MVP, llevar a la sección del inicio que ya trata el tema (preguntas, investigación, para quién, cómo funciona) y ocultar las demás. Los términos de uso, redactarlos con la política (10) |
-| 12 | El detalle muestra las suturas y los equipos en «Datos clínicos», que es pública, pero la API solo los entrega con cuenta (`GET /techniques/{id}/instruments`) | `tecnica.html`, `routes/techniques.py` | Pasarlos a la pestaña Instrumental, detrás de la puerta de cuenta; o hacerlos públicos en la API |
-| 13 | El paso 1 del editor deja cambiar el nombre y la especialidad, pero `PUT /versions/{id}` no los recibe (son de `techniques`) y no hay ruta para cambiarlos | `editor.html`, `routes/versions.py` | Se eligen al crear la técnica (`POST /techniques`); en las versiones siguientes, solo lectura |
-| 14 | El editor toma cada sutura como plano + un texto; la API pide `name`, `gauge`, `needle_type` y `usage` (la carga inicial pone el plano en `usage`) | `editor.html`, `routes/versions.py` | Un campo por dato, con el plano en `usage` |
