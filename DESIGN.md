@@ -594,13 +594,14 @@ Sistema plano con objetos que sí tienen cuerpo. La interfaz se ordena con filet
 - **Pieza de acero** (`filter: drop-shadow(0 2px 1.4px rgba(3,20,28,.6)) drop-shadow(0 6px 8px rgba(3,20,28,.22))`): cada instrumento; al marcarla sube a `drop-shadow(0 12px 8px rgba(3,20,28,.4))` con `translate(-2px, -6px)`.
 - **Pieza en diagrama** (`filter: drop-shadow(0 1px 1px rgba(3,20,28,.22)) drop-shadow(0 4px 6px rgba(3,20,28,.08))`): el instrumental en la mesa del detalle; al señalarla, `drop-shadow(0 18px 10px rgba(3,20,28,.45))` con `translate(-3px, -12px)`.
 - **Panel flotante** (`box-shadow: 0 12px 30px -16px rgba(10,27,34,.45)`): la leyenda «Ver las 10 piezas».
+- **Suave** (`box-shadow: 0 0 0 1px var(--filete), 0 2px 6px rgba(10,27,34,.06), 0 16px 24px -14px rgba(10,27,34,.3)`): el panel de Mi cuenta y los que lo repiten (el buscador de «Editar una publicada», «Más acciones»), la tarjeta de la puerta de cuenta y los paneles del editor y de la revisión que se abren en la página.
 - **Leyenda del lienzo** (`box-shadow: inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10,27,34,.45)`): la leyenda plegable de SIMIQ3D.
 - **Ficha del instrumento** (`box-shadow: inset 0 0 0 1px var(--filete), 0 28px 48px -30px rgba(10,27,34,.55)`): la ficha que sube sobre el lienzo.
 - **Controles del lienzo** (`box-shadow: inset 0 0 0 1px var(--filete), 0 10px 24px -18px rgba(10,27,34,.45)`): los grupos de controles de vista; el selector de técnica y el botón «Leyenda» llevan solo `inset 0 0 0 1px var(--filete-2), 0 1px 2px rgba(10,27,34,.06)`.
 - **Insignia de la pieza** (`box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 6px 14px -6px rgba(10,27,34,.5)`): el número `marca` que flota sobre la pieza señalada; el anillo blanco la despega del paño.
 - **Historial en celular** (`box-shadow: 24px 0 48px -32px rgba(10,27,34,.55)`): el panel del chat que entra desde la izquierda, sobre un velo `rgba(10,27,34,.28)`.
 
-En código, las de uso común (botón en reposo y al pasar, escenario, desplegable, buscador, funda y panel flotante) son propiedades CSS de `shared/design/tokens.css`: `--elevacion-*` y su nombre por uso `--shadow-*`. Las del lienzo de SIMIQ3D y los `drop-shadow` del acero las define quien las use.
+En código, las de uso común (botón en reposo y al pasar, escenario, desplegable, buscador, funda, panel flotante y suave) son propiedades CSS de `shared/design/tokens.css`: `--elevacion-*` y su nombre por uso `--shadow-*`. La suave no lleva su anillo de 1 px: cada componente lo pone con su filete (`0 0 0 1px var(--color-border), var(--shadow-soft)`). Las del lienzo de SIMIQ3D y los `drop-shadow` del acero las define quien las use.
 
 La escena 3D de SIMIQ3D sigue la misma doctrina con luz: sin sombras en tiempo real; la profundidad la dan el canto de la funda, el pie de la mesa y sombras de contacto dibujadas (un degradado radial de `rgba(10,27,34,.42)` a transparente) bajo la mesa y bajo cada pieza.
 
