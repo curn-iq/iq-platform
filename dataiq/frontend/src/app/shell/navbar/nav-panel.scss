@@ -2,6 +2,9 @@
 // columnas: nombre en 1-3, opciones en 4-8, vista previa en 9-12.
 
 :host {
+  // El contenedor del overlay de CDK es `flex`: sin esto el panel mide lo que ocupa su
+  // contenido y no todo el ancho de la ventana.
+  flex: 1 1 auto;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--space-column-gap);
