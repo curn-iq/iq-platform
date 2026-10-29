@@ -1,0 +1,108 @@
+// Panel de «Mi cuenta»: ver «Mi cuenta (menú)» en DESIGN.md.
+
+:host {
+  display: block;
+  width: 300px;
+  padding: 8px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    0 2px 6px rgba(10, 27, 34, 0.06),
+    0 16px 24px -14px rgba(10, 27, 34, 0.3);
+  animation: drop 0.35s var(--ease-enter);
+}
+
+// En celular el panel ocupa el ancho, entre los márgenes laterales.
+@media (max-width: 760px) {
+  :host {
+    width: calc(100vw - 2 * var(--space-gutter));
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+.who {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.email {
+  overflow: hidden;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 1px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.title {
+  padding: 12px 10px 6px;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    color: inherit;
+    font-size: 15.5px;
+    font-weight: 550;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease-fade);
+
+    &:hover {
+      background: var(--color-hover);
+    }
+
+    &[aria-current='page'] {
+      background: var(--color-accent-soft);
+      color: var(--color-accent-strong);
+    }
+  }
+}

@@ -64,7 +64,7 @@ src/
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, not-found, tabs con raya, segmented control, status pill,
+    │   ├── ui/             button, avatar, not-found, tabs con raya, segmented control, status pill,
     │   │                   progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
@@ -178,11 +178,23 @@ destino de cada opción: rutas de esta app (los fragmentos del inicio:
 - «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
   técnica. Mientras llegan las especialidades, el desplegable dice «Cargando…»;
   si la API falla, queda vacío (el interceptor ya avisó).
+- **Sesión:** a la derecha, un visitante ve Ingresar (`/cuenta/ingresar`) y Crear
+  cuenta (`/cuenta/crear`), sin `?volver=`: es un ingreso directo. Con sesión va
+  «Mi cuenta» (avatar con iniciales), que abre `AccountMenu`, un panel anclado a la
+  derecha con nombre, correo, rol y los accesos de gestión del rol
+  (`management-links.ts`: Mis borradores, Por revisar, Instrumental, Usuarios y
+  roles; la página actual lleva `aria-current`). Hasta que `SessionService.loaded()`
+  es `true` no se muestra ni lo uno ni lo otro. Todavía faltan: la cifra junto a
+  cada acceso, que llega con su pantalla (borradores, por revisar, instrumental), y
+  «Cerrar sesión», de la fase 5.
 - **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
   menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
   (el foco vuelve al botón), al elegir una opción o si la ventana vuelve a
-  pasar de 960 px; abrirlo cierra el desplegable de escritorio y al revés.
+  pasar de 960 px; abrirlo cierra el desplegable de escritorio y al revés. Al
+  final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
+  mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
+  solo con el avatar.
 
 ### Errores de la API
 

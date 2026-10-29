@@ -90,12 +90,50 @@ nav {
   }
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+// «Mi cuenta»: avatar, texto y flecha que gira al abrir.
+.account {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 10px 0 6px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-fade);
+
+  .chevron {
+    color: var(--color-text-subtle);
+    transition: transform 0.3s var(--ease-enter);
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: var(--color-hover);
+  }
+
+  &[aria-expanded='true'] .chevron {
+    transform: rotate(180deg);
+  }
+}
+
 .mobile-button {
   display: none;
   place-items: center;
   width: 44px;
   height: 44px;
-  margin-left: auto;
   padding: 0;
   border: 0;
   border-radius: var(--radius-md);
@@ -117,6 +155,17 @@ nav {
 
   .mobile-button {
     display: inline-grid;
+  }
+
+  // En la barra compacta queda Ingresar (Crear cuenta va en el menú) y «Mi cuenta» solo con avatar.
+  .sign-up,
+  .account-text,
+  .account .chevron {
+    display: none;
+  }
+
+  .account {
+    padding: 0 6px;
   }
 }
 

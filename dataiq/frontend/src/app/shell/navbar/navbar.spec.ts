@@ -2,7 +2,9 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { provideRepositoryTesting } from '../../data/testing';
+import { SessionService } from '../../core/session/session.service';
+import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
+import type { Role } from '../../domain/role';
 import { Navbar } from './navbar';
 
 @Component({ template: '' })
@@ -269,6 +271,135 @@ describe('Navbar', () => {
       fixture.destroy();
 
       expect(wideListeners).toHaveLength(0);
+    });
+  });
+
+  describe('sesión', () => {
+    const account = () => root().querySelector<HTMLButtonElement>('.account');
+    const accountMenu = () => document.querySelector('app-account-menu');
+    const actionLinks = () =>
+      Array.from(root().querySelectorAll<HTMLAnchorElement>('.actions a')).map((a) => [
+        a.textContent!.trim(),
+        a.getAttribute('href'),
+      ]);
+
+    /** Responde `GET /auth/me` con una cuenta del rol, o con un 401 si es un visitante. */
+    async function loadSession(role: Role | null): Promise<void> {
+      const session = TestBed.inject(SessionService);
+      const loading = session.load();
+      const request = http.expectOne(`${TEST_API_BASE}/auth/me`);
+      if (role) {
+        request.flush({ id: 'u-1', name: 'Daniela Ortiz', email: 'd@correo.com', role });
+      } else {
+        request.flush(null, { status: 401, statusText: 'Unauthorized' });
+      }
+      await loading;
+      fixture.detectChanges();
+    }
+
+    it('hasta saber si hay sesión no muestra ni Ingresar ni «Mi cuenta»', () => {
+      expect(actionLinks()).toEqual([]);
+      expect(account()).toBeNull();
+    });
+
+    it('a un visitante le ofrece Ingresar y Crear cuenta', async () => {
+      await loadSession(null);
+
+      expect(actionLinks()).toEqual([
+        ['Ingresar', '/cuenta/ingresar'],
+        ['Crear cuenta', '/cuenta/crear'],
+      ]);
+      expect(account()).toBeNull();
+    });
+
+    it('con sesión muestra «Mi cuenta» con las iniciales y no Ingresar', async () => {
+      await loadSession('contributor');
+
+      expect(actionLinks()).toEqual([]);
+      expect(account()!.textContent).toContain('Mi cuenta');
+      expect(account()!.querySelector('app-avatar')!.textContent).toBe('DO');
+      expect(account()!.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('«Mi cuenta» abre el panel con los accesos del rol y lo marca como abierto', async () => {
+      await loadSession('reviewer');
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      expect(account()!.getAttribute('aria-expanded')).toBe('true');
+      expect(account()!.getAttribute('aria-controls')).toBe('account-menu');
+      expect(
+        Array.from(accountMenu()!.querySelectorAll('.links a')).map((a) => a.textContent!.trim()),
+      ).toEqual(['Mis borradores', 'Por revisar', 'Instrumental']);
+    });
+
+    it('un segundo clic, Escape y un clic fuera lo cierran', async () => {
+      await loadSession('contributor');
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      mouseClick(account()!);
+      await fixture.whenStable();
+      expect(accountMenu()).toBeNull();
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await fixture.whenStable();
+      expect(accountMenu()).toBeNull();
+      expect(document.activeElement).toBe(account());
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      document.body.click();
+      await fixture.whenStable();
+      expect(accountMenu()).toBeNull();
+    });
+
+    it('elegir un acceso cierra el panel y lleva a su pantalla', async () => {
+      await loadSession('contributor');
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      accountMenu()!.querySelector<HTMLAnchorElement>('.links a')!.click();
+      await vi.waitFor(() => expect(router.url).toBe('/gestion/borradores'));
+
+      expect(accountMenu()).toBeNull();
+    });
+
+    it('solo hay un panel abierto: «Mi cuenta» cierra el desplegable y al revés', async () => {
+      await loadSession('contributor');
+      mouseClick(button('help'));
+      await opened('Ayuda');
+
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      expect(panels()).toEqual([]);
+      expect(button('help').getAttribute('aria-expanded')).toBe('false');
+
+      mouseClick(button('tools'));
+      await opened('Herramientas');
+      expect(accountMenu()).toBeNull();
+      expect(account()!.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('con el teclado, el foco entra al panel de «Mi cuenta»', async () => {
+      await loadSession('contributor');
+
+      account()!.click();
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      expect(accountMenu()!.contains(document.activeElement)).toBe(true);
+    });
+
+    it('un usuario sin gestión ve su identidad y ningún acceso', async () => {
+      await loadSession('user');
+      mouseClick(account()!);
+      await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+
+      expect(accountMenu()!.querySelector('.role')!.textContent).toBe('Usuario');
+      expect(accountMenu()!.querySelectorAll('.links a')).toHaveLength(0);
     });
   });
 

@@ -1,0 +1,21 @@
+<div class="who">
+  <app-avatar [name]="account().name" size="medium" />
+  <div class="who-text">
+    <p class="name">{{ account().name }}</p>
+    <p class="email">{{ account().email }}</p>
+    <span class="role">{{ roleLabel() }}</span>
+  </div>
+</div>
+
+@if (links().length) {
+  <p class="title">Gestión de DataIQ</p>
+  <ul class="links">
+    @for (link of links(); track link.route) {
+      <li>
+        <a [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page">{{
+          link.label
+        }}</a>
+      </li>
+    }
+  </ul>
+}

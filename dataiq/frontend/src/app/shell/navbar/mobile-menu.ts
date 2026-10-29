@@ -1,6 +1,10 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { SessionService } from '../../core/session/session.service';
+import { ROLE_LABELS } from '../../shared/role-labels';
+import { Button } from '../../shared/ui/button/button';
+import { managementLinks } from './management-links';
 import { CATALOG_ROUTE, NAV_MENUS } from './nav-menus';
 import { SpecialtiesNav } from './specialties-nav';
 
@@ -11,7 +15,7 @@ import { SpecialtiesNav } from './specialties-nav';
  */
 @Component({
   selector: 'app-mobile-menu',
-  imports: [NgTemplateOutlet, RouterLink],
+  imports: [Button, NgTemplateOutlet, RouterLink, RouterLinkActive],
   templateUrl: './mobile-menu.html',
   styleUrl: './mobile-menu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +33,17 @@ export class MobileMenu {
   protected readonly menus = NAV_MENUS;
   protected readonly catalogRoute = CATALOG_ROUTE;
   protected readonly specialties = inject(SpecialtiesNav);
+  protected readonly session = inject(SessionService);
+
+  /** El rol de la cuenta, para decir quién es (el menú «repite nombre y rol» del panel de escritorio). */
+  protected readonly roleLabel = computed(() => {
+    const role = this.session.role();
+    return role ? ROLE_LABELS[role] : '';
+  });
+  protected readonly links = computed(() => {
+    const role = this.session.role();
+    return role ? managementLinks(role) : [];
+  });
 
   protected onClick(event: Event): void {
     if ((event.target as Element).closest('a')) this.chosen.emit();

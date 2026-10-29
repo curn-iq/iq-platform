@@ -2,7 +2,9 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
+import type { Role } from '../../domain/role';
 import { MobileMenu } from './mobile-menu';
 
 @Component({ template: '' })
@@ -102,5 +104,60 @@ describe('MobileMenu', () => {
 
     groups()[0].querySelector('a')!.click();
     expect(chosen).toBe(1);
+  });
+
+  describe('sesión', () => {
+    const actions = () => root().querySelector('.actions');
+    const actionLinks = () =>
+      Array.from(actions()?.querySelectorAll('a') ?? []).map((a) => [
+        a.textContent!.trim(),
+        a.getAttribute('href'),
+      ]);
+
+    async function loadSession(role: Role | null): Promise<void> {
+      const session = TestBed.inject(SessionService);
+      const loading = session.load();
+      const request = http.expectOne(`${TEST_API_BASE}/auth/me`);
+      if (role) {
+        request.flush({ id: 'u-1', name: 'Daniela Ortiz', email: 'd@correo.com', role });
+      } else {
+        request.flush(null, { status: 401, statusText: 'Unauthorized' });
+      }
+      await loading;
+      fixture.detectChanges();
+    }
+
+    it('hasta saber si hay sesión no muestra acciones', () => {
+      expect(actions()).toBeNull();
+    });
+
+    it('a un visitante le ofrece Crear cuenta gratis (grande) e Ingresar', async () => {
+      await loadSession(null);
+
+      expect(actionLinks()).toEqual([
+        ['Crear cuenta gratis', '/cuenta/crear'],
+        ['Ingresar', '/cuenta/ingresar'],
+      ]);
+      expect(actions()!.querySelector('a')!.getAttribute('data-size')).toBe('large');
+      expect(actions()!.querySelector('.who')).toBeNull();
+    });
+
+    it('con sesión dice quién es y lista los accesos de su rol', async () => {
+      await loadSession('reviewer');
+
+      expect(actions()!.querySelector('.who')!.textContent).toBe('Daniela Ortiz · Revisor');
+      expect(actionLinks()).toEqual([
+        ['Mis borradores', '/gestion/borradores'],
+        ['Por revisar', '/gestion/revision'],
+        ['Instrumental', '/gestion/instrumental'],
+      ]);
+    });
+
+    it('un usuario sin gestión solo ve quién es', async () => {
+      await loadSession('user');
+
+      expect(actions()!.querySelector('.who')!.textContent).toBe('Daniela Ortiz · Usuario');
+      expect(actionLinks()).toEqual([]);
+    });
   });
 });

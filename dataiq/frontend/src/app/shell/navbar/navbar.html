@@ -37,24 +37,55 @@
       </button>
     }
   </nav>
-  <button
-    #mobileButton
-    type="button"
-    class="mobile-button"
-    [attr.aria-expanded]="mobileOpen()"
-    [attr.aria-controls]="mobileOpen() ? 'mobile-menu' : null"
-    [attr.aria-label]="mobileOpen() ? 'Cerrar menú' : 'Abrir menú'"
-    (click)="toggleMobile()"
-  >
-    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-      <path
-        d="M3 6h16M3 11h16M3 16h16"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-      />
-    </svg>
-  </button>
+  <div class="actions">
+    <!-- Hasta saber si hay sesión no se muestra nada: un visitante y «aún no se sabe» se verían igual. -->
+    @if (session.loaded()) {
+      @if (session.account(); as account) {
+        <button
+          type="button"
+          class="account"
+          data-menu="account"
+          [attr.aria-expanded]="open() === 'account'"
+          [attr.aria-controls]="open() === 'account' ? 'account-menu' : null"
+          (click)="toggleAccount(account, $event)"
+        >
+          <app-avatar [name]="account.name" />
+          <span class="account-text">Mi cuenta</span>
+          <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+            <path
+              d="M2.5 4.5L6 8l3.5-3.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      } @else {
+        <a app-button variant="ghost" routerLink="/cuenta/ingresar">Ingresar</a>
+        <a app-button class="sign-up" routerLink="/cuenta/crear">Crear cuenta</a>
+      }
+    }
+    <button
+      #mobileButton
+      type="button"
+      class="mobile-button"
+      [attr.aria-expanded]="mobileOpen()"
+      [attr.aria-controls]="mobileOpen() ? 'mobile-menu' : null"
+      [attr.aria-label]="mobileOpen() ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="toggleMobile()"
+    >
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <path
+          d="M3 6h16M3 11h16M3 16h16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  </div>
 </header>
 @if (mobileOpen()) {
   <app-mobile-menu (chosen)="closeMobile()" />
