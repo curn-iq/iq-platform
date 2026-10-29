@@ -3,10 +3,10 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { NoticeService } from '../notice/notice.service';
+import { LOGIN_PATH } from '../session/login-path';
+import { SessionService } from '../session/session.service';
 import { describeApiError } from './error-message';
 
-/** Pantalla de ingreso; `?volver=` lleva la ruta a la que se iba. */
-export const LOGIN_PATH = '/cuenta/ingresar';
 const ACCOUNT_PREFIX = '/cuenta';
 
 // Un 401 de estas rutas no es una sesión vencida: en `/auth/me` es un visitante
@@ -16,11 +16,13 @@ const SILENT_401_PATHS = ['/auth/me', '/auth/login'];
 /**
  * Traduce los errores de la API a un aviso (401, 403, 409, 422, sin conexión y
  * errores del servidor) y deja pasar el error para que quien llamó lo conozca.
- * Un 401 además lleva a ingresar. Los demás códigos (p. ej. el 404) no se avisan.
+ * Un 401 además olvida la cuenta y lleva a ingresar. Los demás códigos (p. ej. el
+ * 404) no se avisan.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notices = inject(NoticeService);
   const router = inject(Router);
+  const session = inject(SessionService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
@@ -28,7 +30,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         const messages = describeApiError(error.status, error.error);
         if (messages) {
           notices.show('error', messages);
-          if (error.status === 401) goToLogin(router);
+          if (error.status === 401) {
+            session.clear();
+            goToLogin(router);
+          }
         }
       }
       return throwError(() => error);

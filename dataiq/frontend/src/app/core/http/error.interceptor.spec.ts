@@ -4,8 +4,9 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { NoticeService } from '../notice/notice.service';
+import { LOGIN_PATH } from '../session/login-path';
+import { SessionService } from '../session/session.service';
 import { provideApi } from './api.providers';
-import { LOGIN_PATH } from './error.interceptor';
 
 @Component({ template: '' })
 class Blank {}
@@ -52,7 +53,34 @@ describe('errorInterceptor', () => {
 
   const messages = () => notices.notices().map((n) => n.messages);
 
+  function signIn(): SessionService {
+    const session = TestBed.inject(SessionService);
+    session.login({ email: 'ana@example.com', password: 'secreto' }).subscribe();
+    http
+      .expectOne('/api/dataiq/auth/login')
+      .flush({ id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'user' });
+    return session;
+  }
+
   describe('401', () => {
+    it('olvida la cuenta: la sesión venció', () => {
+      vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      const session = signIn();
+      expect(session.isLoggedIn()).toBe(true);
+
+      fail('/api/dataiq/versions', 401, { detail: 'El token no es válido o ya venció' });
+
+      expect(session.isLoggedIn()).toBe(false);
+    });
+
+    it('un 401 de /auth/login (contraseña mal puesta) no toca la cuenta', () => {
+      const session = signIn();
+
+      fail('/api/dataiq/auth/login', 401, { detail: 'Correo o contraseña incorrectos' }, 'POST');
+
+      expect(session.isLoggedIn()).toBe(true);
+    });
+
     it('avisa y lleva a ingresar con la ruta actual en ?volver=', () => {
       const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
@@ -116,12 +144,14 @@ describe('errorInterceptor', () => {
   });
 
   describe('403, 409 y 422', () => {
-    it('403 avisa con el texto de la API y no redirige', () => {
+    it('403 avisa con el texto de la API, no redirige y conserva la cuenta', () => {
+      const session = signIn();
       const navigate = vi.spyOn(router, 'navigate');
       fail('/api/dataiq/users', 403, { detail: 'Hace falta el rol admin o uno mayor' });
 
       expect(messages()).toEqual([['Hace falta el rol admin o uno mayor']]);
       expect(navigate).not.toHaveBeenCalled();
+      expect(session.isLoggedIn()).toBe(true);
     });
 
     it('409 avisa con el texto de la API', () => {

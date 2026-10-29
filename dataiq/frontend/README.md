@@ -140,7 +140,8 @@ relativas a `/api/dataiq`.
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
 
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
-`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=`.
+`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
+una ruta propia: ver «Sesión»).
 
 ### Errores de la API
 
@@ -170,8 +171,7 @@ manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
   puesta) no avisa ni redirige: lo trata la pantalla.
 - Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
   `/cuenta/…` no se vuelve a enviar a ingresar.
-- Limpiar la cuenta ante un 401 lo agrega `SessionService`; llega con la
-  casilla de `core/session`.
+- Un 401 (salvo esos dos) también olvida la cuenta (`SessionService.clear()`).
 
 **Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
 `NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
@@ -180,6 +180,28 @@ avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
 neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
 sola a los 3,2 s. Aspecto y razones: «Avisos» en
 [`DESIGN.md`](../../DESIGN.md).
+
+### Sesión
+
+`SessionService` (`core/session/`) guarda la cuenta en un signal. Se pide a la
+API al arrancar (`provideSession()`), pero **el arranque no espera la
+respuesta**: el backend puede tardar segundos en arrancar en frío y las páginas
+públicas no deben quedar en blanco. Hasta que llega, `loaded()` es `false` (el
+shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión), y
+si la API no responde o da 401, queda como visitante. Una respuesta tardía de
+`GET /auth/me` no pisa un ingreso hecho mientras tanto.
+
+- `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
+  la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
+  interceptor ante un 401).
+- `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
+  (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
+  tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
+  aviso de que no hay permiso (el mismo texto de respaldo del 403). Es solo para
+  no mostrar pantallas que no se pueden usar: la API decide en cada petición.
+- `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
+  que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
+  `//sitio`, `https://…`, `\` ni caracteres de control).
 
 ## Correr el frontend
 
