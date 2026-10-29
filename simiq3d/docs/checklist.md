@@ -35,9 +35,9 @@ porqué están en el [README](../README.md).
   (`instruments.description`), con fuentes citables (columna
   `fuentes_descripcion` de `seed/tecnicas.xlsx`): es lo que muestra SIMIQ3D al
   hacer clic en un instrumento
-- [ ] El registro de conversaciones en la política de tratamiento de datos,
-  con su finalidad (evaluación): condición para abrir la plataforma a los
-  estudiantes
+- [x] El registro de conversaciones en el aviso de privacidad
+  ([`docs/privacidad.md`](../../docs/privacidad.md)), con su finalidad
+  (evaluación): condición para abrir la plataforma a los estudiantes
 
 ## 3. Diseño y desarrollo
 

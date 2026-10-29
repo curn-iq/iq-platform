@@ -82,6 +82,20 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 - **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalog/full`, si
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.
+- **Cuentas desde los 14 años.** En el MVP solo se registran mayores de 18
+  ([`privacidad.md`](privacidad.md)). La guía de la Superintendencia de
+  Industria y Comercio sobre datos en universidades (2026) cita un concepto
+  según el cual, en el contexto educativo, un adolescente puede dar la
+  autorización por sí mismo; sirve para el bachiller que quiere conocer la
+  carrera. Cambia el aviso de privacidad y su versión.
+- **Borrar la cuenta desde «Mi cuenta»**, con un plazo para arrepentirse: la
+  cuenta se desactiva y se borra sola al vencer. El plazo no puede pasar de
+  los 15 días hábiles que da la ley para atender un pedido de supresión
+  (Ley 1581 de 2012, art. 15), y necesita una tarea diaria que borre las
+  vencidas. En el MVP la supresión la hace el equipo por terminal
+  (`delete_account`), cuando llega el pedido por el canal del aviso.
+- **Un correo propio del proyecto** para preguntas sobre la plataforma. En el
+  MVP el único canal es el de la CURN, que es la responsable.
 
 ## SIVRI
 
