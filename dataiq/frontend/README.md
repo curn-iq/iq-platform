@@ -52,8 +52,9 @@ src/
 ├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
-    │   ├── http/           provideHttpClient(withFetch()), base /api/dataiq,
+    │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
+    │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
     │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección
@@ -155,6 +156,21 @@ Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 - **422**: `detail` es una lista. Del dominio llega como lista de textos (lo
   que no cuadra en el contenido); de la validación de FastAPI, como lista de
   objetos con el campo que falló.
+
+Qué texto se muestra (`core/http/error-message.ts`): el `detail` de la API,
+que ya viene en español, si es un texto o una lista de textos. Si no lo es (la
+lista de objetos de FastAPI trae mensajes en inglés) o falta, un texto de
+respaldo con la misma voz impersonal. Sin respuesta (estado 0) dice que no hay
+conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
+servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
+manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
+
+- Un 401 de `GET /auth/me` (visitante) y de `POST /auth/login` (contraseña mal
+  puesta) no avisa ni redirige: lo trata la pantalla.
+- Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
+  `/cuenta/…` no se vuelve a enviar a ingresar.
+- Limpiar la cuenta ante un 401 lo agrega `SessionService`; llega con la
+  casilla de `core/session`.
 
 ## Correr el frontend
 
