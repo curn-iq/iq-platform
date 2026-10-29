@@ -2,6 +2,10 @@
 // detalle la mesa es un diagrama sereno (superficie con filete, rejilla fina, sin
 // paño), no el objeto firma.
 
+// El dibujo se separa del borde de la mesa: 4,5 % por cada lado y 91 % del ancho
+$inset: 0.045;
+$side: 0.91;
+
 :host {
   position: relative;
   display: block;
@@ -15,11 +19,48 @@
 // El dibujo se separa del borde de la mesa para que las piezas no queden pegadas
 svg {
   position: absolute;
-  inset: 4.5%;
+  inset: $inset * 100%;
   display: block;
-  width: 91%;
-  height: 91%;
+  width: $side * 100%;
+  height: $side * 100%;
   overflow: visible;
+}
+
+// ---------- Vista previa de la puerta de cuenta ----------
+// Ver «Puerta de cuenta» en DESIGN.md: la mesa, centrada y con celdas de 104 px en toda
+// técnica (así que mide según sus columnas), se recorta a sus primeras dos filas y media
+// y se difumina hacia abajo. Sin números ni leyenda; la tarjeta de la puerta va debajo.
+
+$preview-cell: 104px;
+
+:host([data-variant='preview']) {
+  // Margen de abajo: solo si la mesa se ve entera (si se recorta, se difumina)
+  --bottom-inset: 0;
+  // El dibujo ocupa el 91 % del ancho: para que cada celda mida 104 px, el ancho es más
+  width: min(100%, calc(var(--columns) * #{$preview-cell} / #{$side}));
+  margin-inline: auto;
+  // Alto: el margen de arriba más las filas que se ven, en proporción al ancho
+  aspect-ratio: calc(
+    1 / (#{$inset} + var(--visible-rows) * #{$side} / var(--columns) + var(--bottom-inset))
+  );
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent);
+  mask-image: linear-gradient(180deg, #000 45%, transparent);
+
+  // Una mesa de dos filas o menos se ve entera: no se recorta ni se difumina
+  &[data-cropped='false'] {
+    --bottom-inset: #{$inset};
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  // El dibujo conserva su alto completo y el recorte lo hace el contenedor
+  svg {
+    bottom: auto;
+    height: auto;
+    aspect-ratio: var(--aspect);
+    pointer-events: none;
+  }
 }
 
 .grid-line {

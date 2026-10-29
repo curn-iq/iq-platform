@@ -5,8 +5,9 @@
   [style.--steel-fill]="'url(#' + steelId + ')'"
   [style.--blade-fill]="'url(#' + bladeId + ')'"
   [class.marking]="highlighted() !== null"
-  role="group"
-  [attr.aria-label]="table().name"
+  [attr.role]="preview() ? null : 'group'"
+  [attr.aria-label]="preview() ? null : table().name"
+  [attr.aria-hidden]="preview() ? 'true' : null"
 >
   <defs>
     <linearGradient
@@ -50,12 +51,12 @@
     <g
       class="piece"
       [class.flat]="piece.flat"
-      [class.active]="piece.legendNumber !== null && piece.legendNumber === highlighted()"
+      [class.active]="piece.linked && piece.legendNumber === highlighted()"
       [style.--i]="$index"
-      [attr.data-n]="piece.legendNumber"
-      [attr.tabindex]="piece.legendNumber === null ? null : 0"
-      [attr.role]="piece.legendNumber === null ? null : 'img'"
-      [attr.aria-label]="piece.legendNumber === null ? null : piece.label"
+      [attr.data-n]="piece.linked ? piece.legendNumber : null"
+      [attr.tabindex]="piece.linked ? 0 : null"
+      [attr.role]="piece.linked ? 'img' : null"
+      [attr.aria-label]="piece.linked ? piece.label : null"
       (mouseenter)="point(piece.legendNumber)"
       (mouseleave)="release(piece.legendNumber)"
       (focus)="point(piece.legendNumber)"

@@ -63,7 +63,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Un objeto en varias celdas es uno solo, con un número
 - [x] Instrumental en acero y objetos planos; leyenda enlazada (señalar un número levanta la pieza y atenúa las demás)
 - [x] Hueco «Sin dato» para un número que la fuente no deja leer
-- [ ] Variante de vista previa (recortada, sin números ni leyenda) para la puerta de cuenta
+- [x] Variante de vista previa (recortada, sin números ni leyenda) para la puerta de cuenta
 - [ ] Variante miniatura (celdas de 22 px) para el catálogo de instrumental
 
 ### Fase 4 — Páginas públicas

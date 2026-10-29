@@ -5,10 +5,12 @@ import { TableDiagram } from './table-diagram';
 
 @Component({
   imports: [TableDiagram],
-  template: '<app-table-diagram [table]="table" [(highlighted)]="highlighted" />',
+  template:
+    '<app-table-diagram [table]="table" [variant]="variant" [(highlighted)]="highlighted" />',
 })
 class Host {
   table: Table = makeTable();
+  variant: 'full' | 'preview' = 'full';
   highlighted: number | null = null;
 }
 
@@ -66,6 +68,88 @@ describe('TableDiagram', () => {
     const svg = (await render()).querySelector('svg');
     expect(svg?.getAttribute('role')).toBe('group');
     expect(svg?.getAttribute('aria-label')).toBe('Mesa de Mayo');
+  });
+
+  describe('vista previa', () => {
+    const items = [
+      makeItem({ id: 'a', legendNumber: 1, cells: [{ row: 1, column: 1 }] }),
+      makeItem({ id: 'b', legendNumber: 2, cells: [{ row: 5, column: 2 }] }),
+    ];
+
+    async function preview(table: Table): Promise<HTMLElement> {
+      const fixture = TestBed.createComponent(Host);
+      fixture.componentInstance.table = table;
+      fixture.componentInstance.variant = 'preview';
+      await fixture.whenStable();
+      return fixture.nativeElement;
+    }
+
+    it('es la variante completa si no se pide otra', async () => {
+      const root = await render(makeTable({ items }));
+      expect(root.querySelector('app-table-diagram')?.getAttribute('data-variant')).toBe('full');
+    });
+
+    it('se marca como vista previa', async () => {
+      const root = await preview(makeTable({ items }));
+      expect(root.querySelector('app-table-diagram')?.getAttribute('data-variant')).toBe('preview');
+    });
+
+    it('sigue dibujando la grilla y el instrumental: el vistazo es real', async () => {
+      const root = await preview(makeTable({ items }));
+      expect(root.querySelectorAll('.grid-line').length).toBe(4 + 6);
+      expect(root.querySelectorAll('.piece [data-drawing="kelly"]').length).toBe(2);
+    });
+
+    it('no lleva números', async () => {
+      const root = await preview(makeTable({ items }));
+      expect(root.querySelectorAll('.number').length).toBe(0);
+    });
+
+    it('no se señala ni se llega con el teclado, y no dice qué es cada pieza', async () => {
+      const fixture = TestBed.createComponent(Host);
+      fixture.componentInstance.table = makeTable({ items });
+      fixture.componentInstance.variant = 'preview';
+      await fixture.whenStable();
+      const root: HTMLElement = fixture.nativeElement;
+      const piece = root.querySelector('.piece')!;
+      expect(piece.hasAttribute('tabindex')).toBe(false);
+      expect(piece.hasAttribute('role')).toBe(false);
+      expect(piece.hasAttribute('aria-label')).toBe(false);
+      expect(piece.hasAttribute('data-n')).toBe(false);
+      piece.dispatchEvent(new MouseEvent('mouseenter'));
+      await fixture.whenStable();
+      expect(fixture.componentInstance.highlighted).toBeNull();
+    });
+
+    it('es decorativa para los lectores de pantalla: la tarjeta de la puerta dice lo que abre', async () => {
+      const svg = (await preview(makeTable({ items }))).querySelector('svg');
+      expect(svg?.getAttribute('aria-hidden')).toBe('true');
+      expect(svg?.hasAttribute('role')).toBe(false);
+      expect(svg?.hasAttribute('aria-label')).toBe(false);
+    });
+
+    it('una mesa alta se recorta a sus dos filas y media', async () => {
+      const diagram = (
+        await preview(makeTable({ rows: 7, columns: 5 }))
+      ).querySelector<HTMLElement>('app-table-diagram')!;
+      expect(diagram.getAttribute('data-cropped')).toBe('true');
+      expect(diagram.style.getPropertyValue('--visible-rows')).toBe('2.5');
+      expect(diagram.style.getPropertyValue('--columns')).toBe('5');
+    });
+
+    it('una mesa de dos filas o menos se ve entera, sin recorte', async () => {
+      const diagram = (
+        await preview(makeTable({ rows: 2, columns: 6 }))
+      ).querySelector<HTMLElement>('app-table-diagram')!;
+      expect(diagram.getAttribute('data-cropped')).toBe('false');
+      expect(diagram.style.getPropertyValue('--visible-rows')).toBe('2');
+    });
+
+    it('una mesa vacía (sin objetos) también se dibuja: no revela si la técnica la tiene', async () => {
+      const root = await preview(makeTable({ rows: 6, columns: 8, items: [] }));
+      expect(root.querySelectorAll('.grid-line').length).toBe(7 + 5);
+      expect(root.querySelectorAll('.piece').length).toBe(0);
+    });
   });
 
   describe('objetos', () => {

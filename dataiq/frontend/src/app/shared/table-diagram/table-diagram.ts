@@ -28,10 +28,18 @@ interface DrawnShape extends PlacedShape {
   parts: Part[];
 }
 
+/** `full` es la mesa entera, con números y leyenda; `preview`, el vistazo recortado de la puerta de cuenta. */
+export type TableDiagramVariant = 'full' | 'preview';
+
+/** Cuántas filas se ven en la vista previa: «dos filas y media» (ver «Puerta de cuenta» en `DESIGN.md`). */
+const PREVIEW_ROWS = 2.5;
+
 /** Un objeto listo para dibujar: sus formas, sus celdas y su número, en unidades del dibujo. */
 interface Piece {
   id: string;
   legendNumber: number | null;
+  /** Se puede señalar y llegar con el teclado: tiene número y la variante es la completa. */
+  linked: boolean;
   label: string;
   /** Solo tela, bandeja o recuadro punteado: al atenuarse queda menos transparente que el acero. */
   flat: boolean;
@@ -51,6 +59,12 @@ let nextGradient = 0;
  * un recuadro punteado. Un objeto en varias celdas es una sola pieza, con una
  * zona de clic por celda y un solo número.
  *
+ * La variante `preview` es el vistazo de la puerta de cuenta: la misma mesa
+ * recortada a sus primeras filas y difuminada hacia abajo, sin números, sin
+ * enlace con la leyenda y oculta a los lectores de pantalla. Con celdas de 104 px
+ * en toda mesa, mide según sus columnas. Una mesa sin objetos se dibuja igual: así
+ * un visitante no sabe si la técnica la tiene.
+ *
  * `highlighted` es el número señalado: con `[(highlighted)]` se enlaza con
  * `app-table-legend`. La pieza señalada se levanta y las demás se atenúan; pasar
  * el puntero o enfocar una pieza la señala. El ancho lo decide quien lo use.
@@ -60,12 +74,24 @@ let nextGradient = 0;
   templateUrl: './table-diagram.html',
   styleUrl: './table-diagram.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[style.--aspect]': 'aspect()' },
+  host: {
+    '[attr.data-variant]': 'variant()',
+    '[attr.data-cropped]': 'preview() ? cropped() : null',
+    '[style.--aspect]': 'aspect()',
+    '[style.--columns]': 'preview() ? table().columns : null',
+    '[style.--visible-rows]': 'preview() ? visibleRows() : null',
+  },
 })
 export class TableDiagram {
   readonly table = input.required<Table>();
+  readonly variant = input<TableDiagramVariant>('full');
   /** El número señalado, o `null` si no hay ninguno. */
   readonly highlighted = model<number | null>(null);
+
+  protected readonly preview = computed(() => this.variant() === 'preview');
+  protected readonly visibleRows = computed(() => Math.min(this.table().rows, PREVIEW_ROWS));
+  /** La mesa es más alta que lo que muestra la vista previa: se recorta y se difumina. */
+  protected readonly cropped = computed(() => this.table().rows > PREVIEW_ROWS);
 
   protected readonly cell = CELL;
   protected readonly numberRadius = NUMBER_RADIUS;
@@ -85,6 +111,7 @@ export class TableDiagram {
   protected readonly pieces = computed<Piece[]>(() =>
     this.table().items.flatMap((item) => {
       if (item.cells.length === 0) return [];
+      const linked = !this.preview() && item.legendNumber !== null;
       const shapes = placeShapes(item.cells, shapesFor(item.components)).map((shape) => ({
         ...shape,
         parts: shape.key === null ? [] : DRAWINGS[shape.key].parts,
@@ -93,14 +120,15 @@ export class TableDiagram {
         {
           id: item.id,
           legendNumber: item.legendNumber,
-          label: item.legendNumber === null ? '' : `${item.legendNumber}: ${item.name}`,
+          linked,
+          label: `${item.legendNumber}: ${item.name}`,
           flat: shapes.every((shape) => shape.kind !== 'steel'),
           shapes,
           hits: item.cells.map((cell) => ({
             x: (cell.column - 1) * CELL,
             y: (cell.row - 1) * CELL,
           })),
-          number: item.legendNumber === null ? null : numberPosition(item.cells),
+          number: linked ? numberPosition(item.cells) : null,
         },
       ];
     }),
@@ -126,7 +154,7 @@ export class TableDiagram {
 
   /** El puntero o el foco llegan a una pieza: se señala su número. Una pieza sin número no se señala. */
   protected point(number: number | null): void {
-    if (number !== null) this.highlighted.set(number);
+    if (number !== null && !this.preview()) this.highlighted.set(number);
   }
 
   /** Se va el puntero o el foco: se suelta, salvo que ya se haya señalado otra pieza. */

@@ -161,8 +161,19 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   trae ningún caso (lo ilegible se corrigió o se propuso, ver
   [`checklist-backend.md`](../docs/checklist-backend.md)); la regla cubre los que
   lleguen.
-  Todavía faltan, en las otras casillas de la fase 3, las variantes de vista
-  previa y miniatura.
+- **Vista previa** (`variant="preview"`, para la puerta de cuenta; ver «Puerta de
+  cuenta» en `DESIGN.md`): la misma mesa recortada a sus primeras **2,5 filas** y
+  difuminada hacia abajo, centrada y con celdas de **104 px** (en celular, el ancho
+  de la pantalla). Sigue dibujando la grilla y el instrumental, pero sin números,
+  sin enlace con la leyenda (no se señala ni se llega con Tab, y no lleva
+  `data-n`) y oculta a los lectores de pantalla (`aria-hidden`). La geometría sale
+  de CSS: el componente solo fija `--columns`, `--visible-rows` y `data-cropped`, y
+  el 4,5 % de margen y el 91 % del dibujo son variables de Sass en
+  `table-diagram.scss`. Una mesa de 2 filas o menos se ve entera, sin difuminar.
+  Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
+  revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
+  vez de «Sin mesa» es la página (fase 4).
+  Todavía falta, en la última casilla de la fase 3, la variante miniatura.
 
 ### Glosario (interfaz → código y API)
 
