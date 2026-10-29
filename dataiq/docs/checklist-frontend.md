@@ -44,7 +44,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] `core/http`: `provideHttpClient(withFetch())`, base `/api/dataiq`, interceptor de `X-IQ-Client: web` e interceptor de errores (401, 403, 409, 422)
 - [x] Aviso en pantalla para los errores que traduce el interceptor (componente en `shared/ui/`)
 - [x] `core/session`: `SessionService` (cuenta de `GET /auth/me` al arrancar, ingresar, salir), `sessionGuard` y `roleGuard(min)` con `?volver=`
-- [ ] Tokens de sombra en `shared/design/` (nombres por uso, con los valores de «Shadow Vocabulary» de `DESIGN.md`) y el aviso los usa en vez del valor suelto
+- [x] Tokens de sombra en `shared/design/` (`--elevacion-*` y `--shadow-*`, con los valores de «Shadow Vocabulary» de `DESIGN.md`; las del lienzo de SIMIQ3D quedan para ese frontend) y el aviso los usa en vez del valor suelto
 
 ### Fase 2 — Shell
 

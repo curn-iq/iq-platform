@@ -1,5 +1,4 @@
-// Avisos: ver «Avisos» en DESIGN.md. Las sombras no son tokens (tokens.css no
-// tiene), así que la del error es el valor de «Panel flotante» de DESIGN.md.
+// Avisos: ver «Avisos» en DESIGN.md.
 
 :host {
   position: fixed;
@@ -57,7 +56,7 @@ p {
   background: var(--color-surface);
   box-shadow:
     inset 0 0 0 1px var(--color-border-strong),
-    0 12px 30px -16px rgba(10, 27, 34, 0.45);
+    var(--shadow-floating);
   color: var(--color-text);
   font-size: 14.5px;
   font-weight: 600;

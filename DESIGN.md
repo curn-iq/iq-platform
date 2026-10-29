@@ -600,6 +600,8 @@ Sistema plano con objetos que sí tienen cuerpo. La interfaz se ordena con filet
 - **Insignia de la pieza** (`box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 6px 14px -6px rgba(10,27,34,.5)`): el número `marca` que flota sobre la pieza señalada; el anillo blanco la despega del paño.
 - **Historial en celular** (`box-shadow: 24px 0 48px -32px rgba(10,27,34,.55)`): el panel del chat que entra desde la izquierda, sobre un velo `rgba(10,27,34,.28)`.
 
+En código, las de uso común (botón en reposo y al pasar, escenario, desplegable, buscador, funda y panel flotante) son propiedades CSS de `shared/design/tokens.css`: `--elevacion-*` y su nombre por uso `--shadow-*`. Las del lienzo de SIMIQ3D y los `drop-shadow` del acero las define quien las use.
+
 La escena 3D de SIMIQ3D sigue la misma doctrina con luz: sin sombras en tiempo real; la profundidad la dan el canto de la funda, el pie de la mesa y sombras de contacto dibujadas (un degradado radial de `rgba(10,27,34,.42)` a transparente) bajo la mesa y bajo cada pieza.
 
 ### Named Rules
