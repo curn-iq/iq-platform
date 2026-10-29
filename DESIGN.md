@@ -451,6 +451,16 @@ components:
     textColor: "{colors.superficie}"
     rounded: "{rounded.pill}"
     size: "26px"
+  aviso-error:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.lg}"
+    padding: "12px 14px"
+  aviso-confirmacion:
+    backgroundColor: "{colors.tinta}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.lg}"
+    padding: "12px 18px"
 ---
 
 # Design System: IQ Platform
@@ -504,7 +514,7 @@ Paleta fría y contenida: neutros clínicos con matiz petróleo, un verde de pa�
 - **Niebla de marca** (`niebla-marca`) y **niebla de paño** (`niebla-pano`): texto secundario sobre `marca-hondo` y sobre `pano`. Ninguna pantalla actual tiene esos fondos; quedan reservadas para cuando vuelvan.
 
 ### Named Rules
-**The Dos Acentos Cautivos Rule.** La menta y el rojo viven solo dentro de la cámara (vista Cámara, ventana de SIVRI) y en enlaces sobre capítulos oscuros, en el caso de la menta. Fuera de ahí no existen: ni estados genéricos de éxito o error, ni decoración.
+**The Dos Acentos Cautivos Rule.** La menta y el rojo viven solo dentro de la cámara (vista Cámara, ventana de SIVRI) y en enlaces sobre capítulos oscuros, en el caso de la menta. Fuera de ahí no existen: ni estados genéricos de éxito o error, ni decoración. Por eso los avisos de error y de confirmación del producto son neutros (ver «Avisos»).
 
 **The Paño Es Objeto Rule.** La textura no tejida `--tela` y el velo `brillo-pano`/`sombra-pano` se aplican solo a la funda de Mayo y sus miniaturas. Ninguna superficie de página, tarjeta o banda lleva textura.
 
@@ -632,6 +642,13 @@ Firmes y clínicos: verde lleno, sin adornos, con una flecha que avanza al pasar
 ### Inputs / Fields
 - **Buscador del catálogo:** 60px, `superficie`, 14px de radio, filete interior `filete-2` y sombra de buscador; lupa de 20px en `tinta-3` a 20px del borde; texto 17px. Foco: filete interior de 2px en `marca`, sin contorno exterior. Al escribir aparece a la derecha un botón limpiar de 40px que al pasar toma `hover-neutro`.
 - **Buscador de la columna de técnicas:** 42px, `fondo`, 10px de radio, filete interior `filete`, 15px; foco igual, 2px en `marca`.
+
+### Avisos
+Lo que la interfaz le dice a la persona cuando algo falla o se hizo (decidido por Juan el 2026-10-28). Dos formas, ambas planas y sin color de estado: ni rojo ni verde (ver «The Dos Acentos Cautivos Rule»). Van fijas abajo al centro, a 28px del borde, con un ancho máximo de 440px y el margen `lado` a cada lado en celular; si hay las dos, el error arriba y la confirmación debajo, a 10px. Entran subiendo 16px con fundido (`.4s expo`). La franja no tapa lo que hay debajo: solo los avisos reciben clics.
+- **Error:** el aviso del chat no disponible, pero flotante. `superficie` con filete interior `filete-2` y la sombra de «Panel flotante»; 12px de radio y 12px 14px de relleno. A la izquierda el círculo de alerta de 20px en `tinta-3`; el texto en 14.5px 600 `tinta` con interlínea 1.45, una línea por mensaje (4px entre ellas, sin viñetas); a la derecha el botón cerrar, un ícono pequeño de 34px (`fondo`, 9px; hover `hover-neutro`), metido en el alto del texto con márgenes negativos para que el aviso no crezca. Se queda hasta que se cierra con ese botón: lo que falló no desaparece solo.
+- **Confirmación:** el `aviso-ok` de los mockups. `tinta` con texto `superficie`, 12px de radio, 12px 18px de relleno, 15.5px 600, sin ícono ni botón. Se va sola a los 3.2s.
+- **Para lectores de pantalla:** el error vive en una región `role="alert"` y la confirmación en una `role="status"`, las dos presentes desde el inicio para que se anuncien lo que llegue después.
+- **Texto:** voz impersonal («Hace falta iniciar sesión.»). El texto de un error de la API es el `detail` que ella manda; si falta, uno de respaldo con esa misma voz (ver el README del frontend, «Errores de la API»).
 
 ### Navigation
 - **Barra:** fija arriba, 72px (64px en celular), fondo `fondo` con filete inferior. Marca: un cuadrado de 30px y 8px de radio en `marca` con rejilla blanca, más «IQ Platform» 700 a 19px; a la izquierda cuatro categorías con flecha: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; a la derecha Ingresar y Crear cuenta. Con sesión iniciada, en su lugar va «Mi cuenta»: avatar redondo de 32px en `marca-claro` con su ícono en `marca-hondo`, 44px de alto y 12px de radio.

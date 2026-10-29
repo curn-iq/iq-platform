@@ -64,7 +64,8 @@ src/
     │                       auth, users)
     ├── shared/
     │   ├── ui/             button, tabs con raya, segmented control, status pill,
-    │   │                   progress mark (22 px), search field, demo tag, floating panel
+    │   │                   progress mark (22 px), search field, demo tag, floating panel,
+    │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
     └── features/
@@ -171,6 +172,14 @@ manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
   `/cuenta/…` no se vuelve a enviar a ingresar.
 - Limpiar la cuenta ante un 401 lo agrega `SessionService`; llega con la
   casilla de `core/session`.
+
+**Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
+`NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
+`App` los pasa a `shared/ui/notice-stack`, que solo dibuja: recibe la lista y
+avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
+neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
+sola a los 3,2 s. Aspecto y razones: «Avisos» en
+[`DESIGN.md`](../../DESIGN.md).
 
 ## Correr el frontend
 

@@ -2,3 +2,4 @@
   <h1>DataIQ</h1>
   <router-outlet />
 </main>
+<app-notice-stack [notices]="notices.notices()" (dismissed)="notices.dismiss($event)" />
