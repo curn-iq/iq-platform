@@ -173,7 +173,18 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
   revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
   vez de «Sin mesa» es la página (fase 4).
-  Todavía falta, en la última casilla de la fase 3, la variante miniatura.
+- **Miniatura** (`app-table-miniature`, para «Dónde va» del catálogo de
+  instrumental; ver «Catálogo de instrumental» en `DESIGN.md`): es un componente
+  hermano del diagrama, no un SVG, porque lleva su propia estructura: una rejilla
+  de celdas de **22 px** (18 px en celular) con las celdas de **un** objeto
+  encendidas en `marca` y la primera (en orden de lectura) como círculo con su
+  número. Recibe la mesa (`table`, solo para su tamaño), el objeto (`item`) y el
+  turno de su fila en la lista (`index`), que escalona cuándo se enciende cada una
+  (70 ms por turno). Todas las mesas van a la **misma escala**: una mesa ancha se
+  desplaza dentro de su marco, con el borde derecho desvanecido. Es decorativa
+  (`aria-hidden`): quien la use pone al lado, en texto, la técnica, la mesa y el
+  número («Mesa de Mayo · n.° 4»). Un objeto con varias celdas lleva un solo
+  número; sin número, sus celdas se encienden sin círculo.
 
 ### Glosario (interfaz → código y API)
 
