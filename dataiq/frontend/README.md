@@ -156,6 +156,28 @@ La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
 `#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
 una ruta propia: ver «Sesión»).
 
+### Barra (`shell/navbar/`)
+
+La barra (`Navbar`) tiene la marca y cuatro menús; cada botón abre su
+desplegable (`NavPanel`), un overlay de CDK a todo el ancho bajo la barra. Solo
+hay uno abierto a la vez; se cierra con Escape (el foco vuelve a su botón), con
+un clic fuera o al elegir una opción, y con el teclado el foco entra al primer
+enlace. Un segundo clic sobre «Especialidades» lleva al catálogo. El contenido
+de Herramientas, ¿Por qué IQ Platform? y Ayuda está en `nav-menus.ts`, con el
+destino de cada opción: rutas de esta app (los fragmentos del inicio:
+`/#camino`, `/#investigacion`, `/#preguntas`, `/#quien`) y `/simiq3d/` y
+`/sivri/` como enlaces normales, con navegación completa (Resuelto 17).
+
+- **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
+  dinámico la primera vez que se abre un menú: la barra está en todas las
+  páginas y no debe engordar el código inicial.
+- **Especialidades** salen de la API (`SpecialtiesNav`, que pide
+  `GET /specialties` y `GET /techniques` la primera vez que se abre ese
+  desplegable). Cada una lleva a `/tecnicas?especialidad=<id>`: el parámetro es
+  el `id` de la especialidad.
+- «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
+  técnica.
+
 ### Errores de la API
 
 Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:

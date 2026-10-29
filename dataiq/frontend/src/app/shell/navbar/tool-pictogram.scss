@@ -1,0 +1,57 @@
+// Pictogramas de las herramientas: solo los nombres por uso de los tokens.
+
+:host {
+  display: block;
+  width: 96px;
+  height: 96px;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bg {
+  fill: var(--color-accent-soft);
+}
+
+.paper {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.accent-face {
+  fill: var(--color-accent);
+}
+
+.accent-fill {
+  fill: var(--color-accent);
+}
+
+.ink,
+.muted,
+.accent-line,
+.surface-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ink {
+  stroke: var(--color-text);
+}
+
+.muted {
+  stroke: var(--color-text-subtle);
+}
+
+.accent-line {
+  stroke: var(--color-accent);
+}
+
+.surface-line {
+  stroke: var(--color-surface);
+}

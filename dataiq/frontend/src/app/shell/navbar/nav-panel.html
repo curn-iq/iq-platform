@@ -1,0 +1,112 @@
+<ng-template #arrow>
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+    <path
+      d="M3 8h9M8.5 4L12.5 8l-4 4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</ng-template>
+
+<ng-template #optionBody let-option>
+  <span>
+    <strong>{{ option.label }}</strong>
+    <span>{{ option.hint }}</span>
+  </span>
+  <ng-container [ngTemplateOutlet]="arrow" />
+</ng-template>
+
+<div class="head">
+  <p class="name">{{ menu().label }}</p>
+  <p class="line">{{ menu().line }}</p>
+  @if (menu().headerLink; as link) {
+    <a class="link" [routerLink]="link.target.route">
+      {{ link.label }}
+      <ng-container [ngTemplateOutlet]="arrow" />
+    </a>
+  }
+</div>
+
+<ul class="list">
+  @for (option of options(); track option.label; let i = $index) {
+    <li>
+      @if (option.target.href; as href) {
+        <a
+          [href]="href"
+          [class.pointed]="pointed() === i"
+          (mouseenter)="pointed.set(i)"
+          (focus)="pointed.set(i)"
+        >
+          <ng-container
+            [ngTemplateOutlet]="optionBody"
+            [ngTemplateOutletContext]="{ $implicit: option }"
+          />
+        </a>
+      } @else {
+        <a
+          [routerLink]="option.target.route"
+          [fragment]="option.target.fragment"
+          [queryParams]="option.target.queryParams"
+          [class.pointed]="pointed() === i"
+          (mouseenter)="pointed.set(i)"
+          (focus)="pointed.set(i)"
+        >
+          <ng-container
+            [ngTemplateOutlet]="optionBody"
+            [ngTemplateOutletContext]="{ $implicit: option }"
+          />
+        </a>
+      }
+    </li>
+  }
+</ul>
+
+<div class="view">
+  @switch (menu().preview.kind) {
+    @case ('tools') {
+      @if (previewed()?.tool; as tool) {
+        <div class="tool">
+          <app-tool-pictogram [name]="tool.pictogram" />
+          <div>
+            <p class="tool-name">{{ previewed()!.label }}</p>
+            <ul class="rows">
+              @for (capability of tool.capabilities; track capability) {
+                <li>{{ capability }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    }
+    @case ('specialties') {
+      @if (previewedSpecialty(); as specialty) {
+        <p class="view-title">{{ specialty.name }}</p>
+        <ul class="rows">
+          @for (technique of specialty.techniques; track technique) {
+            <li>{{ technique }}</li>
+          }
+        </ul>
+      }
+    }
+    @case ('phrase') {
+      @if (phrase(); as text) {
+        <p class="phrase">
+          {{ text.start }}<em>{{ text.accent }}</em>
+        </p>
+      }
+    }
+    @case ('questions') {
+      @if (questions(); as asked) {
+        <p class="view-title">{{ asked.title }}</p>
+        <ul class="rows">
+          @for (item of asked.items; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

@@ -50,7 +50,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 - [x] Esqueleto de rutas con carga diferida, con el título de la pestaña del navegador en cada ruta
 - [x] Página «No encontrada» para una ruta que no existe
-- [ ] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
+- [x] Barra: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda; un desplegable a la vez (CDK overlay), Escape y clic fuera
 - [ ] Menú de celular a pantalla completa (≤ 960 px)
 - [ ] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
 - [ ] Pie oscuro

@@ -1,0 +1,206 @@
+// Desplegable de la barra: ver «Navigation» en DESIGN.md. La rejilla es la de 12
+// columnas: nombre en 1-3, opciones en 4-8, vista previa en 9-12.
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-column-gap);
+  align-items: start;
+  padding: 40px var(--space-gutter) 44px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-dropdown);
+  animation: drop 0.4s var(--ease-enter);
+}
+
+// Por debajo de 960 px los menús pasan al panel del celular.
+@media (max-width: 960px) {
+  :host {
+    display: none;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.head {
+  grid-column: 1 / 4;
+  display: grid;
+  gap: 12px;
+}
+
+.name {
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.line {
+  max-width: 26ch;
+  color: var(--color-text-subtle);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.link {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--color-accent);
+  font-weight: 650;
+  text-decoration: none;
+
+  svg {
+    transition: transform 0.35s var(--ease-enter);
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+}
+
+.list {
+  grid-column: 4 / 9;
+  border-top: 1px solid var(--color-border);
+
+  a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--color-border);
+    color: inherit;
+    text-decoration: none;
+    transition: padding 0.35s var(--ease-enter);
+  }
+
+  strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    transition: color 0.2s var(--ease-fade);
+  }
+
+  a span span {
+    display: block;
+    margin-top: 2px;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+  }
+
+  svg {
+    color: var(--color-accent);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s var(--ease-fade),
+      transform 0.35s var(--ease-enter);
+  }
+
+  a:hover,
+  a:focus-visible,
+  a.pointed {
+    padding-left: 12px;
+  }
+
+  a:hover svg,
+  a:focus-visible svg,
+  a.pointed svg {
+    opacity: 1;
+    transform: none;
+  }
+
+  a:hover strong,
+  a:focus-visible strong,
+  a.pointed strong {
+    color: var(--color-accent);
+  }
+}
+
+.view {
+  grid-column: 9 / 13;
+}
+
+.tool {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  animation: appear 0.35s var(--ease-enter);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tool-name {
+  margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.view-title {
+  padding-bottom: 8px;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.rows {
+  border-top: 1px solid var(--color-border);
+
+  li {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+}
+
+.phrase {
+  padding: 28px;
+  border-radius: var(--radius-window);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-size: 26px;
+  line-height: 1.12;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+
+  em {
+    font-style: normal;
+    color: var(--color-accent);
+  }
+}

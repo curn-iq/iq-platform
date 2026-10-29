@@ -1,0 +1,30 @@
+<svg viewBox="0 0 120 120" aria-hidden="true">
+  <rect class="bg" width="120" height="120" rx="24" />
+  @switch (name()) {
+    @case ('data') {
+      <rect class="paper" x="30" y="24" width="60" height="72" rx="7" />
+      <path class="ink" stroke-width="4" d="M40 40 H66" />
+      <circle class="accent-fill" cx="42" cy="56" r="3" />
+      <circle class="accent-fill" cx="42" cy="68" r="3" />
+      <circle class="accent-fill" cx="42" cy="80" r="3" />
+      <path class="muted" stroke-width="2.4" d="M51 56 H78 M51 68 H74 M51 80 H70" />
+    }
+    @case ('3d') {
+      <path class="paper" d="M60 26 L90 43 L60 60 L30 43 Z" />
+      <path class="paper" d="M30 43 V78 L60 95 V60 Z" />
+      <path class="paper accent-face" d="M90 43 V78 L60 95 V60 Z" />
+      <path class="accent-line" stroke-width="2.4" d="M96 30 a10 10 0 0 1 4 14" />
+      <path class="accent-line" stroke-width="2.4" d="M101 46 l-1 -5 -4 3" />
+    }
+    @case ('camera') {
+      <path
+        class="ink"
+        stroke-width="3"
+        d="M28 42 V32 a4 4 0 0 1 4 -4 H42 M78 28 H88 a4 4 0 0 1 4 4 V42 M92 78 V88 a4 4 0 0 1 -4 4 H78 M42 92 H32 a4 4 0 0 1 -4 -4 V78"
+      />
+      <rect class="paper" x="42" y="46" width="36" height="28" rx="5" />
+      <circle class="accent-fill" cx="76" cy="74" r="12" />
+      <path class="surface-line" stroke-width="2.6" d="M70.5 74 L74.5 78 L81.5 70.5" />
+    }
+  }
+</svg>

@@ -1,0 +1,106 @@
+// Barra: ver «Navigation» en DESIGN.md.
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  height: var(--size-navbar);
+  padding-inline: var(--space-gutter);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand-tile {
+  fill: var(--color-accent);
+}
+
+.brand-grid {
+  stroke: var(--color-surface);
+  stroke-opacity: 0.35;
+}
+
+.brand-dot {
+  fill: var(--color-surface);
+}
+
+.brand-spark {
+  fill: var(--color-accent-soft);
+}
+
+nav {
+  display: flex;
+  gap: 2px;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-fade),
+    color 0.2s var(--ease-fade);
+
+  svg {
+    transition: transform 0.35s var(--ease-enter);
+  }
+
+  &[aria-current='page'] {
+    color: var(--color-accent-strong);
+    font-weight: 650;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: var(--color-hover);
+    color: var(--color-text);
+  }
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+}
+
+// Por debajo de 960 px los cuatro menús ya no caben en una línea y pasan al
+// menú del celular.
+@media (max-width: 960px) {
+  nav {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .bar {
+    gap: 12px;
+    height: var(--size-navbar-mobile);
+  }
+}

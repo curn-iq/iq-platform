@@ -1,0 +1,40 @@
+<header class="bar">
+  <a class="brand" routerLink="/" aria-label="IQ Platform, inicio">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+      <rect class="brand-tile" width="30" height="30" rx="8" />
+      <path
+        class="brand-grid"
+        d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12"
+        stroke-width="1.2"
+      />
+      <circle class="brand-dot" cx="15" cy="15" r="3.2" />
+      <circle class="brand-spark" cx="21" cy="9" r="2" />
+    </svg>
+    IQ Platform
+  </a>
+  <nav #nav aria-label="Principal">
+    @for (menu of menus; track menu.id) {
+      <button
+        type="button"
+        class="item"
+        [attr.data-menu]="menu.id"
+        [attr.aria-expanded]="open() === menu.id"
+        [attr.aria-controls]="open() === menu.id ? 'nav-panel' : null"
+        [attr.aria-current]="current() === menu.id ? 'page' : null"
+        (click)="toggle(menu, $event)"
+      >
+        {{ menu.label }}
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path
+            d="M2.5 4.5L6 8l3.5-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    }
+  </nav>
+</header>
