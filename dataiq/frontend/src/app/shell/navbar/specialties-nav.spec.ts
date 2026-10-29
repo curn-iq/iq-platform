@@ -31,6 +31,7 @@ describe('SpecialtiesNav', () => {
     http.expectOne(`${TEST_API_BASE}/specialties`);
     http.expectOne(`${TEST_API_BASE}/techniques`);
     expect(nav.entries()).toEqual([]);
+    expect(nav.loading()).toBe(true);
   });
 
   it('junta a cada especialidad con los nombres de sus técnicas, en el orden de la API', async () => {
@@ -49,6 +50,7 @@ describe('SpecialtiesNav', () => {
     ]);
     await settle();
 
+    expect(nav.loading()).toBe(false);
     expect(nav.entries()).toEqual([
       { id: 'e-1', name: 'Cirugía general', techniques: ['Mastectomía', 'Tiroidectomía'] },
       { id: 'e-2', name: 'Urología', techniques: ['Prostatectomía'] },

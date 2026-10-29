@@ -50,6 +50,11 @@ export class NavPanel {
     this.menu().preview.kind === 'specialties' ? this.injector.get(SpecialtiesNav).entries() : [],
   );
 
+  /** Las especialidades aún no llegan (los demás menús no esperan nada). */
+  protected readonly loading = computed(
+    () => this.menu().preview.kind === 'specialties' && this.injector.get(SpecialtiesNav).loading(),
+  );
+
   protected readonly options = computed<readonly NavOption[]>(() => {
     const menu = this.menu();
     if (menu.preview.kind !== 'specialties') return menu.options ?? [];

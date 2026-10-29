@@ -30,39 +30,43 @@
   }
 </div>
 
-<ul class="list">
-  @for (option of options(); track option.label; let i = $index) {
-    <li>
-      @if (option.target.href; as href) {
-        <a
-          [href]="href"
-          [class.pointed]="pointed() === i"
-          (mouseenter)="pointed.set(i)"
-          (focus)="pointed.set(i)"
-        >
-          <ng-container
-            [ngTemplateOutlet]="optionBody"
-            [ngTemplateOutletContext]="{ $implicit: option }"
-          />
-        </a>
-      } @else {
-        <a
-          [routerLink]="option.target.route"
-          [fragment]="option.target.fragment"
-          [queryParams]="option.target.queryParams"
-          [class.pointed]="pointed() === i"
-          (mouseenter)="pointed.set(i)"
-          (focus)="pointed.set(i)"
-        >
-          <ng-container
-            [ngTemplateOutlet]="optionBody"
-            [ngTemplateOutletContext]="{ $implicit: option }"
-          />
-        </a>
-      }
-    </li>
-  }
-</ul>
+@if (loading()) {
+  <p class="list loading" role="status">Cargando…</p>
+} @else {
+  <ul class="list">
+    @for (option of options(); track option.label; let i = $index) {
+      <li>
+        @if (option.target.href; as href) {
+          <a
+            [href]="href"
+            [class.pointed]="pointed() === i"
+            (mouseenter)="pointed.set(i)"
+            (focus)="pointed.set(i)"
+          >
+            <ng-container
+              [ngTemplateOutlet]="optionBody"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            />
+          </a>
+        } @else {
+          <a
+            [routerLink]="option.target.route"
+            [fragment]="option.target.fragment"
+            [queryParams]="option.target.queryParams"
+            [class.pointed]="pointed() === i"
+            (mouseenter)="pointed.set(i)"
+            (focus)="pointed.set(i)"
+          >
+            <ng-container
+              [ngTemplateOutlet]="optionBody"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            />
+          </a>
+        }
+      </li>
+    }
+  </ul>
+}
 
 <div class="view">
   @switch (menu().preview.kind) {

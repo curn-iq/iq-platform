@@ -140,6 +140,13 @@ ul {
   }
 }
 
+.loading {
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-subtle);
+  font-size: 15px;
+}
+
 .view {
   grid-column: 9 / 13;
 }

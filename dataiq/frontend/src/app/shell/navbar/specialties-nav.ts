@@ -19,10 +19,15 @@ export class SpecialtiesNav {
   private readonly specialties = this.repository.specialties();
   private readonly techniques = this.repository.list();
 
+  /** `true` mientras alguna de las dos respuestas no llega. */
+  readonly loading = computed(() => this.specialties.isLoading() || this.techniques.isLoading());
+
   /** Vacía hasta que llegan las dos respuestas (o si alguna falla: el interceptor ya avisó). */
   readonly entries = computed<SpecialtyEntry[]>(() => {
-    const techniques = this.techniques.value() ?? [];
-    return (this.specialties.value() ?? []).map((specialty) => ({
+    // `value()` lanza si la petición falló: sin respuesta, la lista queda vacía.
+    const techniques = (this.techniques.hasValue() ? this.techniques.value() : undefined) ?? [];
+    const specialties = (this.specialties.hasValue() ? this.specialties.value() : undefined) ?? [];
+    return specialties.map((specialty) => ({
       id: specialty.id,
       name: specialty.name,
       techniques: techniques.filter((t) => t.specialty === specialty.name).map((t) => t.name),

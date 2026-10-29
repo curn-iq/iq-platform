@@ -185,6 +185,46 @@ describe('NavPanel', () => {
     });
   });
 
+  describe('Especialidades mientras llegan', () => {
+    it('dice «Cargando…» en vez de la lista y la quita al llegar', async () => {
+      await open('specialties');
+
+      expect(texts('.loading')).toEqual(['Cargando…']);
+      expect(root().querySelector('.loading')!.getAttribute('role')).toBe('status');
+      expect(root().querySelector('.list a')).toBeNull();
+
+      http.expectOne(`${TEST_API_BASE}/specialties`).flush([{ id: 'e-1', name: 'Urología' }]);
+      http.expectOne(`${TEST_API_BASE}/techniques`).flush([]);
+      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(root().querySelector('.loading')).toBeNull();
+      expect(texts('.list strong')).toEqual(['Urología']);
+    });
+
+    it('si la API falla deja de decir «Cargando…»', async () => {
+      await open('specialties');
+
+      http
+        .expectOne(`${TEST_API_BASE}/specialties`)
+        .flush(null, { status: 500, statusText: 'Server Error' });
+      http
+        .expectOne(`${TEST_API_BASE}/techniques`)
+        .flush(null, { status: 500, statusText: 'Server Error' });
+      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(root().querySelector('.loading')).toBeNull();
+      expect(links()).toEqual([]);
+    });
+
+    it('los demás menús no dicen «Cargando…»', async () => {
+      await open('tools');
+
+      expect(root().querySelector('.loading')).toBeNull();
+    });
+  });
+
   describe('elegir una opción', () => {
     it('avisa con `chosen` al tocar una opción o el enlace del encabezado', async () => {
       await open('specialties');
