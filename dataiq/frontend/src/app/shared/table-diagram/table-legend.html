@@ -1,15 +1,23 @@
 <ol [attr.aria-label]="'Leyenda de ' + table().name">
   @for (row of rows(); track row.id) {
-    <li
-      tabindex="0"
-      [class.active]="row.number === highlighted()"
-      (mouseenter)="point(row.number)"
-      (mouseleave)="release(row.number)"
-      (focus)="point(row.number)"
-      (blur)="release(row.number)"
-    >
-      <b>{{ row.number }}</b>
-      <span>{{ row.name }}</span>
-    </li>
+    @if (row.kind === 'placed') {
+      <li
+        data-kind="placed"
+        tabindex="0"
+        [class.active]="row.number === highlighted()"
+        (mouseenter)="point(row.number)"
+        (mouseleave)="release(row.number)"
+        (focus)="point(row.number)"
+        (blur)="release(row.number)"
+      >
+        <b>{{ row.number }}</b>
+        <span>{{ row.name }}</span>
+      </li>
+    } @else {
+      <li [attr.data-kind]="row.kind" class="off">
+        <b>{{ row.number }}</b>
+        <span>{{ row.name ?? 'Sin dato' }}</span>
+      </li>
+    }
   }
 </ol>

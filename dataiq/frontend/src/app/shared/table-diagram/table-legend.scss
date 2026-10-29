@@ -38,6 +38,19 @@ li {
   }
 }
 
+// Lo que no está en la mesa (un hueco «Sin dato» o un objeto que la fuente no ubica): no hay
+// pieza que levantar, así que no se señala. Círculo vacío con filete `filete-2` y texto `tinta-3`.
+li.off {
+  color: var(--color-text-subtle);
+  cursor: default;
+
+  b {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--color-border-strong);
+    color: var(--color-text-subtle);
+  }
+}
+
 b {
   display: grid;
   place-items: center;

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import { legendEntries } from '../../domain/legend';
 import type { Table } from '../../domain/table';
 
 /**
@@ -6,7 +7,10 @@ import type { Table } from '../../domain/table';
  * cada objeto con su número y su nombre, enlazada con `app-table-diagram`. Se
  * enlazan con `[(highlighted)]`: señalar un número (con el puntero o el
  * teclado) marca su fila aquí y levanta su pieza en la mesa, y al revés.
- * Solo lista lo que está en la mesa: un objeto con número y celdas.
+ *
+ * Solo las filas de objetos que están en la mesa se señalan. Un objeto que la
+ * fuente no ubica se lista apagado y sin enlace, y un número que no deja leer
+ * queda como hueco «Sin dato» (ver `domain/legend.ts`).
  */
 @Component({
   selector: 'app-table-legend',
@@ -19,15 +23,7 @@ export class TableLegend {
   /** El número señalado, o `null` si no hay ninguno. */
   readonly highlighted = model<number | null>(null);
 
-  protected readonly rows = computed(() =>
-    this.table()
-      .items.flatMap((item) =>
-        item.legendNumber === null || item.cells.length === 0
-          ? []
-          : [{ id: item.id, number: item.legendNumber, name: item.name }],
-      )
-      .sort((a, b) => a.number - b.number),
-  );
+  protected readonly rows = computed(() => legendEntries(this.table().items));
 
   protected point(number: number): void {
     this.highlighted.set(number);

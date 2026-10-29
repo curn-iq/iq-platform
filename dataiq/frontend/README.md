@@ -144,14 +144,25 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS` y a la
   tabla de palabras clave. Cada diagrama tiene sus propios degradados de acero
   (`id` únicos), porque puede haber dos en una página.
-- **Leyenda enlazada:** `app-table-legend` lista los objetos con número y celdas
-  (nombre = componentes unidos con «y»). Mesa y leyenda comparten
+- **Leyenda enlazada:** `app-table-legend` lista cada objeto con número
+  (nombre = componentes unidos con «y») por número. Mesa y leyenda comparten
   `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
   o una fila lo señala; la pieza se levanta, las demás se atenúan al 38 % (la tela,
   al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
   `highlighted` por mesa, porque cada mesa tiene su propia numeración.
-  Todavía faltan, en las otras casillas de la fase 3, el hueco «Sin dato» y las
-  variantes de vista previa y miniatura.
+- **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
+  objeto con número tiene su fila según lo que la fuente dice de él. Con celdas
+  (`placed`) está en la mesa y se señala. Sin celdas pero con componentes
+  (`unplaced`) se sabe qué es, no dónde va: se lista con su nombre, apagado y sin
+  enlace. Sin celdas ni componentes (`gap`) es un número que la fuente da y no
+  deja leer: dice «Sin dato», sin el texto crudo. Las filas apagadas tienen el
+  círculo vacío con filete `filete-2` y no se llegan con Tab: no hay pieza que
+  levantar. Un objeto sin número no tiene fila. La carga inicial de la CURN hoy no
+  trae ningún caso (lo ilegible se corrigió o se propuso, ver
+  [`checklist-backend.md`](../docs/checklist-backend.md)); la regla cubre los que
+  lleguen.
+  Todavía faltan, en las otras casillas de la fase 3, las variantes de vista
+  previa y miniatura.
 
 ### Glosario (interfaz → código y API)
 

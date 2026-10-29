@@ -53,13 +53,55 @@ describe('TableLegend', () => {
     ]);
   });
 
-  it('no lista lo que no se puede señalar en la mesa: sin número o sin celda', async () => {
+  it('no lista el objeto sin número', async () => {
     const fixture = await mount([
       makeItem({ id: 'a', legendNumber: 1 }),
       makeItem({ id: 'b', legendNumber: null }),
-      makeItem({ id: 'c', legendNumber: 3, cells: [] }),
     ]);
     expect(rows(fixture.nativeElement)).toHaveLength(1);
+  });
+
+  describe('lo que no está en la mesa', () => {
+    const gap = makeItem({ id: 'g', legendNumber: 8, cells: [], components: [], name: 'Mb 4' });
+    const unplaced = makeItem({ id: 'u', legendNumber: 9, cells: [], name: 'Pinza Kelly' });
+
+    it('un número que la fuente no deja leer es un hueco «Sin dato», sin el texto crudo', async () => {
+      const fixture = await mount([gap]);
+      const [row] = rows(fixture.nativeElement);
+      expect(row.querySelector('b')?.textContent).toBe('8');
+      expect(row.querySelector('span')?.textContent).toBe('Sin dato');
+      expect(row.getAttribute('data-kind')).toBe('gap');
+      expect(row.textContent).not.toContain('Mb 4');
+    });
+
+    it('un objeto con nombre y sin celdas se lista con su nombre, apagado', async () => {
+      const fixture = await mount([unplaced]);
+      const [row] = rows(fixture.nativeElement);
+      expect(row.querySelector('span')?.textContent).toBe('Pinza Kelly');
+      expect(row.getAttribute('data-kind')).toBe('unplaced');
+    });
+
+    it('conserva su lugar por número entre los demás', async () => {
+      const fixture = await mount([unplaced, makeItem({ id: 'a', legendNumber: 1 }), gap]);
+      const numbers = rows(fixture.nativeElement).map((li) => li.querySelector('b')?.textContent);
+      expect(numbers).toEqual(['1', '8', '9']);
+    });
+
+    it('no se llega con el teclado ni se señala: no hay pieza que levantar', async () => {
+      const fixture = await mount([gap, unplaced]);
+      for (const row of rows(fixture.nativeElement)) {
+        expect(row.hasAttribute('tabindex')).toBe(false);
+        row.dispatchEvent(new MouseEvent('mouseenter'));
+        row.dispatchEvent(new FocusEvent('focus'));
+      }
+      await fixture.whenStable();
+      expect(fixture.componentInstance.highlighted).toBeNull();
+    });
+
+    it('nunca queda marcado, aunque su número sea el señalado', async () => {
+      const fixture = await mount([gap], 8);
+      expect(rows(fixture.nativeElement)[0].classList.contains('active')).toBe(false);
+    });
   });
 
   it('la fila señalada queda marcada', async () => {
