@@ -73,6 +73,11 @@ p {
   display: grid;
   gap: 4px;
   align-self: center;
+  // Un 422 con muchas líneas se desplaza dentro del aviso en vez de crecer
+  // hasta salirse de la pantalla (caben tres errores: `MAX_ERRORS`).
+  max-height: 20vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 // 34 px es el ícono pequeño de DESIGN.md; los márgenes negativos lo meten en el

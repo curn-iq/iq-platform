@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { NoticeService } from './notice.service';
+import { MAX_ERRORS, NoticeService } from './notice.service';
 
 describe('NoticeService', () => {
   let service: NoticeService;
@@ -27,6 +27,34 @@ describe('NoticeService', () => {
     service.show('error', ['Hace falta iniciar sesión']);
 
     expect(service.notices()).toHaveLength(1);
+  });
+
+  it('una confirmación igual a una a la vista la reemplaza, para que vuelva a contar su tiempo', () => {
+    service.show('confirmation', ['Guardado.']);
+    const [first] = service.notices();
+
+    service.show('confirmation', ['Guardado.']);
+
+    const [second, ...rest] = service.notices();
+    expect(rest).toEqual([]);
+    expect(second.messages).toEqual(['Guardado.']);
+    expect(second.id).not.toBe(first.id);
+  });
+
+  it(`deja a la vista como mucho ${MAX_ERRORS} errores: se va el más antiguo`, () => {
+    service.show('confirmation', ['Guardado.']);
+    for (let i = 1; i <= MAX_ERRORS + 1; i++) service.show('error', [`Error ${i}`]);
+
+    const errors = service.notices().filter((n) => n.kind === 'error');
+    expect(errors.map((n) => n.messages[0])).toEqual(
+      Array.from({ length: MAX_ERRORS }, (_, i) => `Error ${i + 2}`),
+    );
+    expect(service.notices().some((n) => n.kind === 'confirmation')).toBe(true);
+  });
+
+  it('un aviso sin mensajes no se muestra', () => {
+    service.show('error', []);
+    expect(service.notices()).toEqual([]);
   });
 
   it('distingue por tipo y por mensajes', () => {

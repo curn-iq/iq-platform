@@ -76,6 +76,21 @@ describe('guards de sesión', () => {
       expect(url.queryParams).toEqual({ volver: '/mi-cuenta?pestana=datos' });
     });
 
+    it('si la primera consulta falló (arranque en frío), vuelve a preguntar', async () => {
+      const failed = session.load();
+      http
+        .expectOne(`${TEST_API_BASE}/auth/me`)
+        .flush(null, { status: 504, statusText: 'Gateway Timeout' });
+      await failed;
+
+      const navigation = router.navigateByUrl('/mi-cuenta');
+      const request = await vi.waitFor(() => http.expectOne(`${TEST_API_BASE}/auth/me`));
+      request.flush(account('user'));
+
+      expect(await navigation).toBe(true);
+      expect(router.url).toBe('/mi-cuenta');
+    });
+
     it('espera a que se sepa si hay sesión antes de decidir', async () => {
       const navigation = router.navigateByUrl('/mi-cuenta');
       const request = await vi.waitFor(() => http.expectOne(`${TEST_API_BASE}/auth/me`));

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import type { Role } from '../../domain/role';
-import { describeApiError } from '../http/error-message';
+import { NO_PERMISSION } from '../http/error-message';
 import { NoticeService } from '../notice/notice.service';
 import { LOGIN_PATH } from './login-path';
 import { SessionService } from './session.service';
@@ -36,7 +36,7 @@ export function roleGuard(minimum: Role): CanActivateFn {
     if (!session.isLoggedIn()) return toLogin(router, state.url);
     if (session.hasRole(minimum)) return true;
 
-    notices.show('error', describeApiError(403, null) ?? []);
+    notices.show('error', [NO_PERMISSION]);
     return router.createUrlTree(['/']);
   };
 }

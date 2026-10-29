@@ -83,6 +83,7 @@ describe('errorInterceptor', () => {
 
     it('avisa y lleva a ingresar con la ruta actual en ?volver=', () => {
       const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      signIn();
 
       fail('/api/dataiq/versions', 401, { detail: 'El token no es válido o ya venció' });
 
@@ -94,6 +95,7 @@ describe('errorInterceptor', () => {
 
     it('si la API no trae texto, usa el de respaldo', () => {
       vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      signIn();
       fail('/api/dataiq/versions', 401, null);
       expect(messages()).toEqual([['Hace falta iniciar sesión.']]);
     });
@@ -126,6 +128,7 @@ describe('errorInterceptor', () => {
     it('no vuelve a enviar a quien ya está en la cuenta', async () => {
       await router.navigateByUrl('/cuenta/ingresar?volver=%2Ftecnicas');
       const navigate = vi.spyOn(router, 'navigate');
+      signIn();
 
       fail('/api/dataiq/versions', 401, null);
 
@@ -134,12 +137,59 @@ describe('errorInterceptor', () => {
     });
 
     it('varias peticiones que fallan a la vez dan un solo aviso', () => {
-      vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      signIn();
 
-      fail('/api/dataiq/versions', 401, null);
-      fail('/api/dataiq/instruments', 401, null);
+      client.get('/api/dataiq/versions').subscribe({ error: () => undefined });
+      client.get('/api/dataiq/instruments').subscribe({ error: () => undefined });
+      http.expectOne('/api/dataiq/versions').flush(null, { status: 401, statusText: 'Error' });
+      http.expectOne('/api/dataiq/instruments').flush(null, { status: 401, statusText: 'Error' });
 
       expect(notices.notices()).toHaveLength(1);
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('un visitante en una página pública: ni aviso ni redirección, y el error le llega a la pantalla', () => {
+      const navigate = vi.spyOn(router, 'navigate');
+
+      const error = fail('/api/dataiq/techniques/t-1/instruments', 401, {
+        detail: 'Hace falta iniciar sesión',
+      });
+
+      expect(error?.status).toBe(401);
+      expect(notices.notices()).toEqual([]);
+      expect(navigate).not.toHaveBeenCalled();
+      expect(router.url).toBe('/tecnicas?especialidad=urologia');
+    });
+
+    it('el 401 de una petición que salió antes de volver a ingresar no borra la sesión nueva', () => {
+      const navigate = vi.spyOn(router, 'navigate');
+      const session = signIn();
+      client.get('/api/dataiq/versions').subscribe({ error: () => undefined });
+
+      // Se vuelve a ingresar mientras la petición con la cookie vieja sigue en camino.
+      session.login({ email: 'ana@example.com', password: 'secreto' }).subscribe();
+      http
+        .expectOne('/api/dataiq/auth/login')
+        .flush({ id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'reviewer' });
+      http.expectOne('/api/dataiq/versions').flush(null, { status: 401, statusText: 'Error' });
+
+      expect(session.role()).toBe('reviewer');
+      expect(notices.notices()).toEqual([]);
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('si no se puede llevar a ingresar, se queda donde está sin un error sin manejar', async () => {
+      const navigate = vi
+        .spyOn(router, 'navigate')
+        .mockRejectedValue(new Error('NG04002: Cannot match any routes'));
+      const session = signIn();
+
+      fail('/api/dataiq/versions', 401, null);
+      await navigate.mock.results[0].value.catch(() => undefined);
+
+      expect(session.isLoggedIn()).toBe(false);
+      expect(messages()).toEqual([['Hace falta iniciar sesión.']]);
     });
   });
 

@@ -98,7 +98,9 @@ navegador.
 - `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
   del token `API_BASE_URL`, que `core/http` provee con `/api/dataiq`.
 - Para probarlos: `provideRepositoryTesting()` (`data/testing.ts`) con
-  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`.
+  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`. La base
+  de prueba (`TEST_API_BASE`) es distinta a `/api/dataiq` a propósito: así se
+  comprueba que cada repositorio usa la que recibe.
 
 **El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
 en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
@@ -147,9 +149,9 @@ una ruta propia: ver «Sesión»).
 
 Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 
-- **401**: no hay sesión o venció (dura 2 horas). Se limpia la cuenta y se
-  lleva a `/cuenta/ingresar?volver=<ruta actual>`. En una página pública, el
-  401 de `GET /auth/me` solo significa visitante.
+- **401**: no hay sesión o venció (dura 2 horas). Si la petición salió con
+  sesión, se limpia la cuenta y se lleva a `/cuenta/ingresar?volver=<ruta
+  actual>`. Un visitante no tiene sesión que vencer: ver las excepciones abajo.
 - **403**: el rol no alcanza (o falta `X-IQ-Client`, que sería un error del
   frontend).
 - **409**: otro cambio llegó primero o el estado no lo permite (otro revisor
@@ -167,18 +169,29 @@ conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
 servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
 manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
 
-- Un 401 de `GET /auth/me` (visitante) y de `POST /auth/login` (contraseña mal
-  puesta) no avisa ni redirige: lo trata la pantalla.
+- Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
+  cuenta; lo trata la pantalla:
+  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
+    puesta);
+  - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
+    página pública: no lo saca de ahí;
+  - el de una petición que salió antes de ingresar o salir
+    (`SessionService.generation` cambió): viene de la cookie vieja y no debe
+    borrar la sesión nueva.
 - Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
-  `/cuenta/…` no se vuelve a enviar a ingresar.
-- Un 401 (salvo esos dos) también olvida la cuenta (`SessionService.clear()`).
+  `/cuenta/…` no se vuelve a enviar a ingresar. Si la navegación falla, se queda
+  donde está.
+- Los demás 401 también olvidan la cuenta (`SessionService.clear()`).
 
 **Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
 `NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
 `App` los pasa a `shared/ui/notice-stack`, que solo dibuja: recibe la lista y
 avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
 neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
-sola a los 3,2 s. Aspecto y razones: «Avisos» en
+sola a los 3,2 s. Un error igual a uno a la vista no se repite, y caben tres
+(`MAX_ERRORS`): si llega otro, se va el más antiguo. Una confirmación igual a
+una a la vista la reemplaza y vuelve a contar su tiempo. Un aviso sin mensajes
+no se muestra. Aspecto y razones: «Avisos» en
 [`DESIGN.md`](../../DESIGN.md).
 
 ### Sesión
@@ -188,8 +201,11 @@ API al arrancar (`provideSession()`), pero **el arranque no espera la
 respuesta**: el backend puede tardar segundos en arrancar en frío y las páginas
 públicas no deben quedar en blanco. Hasta que llega, `loaded()` es `false` (el
 shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión), y
-si la API no responde o da 401, queda como visitante. Una respuesta tardía de
-`GET /auth/me` no pisa un ingreso hecho mientras tanto.
+si la API no responde o da 401, queda como visitante. Solo el 401 es
+definitivo: si la API no respondió (sin conexión o un 5xx en un arranque en
+frío), el próximo `load()` —el de un guard, por ejemplo— vuelve a preguntar.
+Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una respuesta
+tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
 
 - `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
   la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
@@ -197,7 +213,8 @@ si la API no responde o da 401, queda como visitante. Una respuesta tardía de
 - `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
   (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
   tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
-  aviso de que no hay permiso (el mismo texto de respaldo del 403). Es solo para
+  aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
+  403). Es solo para
   no mostrar pantallas que no se pueden usar: la API decide en cada petición.
 - `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
   que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no

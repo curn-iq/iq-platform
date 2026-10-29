@@ -2,9 +2,13 @@
 // ni usted). Solo se usan cuando la API no trae un `detail` en texto.
 const NO_CONNECTION = 'No hay conexión con el servidor.';
 const SERVER_ERROR = 'El servidor no pudo responder. Intentar de nuevo en un momento.';
+
+/** El texto del 403; `roleGuard` también lo usa cuando el rol no alcanza. */
+export const NO_PERMISSION = 'No hay permiso para esta acción.';
+
 const FALLBACKS: Readonly<Record<number, string>> = {
   401: 'Hace falta iniciar sesión.',
-  403: 'No hay permiso para esta acción.',
+  403: NO_PERMISSION,
   409: 'Otro cambio llegó primero. Recargar e intentar de nuevo.',
   422: 'Hay datos que no son válidos.',
 };

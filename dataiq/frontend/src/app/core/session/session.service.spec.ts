@@ -66,6 +66,29 @@ describe('SessionService', () => {
       expect(session.loaded()).toBe(true);
     });
 
+    it('si la API no respondió, el próximo load() vuelve a preguntar', async () => {
+      const first = session.load();
+      me().flush(null, { status: 504, statusText: 'Gateway Timeout' });
+      await first;
+      expect(session.isLoggedIn()).toBe(false);
+
+      const second = session.load();
+      expect(second).not.toBe(first);
+      me().flush(account('reviewer'));
+      await second;
+
+      expect(session.role()).toBe('reviewer');
+    });
+
+    it('un 401 sí es definitivo: no vuelve a preguntar', async () => {
+      const first = session.load();
+      me().flush(null, unauthorized);
+      await first;
+
+      expect(session.load()).toBe(first);
+      http.expectNone(`${TEST_API_BASE}/auth/me`);
+    });
+
     it('pide la cuenta una sola vez: quien llame de nuevo recibe lo mismo', async () => {
       const first = session.load();
       const second = session.load();
@@ -92,6 +115,19 @@ describe('SessionService', () => {
   });
 
   describe('login', () => {
+    it('deja la sesión como sabida aunque GET /auth/me no haya respondido', async () => {
+      const loading = session.load();
+      const request = me();
+
+      session.login(credentials).subscribe();
+      http.expectOne(`${TEST_API_BASE}/auth/login`).flush(account());
+
+      expect(session.loaded()).toBe(true);
+      expect(session.isLoggedIn()).toBe(true);
+      request.flush(account());
+      await loading;
+    });
+
     it('manda las credenciales, guarda la cuenta y la devuelve', () => {
       let result: Account | undefined;
       session.login(credentials).subscribe((a) => (result = a));
@@ -146,7 +182,17 @@ describe('SessionService', () => {
     session.clear();
 
     expect(session.account()).toBeNull();
+    expect(session.loaded()).toBe(true);
     http.expectNone(() => true);
+  });
+
+  it('generation cambia con cada cambio de cuenta', () => {
+    const start = session.generation;
+    session.login(credentials).subscribe();
+    http.expectOne(`${TEST_API_BASE}/auth/login`).flush(account());
+    session.clear();
+
+    expect(session.generation).toBe(start + 2);
   });
 
   describe('hasRole', () => {

@@ -11,6 +11,13 @@ export interface Notice {
 }
 
 /**
+ * Cuántos errores caben a la vez. Un error se queda hasta que se cierra, así
+ * que sin tope se apilarían (p. ej. un 422 distinto en cada autoguardado) hasta
+ * salirse de la pantalla.
+ */
+export const MAX_ERRORS = 3;
+
+/**
  * Avisos en pantalla. Solo guarda cuáles hay; quien los dibuja es el componente
  * de `shared/ui/`, que recibe `notices` y avisa con `dismiss`.
  */
@@ -22,18 +29,32 @@ export class NoticeService {
   readonly notices = this.list.asReadonly();
 
   /**
-   * Agrega un aviso. Si ya hay uno igual a la vista (varias peticiones que
-   * fallan a la vez dan el mismo error), no se repite.
+   * Agrega un aviso; uno sin mensajes no se muestra.
+   * - Un error igual a uno a la vista no se repite (varias peticiones que fallan
+   *   a la vez dan el mismo). Si ya hay `MAX_ERRORS`, se va el más antiguo.
+   * - Una confirmación igual a una a la vista la reemplaza, para que vuelva a
+   *   contar su tiempo (guardar dos veces seguidas confirma las dos).
    */
   show(kind: NoticeKind, messages: readonly string[]): void {
-    const repeated = this.list().some(
-      (notice) =>
-        notice.kind === kind &&
-        notice.messages.length === messages.length &&
-        notice.messages.every((message, i) => message === messages[i]),
-    );
-    if (repeated) return;
-    this.list.update((notices) => [...notices, { id: this.nextId++, kind, messages }]);
+    if (messages.length === 0) return;
+    const same = (notice: Notice) =>
+      notice.kind === kind &&
+      notice.messages.length === messages.length &&
+      notice.messages.every((message, i) => message === messages[i]);
+
+    if (kind === 'error' && this.list().some(same)) return;
+    this.list.update((notices) => {
+      let kept = notices.filter((notice) => !same(notice));
+      if (kind === 'error') {
+        const errors = kept.filter((notice) => notice.kind === 'error');
+        const excess = errors.length - (MAX_ERRORS - 1);
+        if (excess > 0) {
+          const dropped = new Set(errors.slice(0, excess).map((notice) => notice.id));
+          kept = kept.filter((notice) => !dropped.has(notice.id));
+        }
+      }
+      return [...kept, { id: this.nextId++, kind, messages }];
+    });
   }
 
   dismiss(id: number): void {
