@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  flex: none;
+  width: 30px;
+  height: 30px;
+}
+
+svg {
+  display: block;
+}
+
+.tile {
+  fill: var(--color-accent);
+}
+
+.grid {
+  stroke: var(--color-surface);
+  stroke-opacity: 0.35;
+}
+
+.dot {
+  fill: var(--color-surface);
+}
+
+.spark {
+  fill: var(--color-accent-soft);
+}

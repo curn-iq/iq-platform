@@ -29,23 +29,6 @@
   white-space: nowrap;
 }
 
-.brand-tile {
-  fill: var(--color-accent);
-}
-
-.brand-grid {
-  stroke: var(--color-surface);
-  stroke-opacity: 0.35;
-}
-
-.brand-dot {
-  fill: var(--color-surface);
-}
-
-.brand-spark {
-  fill: var(--color-accent-soft);
-}
-
 nav {
   display: flex;
   gap: 2px;

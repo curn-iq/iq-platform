@@ -64,7 +64,7 @@ src/
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, avatar, not-found, tabs con raya, segmented control, status pill,
+    │   ├── ui/             button, avatar, brand mark, not-found, tabs con raya, segmented control, status pill,
     │   │                   progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
@@ -195,6 +195,18 @@ destino de cada opción: rutas de esta app (los fragmentos del inicio:
   final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
   mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
   solo con el avatar.
+
+### Pie (`shell/footer/`)
+
+El pie oscuro (`Footer`) va en todas las páginas, bajo `<main>`, que crece para
+que el pie quede abajo aunque la página sea corta. Lleva la marca con su frase y
+las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
+Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
+no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
+«Preguntas frecuentes» y «Para docentes»; la política de datos se suma con su
+página (fase 5). Las especialidades las da `Specialties` (`GET /specialties`,
+una sola petición que comparte con el desplegable de la barra) y dicen
+«Cargando…» mientras llegan.
 
 ### Errores de la API
 

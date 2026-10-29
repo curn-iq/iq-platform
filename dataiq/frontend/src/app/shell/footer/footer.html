@@ -1,0 +1,86 @@
+<ng-template #link let-option>
+  @if (option.target.href) {
+    <a [href]="option.target.href">{{ option.label }}</a>
+  } @else {
+    <a
+      [routerLink]="option.target.route"
+      [fragment]="option.target.fragment"
+      [queryParams]="option.target.queryParams"
+      >{{ option.label }}</a
+    >
+  }
+</ng-template>
+
+<div class="grid">
+  <div class="brand">
+    <a class="brand-link" routerLink="/" aria-label="IQ Platform, inicio">
+      <app-brand-mark />
+      IQ Platform
+    </a>
+    <p>
+      Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.
+    </p>
+  </div>
+
+  <nav class="columns" aria-label="Pie de página">
+    <div>
+      <h2 class="title">Herramientas</h2>
+      <ul>
+        @for (option of columns().tools; track option.label) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="link"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="title">Especialidades</h2>
+      <ul>
+        @for (specialty of specialties.list(); track specialty.id) {
+          <li>
+            <a [routerLink]="catalogRoute" [queryParams]="{ especialidad: specialty.id }">{{
+              specialty.name
+            }}</a>
+          </li>
+        }
+      </ul>
+      @if (specialties.loading()) {
+        <p class="loading" role="status">Cargando…</p>
+      }
+    </div>
+    <div>
+      <h2 class="title">¿Por qué IQ Platform?</h2>
+      <ul>
+        @for (option of columns().why; track option.label) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="link"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="title">Ayuda</h2>
+      <ul>
+        @for (option of columns().help; track option.label) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="link"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<div class="base">
+  <span>© {{ year }} IQ Platform</span>
+  <span>IQ Platform es un nombre provisional.</span>
+</div>

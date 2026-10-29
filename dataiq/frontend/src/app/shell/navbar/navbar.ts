@@ -16,6 +16,7 @@ import { filter, map } from 'rxjs';
 import { SessionService } from '../../core/session/session.service';
 import type { Account } from '../../data/api/models';
 import { Avatar } from '../../shared/ui/avatar/avatar';
+import { BrandMark } from '../../shared/ui/brand-mark/brand-mark';
 import { Button } from '../../shared/ui/button/button';
 import { MobileMenu } from './mobile-menu';
 import { CATALOG_ROUTE, NAV_MENUS, NavMenu, NavMenuId } from './nav-menus';
@@ -32,7 +33,7 @@ type PanelId = NavMenuId | 'account';
  */
 @Component({
   selector: 'app-navbar',
-  imports: [Avatar, Button, MobileMenu, RouterLink],
+  imports: [Avatar, BrandMark, Button, MobileMenu, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -661,7 +661,7 @@ Lo que la interfaz le dice a la persona cuando algo falla o se hizo (decidido po
   - *Especialidades:* las cinco especialidades; la vista previa lista las técnicas reales de la señalada.
   - *¿Por qué IQ Platform?* y *Ayuda:* tres opciones cada uno; la vista previa es una frase en una tarjeta `marca-claro` con texto `marca-hondo` y el final en `marca` (title) o la lista «Lo más preguntado». **En el MVP** «¿Por qué IQ Platform?» lleva dos opciones, «Cómo funciona» y «La investigación», porque «Quiénes somos» no tiene texto (Resuelto 26 de `dataiq/docs/checklist-frontend.md`); las opciones de los dos menús llevan a su sección del inicio.
 - **Celular:** el botón de menú (44px) abre un panel `superficie` a pantalla completa con grupos plegables (`details`, filete inferior, flecha que gira) y, al final, Crear cuenta gratis (botón grande) e Ingresar (enmarcado con filete).
-- **Pie:** oscuro (`noche`), marca y frase en 1.6 fracciones y cuatro columnas: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda.
+- **Pie:** oscuro (`noche`), marca y frase en 1.6 fracciones y cuatro columnas: Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda. **En el MVP** (Resuelto 26 de `dataiq/docs/checklist-frontend.md`) sin «Quiénes somos» ni «Términos de uso», que no tienen texto; Ayuda lleva «Preguntas frecuentes», «Para docentes» y, con su página, la política de datos.
 
 ### Escenario de la mesa (firma)
 La misma mesa en tres vistas, dentro de un contenedor de 24px con degradado blanco a `#eef3f4`.
