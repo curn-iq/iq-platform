@@ -8,8 +8,8 @@ el visor 3D de SIMIQ3D.
 
 | Archivo | Qué es |
 |---|---|
-| `*.glb` | Modelos optimizados para cargar en el visor web |
-| `*.blend` | Archivos fuente de Blender, organizados por familia |
+| `glb/*.glb` | Modelos optimizados para cargar en el visor web |
+| `blender/*.blend` | Archivos fuente de Blender, organizados por familia |
 | `modelos.csv` | Instrumento, archivo GLB, medidas principales, fuente y notas |
 
 ## Convenciones
