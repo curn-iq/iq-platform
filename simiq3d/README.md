@@ -112,6 +112,12 @@ Decidido por Mauricio el 2026-10-15:
 - **Errores de escritura:** si un nombre se parece mucho a una técnica o a un
   instrumento («masectomia», «pinza allys»), el chat no adivina: responde
   «¿Quizás quisiste decir…?» con la pregunta corregida como opción.
+- **Lo que se decide sin el modelo, se decide sin el modelo:** una técnica de
+  otra especialidad («la cesárea») o un instrumento nombrado por su familia en
+  una mesa que lleva varios («el bisturí» de la eventrorrafia) se responden con
+  reglas fijas, antes de preguntarle al modelo. Una técnica descrita sin
+  nombrarla («la cirugía para quitar la vesícula») se reconoce por las palabras
+  de su descripción en DataIQ que solo están en ella; si hay empate, no adivina.
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB
   de RAM), con una dirección HTTPS fija de Tailscale Funnel, como el Servidor
