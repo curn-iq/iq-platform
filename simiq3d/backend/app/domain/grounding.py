@@ -26,16 +26,18 @@ def unsupported(text: str, results: list[dict], catalog: Catalog) -> list[str]:
         if contains(said, normalize(t.name)) and not contains(facts, normalize(t.name)):
             problems.append(t.name)
     for i in catalog.instruments:
-        keys = {normalize(n) for n in (i.name, *i.aliases)} | {
-            GENERIC.sub("", normalize(i.name))
-        }
-        mentioned = any(len(k) >= 5 and contains(said, k) for k in keys)
+        keys, proper = _mention_keys(i.name, i.aliases)
+        mentioned = any(len(k) >= 5 and contains(said, k) for k in keys) or (
+            proper is not None and len(proper) >= 5 and contains(text, proper)
+        )
         if mentioned and not contains(facts, normalize(i.name)):
             problems.append(i.name)
     # Lo que parece un instrumento pero no es del catálogo (inventado).
     catalog_words = {w for i in catalog.instruments for w in normalize(i.name).split()}
     for match in _INSTRUMENT_LIKE.finditer(text):
         word = normalize(match.group(1))
+        if word in _NUMBER_WORDS_IN_NAMES:
+            continue  # «el mango número 7»
         if word not in catalog_words and not contains(facts, word):
             problems.append(match.group(0))
     numbers = set(re.findall(r"\d+", facts))
@@ -62,12 +64,34 @@ def unsupported(text: str, results: list[dict], catalog: Catalog) -> list[str]:
     return problems
 
 
+# «el mango número 7»: no es un instrumento que se llame «Número».
+_NUMBER_WORDS_IN_NAMES = {"numero", "nro"}
+# La palabra con que se nombra todo el instrumental, aunque en el catálogo haya un
+# objeto que se llame así.
+_PLAIN_WORDS = {"instrumental"}
+
+
+def _mention_keys(name: str, aliases: tuple[str, ...]) -> tuple[set[str], str | None]:
+    """Cómo se menciona un instrumento en una respuesta: su nombre o un alias
+    (sin mayúsculas ni tildes) y, sin «pinza de», el nombre propio que queda,
+    tal como se escribe («la Kelly»). Un adjetivo no cuenta («largo»,
+    «abdominal»), ni el nombre propio en minúscula («el campo operatorio» no es
+    la Pinza de Campo)."""
+    keys = {normalize(n) for n in (name, *aliases)} - _PLAIN_WORDS
+    rest = GENERIC.sub("", normalize(name))
+    dropped = len(normalize(name).split()) - len(rest.split())
+    proper = " ".join(name.split()[dropped:]) if dropped else None
+    if proper is not None and not proper[:1].isupper():
+        proper = None
+    return keys, proper
+
+
 # Los números del texto, menos el de «3D» (el visor), que no es un dato.
 _NUMBER = re.compile(r"(?<!\d)\d+(?!\d)(?![dD]\b)")
 _GRID_WORDS = re.compile(r"\b(?:filas?|columnas?|celdas?|cuadricula)\b")
 _SAME_PLACE = re.compile(
     r"\b(?:en cada una|en todas|misma (?:ubicacion|posicion|zona|parte)|"
-    r"mismo (?:lugar|sitio))\b"
+    r"mismo (?:lugar|sitio)|(?:ubicaciones|posiciones|lugares) similares)\b"
 )
 
 
