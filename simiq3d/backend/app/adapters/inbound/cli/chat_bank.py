@@ -55,7 +55,7 @@ from app.domain.chat import (
     Vocabulary,
     spelling_reply,
 )
-from app.domain.names import GENERIC, contains, suggest_spelling
+from app.domain.names import canonical, contains, instrument_keys, suggest_spelling
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 from app.ports.chat import ChatEngine, ModelUnavailable
 
@@ -97,6 +97,14 @@ NEEDS = {
 # proporción de sus palabras de cinco letras o más. El agente cita los datos
 # como vienen, pero puede acortar.
 COVERAGE = 0.4
+# «¿Para qué sirve la Metzenbaum?» se responde con una frase de la descripción:
+# basta con que el texto traiga casi toda una de sus frases.
+SENTENCE_COVERAGE = 0.6
+
+# Los datos clínicos que puede pedir una pregunta: los del chat, más la
+# anestesia y la posición por separado («¿Cuál es la posición del paciente?»
+# no pide la anestesia).
+DATA_FIELDS = {f.value for f in ClinicalField} | {"anesthesia", "patient_position"}
 
 NUMBERS = {
     1: ("uno", "una"),
@@ -125,7 +133,15 @@ OPENS = {
 }
 
 # Cómo dice el chat que no tiene la respuesta, cuando no responde la plantilla.
-REFUSALS = ("solo puedo", "no puedo", "no tengo", "no trata", "no esta", "no hay")
+REFUSALS = (
+    "solo puedo",
+    "solo cubre",
+    "no puedo",
+    "no tengo",
+    "no trata",
+    "no esta",
+    "no hay",
+)
 
 
 class BankError(Exception):
@@ -179,18 +195,20 @@ def check_bank(bank: list[Question], catalog: Catalog) -> None:
             problems.append(f"{q.id}: no se sabe calificar «{q.expects}»")
             continue
         names = {
-            "T": ("tecnica", q.technique, find_technique),
-            "O": ("otra_tecnica", q.other_technique, find_technique),
-            "I": ("instrumento", q.instrument, find_instrument),
+            "T": ("tecnica", [q.technique], find_technique),
+            "O": ("otra_tecnica", [q.other_technique], find_technique),
+            # Una pregunta ambigua puede traer las opciones, separadas por «|».
+            "I": ("instrumento", q.instrument.split("|"), find_instrument),
         }
-        for need, (column, name, find) in names.items():
-            if need in needs and not name:
+        for need, (column, values, find) in names.items():
+            if need in needs and not values[0]:
                 problems.append(f"{q.id}: falta {column}")
-            elif name and find(catalog, name) is None:
-                problems.append(f"{q.id}: «{name}» no está en DataIQ")
+            for name in values:
+                if name and find(catalog, name) is None:
+                    problems.append(f"{q.id}: «{name}» no está en DataIQ")
         if q.open_technique and find_technique(catalog, q.open_technique) is None:
             problems.append(f"{q.id}: «{q.open_technique}» no está en DataIQ")
-        if "D" in needs and q.field not in {f.value for f in ClinicalField}:
+        if "D" in needs and q.field not in DATA_FIELDS:
             problems.append(f"{q.id}: dato desconocido «{q.field}»")
     if problems:
         raise BankError("El banco no cuadra con DataIQ:\n" + "\n".join(problems))
@@ -199,14 +217,10 @@ def check_bank(bank: list[Question], catalog: Catalog) -> None:
 # --- Calificar una respuesta ---------------------------------------------------
 
 
-def _keys(instrument: Instrument) -> set[str]:
-    names = {normalize(n) for n in (instrument.name, *instrument.aliases)}
-    return names | {GENERIC.sub("", n) for n in names}
-
-
 def _names_instrument(text: str, instrument: Instrument) -> bool:
-    said = normalize(text).replace("mesa de mayo", "")
-    return any(key and contains(said, key) for key in _keys(instrument))
+    said = canonical(text).replace("mesa de mayo", "")
+    keys = instrument_keys(instrument.name, instrument.aliases)
+    return any(contains(said, key) for key in keys)
 
 
 def _names_technique(text: str, technique: Technique) -> bool:
@@ -215,12 +229,26 @@ def _names_technique(text: str, technique: Technique) -> bool:
     return contains(said, key) or contains(said, key.split()[0])
 
 
+def _words(text: str) -> set[str]:
+    return {w for w in re.findall(r"\w+", normalize(text)) if len(w) >= 5}
+
+
 def _covers(text: str, source: str | None) -> bool:
-    words = {w for w in re.findall(r"\w+", normalize(source or "")) if len(w) >= 5}
+    words = _words(source or "")
     if not words:
         return False
-    said = set(re.findall(r"\w+", normalize(text)))
-    return len(words & said) / len(words) >= COVERAGE
+    return len(words & _words(text)) / len(words) >= COVERAGE
+
+
+def _covers_a_sentence(text: str, source: str | None) -> bool:
+    """El texto trae casi toda una frase de la fuente (de tres palabras de cinco
+    letras o más, al menos)."""
+    said = _words(text)
+    for sentence in re.split(r"[.;:]", source or ""):
+        words = _words(sentence)
+        if len(words) >= 3 and len(words & said) / len(words) >= SENTENCE_COVERAGE:
+            return True
+    return False
 
 
 def _says_number(text: str, n: int) -> bool:
@@ -233,11 +261,15 @@ def _instruments(technique: Technique, catalog: Catalog) -> list[Instrument]:
     return [i for i in catalog.instruments if i.id in ids]
 
 
-def _field_text(technique: Technique, field: ClinicalField) -> str | None:
+def _field_text(technique: Technique, field: str) -> str | None:
+    if field == "anesthesia":
+        return technique.anesthesia
+    if field == "patient_position":
+        return technique.patient_position
     if field == ClinicalField.anesthesia_position:
         parts = [technique.anesthesia, technique.patient_position]
         return " ".join(p for p in parts if p) or None
-    return getattr(technique, field.value)
+    return getattr(technique, field)
 
 
 def _goes_in(technique: Technique, instrument: Instrument) -> bool:
@@ -305,11 +337,11 @@ def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
                 return True, ""
             return False, "ni pregunta en cuál técnica ni nombra todas"
         case "describir":
-            if _covers(text, i.description):
+            if _covers(text, i.description) or _covers_a_sentence(text, i.description):
                 return True, ""
             return False, "no trae la descripción de DataIQ"
         case "dato":
-            if _covers(text, _field_text(t, ClinicalField(q.field))):
+            if _covers(text, _field_text(t, q.field)):
                 return True, ""
             return False, "no trae el dato de DataIQ"
         case "listar":
@@ -330,6 +362,11 @@ def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
             return _compare(q.expects, text, t, other, catalog)
         case "aclarar":
             if reply.action == ChatAction.clarify:
+                return True, ""
+            # Si la pregunta es ambigua («el bisturí» de una mesa que lleva dos),
+            # también es correcto responder por cada opción.
+            options = [find_instrument(catalog, n) for n in q.instrument.split("|")]
+            if "|" in q.instrument and all(_names_instrument(text, o) for o in options):
                 return True, ""
             return False, "no pide precisar"
         case "fuera":

@@ -231,3 +231,30 @@ async def test_the_bank_runs_like_the_chat_route():
     report = summary(outcomes)
     assert report.startswith("Exactitud: 3/3 (100.0 %)")
     assert "error_escritura" in report
+
+
+def test_a_question_for_the_position_does_not_need_the_anesthesia():
+    q = question("dato", tecnica="Colecistectomía", dato="patient_position")
+    position = Reply(ChatAction.answer, "El paciente va en decúbito supino.")
+    assert score(q, position, CATALOG)[0] is True
+    q = question("dato", tecnica="Colecistectomía", dato="anesthesia")
+    assert score(q, position, CATALOG)[0] is False
+
+
+def test_one_sentence_of_the_description_answers_what_it_is_for():
+    q = question("describir", instrumento="Tijera de Mayo")
+    sentence = Reply(ChatAction.answer, "Es una tijera recta para cortar tejidos.")
+    assert score(q, sentence, CATALOG)[0] is True
+
+
+def test_an_ambiguous_question_can_be_answered_for_each_option():
+    q = question(
+        "aclarar",
+        tecnica="Colecistectomía",
+        instrumento="Pinza de Allis|Pinza Kelly",
+    )
+    check_bank([q], CATALOG)
+    both = Reply(ChatAction.answer, "La Allis va arriba y la Kelly, al centro.")
+    one = Reply(ChatAction.answer, "La Allis va arriba.")
+    assert score(q, both, CATALOG)[0] is True
+    assert score(q, one, CATALOG)[0] is False
