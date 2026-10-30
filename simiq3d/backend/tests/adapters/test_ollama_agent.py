@@ -6,7 +6,15 @@ import pytest
 from app.adapters.outbound.language.ollama import OllamaAgent
 from app.domain.chat import ChatAction
 from app.ports.chat import ModelUnavailable
-from tests.sample import ALLIS, CATALOG, COLECISTECTOMIA, KELLY, MASTECTOMIA
+from tests.sample import (
+    ALLIS,
+    CATALOG,
+    COLECISTECTOMIA,
+    KELLY,
+    LAHEY,
+    MASTECTOMIA,
+    TIROIDECTOMIA,
+)
 
 
 def call(name: str, **args) -> dict:
@@ -230,6 +238,164 @@ async def test_a_single_technique_in_the_answer_sets_the_scene():
 
     assert reply.action == ChatAction.highlight_instrument
     assert (reply.technique_id, reply.instrument_id) == (MASTECTOMIA.id, KELLY.id)
+
+
+@pytest.mark.anyio
+async def test_the_asked_instrument_is_highlighted_not_its_neighbor():
+    # La respuesta nombra también al vecino, de nombre más largo.
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Tiroidectomía")),
+        tool_calls(
+            call("reply", text="La Pinza Lahey va junto a la Pinza Kelly Adson.")
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "¿Dónde va la Lahey en la tiroidectomía?", CATALOG, TIROIDECTOMIA.id
+    )
+
+    assert reply.action == ChatAction.highlight_instrument
+    assert (reply.technique_id, reply.instrument_id) == (TIROIDECTOMIA.id, LAHEY.id)
+
+
+@pytest.mark.anyio
+async def test_an_asked_instrument_that_is_not_in_the_table_is_not_replaced():
+    server = ScriptedOllama(
+        tool_calls(
+            call("get_technique", technique="Mastectomía"),
+            call("find_instrument", instrument="Lahey"),
+        ),
+        tool_calls(
+            call(
+                "reply",
+                text="La Pinza Lahey no va en Mastectomía; esa mesa lleva la "
+                "Pinza Kelly.",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "¿Dónde va la Lahey en la mastectomía?", CATALOG, MASTECTOMIA.id
+    )
+
+    assert reply.action == ChatAction.show_technique
+    assert (reply.technique_id, reply.instrument_id) == (MASTECTOMIA.id, None)
+
+
+@pytest.mark.anyio
+async def test_mentioning_the_3d_viewer_does_not_fall_back():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Colecistectomía")),
+        tool_calls(
+            call("reply", text="La Colecistectomía ya está abierta en el visor 3D.")
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "Muéstrame la colecistectomía", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert reply.answered_by == "qwen2.5:7b"
+    assert reply.technique_id == COLECISTECTOMIA.id
+
+
+@pytest.mark.anyio
+async def test_the_technique_of_the_question_wins_over_the_open_one():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Mastectomía")),
+        tool_calls(call("reply", text="La Pinza Kelly va al centro.")),
+    )
+
+    reply = await server.agent().reply(
+        "¿Y dónde va la Kelly en la mastectomía?", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert (reply.technique_id, reply.instrument_id) == (MASTECTOMIA.id, KELLY.id)
+
+
+@pytest.mark.anyio
+async def test_the_consulted_technique_is_shown_when_the_answer_does_not_name_it():
+    server = ScriptedOllama(
+        tool_calls(
+            call("get_technique", technique="la cirugía para quitar la vesícula")
+        ),
+        tool_calls(call("reply", text="Su mesa de Mayo lleva 4 objetos.")),
+    )
+
+    reply = await server.agent().reply(
+        "Quiero ver la mesa de la cirugía para quitar la vesícula", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.show_technique
+    assert reply.technique_id == COLECISTECTOMIA.id
+
+
+@pytest.mark.anyio
+async def test_the_rules_before_the_model_answer_without_calling_it():
+    server = ScriptedOllama()
+
+    reply = await server.agent().reply(
+        "¿Qué lleva la mesa de Mayo de la cesárea?", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.no_answer
+    assert reply.answered_by == "plantillas"
+    assert server.requests == []
+
+
+@pytest.mark.anyio
+async def test_only_the_sentence_that_names_a_tool_is_removed():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Colecistectomía")),
+        tool_calls(
+            call(
+                "reply",
+                text="La Kelly va al centro. Puedes verla con el comando show_in_3d.",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "¿Dónde va la Kelly?", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert reply.reply == "La Kelly va al centro."
+
+
+@pytest.mark.anyio
+async def test_the_model_is_told_which_technique_the_question_describes():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Colecistectomía")),
+        tool_calls(call("reply", text="Su mesa de Mayo lleva 4 objetos.")),
+    )
+
+    reply = await server.agent().reply(
+        "¿Cómo se ve la mesa para quitar la vesícula?", CATALOG, None
+    )
+
+    question = server.requests[0]["messages"][1]["content"]
+    assert question.startswith("La pregunta describe la técnica Colecistectomía.")
+    assert reply.technique_id == COLECISTECTOMIA.id
+
+
+@pytest.mark.anyio
+async def test_offers_and_quoted_places_are_cleaned():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Colecistectomía")),
+        tool_calls(
+            call(
+                "reply",
+                text='La Kelly va en la ubicación "en el centro". '
+                "¿Quieres verla en 3D? Puedo resaltarla para ti.",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "¿Dónde va la Kelly?", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert reply.reply == "La Kelly va en el centro."
 
 
 @pytest.mark.anyio

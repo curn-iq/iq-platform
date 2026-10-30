@@ -27,6 +27,27 @@ FIELDS = (
 GENERIC = re.compile(r"^(pinzas?|tijeras?|separador|portaagujas)( de)? ")
 
 
+# «N.° 3», «número 3», «nro. 3» y «#3» se dicen distinto y son lo mismo.
+_NUMBER_MARK = re.compile(
+    r"(?:\bn\s*\.?\s*[°º]|\bnro\b\.?|\bnumero\b|\bnum\b\.?|#)\s*(?=\d)"
+)
+
+
+def canonical(text: str) -> str:
+    """Normalizado y sin la marca de número: «Mango de bisturí N.° 3» y «mango
+    de bisturí número 3» quedan iguales («mango de bisturi 3»)."""
+    return " ".join(_NUMBER_MARK.sub("", normalize(text)).split())
+
+
+def instrument_keys(name: str, aliases: tuple[str, ...] = ()) -> set[str]:
+    """Cómo se puede nombrar un instrumento: su nombre o un alias, sin «pinza
+    de» («la Kelly») y sin «de bisturí» («el mango 7», «la hoja 15»)."""
+    names = {canonical(n) for n in (name, *aliases)}
+    keys = names | {GENERIC.sub("", n) for n in names}
+    keys |= {n.replace(" de bisturi", "") for n in names}
+    return {k for k in keys if k}
+
+
 def contains(text: str, key: str) -> bool:
     return re.search(rf"(?<!\w){re.escape(key)}(?!\w)", text) is not None
 
@@ -42,18 +63,36 @@ def technique_in(text: str, vocabulary: Vocabulary) -> str | None:
     return None
 
 
+def instruments_in(text: str, vocabulary: Vocabulary) -> list[str]:
+    """Los instrumentos que nombra el texto, en el orden en que aparecen. Donde
+    dos nombres empiezan igual, cuenta el más largo: «Kelly Adson» no es además
+    la Kelly. «mesa de Mayo» no es la Tijera de Mayo."""
+    text = canonical(text).replace("mesa de mayo", "")
+    found: list[tuple[int, int, str]] = []
+    for name, aliases in vocabulary.instruments.items():
+        for key in instrument_keys(name, aliases):
+            for match in re.finditer(rf"(?<!\w){re.escape(key)}(?!\w)", text):
+                found.append((match.start(), match.end(), name))
+    names: list[str] = []
+    taken_until = -1
+    for start, end, name in sorted(found, key=lambda m: (m[0], m[0] - m[1])):
+        if start < taken_until:
+            continue
+        taken_until = end
+        if name not in names:
+            names.append(name)
+    return names
+
+
 def instrument_in(text: str, vocabulary: Vocabulary) -> str | None:
     """El instrumento cuyo nombre (o alias, o nombre sin «pinza de») aparece en el
     texto. Si coinciden varios, gana el más largo: «Kelly Adson» antes que
     «Kelly». «mesa de Mayo» no es la Tijera de Mayo."""
-    text = normalize(text).replace("mesa de mayo", "")
+    text = canonical(text).replace("mesa de mayo", "")
     best: tuple[int, str] | None = None
     for name, aliases in vocabulary.instruments.items():
-        keys = {normalize(n) for n in (name, *aliases)} | {
-            GENERIC.sub("", normalize(name))
-        }
-        for key in keys:
-            if key and contains(text, key) and (best is None or len(key) > best[0]):
+        for key in instrument_keys(name, aliases):
+            if contains(text, key) and (best is None or len(key) > best[0]):
                 best = (len(key), name)
     return best[1] if best else None
 

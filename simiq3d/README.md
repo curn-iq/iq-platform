@@ -89,8 +89,13 @@ Decidido por Mauricio el 2026-10-15:
     en el mismo lugar») y cualquier mención de filas, columnas o celdas;
   - si no pasa la verificación, si no consultó nada o si no termina en seis
     pasos, responden las plantillas de antes, que solo usan datos de DataIQ;
-  - lo que se ve en 3D sale de la consulta del visor, con ids reales, nunca
-    del texto.
+  - lo que se ve en 3D sale de la consulta del visor (`show_in_3d`), con ids
+    reales. Si el modelo no la usó, el visor abre la técnica abierta (o la
+    única que nombra la respuesta) y resalta el instrumento por el que se
+    preguntó, si va en esa mesa; solo si la pregunta no nombra ninguno, el
+    primero que nombra la respuesta. Siempre con ids de DataIQ: la respuesta
+    nombra también a los vecinos («junto a la Kelly Adson»), y resaltar uno de
+    ellos señalaría otro instrumento.
 
   La verificación compara nombres y números, no el sentido de las frases:
   una afirmación falsa escrita solo con palabras puede pasar. Por eso la
@@ -107,6 +112,12 @@ Decidido por Mauricio el 2026-10-15:
 - **Errores de escritura:** si un nombre se parece mucho a una técnica o a un
   instrumento («masectomia», «pinza allys»), el chat no adivina: responde
   «¿Quizás quisiste decir…?» con la pregunta corregida como opción.
+- **Lo que se decide sin el modelo, se decide sin el modelo:** una técnica de
+  otra especialidad («la cesárea») o un instrumento nombrado por su familia en
+  una mesa que lleva varios («el bisturí» de la eventrorrafia) se responden con
+  reglas fijas, antes de preguntarle al modelo. Una técnica descrita sin
+  nombrarla («la cirugía para quitar la vesícula») se reconoce por las palabras
+  de su descripción en DataIQ que solo están en ella; si hay empate, no adivina.
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB
   de RAM), con una dirección HTTPS fija de Tailscale Funnel, como el Servidor
