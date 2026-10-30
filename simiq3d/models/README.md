@@ -12,9 +12,18 @@ el visor 3D de SIMIQ3D.
 | `blender/*.blend` | Archivos fuente de Blender, organizados por familia |
 | `modelos.csv` | Instrumento, archivo GLB, medidas principales, fuente y notas |
 
+`modelos.csv` es también el mapeo de cada modelo a su instrumento: la columna
+`instrumento` lleva el nombre del instrumento en DataIQ (o uno de sus alias) y
+`archivo`, su GLB. El backend las carga con
+`uv run python -m app.adapters.inbound.cli.load_models`, que traduce cada
+nombre a su id en el DataIQ de ese entorno (los ids cambian de una instalación
+a otra) y deja la tabla `model_mappings` igual al archivo.
+
 ## Convenciones
 
-- Escala real, en metros.
+- Escala real, en metros (la unidad de glTF).
+- Un GLB por instrumento, con nombre en inglés (`kelly_forceps.glb`), como el
+  resto del código.
 - Origen en el centro del instrumento.
 - Eje largo sobre X, punta hacia +X. Z arriba en Blender; el exportador lo pasa
   a Y arriba en el GLB.
@@ -36,8 +45,8 @@ Cada fila de `modelos.csv` dice de dónde sale cada medida.
   dientes), y por completo Kelly, el mango N.° 7 y las hojas, que no están en
   el catálogo.
 
-Se pueden afinar con las fotos de referencia de IQ (una regla milimetrada junto
-a cada instrumento) y actualizar el modelo fuente correspondiente.
+Las fotos propias de cada instrumento, con medidas exactas, son para después
+del MVP ([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
 
 ## Simplificaciones
 
