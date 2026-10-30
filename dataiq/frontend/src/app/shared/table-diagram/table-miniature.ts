@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import type { Table, TableItem } from '../../domain/table';
+import { readingOrder, type Table, type TableItem } from '../../domain/table';
 
 interface MiniCell {
   /** Es una celda del objeto. */
@@ -35,7 +35,7 @@ export class TableMiniature {
   protected readonly cells = computed<MiniCell[]>(() => {
     const { rows, columns } = this.table();
     const { cells, legendNumber } = this.item();
-    const first = [...cells].sort((a, b) => a.row - b.row || a.column - b.column)[0];
+    const [first] = readingOrder(cells);
     const taken = new Set(cells.map((cell) => `${cell.row},${cell.column}`));
     return Array.from({ length: rows * columns }, (_, position) => {
       const row = Math.floor(position / columns) + 1;

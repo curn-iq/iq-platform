@@ -1,10 +1,10 @@
 import { DRAWINGS, type DrawingKey } from './drawings';
 
 const STEEL: DrawingKey[] = [
-  'bisturi',
+  'scalpel',
   'metzenbaum',
   'mayo',
-  'diseccion',
+  'dissecting',
   'farabeuf',
   'senn',
   'allis',
@@ -12,13 +12,13 @@ const STEEL: DrawingKey[] = [
   'rochester',
   'mosquito',
   'kelly',
-  'cistica',
-  'campo',
-  'energia',
-  'portaagujas',
+  'cystic',
+  'towelClamp',
+  'energy',
+  'needleHolder',
   'frazier',
 ];
-const FLAT: DrawingKey[] = ['ropa', 'compresas', 'bandeja', 'caucho', 'compresaPorta'];
+const FLAT: DrawingKey[] = ['drapePack', 'sponges', 'tray', 'suctionTubing', 'threadedSponge'];
 
 describe('DRAWINGS', () => {
   it('tiene los dieciséis instrumentos de acero y los cinco objetos planos de los mockups', () => {
@@ -45,7 +45,7 @@ describe('DRAWINGS', () => {
   });
 
   it('el objeto plano está centrado en el origen, para ponerlo en el centro de su celda', () => {
-    const tray = DRAWINGS.bandeja.parts;
+    const tray = DRAWINGS.tray.parts;
     expect(tray[0]).toMatchObject({ shape: 'rect', x: -38, y: -28, width: 76, height: 56 });
   });
 

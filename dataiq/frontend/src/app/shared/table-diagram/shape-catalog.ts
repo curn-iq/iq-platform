@@ -1,7 +1,10 @@
-import { DRAWINGS, type DrawingKey } from './drawings';
+import { DRAWINGS, type DrawingKey, type FlatKey, type SteelKey } from './drawings';
 
 /** Una forma que el diagrama pone en la mesa: acero, plano, o un recuadro punteado sin dibujo. */
-export type Shape = { kind: 'steel' | 'flat'; key: DrawingKey } | { kind: 'unknown'; key: null };
+export type Shape =
+  | { kind: 'steel'; key: SteelKey }
+  | { kind: 'flat'; key: FlatKey }
+  | { kind: 'unknown'; key: null };
 
 /**
  * Palabras del nombre del componente que dicen qué dibujo le toca, como la
@@ -11,11 +14,11 @@ export type Shape = { kind: 'steel' | 'flat'; key: DrawingKey } | { kind: 'unkno
 const KEYWORDS: readonly (readonly [string, DrawingKey])[] = [
   ['metzenbaum', 'metzenbaum'],
   ['tijera de mayo', 'mayo'],
-  ['tijera de energia', 'energia'],
-  ['mango de bisturi', 'bisturi'],
+  ['tijera de energia', 'energy'],
+  ['mango de bisturi', 'scalpel'],
   // La hoja va dibujada con su mango
-  ['hoja de bisturi', 'bisturi'],
-  ['diseccion', 'diseccion'],
+  ['hoja de bisturi', 'scalpel'],
+  ['diseccion', 'dissecting'],
   ['farabeuf', 'farabeuf'],
   ['senn', 'senn'],
   ['allis', 'allis'],
@@ -23,16 +26,22 @@ const KEYWORDS: readonly (readonly [string, DrawingKey])[] = [
   ['rochester', 'rochester'],
   ['mosquito', 'mosquito'],
   ['kelly', 'kelly'],
-  ['cistica', 'cistica'],
-  ['portaagujas', 'portaagujas'],
-  ['pinza de campo', 'campo'],
+  ['cistica', 'cystic'],
+  ['portaagujas', 'needleHolder'],
+  ['pinza de campo', 'towelClamp'],
   ['frazier', 'frazier'],
-  ['paquete de ropa', 'ropa'],
-  ['compresa', 'compresas'],
-  ['gasa', 'compresas'],
-  ['bandeja', 'bandeja'],
-  ['caucho de succion', 'caucho'],
+  ['paquete de ropa', 'drapePack'],
+  ['compresa', 'sponges'],
+  ['gasa', 'sponges'],
+  ['bandeja', 'tray'],
+  ['caucho de succion', 'suctionTubing'],
 ];
+
+/**
+ * Los dibujos son del instrumental de cirugía abierta: uno laparoscópico
+ * («Portaagujas laparoscópico») no se parece al abierto de su mismo nombre.
+ */
+const OTHER_FAMILY = 'laparoscop';
 
 function normalize(text: string): string {
   return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -41,27 +50,35 @@ function normalize(text: string): string {
 /** El dibujo de un componente del catálogo, o `null` si no tiene uno propio. */
 export function drawingFor(name: string): DrawingKey | null {
   const normalized = normalize(name);
+  if (normalized.includes(OTHER_FAMILY)) return null;
   return KEYWORDS.find(([word]) => normalized.includes(word))?.[1] ?? null;
 }
 
+function shapeOf(key: DrawingKey): Shape {
+  return DRAWINGS[key].kind === 'steel'
+    ? { kind: 'steel', key: key as SteelKey }
+    : { kind: 'flat', key: key as FlatKey };
+}
+
 /**
- * Las formas de un objeto, a partir de los nombres de sus componentes. Cada
- * dibujo aparece una sola vez («Mango de bisturí» y «Hoja de bisturí» son un
- * bisturí; «con garra» y «sin garra», una pinza de disección). Una compresa con
- * portaagujas es la compresa con su hilo. Un componente sin dibujo suma un solo
- * recuadro punteado, y un objeto sin componentes tampoco inventa un dibujo.
+ * Las formas de un objeto, a partir de los nombres de sus instrumentos (sin sus
+ * suturas: el hilo no se dibuja solo). Cada dibujo aparece una sola vez («Mango
+ * de bisturí» y «Hoja de bisturí» son un bisturí; «con garra» y «sin garra», una
+ * pinza de disección). Una compresa con portaagujas es la compresa con su hilo.
+ * Un instrumento sin dibujo suma un solo recuadro punteado, y un objeto sin
+ * instrumentos tampoco inventa un dibujo.
  */
-export function shapesFor(components: readonly string[]): Shape[] {
-  const keys = components.map(drawingFor);
-  const holdsNeedle = keys.includes('portaagujas');
+export function shapesFor(instruments: readonly string[]): Shape[] {
+  const keys = instruments.map(drawingFor);
+  const holdsNeedle = keys.includes('needleHolder');
   const shapes: Shape[] = [];
   const seen = new Set<DrawingKey>();
   for (const found of keys) {
     if (found === null) continue;
-    const key = found === 'compresas' && holdsNeedle ? 'compresaPorta' : found;
+    const key = found === 'sponges' && holdsNeedle ? 'threadedSponge' : found;
     if (seen.has(key)) continue;
     seen.add(key);
-    shapes.push({ kind: DRAWINGS[key].kind, key });
+    shapes.push(shapeOf(key));
   }
   if (keys.length === 0 || keys.includes(null)) shapes.push({ kind: 'unknown', key: null });
   return shapes;

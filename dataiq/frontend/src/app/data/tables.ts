@@ -27,6 +27,9 @@ export function toTables(zones: readonly ZoneLayout[], items: readonly Technique
                   legendNumber: item.legend_number,
                   name: itemName(components, item.source_text),
                   components,
+                  instruments: item.components
+                    .filter((component) => component.suture_id === null)
+                    .map((component) => component.name),
                   cells: item.cells.map((cell) => ({ row: cell.row, column: cell.column })),
                 };
               }),

@@ -25,12 +25,26 @@ export class TableLegend {
 
   protected readonly rows = computed(() => legendEntries(this.table().items));
 
-  protected point(number: number): void {
+  /** El número de la fila que tiene el foco: sigue señalada aunque el puntero pase y se vaya. */
+  private focused: number | null = null;
+
+  protected enter(number: number): void {
     this.highlighted.set(number);
   }
 
-  /** Se va el puntero o el foco: se suelta, salvo que ya se haya señalado otra fila. */
-  protected release(number: number): void {
+  /** Se va el puntero: se vuelve a la fila con el foco, salvo que ya se haya señalado otra. */
+  protected leave(number: number): void {
+    if (this.highlighted() === number) this.highlighted.set(this.focused);
+  }
+
+  protected focus(number: number): void {
+    this.focused = number;
+    this.highlighted.set(number);
+  }
+
+  /** Se va el foco: se suelta, salvo que ya se haya señalado otra fila. */
+  protected blur(number: number): void {
+    this.focused = null;
     if (this.highlighted() === number) this.highlighted.set(null);
   }
 }

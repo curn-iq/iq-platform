@@ -5,6 +5,14 @@ export interface TableCell {
 }
 
 /**
+ * Las celdas de un objeto en orden de lectura: por fila y, en la misma fila, por
+ * columna. La primera es la que lleva el número en el diagrama y en la miniatura.
+ */
+export function readingOrder(cells: readonly TableCell[]): TableCell[] {
+  return [...cells].sort((a, b) => a.row - b.row || a.column - b.column);
+}
+
+/**
  * Un objeto físico de la mesa. Aunque ocupe varias celdas, es uno solo y lleva
  * un solo número. Sin celdas, la fuente no dice dónde va; sin número, la fuente
  * no le puso (o no deja leerlo).
@@ -14,8 +22,10 @@ export interface TableItem {
   legendNumber: number | null;
   /** Lo que dice la leyenda: sus componentes unidos con «y» (`itemName`). */
   name: string;
-  /** Los nombres de sus componentes del catálogo; el diagrama elige su dibujo por ellos. */
+  /** Los nombres de sus componentes del catálogo: instrumentos y suturas. */
   components: string[];
+  /** Los nombres de los componentes que son instrumentos; el diagrama elige su dibujo por ellos. */
+  instruments: string[];
   cells: TableCell[];
 }
 

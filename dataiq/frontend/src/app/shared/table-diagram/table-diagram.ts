@@ -112,7 +112,7 @@ export class TableDiagram {
     this.table().items.flatMap((item) => {
       if (item.cells.length === 0) return [];
       const linked = !this.preview() && item.legendNumber !== null;
-      const shapes = placeShapes(item.cells, shapesFor(item.components)).map((shape) => ({
+      const shapes = placeShapes(item.cells, shapesFor(item.instruments)).map((shape) => ({
         ...shape,
         parts: shape.key === null ? [] : DRAWINGS[shape.key].parts,
       }));
@@ -134,8 +134,18 @@ export class TableDiagram {
     }),
   );
 
-  /** Los números miden lo mismo en pantalla a cualquier ancho de la mesa. */
-  protected readonly numberScale = signal(1);
+  /** Los píxeles que ocupa el dibujo en pantalla; 0 mientras no se ha medido. */
+  private readonly svgWidth = signal(0);
+
+  /**
+   * Los números miden lo mismo en pantalla a cualquier ancho de la mesa. Depende
+   * del ancho en pantalla y del de la mesa en celdas: otra mesa en el mismo
+   * espacio también cambia la escala.
+   */
+  protected readonly numberScale = computed(() => numberScale(this.svgWidth(), this.width()));
+
+  /** El número de la pieza que tiene el foco: sigue señalada aunque el puntero pase y se vaya. */
+  private focused: number | null = null;
 
   private readonly svg = viewChild.required<ElementRef<SVGSVGElement>>('svg');
 
@@ -145,20 +155,31 @@ export class TableDiagram {
       if (typeof ResizeObserver === 'undefined') return;
       const element = this.svg().nativeElement;
       const observer = new ResizeObserver(() =>
-        this.numberScale.set(numberScale(element.getBoundingClientRect().width, this.width())),
+        this.svgWidth.set(element.getBoundingClientRect().width),
       );
       observer.observe(element);
       destroyRef.onDestroy(() => observer.disconnect());
     });
   }
 
-  /** El puntero o el foco llegan a una pieza: se señala su número. Una pieza sin número no se señala. */
-  protected point(number: number | null): void {
+  /** El puntero llega a una pieza: se señala su número. Una pieza sin número no se señala. */
+  protected enter(number: number | null): void {
     if (number !== null && !this.preview()) this.highlighted.set(number);
   }
 
-  /** Se va el puntero o el foco: se suelta, salvo que ya se haya señalado otra pieza. */
-  protected release(number: number | null): void {
+  /** Se va el puntero: se vuelve a la pieza con el foco, salvo que ya se haya señalado otra. */
+  protected leave(number: number | null): void {
+    if (number !== null && this.highlighted() === number) this.highlighted.set(this.focused);
+  }
+
+  protected focus(number: number | null): void {
+    this.focused = number;
+    this.enter(number);
+  }
+
+  /** Se va el foco: se suelta, salvo que ya se haya señalado otra pieza. */
+  protected blur(number: number | null): void {
+    this.focused = null;
     if (number !== null && this.highlighted() === number) this.highlighted.set(null);
   }
 }

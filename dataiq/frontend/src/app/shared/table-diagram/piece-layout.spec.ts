@@ -2,8 +2,8 @@ import { CELL, NUMBER_RADIUS, numberPosition, numberScale, placeShapes } from '.
 
 describe('placeShapes', () => {
   const kelly = { kind: 'steel', key: 'kelly' } as const;
-  const energy = { kind: 'steel', key: 'energia' } as const;
-  const gown = { kind: 'flat', key: 'ropa' } as const;
+  const energy = { kind: 'steel', key: 'energy' } as const;
+  const gown = { kind: 'flat', key: 'drapePack' } as const;
   const unknown = { kind: 'unknown', key: null } as const;
 
   it('un instrumento en una celda va al centro, inclinado 40°, a su escala', () => {
@@ -17,12 +17,12 @@ describe('placeShapes', () => {
 
   it('un objeto plano va centrado en su celda, sin girar', () => {
     const [placed] = placeShapes([{ row: 1, column: 1 }], [gown]);
-    expect(placed).toMatchObject({ kind: 'flat', key: 'ropa', transform: 'translate(50 50)' });
+    expect(placed).toMatchObject({ kind: 'flat', key: 'drapePack', transform: 'translate(50 50)' });
   });
 
   it('un plano con un instrumento: el plano al centro y el instrumento encima, más chico', () => {
     const [flat, steel] = placeShapes([{ row: 1, column: 1 }], [kelly, gown]);
-    expect(flat.key).toBe('ropa');
+    expect(flat.key).toBe('drapePack');
     expect(flat.transform).toBe('translate(50 50)');
     expect(steel.key).toBe('kelly');
     expect(steel.transform).toBe(
@@ -62,7 +62,7 @@ describe('placeShapes', () => {
         { row: 4, column: 2 },
         { row: 5, column: 1 },
       ],
-      [{ kind: 'steel', key: 'campo' }],
+      [{ kind: 'steel', key: 'towelClamp' }],
     );
     expect(placed.transform).toContain('translate(100 400) rotate(45)');
     // el largo (141,4) × .85 / 100 = 1,202 y × 1,15 = 1,382
@@ -75,7 +75,7 @@ describe('placeShapes', () => {
         { row: 2, column: 2 },
         { row: 2, column: 3 },
       ],
-      [{ kind: 'steel', key: 'campo' }],
+      [{ kind: 'steel', key: 'towelClamp' }],
     );
     expect(placed.transform).toContain('translate(200 150) rotate(-90)');
   });

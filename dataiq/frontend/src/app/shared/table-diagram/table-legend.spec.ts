@@ -18,6 +18,7 @@ function makeItem(overrides: Partial<TableItem> = {}): TableItem {
     legendNumber: 1,
     name: 'Pinza Kelly',
     components: ['Pinza Kelly'],
+    instruments: ['Pinza Kelly'],
     cells: [{ row: 1, column: 1 }],
     ...overrides,
   };
@@ -136,6 +137,16 @@ describe('TableLegend', () => {
     row.dispatchEvent(new FocusEvent('blur'));
     await fixture.whenStable();
     expect(fixture.componentInstance.highlighted).toBeNull();
+  });
+
+  it('si el puntero pasa por la fila enfocada y se va, la fila sigue señalada', async () => {
+    const fixture = await mount([makeItem({ legendNumber: 4 })]);
+    const row = rows(fixture.nativeElement)[0];
+    row.dispatchEvent(new FocusEvent('focus'));
+    row.dispatchEvent(new MouseEvent('mouseenter'));
+    row.dispatchEvent(new MouseEvent('mouseleave'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.highlighted).toBe(4);
   });
 
   it('es una lista con el nombre de su mesa', async () => {

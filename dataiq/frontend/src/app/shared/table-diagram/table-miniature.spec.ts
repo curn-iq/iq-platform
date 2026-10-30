@@ -23,6 +23,7 @@ function makeItem(overrides: Partial<TableItem> = {}): TableItem {
     legendNumber: 4,
     name: 'Pinza Kelly',
     components: ['Pinza Kelly'],
+    instruments: ['Pinza Kelly'],
     cells: [{ row: 2, column: 3 }],
     ...overrides,
   };

@@ -4,19 +4,19 @@ import { drawingFor, shapesFor } from './shape-catalog';
 describe('drawingFor', () => {
   it('reconoce el instrumento por su nombre, sin importar tildes ni mayúsculas', () => {
     expect(drawingFor('Pinza de Allis')).toBe('allis');
-    expect(drawingFor('MANGO DE BISTURÍ N.° 3')).toBe('bisturi');
-    expect(drawingFor('Pinza de disección con garra')).toBe('diseccion');
+    expect(drawingFor('MANGO DE BISTURÍ N.° 3')).toBe('scalpel');
+    expect(drawingFor('Pinza de disección con garra')).toBe('dissecting');
     expect(drawingFor('Tijera de Metzenbaum')).toBe('metzenbaum');
   });
 
   it('una variante de la misma pinza usa el dibujo de su familia', () => {
     expect(drawingFor('Pinza Kelly Adson')).toBe('kelly');
-    expect(drawingFor('Portaagujas (sin especificar)')).toBe('portaagujas');
-    expect(drawingFor('Pinza de Campo')).toBe('campo');
+    expect(drawingFor('Portaagujas (sin especificar)')).toBe('needleHolder');
+    expect(drawingFor('Pinza de Campo')).toBe('towelClamp');
   });
 
   it('la hoja del bisturí se dibuja con su mango', () => {
-    expect(drawingFor('Hoja de bisturí #15')).toBe('bisturi');
+    expect(drawingFor('Hoja de bisturí #15')).toBe('scalpel');
   });
 
   it('distingue la tijera de Mayo del separador Mayo Collins', () => {
@@ -25,11 +25,11 @@ describe('drawingFor', () => {
   });
 
   it('reconoce los objetos planos', () => {
-    expect(drawingFor('Paquete de ropa')).toBe('ropa');
-    expect(drawingFor('Compresa')).toBe('compresas');
-    expect(drawingFor('Gasa')).toBe('compresas');
-    expect(drawingFor('Bandeja')).toBe('bandeja');
-    expect(drawingFor('Caucho de succión')).toBe('caucho');
+    expect(drawingFor('Paquete de ropa')).toBe('drapePack');
+    expect(drawingFor('Compresa')).toBe('sponges');
+    expect(drawingFor('Gasa')).toBe('sponges');
+    expect(drawingFor('Bandeja')).toBe('tray');
+    expect(drawingFor('Caucho de succión')).toBe('suctionTubing');
   });
 
   it('lo que no tiene dibujo propio no recibe el de otro', () => {
@@ -42,6 +42,8 @@ describe('drawingFor', () => {
       'Separador de Deaver ancho',
       'Cánula de Yankauer',
       'Riñonera/Coca',
+      'Portaagujas laparoscópico',
+      'Pinza Kelly laparoscópica',
     ]) {
       expect(drawingFor(name), name).toBeNull();
     }
@@ -62,32 +64,32 @@ describe('shapesFor', () => {
 
   it('el mango y la hoja del bisturí son un solo bisturí', () => {
     expect(shapesFor(['Mango de bisturí N.° 3', 'Hoja de bisturí #15'])).toEqual([
-      { kind: 'steel', key: 'bisturi' },
+      { kind: 'steel', key: 'scalpel' },
     ]);
   });
 
   it('la pinza con y sin garra es una sola pinza', () => {
     expect(shapesFor(['Pinza de disección con garra', 'Pinza de disección sin garra'])).toEqual([
-      { kind: 'steel', key: 'diseccion' },
+      { kind: 'steel', key: 'dissecting' },
     ]);
   });
 
   it('dos instrumentos distintos en un objeto se dibujan los dos', () => {
     expect(shapesFor(['Pinza Cística', 'Tijera de energía'])).toEqual([
-      { kind: 'steel', key: 'cistica' },
-      { kind: 'steel', key: 'energia' },
+      { kind: 'steel', key: 'cystic' },
+      { kind: 'steel', key: 'energy' },
     ]);
   });
 
   it('una compresa con portaagujas es la compresa con su hilo y el portaagujas', () => {
     expect(shapesFor(['Compresa', 'Portaagujas (sin especificar)'])).toEqual([
-      { kind: 'flat', key: 'compresaPorta' },
-      { kind: 'steel', key: 'portaagujas' },
+      { kind: 'flat', key: 'threadedSponge' },
+      { kind: 'steel', key: 'needleHolder' },
     ]);
   });
 
   it('una compresa sola es la pila de compresas', () => {
-    expect(shapesFor(['Compresa'])).toEqual([{ kind: 'flat', key: 'compresas' }]);
+    expect(shapesFor(['Compresa'])).toEqual([{ kind: 'flat', key: 'sponges' }]);
   });
 
   it('lo que no tiene dibujo es una sola forma punteada, por muchos componentes que sean', () => {
@@ -99,6 +101,13 @@ describe('shapesFor', () => {
   it('un componente sin dibujo suma el punteado a los que sí tienen', () => {
     expect(shapesFor(['Pinza Kelly', 'Pinza de Moynihan'])).toEqual([
       { kind: 'steel', key: 'kelly' },
+      { kind: 'unknown', key: null },
+    ]);
+  });
+
+  it('un portaagujas laparoscópico no se dibuja como el abierto, aunque comparta el nombre', () => {
+    expect(shapesFor(['Compresa', 'Portaagujas laparoscópico'])).toEqual([
+      { kind: 'flat', key: 'sponges' },
       { kind: 'unknown', key: null },
     ]);
   });

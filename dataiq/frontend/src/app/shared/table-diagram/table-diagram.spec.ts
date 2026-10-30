@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { Table, TableItem } from '../../domain/table';
 import { TableDiagram } from './table-diagram';
@@ -24,6 +24,7 @@ function makeItem(overrides: Partial<TableItem> = {}): TableItem {
     legendNumber: 1,
     name: 'Pinza Kelly',
     components: ['Pinza Kelly'],
+    instruments: ['Pinza Kelly'],
     cells: [{ row: 2, column: 3 }],
     ...overrides,
   };
@@ -97,7 +98,7 @@ describe('TableDiagram', () => {
     it('sigue dibujando la grilla y el instrumental: el vistazo es real', async () => {
       const root = await preview(makeTable({ items }));
       expect(root.querySelectorAll('.grid-line').length).toBe(4 + 6);
-      expect(root.querySelectorAll('.piece [data-drawing="kelly"]').length).toBe(2);
+      expect(root.querySelectorAll('.shape [data-drawing="kelly"]').length).toBe(2);
     });
 
     it('no lleva números', async () => {
@@ -222,24 +223,54 @@ describe('TableDiagram', () => {
     describe('formas', () => {
       it('un instrumento con dibujo se pinta en acero', async () => {
         const root = await render(makeTable({ items: [makeItem()] }));
-        const shape = root.querySelector('.piece .shape [data-drawing="kelly"]');
+        const shape = root.querySelector('.shape [data-drawing="kelly"]');
         expect(shape?.getAttribute('data-kind')).toBe('steel');
         expect(shape?.querySelectorAll('.steel').length).toBeGreaterThan(0);
       });
 
       it('lo que es de tela o bandeja se pinta plano', async () => {
-        const item = makeItem({ name: 'Paquete de ropa', components: ['Paquete de ropa'] });
+        const item = makeItem({
+          name: 'Paquete de ropa',
+          components: ['Paquete de ropa'],
+          instruments: ['Paquete de ropa'],
+        });
         const root = await render(makeTable({ items: [item] }));
-        const shape = root.querySelector('.piece .shape [data-drawing="ropa"]');
+        const shape = root.querySelector('.shape [data-drawing="drapePack"]');
         expect(shape?.getAttribute('data-kind')).toBe('flat');
         expect(shape?.querySelectorAll('.cloth').length).toBeGreaterThan(0);
       });
 
       it('lo que no tiene dibujo es un recuadro punteado, nunca el dibujo de otro', async () => {
-        const item = makeItem({ name: 'Pinza de Babcock', components: ['Pinza de Babcock'] });
+        const item = makeItem({
+          name: 'Pinza de Babcock',
+          components: ['Pinza de Babcock'],
+          instruments: ['Pinza de Babcock'],
+        });
         const root = await render(makeTable({ items: [item] }));
-        expect(root.querySelectorAll('.piece .unknown').length).toBe(1);
-        expect(root.querySelectorAll('.piece [data-drawing]').length).toBe(0);
+        expect(root.querySelectorAll('.shape .unknown').length).toBe(1);
+        expect(root.querySelectorAll('.shape [data-drawing]').length).toBe(0);
+      });
+
+      it('la sutura de un objeto no suma un recuadro punteado: no es un instrumento sin dibujo', async () => {
+        const item = makeItem({
+          name: 'Compresa, Portaagujas mediano y Vicryl 2-0',
+          components: ['Compresa', 'Portaagujas mediano', 'Vicryl 2-0'],
+          instruments: ['Compresa', 'Portaagujas mediano'],
+        });
+        const root = await render(makeTable({ items: [item] }));
+        expect(root.querySelector('.shape [data-drawing="threadedSponge"]')).not.toBeNull();
+        expect(root.querySelectorAll('.shape .unknown').length).toBe(0);
+      });
+
+      it('las formas van en una capa debajo de las piezas: ninguna tapa un número', async () => {
+        const root = await render(makeTable({ items: [makeItem()] }));
+        const svg = root.querySelector('svg')!;
+        const shapes = svg.querySelector('.shapes')!;
+        const piece = svg.querySelector('.piece')!;
+        expect(
+          shapes.compareDocumentPosition(piece) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+        expect(piece.querySelector('.shape')).toBeNull();
       });
 
       it('un objeto de varias celdas dibuja su forma una sola vez', async () => {
@@ -249,9 +280,10 @@ describe('TableDiagram', () => {
             { row: 5, column: 1 },
           ],
           components: ['Pinza de Campo'],
+          instruments: ['Pinza de Campo'],
         });
         const root = await render(makeTable({ items: [item] }));
-        expect(root.querySelectorAll('.piece [data-drawing="campo"]').length).toBe(1);
+        expect(root.querySelectorAll('.shape [data-drawing="towelClamp"]').length).toBe(1);
       });
 
       it('el degradado del acero es propio de cada diagrama', async () => {
@@ -276,6 +308,7 @@ describe('TableDiagram', () => {
         const root: HTMLElement = fixture.nativeElement;
         expect(piece(root, 2).classList.contains('active')).toBe(true);
         expect(piece(root, 1).classList.contains('active')).toBe(false);
+        expect(root.querySelectorAll('.shape.active').length).toBe(1);
         expect(root.querySelector('svg')?.classList.contains('marking')).toBe(true);
       });
 
@@ -305,6 +338,28 @@ describe('TableDiagram', () => {
         piece(root, 2).dispatchEvent(new FocusEvent('blur'));
         await fixture.whenStable();
         expect(fixture.componentInstance.highlighted).toBeNull();
+      });
+
+      it('si el puntero pasa por la pieza enfocada y se va, la pieza sigue señalada', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        piece(root, 1).dispatchEvent(new FocusEvent('focus'));
+        piece(root, 1).dispatchEvent(new MouseEvent('mouseenter'));
+        piece(root, 1).dispatchEvent(new MouseEvent('mouseleave'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(1);
+      });
+
+      it('si el puntero pasa por otra pieza y se va, vuelve a la enfocada', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        piece(root, 1).dispatchEvent(new FocusEvent('focus'));
+        piece(root, 2).dispatchEvent(new MouseEvent('mouseenter'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(2);
+        piece(root, 2).dispatchEvent(new MouseEvent('mouseleave'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(1);
       });
 
       it('la pieza con número se llega con el teclado y dice cuál es', async () => {
@@ -355,6 +410,16 @@ describe('TableDiagram', () => {
         const svg = root.querySelector<SVGElement>('svg');
         // 250 px para 500 unidades: el dibujo se achica a la mitad y el número se agranda al doble
         expect(Number(svg?.style.getPropertyValue('--number-scale'))).toBeCloseTo(22 / 16);
+      });
+
+      it('otra mesa en el mismo ancho reescala el número, aunque el dibujo no cambie de tamaño', async () => {
+        const fixture = await mount(makeTable({ columns: 5, items: [makeItem()] }));
+        fixture.componentInstance.table = makeTable({ columns: 10, items: [makeItem()] });
+        fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+        await fixture.whenStable();
+        const svg = (fixture.nativeElement as HTMLElement).querySelector<SVGElement>('svg');
+        // 250 px para 1000 unidades: el dibujo es la cuarta parte y el número se agranda al cuádruple
+        expect(Number(svg?.style.getPropertyValue('--number-scale'))).toBeCloseTo(44 / 16);
       });
 
       it('deja de observar al destruirse', async () => {

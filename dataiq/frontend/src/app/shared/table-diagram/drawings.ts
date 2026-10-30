@@ -47,11 +47,12 @@ export interface Drawing {
   parts: Part[];
 }
 
-export type DrawingKey =
-  | 'bisturi'
+/** Los dibujos del instrumental en acero. */
+export type SteelKey =
+  | 'scalpel'
   | 'metzenbaum'
   | 'mayo'
-  | 'diseccion'
+  | 'dissecting'
   | 'farabeuf'
   | 'senn'
   | 'allis'
@@ -59,16 +60,16 @@ export type DrawingKey =
   | 'rochester'
   | 'mosquito'
   | 'kelly'
-  | 'cistica'
-  | 'campo'
-  | 'energia'
-  | 'portaagujas'
-  | 'frazier'
-  | 'ropa'
-  | 'compresas'
-  | 'bandeja'
-  | 'caucho'
-  | 'compresaPorta';
+  | 'cystic'
+  | 'towelClamp'
+  | 'energy'
+  | 'needleHolder'
+  | 'frazier';
+
+/** Los dibujos de lo plano: tela, bandeja y caucho. */
+export type FlatKey = 'drapePack' | 'sponges' | 'tray' | 'suctionTubing' | 'threadedSponge';
+
+export type DrawingKey = SteelKey | FlatKey;
 
 /** Redondea para que los números de las rutas no arrastren decimales de coma flotante. */
 const round = (value: number): number => Math.round(value * 1000) / 1000;
@@ -137,18 +138,22 @@ function scissors(joint: number, tip: number, half: number): Part[] {
   ];
 }
 
-const steel = (parts: Part[]): Drawing => ({ kind: 'steel', parts });
-const flat = (parts: Part[]): Drawing => ({ kind: 'flat', parts });
+type SteelDrawing = Drawing & { kind: 'steel' };
+type FlatDrawing = Drawing & { kind: 'flat' };
 
-export const DRAWINGS: Record<DrawingKey, Drawing> = {
-  bisturi: steel([
+const steel = (parts: Part[]): SteelDrawing => ({ kind: 'steel', parts });
+const flat = (parts: Part[]): FlatDrawing => ({ kind: 'flat', parts });
+
+/** Cada clave dice si es acero o plano: un dibujo de acero no puede quedar como plano, ni al revés. */
+export const DRAWINGS: Record<SteelKey, SteelDrawing> & Record<FlatKey, FlatDrawing> = {
+  scalpel: steel([
     rect('steel', -3.6, 32, 7.2, 68, 1.8),
     ...grooves(64, 94, -2.5, 5),
     path('blade', 'M-2.3 33 L-2.3 15 C-2.3 7 1.6 1.5 3.6 4.8 C5 8 3.4 18 2.3 33 Z'),
   ]),
   metzenbaum: steel(scissors(52, 16, 2.6)),
   mayo: steel(scissors(46, 6, 3.6)),
-  diseccion: steel([
+  dissecting: steel([
     {
       shape: 'path',
       style: 'steel',
@@ -198,11 +203,11 @@ export const DRAWINGS: Record<DrawingKey, Drawing> = {
     path('steel', 'M-2.4 44 L-1.4 8 Q0 4 1.4 8 L2.4 44 Z'),
     ...grooves(10, 40, -1.2, 2.4),
   ]),
-  cistica: steel([
+  cystic: steel([
     ...handles(46, true),
     path('steel', 'M-2.4 46 C-2.4 30 -1 18 4 8 Q6 6 5.4 9.2 C1.8 18 1.6 30 2.4 46 Z'),
   ]),
-  campo: steel([
+  towelClamp: steel([
     ...handles(50, true),
     path(
       'steel',
@@ -213,8 +218,8 @@ export const DRAWINGS: Record<DrawingKey, Drawing> = {
       'M2.6 50 C3.6 34 7.4 21 3.4 9 Q0.6 2 -3.4 3.6 Q0 6.4 0.8 12.4 C2.2 23 0.8 35 0 50 Z',
     ),
   ]),
-  energia: steel([...scissors(50, 12, 2.4), rect('box', -1.2, 96, 2.4, 9, 1)]),
-  portaagujas: steel([
+  energy: steel([...scissors(50, 12, 2.4), rect('box', -1.2, 96, 2.4, 9, 1)]),
+  needleHolder: steel([
     ...handles(56, true),
     path('steel', 'M-3 56 L-2.4 14 Q0 9 2.4 14 L3 56 Z'),
     ...grooves(16, 30, -1.6, 3.2),
@@ -224,12 +229,12 @@ export const DRAWINGS: Record<DrawingKey, Drawing> = {
     { shape: 'circle', style: 'box', cx: 0, cy: 78, r: 1.6 },
     path('steel', 'M-1.4 70 L-1.4 22 L-6.2 5 L-4 4 L1.4 20 L1.4 70 Z'),
   ]),
-  ropa: flat([
+  drapePack: flat([
     rect('cloth', -34, -26, 68, 52, 4),
     rect('cloth', -30, -30, 60, 48, 4),
     path('fold', 'M-30 -14 H30 M-30 2 H30 M0 -30 V18'),
   ]),
-  compresas: flat([
+  sponges: flat([
     rect('cloth', -30, -24, 50, 42, 3, { transform: 'rotate(-8)' }),
     path('fold', 'M-26 -6 H16', { transform: 'rotate(-8)' }),
     rect('cloth', -12, -14, 40, 36, 2, { transform: 'rotate(6)' }),
@@ -241,12 +246,12 @@ export const DRAWINGS: Record<DrawingKey, Drawing> = {
       },
     ),
   ]),
-  bandeja: flat([rect('tray-rim', -38, -28, 76, 56, 8), rect('tray-floor', -31, -21, 62, 42, 5)]),
-  caucho: flat([
+  tray: flat([rect('tray-rim', -38, -28, 76, 56, 8), rect('tray-floor', -31, -21, 62, 42, 5)]),
+  suctionTubing: flat([
     path('rubber', 'M-30 26 C-46 -8 -6 -36 14 -18 C34 0 6 28 -10 10 C-22 -4 8 -20 30 -30'),
     path('rubber-glint', 'M-30 26 C-46 -8 -6 -36 14 -18 C34 0 6 28 -10 10 C-22 -4 8 -20 30 -30'),
   ]),
-  compresaPorta: flat([
+  threadedSponge: flat([
     rect('cloth', -34, -30, 68, 60, 4),
     path('fold', 'M-34 0 H34'),
     path('thread', 'M14 -20 c10 4 10 16 0 20 c-8 3 -14 -2 -10 -8'),

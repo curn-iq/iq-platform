@@ -112,7 +112,9 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 
 - **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
   diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `name`, `components`,
-  `cells`). El `name` es lo que dice la leyenda (`itemName()`, en `domain/`).
+  `instruments`, `cells`). El `name` es lo que dice la leyenda (`itemName()`, en
+  `domain/`); `instruments` son los componentes que no son suturas, los que se
+  dibujan.
   `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
   API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
   uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
@@ -125,12 +127,17 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   entre celdas, sin borde.
 - **Objetos:** cada objeto con celdas es **una** pieza (`.piece`, con
   `data-n` = su número), aunque ocupe varias: una zona de clic por celda y un solo
-  número. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
+  número. Las formas de todas las piezas van en una capa aparte (`.shapes`), debajo
+  de las piezas y con una sola sombra: un número nunca queda tapado por la forma de
+  otra pieza, y atenuar las demás no recalcula una sombra por pieza. La primera
+  celda en orden de lectura (`readingOrder()`, en `domain/table.ts`) es la del
+  número, también en la miniatura. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
   sin número se dibuja sin número. `piece-layout.ts` pone el círculo del número:
   en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
   de la línea que une su primera y su última celda si ocupa varias. El círculo
   (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
-  `ResizeObserver` mide el dibujo y fija `--number-scale`.
+  `ResizeObserver` mide el dibujo y `--number-scale` sale de ese ancho y del de la
+  mesa en celdas, así que otra mesa en el mismo espacio también lo cambia.
 - **Formas** (decidido por Juan el 2026-10-29; ver «Detalle de técnica» en
   `DESIGN.md`): los dibujos del mockup (16 de acero y 5 planos) están en
   `drawings.ts` como **datos**, que la plantilla pinta como SVG: sin `innerHTML`.
@@ -138,16 +145,24 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   nombre (sin tildes ni mayúsculas) y arma las formas del objeto: cada dibujo una
   sola vez (mango y hoja de bisturí son un bisturí), una compresa con portaagujas
   es la compresa con su hilo, y lo que no tiene dibujo propio es **un recuadro
-  punteado**, nunca la silueta de otro instrumento. `placeShapes()` las coloca:
+  punteado**, nunca la silueta de otro instrumento. Los dibujos son de cirugía
+  abierta: un nombre con «laparoscópico» no toma el dibujo de su homónimo abierto.
+  Las suturas no se dibujan solas ni suman el recuadro punteado: no son un
+  instrumento sin dibujo; un objeto que solo tiene suturas es el recuadro.
+  `placeShapes()` las coloca:
   en una celda, lo plano al centro y el acero inclinado 40° encima (si son dos,
   a los lados); en varias, el acero a lo largo de la línea que une sus celdas.
-  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS` y a la
-  tabla de palabras clave. Cada diagrama tiene sus propios degradados de acero
+  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS`, a la
+  tabla de palabras clave y, si es de acero, a `SCALE` (`piece-layout.ts`): el
+  tipo `SteelKey` hace que falte una escala no compile. Las claves de los dibujos
+  van en inglés (`scalpel`, `needleHolder`, `drapePack`…), como el resto del código. Cada diagrama tiene sus propios degradados de acero
   (`id` únicos), porque puede haber dos en una página.
 - **Leyenda enlazada:** `app-table-legend` lista cada objeto con número
-  (nombre = componentes unidos con «y») por número. Mesa y leyenda comparten
+  (nombre = componentes unidos con «y», o «e» ante el sonido /i/: «Compresa e
+  Hilo») por número. Mesa y leyenda comparten
   `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
-  o una fila lo señala; la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
+  a la enfocada; la pieza se levanta, las demás se atenúan al 38 % (la tela,
   al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
   `highlighted` por mesa, porque cada mesa tiene su propia numeración.
 - **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
@@ -169,7 +184,9 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   `data-n`) y oculta a los lectores de pantalla (`aria-hidden`). La geometría sale
   de CSS: el componente solo fija `--columns`, `--visible-rows` y `data-cropped`, y
   el 4,5 % de margen y el 91 % del dibujo son variables de Sass en
-  `table-diagram.scss`. Una mesa de 2 filas o menos se ve entera, sin difuminar.
+  `table-diagram.scss`. El margen de arriba es un `margin` en %, que se mide sobre
+  el ancho, como el alto que le reserva el `aspect-ratio` (un `top` en % se mediría
+  sobre el alto y mostraría más de 2,5 filas). Una mesa de 2 filas o menos se ve entera, sin difuminar.
   Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
   revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
   vez de «Sin mesa» es la página (fase 4).

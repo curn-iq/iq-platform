@@ -47,20 +47,85 @@
       <path class="grid-line" data-axis="row" [attr.d]="'M0 ' + y + 'H' + width()" />
     }
   </g>
+  <!-- Todas las formas en una capa con una sola sombra: atenuar las demás no recalcula una sombra por pieza -->
+  <g class="shapes" aria-hidden="true">
+    @for (piece of pieces(); track piece.id) {
+      <g class="placing" [style.--i]="$index">
+        <g
+          class="shape"
+          [class.flat]="piece.flat"
+          [class.active]="piece.linked && piece.legendNumber === highlighted()"
+        >
+          @for (shape of piece.shapes; track $index) {
+            @if (shape.kind === 'unknown') {
+              <rect
+                class="unknown"
+                [attr.transform]="shape.transform"
+                [attr.x]="-shape.width! / 2"
+                [attr.y]="-shape.height! / 2"
+                [attr.width]="shape.width"
+                [attr.height]="shape.height"
+                rx="8"
+              />
+            } @else {
+              <g
+                [attr.transform]="shape.transform"
+                [attr.data-drawing]="shape.key"
+                [attr.data-kind]="shape.kind"
+              >
+                @for (part of shape.parts; track $index) {
+                  @switch (part.shape) {
+                    @case ('path') {
+                      <path
+                        [attr.class]="part.style"
+                        [attr.d]="part.d"
+                        [attr.fill-rule]="part.evenodd ? 'evenodd' : null"
+                        [attr.transform]="part.transform"
+                      />
+                    }
+                    @case ('rect') {
+                      <rect
+                        [attr.class]="part.style"
+                        [attr.x]="part.x"
+                        [attr.y]="part.y"
+                        [attr.width]="part.width"
+                        [attr.height]="part.height"
+                        [attr.rx]="part.rx"
+                        [attr.transform]="part.transform"
+                      />
+                    }
+                    @case ('circle') {
+                      <circle
+                        [attr.class]="part.style"
+                        [attr.cx]="part.cx"
+                        [attr.cy]="part.cy"
+                        [attr.r]="part.r"
+                        [attr.transform]="part.transform"
+                      />
+                    }
+                  }
+                }
+              </g>
+            }
+          }
+        </g>
+      </g>
+    }
+  </g>
+  <!-- Encima, cada pieza: una zona de clic por celda y su número, que nunca se atenúa ni queda tapado -->
   @for (piece of pieces(); track piece.id) {
     <g
-      class="piece"
-      [class.flat]="piece.flat"
+      class="piece placing"
       [class.active]="piece.linked && piece.legendNumber === highlighted()"
       [style.--i]="$index"
       [attr.data-n]="piece.linked ? piece.legendNumber : null"
       [attr.tabindex]="piece.linked ? 0 : null"
       [attr.role]="piece.linked ? 'img' : null"
       [attr.aria-label]="piece.linked ? piece.label : null"
-      (mouseenter)="point(piece.legendNumber)"
-      (mouseleave)="release(piece.legendNumber)"
-      (focus)="point(piece.legendNumber)"
-      (blur)="release(piece.legendNumber)"
+      (mouseenter)="enter(piece.legendNumber)"
+      (mouseleave)="leave(piece.legendNumber)"
+      (focus)="focus(piece.legendNumber)"
+      (blur)="blur(piece.legendNumber)"
     >
       @for (hit of piece.hits; track $index) {
         <rect
@@ -71,60 +136,6 @@
           [attr.height]="cell"
         />
       }
-      <g class="shape">
-        @for (shape of piece.shapes; track $index) {
-          @if (shape.kind === 'unknown') {
-            <rect
-              class="unknown"
-              [attr.transform]="shape.transform"
-              [attr.x]="-shape.width! / 2"
-              [attr.y]="-shape.height! / 2"
-              [attr.width]="shape.width"
-              [attr.height]="shape.height"
-              rx="8"
-            />
-          } @else {
-            <g
-              [attr.transform]="shape.transform"
-              [attr.data-drawing]="shape.key"
-              [attr.data-kind]="shape.kind"
-            >
-              @for (part of shape.parts; track $index) {
-                @switch (part.shape) {
-                  @case ('path') {
-                    <path
-                      [attr.class]="part.style"
-                      [attr.d]="part.d"
-                      [attr.fill-rule]="part.evenodd ? 'evenodd' : null"
-                      [attr.transform]="part.transform"
-                    />
-                  }
-                  @case ('rect') {
-                    <rect
-                      [attr.class]="part.style"
-                      [attr.x]="part.x"
-                      [attr.y]="part.y"
-                      [attr.width]="part.width"
-                      [attr.height]="part.height"
-                      [attr.rx]="part.rx"
-                      [attr.transform]="part.transform"
-                    />
-                  }
-                  @case ('circle') {
-                    <circle
-                      [attr.class]="part.style"
-                      [attr.cx]="part.cx"
-                      [attr.cy]="part.cy"
-                      [attr.r]="part.r"
-                      [attr.transform]="part.transform"
-                    />
-                  }
-                }
-              }
-            </g>
-          }
-        }
-      </g>
       @if (piece.number; as position) {
         <g class="number">
           <circle [attr.cx]="position.x" [attr.cy]="position.y" [attr.r]="numberRadius" />

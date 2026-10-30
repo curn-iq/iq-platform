@@ -54,11 +54,14 @@ $preview-cell: 104px;
     mask-image: none;
   }
 
-  // El dibujo conserva su alto completo y el recorte lo hace el contenedor
+  // El dibujo conserva su alto completo y el recorte lo hace el contenedor. Va en el flujo,
+  // con margen: un margen en % se mide sobre el ancho (como el alto de arriba), y `top` en
+  // % se mediría sobre el alto, que aquí es solo lo que se ve.
   svg {
-    bottom: auto;
+    position: static;
     height: auto;
     aspect-ratio: var(--aspect);
+    margin: $inset * 100% auto 0;
     pointer-events: none;
   }
 }
@@ -97,11 +100,14 @@ $preview-cell: 104px;
 
 // ---------- Piezas ----------
 
-.piece {
-  cursor: pointer;
-  // Entrada rápida: las piezas se colocan una tras otra
+// Entrada rápida: las piezas se colocan una tras otra (la forma y su número, a la vez)
+.placing {
   animation: place 0.35s var(--ease-enter) backwards;
   animation-delay: calc(var(--i, 0) * 25ms);
+}
+
+.piece {
+  cursor: pointer;
 
   // El efecto de levantarse y de atenuar las demás es el indicador de foco
   &:focus {
@@ -125,9 +131,15 @@ $preview-cell: 104px;
   fill: transparent;
 }
 
-// «Pieza en diagrama» de DESIGN.md: sombra suave, y al señalarla sube y se despega
-.shape {
+// «Pieza en diagrama» de DESIGN.md: sombra suave, y al señalarla sube y se despega. La
+// sombra en reposo es una sola para toda la capa: con una por pieza, atenuar las demás
+// recalculaba cada sombra en cada cuadro. Las zonas de clic de las piezas van encima.
+.shapes {
   filter: drop-shadow(0 1px 1px rgba(3, 20, 28, 0.22)) drop-shadow(0 4px 6px rgba(3, 20, 28, 0.08));
+  pointer-events: none;
+}
+
+.shape {
   transform-box: fill-box;
   transform-origin: center;
   transition:
@@ -136,17 +148,17 @@ $preview-cell: 104px;
     opacity 0.3s var(--ease-fade);
 }
 
-.piece.active .shape {
+.shape.active {
   transform: translate(-3px, -12px);
   filter: drop-shadow(0 18px 10px rgba(3, 20, 28, 0.45));
 }
 
 // Al señalar una, las demás se atenúan (la tela clara, menos); sus números siguen legibles
-.marking .piece:not(.active) .shape {
+.marking .shape:not(.active) {
   opacity: 0.38;
 }
 
-.marking .piece.flat:not(.active) .shape {
+.marking .shape.flat:not(.active) {
   opacity: 0.55;
 }
 

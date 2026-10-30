@@ -7,6 +7,7 @@ function item(overrides: Partial<TableItem> = {}): TableItem {
     legendNumber: 1,
     name: 'Pinza Kelly',
     components: ['Pinza Kelly'],
+    instruments: ['Pinza Kelly'],
     cells: [{ row: 1, column: 1 }],
     ...overrides,
   };

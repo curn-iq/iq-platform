@@ -5,10 +5,10 @@
         data-kind="placed"
         tabindex="0"
         [class.active]="row.number === highlighted()"
-        (mouseenter)="point(row.number)"
-        (mouseleave)="release(row.number)"
-        (focus)="point(row.number)"
-        (blur)="release(row.number)"
+        (mouseenter)="enter(row.number)"
+        (mouseleave)="leave(row.number)"
+        (focus)="focus(row.number)"
+        (blur)="blur(row.number)"
       >
         <b>{{ row.number }}</b>
         <span>{{ row.name }}</span>

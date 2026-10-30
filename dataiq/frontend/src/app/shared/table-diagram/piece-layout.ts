@@ -1,5 +1,5 @@
-import type { TableCell } from '../../domain/table';
-import type { DrawingKey } from './drawings';
+import { readingOrder, type TableCell } from '../../domain/table';
+import type { DrawingKey, SteelKey } from './drawings';
 import type { Shape } from './shape-catalog';
 
 /** Lado de una celda en las unidades del dibujo; el SVG se escala al ancho que le den. */
@@ -22,6 +22,11 @@ interface Point {
   y: number;
 }
 
+/** El centro de una celda, en unidades del dibujo. */
+function cellCenter(cell: TableCell): Point {
+  return { x: (cell.column - 0.5) * CELL, y: (cell.row - 0.5) * CELL };
+}
+
 /**
  * Dónde va el círculo del número de un objeto, en unidades del dibujo. Un
  * objeto de una celda lo lleva en su esquina inferior derecha. Uno de varias lo
@@ -30,17 +35,13 @@ interface Point {
  * ella.
  */
 export function numberPosition(cells: readonly TableCell[]): Point {
-  const [first, ...rest] = [...cells].sort((a, b) => a.row - b.row || a.column - b.column);
+  const [first, ...rest] = readingOrder(cells);
   const last = rest.at(-1);
   if (last === undefined) {
     return { x: (first.column - 1) * CELL + CORNER, y: (first.row - 1) * CELL + CORNER };
   }
-  const center = (cell: TableCell): Point => ({
-    x: (cell.column - 0.5) * CELL,
-    y: (cell.row - 0.5) * CELL,
-  });
-  const from = center(first);
-  const to = center(last);
+  const from = cellCenter(first);
+  const to = cellCenter(last);
   // Dirección de la línea (siempre hacia arriba o, si es horizontal, hacia la izquierda)
   const dx = from.x - to.x;
   const dy = from.y - to.y;
@@ -65,11 +66,11 @@ export function numberScale(svgWidth: number, viewBoxWidth: number): number {
 const SLANT = 40;
 
 /** Cuánto se escala cada instrumento en su celda, para que se vea del largo que tiene en la mesa. */
-const SCALE: Record<string, number> = {
-  bisturi: 0.84,
+const SCALE: Record<SteelKey, number> = {
+  scalpel: 0.84,
   metzenbaum: 1,
   mayo: 0.88,
-  diseccion: 0.9,
+  dissecting: 0.9,
   farabeuf: 0.9,
   senn: 0.72,
   allis: 0.92,
@@ -77,10 +78,10 @@ const SCALE: Record<string, number> = {
   rochester: 0.95,
   mosquito: 0.74,
   kelly: 0.85,
-  cistica: 0.85,
-  campo: 1,
-  energia: 0.85,
-  portaagujas: 0.8,
+  cystic: 0.85,
+  towelClamp: 1,
+  energy: 0.85,
+  needleHolder: 0.8,
   frazier: 0.9,
 };
 
@@ -117,16 +118,12 @@ function steelTransform(center: Point, angle: number, offset: number, scale: num
  * punteado se dibujan antes que el acero, para que el acero quede encima.
  */
 export function placeShapes(cells: readonly TableCell[], shapes: readonly Shape[]): PlacedShape[] {
-  const sorted = [...cells].sort((a, b) => a.row - b.row || a.column - b.column);
+  const sorted = readingOrder(cells);
   const first = sorted[0];
   const last = sorted[sorted.length - 1];
   const multi = sorted.length > 1;
-  const center = (cell: TableCell): Point => ({
-    x: (cell.column - 0.5) * CELL,
-    y: (cell.row - 0.5) * CELL,
-  });
-  const from = center(first);
-  const to = center(last);
+  const from = cellCenter(first);
+  const to = cellCenter(last);
   const mid: Point = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
   const length = Math.hypot(from.x - to.x, from.y - to.y);
   const lineAngle = multi ? (Math.atan2(from.x - to.x, -(from.y - to.y)) * 180) / Math.PI : 0;
@@ -136,7 +133,7 @@ export function placeShapes(cells: readonly TableCell[], shapes: readonly Shape[
 
   const behind = shapes.filter((shape) => shape.kind !== 'steel');
   const steels = shapes.filter(
-    (shape): shape is Extract<Shape, { key: DrawingKey }> => shape.kind === 'steel',
+    (shape): shape is Extract<Shape, { kind: 'steel' }> => shape.kind === 'steel',
   );
 
   const placedBehind = behind.map((shape): PlacedShape => {
@@ -172,7 +169,7 @@ export function placeShapes(cells: readonly TableCell[], shapes: readonly Shape[
         scale = 0.82;
       } else {
         at = { x: origin.x + 54, y: origin.y + 54 };
-        scale = 1.2 * (SCALE[shape.key] ?? 0.9);
+        scale = 1.2 * SCALE[shape.key];
       }
     }
     return { kind: 'steel', key: shape.key, transform: steelTransform(at, angle, offset, scale) };

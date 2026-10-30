@@ -17,6 +17,17 @@ describe('itemName', () => {
     );
   });
 
+  it('«e» ante una palabra que empieza con el sonido /i/, con o sin h ni tilde', () => {
+    expect(itemName(['Compresa', 'Instrumental'], '')).toBe('Compresa e Instrumental');
+    expect(itemName(['Compresa', 'Hilo de seda'], '')).toBe('Compresa e Hilo de seda');
+    expect(itemName(['Compresa', 'Íleo'], '')).toBe('Compresa e Íleo');
+  });
+
+  it('«y» si la i forma diptongo con la vocal que sigue', () => {
+    expect(itemName(['Agua', 'Hielo'], '')).toBe('Agua y Hielo');
+    expect(itemName(['Cobre', 'hierro'], '')).toBe('Cobre y hierro');
+  });
+
   it('no cambia las mayúsculas de los nombres del catálogo', () => {
     expect(itemName(['Pinza de Allis', 'Tijera de Mayo'], '')).toBe(
       'Pinza de Allis y Tijera de Mayo',

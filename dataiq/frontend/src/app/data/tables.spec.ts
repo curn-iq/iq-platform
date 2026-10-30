@@ -61,6 +61,7 @@ describe('toTables', () => {
         legendNumber: 4,
         name: 'Pinza Kelly',
         components: ['Pinza Kelly'],
+        instruments: ['Pinza Kelly'],
         cells: [{ row: 2, column: 3 }],
       },
     ]);
@@ -95,6 +96,17 @@ describe('toTables', () => {
     const [mayo] = toTables([MAYO], [item({ components })]);
     expect(mayo.items[0].name).toBe('Mango de bisturí N.° 3 y Hoja de bisturí #15');
     expect(mayo.items[0].components).toEqual(['Mango de bisturí N.° 3', 'Hoja de bisturí #15']);
+  });
+
+  it('las suturas cuentan en el nombre, pero no entre los instrumentos que se dibujan', () => {
+    const components = [
+      { instrument_id: 'a', suture_id: null, name: 'Compresa' },
+      { instrument_id: 'b', suture_id: null, name: 'Portaagujas mediano' },
+      { instrument_id: null, suture_id: 'c', name: 'Vicryl 2-0' },
+    ];
+    const [mayo] = toTables([MAYO], [item({ components })]);
+    expect(mayo.items[0].components).toEqual(['Compresa', 'Portaagujas mediano', 'Vicryl 2-0']);
+    expect(mayo.items[0].instruments).toEqual(['Compresa', 'Portaagujas mediano']);
   });
 
   it('sin componentes, el nombre es el texto de la fuente', () => {
