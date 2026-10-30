@@ -1,7 +1,7 @@
 import pytest
 
 from app.domain.chat import Vocabulary
-from app.domain.names import suggest_spelling
+from app.domain.names import instruments_in, suggest_spelling
 from tests.sample import CATALOG
 
 VOCABULARY = Vocabulary.from_catalog(CATALOG)
@@ -38,3 +38,10 @@ def test_misspelled_names_are_suggested_well_written(question, corrected):
 )
 def test_well_written_questions_are_left_alone(question):
     assert suggest_spelling(question, VOCABULARY) is None
+
+
+def test_instruments_are_listed_in_the_order_they_are_named():
+    text = "La Pinza Lahey va junto a la Pinza Kelly Adson, en la mesa de Mayo."
+
+    # «Kelly Adson» no es además la Kelly, y «mesa de Mayo» no es la Tijera.
+    assert instruments_in(text, VOCABULARY) == ["Pinza Lahey", "Pinza Kelly Adson"]

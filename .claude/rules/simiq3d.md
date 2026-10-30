@@ -19,7 +19,9 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
   respuesta esté en esos resultados. Si no pasa, si no consultó nada o si se
   acaba el tiempo, responden las plantillas (`app/domain/chat.py`), que solo
   usan datos de DataIQ. Lo que muestra el visor sale de `show_in_3d`, con ids
-  reales, nunca del texto.
+  reales; si el modelo no la usó, de la técnica abierta y del instrumento por
+  el que se preguntó (`_implied_scene`), nunca del vecino que nombre la
+  respuesta.
 - **Nunca hablarle al estudiante de filas, columnas ni celdas:** la mesa real
   no tiene cuadrícula. Se dice la zona de la mesa («arriba a la derecha»), lo
   que tiene al lado y el número del diagrama de IQ.

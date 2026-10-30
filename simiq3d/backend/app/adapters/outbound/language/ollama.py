@@ -19,7 +19,7 @@ from app.domain.catalog import (
 )
 from app.domain.chat import ChatAction, Reply, Vocabulary, the
 from app.domain.grounding import unsupported
-from app.domain.names import asks_to_describe, contains, instrument_in
+from app.domain.names import asks_to_describe, contains, instruments_in
 from app.ports.chat import ModelUnavailable
 
 logger = logging.getLogger(__name__)
@@ -277,7 +277,7 @@ class OllamaAgent:
             logger.warning("Respuesta sin respaldo en DataIQ: %s", problems)
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
-            scene = _implied_scene(text, catalog, open_technique_id)
+            scene = _implied_scene(text, question, catalog, open_technique_id)
         if did_you_mean:
             return Reply(
                 ChatAction.clarify,
@@ -381,11 +381,13 @@ def _clean(text: str) -> tuple[str, list[str]]:
 
 
 def _implied_scene(
-    text: str, catalog: Catalog, open_technique_id
+    text: str, question: str, catalog: Catalog, open_technique_id
 ) -> tools.Scene | None:
     """Si el modelo no llamó a show_in_3d, la escena sale de lo que dice: la
-    técnica abierta, o la única técnica que nombra; y, si nombra un instrumento
-    de esa mesa, se resalta."""
+    técnica abierta, o la única técnica que nombra. Se resalta el instrumento
+    por el que se preguntó, si va en esa mesa: la respuesta nombra también a
+    sus vecinos («la Babcock va junto a la Kelly Adson»). Si la pregunta no
+    nombra ninguno, el primero que nombra la respuesta."""
     said = normalize(text)
     named = [
         t for t in in_scope(catalog) if contains(said, normalize(t.name).split()[0])
@@ -395,10 +397,12 @@ def _implied_scene(
     )
     if technique is None:
         return None
-    name = instrument_in(text, Vocabulary.from_catalog(catalog))
-    instrument = find_instrument(catalog, name)
-    if instrument and item_with(technique, instrument.id):
-        return tools.Scene(technique, instrument)
+    vocabulary = Vocabulary.from_catalog(catalog)
+    asked = instruments_in(question, vocabulary)
+    for name in asked or instruments_in(text, vocabulary)[:1]:
+        instrument = find_instrument(catalog, name)
+        if instrument and item_with(technique, instrument.id):
+            return tools.Scene(technique, instrument)
     return tools.Scene(technique)
 
 
