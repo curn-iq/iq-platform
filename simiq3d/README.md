@@ -146,13 +146,16 @@ hacia dónde apunta:
   Medirla es para después del MVP
   ([`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md)).
 - **Los instrumentos, a escala real** (ver «Modelos 3D»), con **su centro
-  en el centro de su celda**. Un instrumento suele ser más largo que una celda:
+  en el centro de su celda** y apoyados en la mesa (el origen de cada modelo
+  está a la altura de su punto más bajo). Un instrumento suele ser más largo que una celda:
   sobresale hacia las vecinas, como en la mesa real. SIVRI mide igual: por el
   centro.
 - **Todos los instrumentos apuntan igual.** Hacia dónde apunta cada uno es
   para después del MVP.
-- **Objetos compuestos:** el mango con su hoja es un solo modelo, con la hoja
-  montada; dos instrumentos en la misma celda van uno al lado del otro.
+- **Objetos compuestos:** el mango con su hoja va en la celda como un
+  mango, con la hoja montada en él: la hoja se cuelga del nodo `blade_mount`
+  de su mango ([`models/README.md`](models/README.md), «Mango y hoja»). Dos
+  instrumentos independientes en la misma celda van uno al lado del otro.
 
 ## Backend y base de datos
 
