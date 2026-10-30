@@ -39,7 +39,7 @@ def unsupported(text: str, results: list[dict], catalog: Catalog) -> list[str]:
         if word not in catalog_words and not contains(facts, word):
             problems.append(match.group(0))
     numbers = set(re.findall(r"\d+", facts))
-    problems += [n for n in re.findall(r"\d+", text) if n not in numbers]
+    problems += [n for n in _NUMBER.findall(text) if n not in numbers]
     # Un conteo («7 objetos», «cinco técnicas») tiene que ser uno de los totales
     # que devolvieron las consultas, no cualquier número que aparezca en ellas
     # (el 7 puede ser el número de un objeto en el diagrama).
@@ -62,6 +62,8 @@ def unsupported(text: str, results: list[dict], catalog: Catalog) -> list[str]:
     return problems
 
 
+# Los números del texto, menos el de «3D» (el visor), que no es un dato.
+_NUMBER = re.compile(r"(?<!\d)\d+(?!\d)(?![dD]\b)")
 _GRID_WORDS = re.compile(r"\b(?:filas?|columnas?|celdas?|cuadricula)\b")
 _SAME_PLACE = re.compile(
     r"\b(?:en cada una|en todas|misma (?:ubicacion|posicion|zona|parte)|"

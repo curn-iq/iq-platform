@@ -181,3 +181,11 @@ def test_counts_from_comparisons_and_lists_are_accepted():
         "6",
         "6 instrumentos",
     ]
+
+
+def test_3d_is_not_a_number_to_check():
+    results = [tools.get_technique(CATALOG, "Colecistectomía")]
+
+    assert unsupported("Ya está abierta en el visor 3D.", results, CATALOG) == []
+    assert unsupported("¿Quieres verla en 3D?", results, CATALOG) == []
+    assert unsupported("Mide 3 cm.", results, CATALOG) == ["3"]
