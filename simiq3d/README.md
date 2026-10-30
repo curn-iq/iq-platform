@@ -302,7 +302,9 @@ simiq3d/
 ├── backend/                   FastAPI: el chat y el mapeo de modelos (ver su README)
 ├── servidor-pc2/              filtro con clave para Ollama y cómo montar el Servidor PC2
 ├── frontend/                  Angular + Three.js
-├── models/                    .blend por familia, GLB por instrumento y modelos.csv
+├── models/                    assets 3D y modelos.csv
+│   ├── blender/               .blend por familia
+│   └── glb/                   GLB por instrumento
 └── docs/
     ├── checklist.md           avance por actividad de DSRM
     ├── checklist-backend.md   avance del backend

@@ -102,9 +102,9 @@ sobre Z. Solo la mesa de Mayo (alcance del MVP).
 
 ```
 simiq3d/models/                  la fuente (la llenan quienes modelan)
-├── <familia>.blend              una base por familia
-├── <instrumento>.glb            exportado de Blender, sin comprimir
-└── medidas.md                   medidas de cada instrumento, con su fuente
+├── blender/<familia>.blend      una base por familia
+├── glb/<instrumento>.glb        exportado de Blender, sin comprimir
+└── modelos.csv                  medidas de cada instrumento, con su fuente
         │  npm run models (gltfpack, meshopt)
         ▼
 simiq3d/frontend/public/models/  lo que se publica (generado, no se versiona)
