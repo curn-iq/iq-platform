@@ -1,0 +1,118 @@
+// Avisos: ver «Avisos» en DESIGN.md.
+
+:host {
+  position: fixed;
+  inset: auto 0 28px;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  // La franja no tapa lo que hay debajo; solo los avisos reciben clics.
+  pointer-events: none;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(440px, calc(100% - 2 * var(--space-gutter)));
+}
+
+.errors,
+.confirmations {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.errors:not(:empty) ~ .confirmations:not(:empty) {
+  margin-top: 10px;
+}
+
+p {
+  margin: 0;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.error {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow:
+    inset 0 0 0 1px var(--color-border-strong),
+    var(--shadow-floating);
+  color: var(--color-text);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  animation: appear 0.4s var(--ease-enter);
+}
+
+.error-icon {
+  margin-top: 1px;
+  color: var(--color-text-subtle);
+}
+
+.error-messages {
+  display: grid;
+  gap: 4px;
+  align-self: center;
+  // Un 422 con muchas líneas se desplaza dentro del aviso en vez de crecer
+  // hasta salirse de la pantalla (caben tres errores: `MAX_ERRORS`).
+  max-height: 20vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+// 34 px es el ícono pequeño de DESIGN.md; los márgenes negativos lo meten en el
+// alto del texto para que el aviso no crezca por el botón.
+.close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin: -6px -8px -6px 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control-sm);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.3s var(--ease-fade);
+
+  &:hover {
+    background: var(--color-hover);
+    color: var(--color-text);
+  }
+}
+
+.confirmation {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: 15.5px;
+  font-weight: 600;
+  animation: appear 0.4s var(--ease-enter);
+}

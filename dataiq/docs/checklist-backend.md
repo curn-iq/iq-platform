@@ -76,6 +76,15 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
      y `PATCH /users/{id}/role`, solo admin y no
      sobre su propia cuenta. El primer admin se asigna por terminal:
      `uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`
+   - [x] Supresión de una cuenta por terminal, cuando su titular la pide por
+     el canal del aviso de privacidad ([`docs/privacidad.md`](../../docs/privacidad.md)):
+     `uv run python -m app.adapters.inbound.cli.delete_account <correo>`. Sin
+     contenido se borra entera; si creó o revisó técnicas o versiones, se
+     borran su nombre, su correo y su contraseña, y lo que hizo se conserva
+     sin su nombre
+   - [ ] Pedir que se acepte de nuevo el aviso cuando cambie su versión
+     (`users.policy_version` distinta de `POLICY_VERSION`), antes de publicar
+     la versión 1.1; el aviso lo promete (Decreto 1377 de 2013, art. 5)
 5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
    - `POST /auth/register` (autorregistro con la política aceptada),
      `POST /auth/login`, `GET /auth/me` y `GET /.well-known/jwks.json`

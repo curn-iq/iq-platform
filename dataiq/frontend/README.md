@@ -52,9 +52,11 @@ src/
 ├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
-    │   ├── http/           provideHttpClient(withFetch()), base /api/dataiq,
+    │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
-    │   └── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
+    │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección
     ├── data/
@@ -62,8 +64,9 @@ src/
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, tabs con raya, segmented control, status pill,
-    │   │                   progress mark (22 px), search field, demo tag, floating panel
+    │   ├── ui/             button, avatar, brand mark, not-found, tabs con raya, segmented control, status pill,
+    │   │                   progress mark (22 px), search field, demo tag, floating panel,
+    │   │                   notice stack (los avisos: error y confirmación)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
     └── features/
@@ -81,12 +84,126 @@ tipos generados tal cual. Un repositorio solo transforma cuando la forma de la
 API no le sirve a la pantalla (p. ej. agrupar los objetos por mesa para el
 diagrama), y esa transformación vive en `data/`, no en el componente.
 
+**Repositorios** (`data/*.repository.ts`): uno por recurso, con un método por
+operación de la API. `techniques` incluye las especialidades; `catalog`, el
+instrumental. `POST /auth/token` y el JWKS no tienen método: no son del
+navegador.
+
+- Las **lecturas** devuelven un `httpResource` (se crean en un contexto de
+  inyección, p. ej. al declarar el campo del componente). Reciben el `id` o el
+  filtro como función (`() => id()`, normalmente una señal): si devuelve
+  `undefined`, el recurso no pide nada. `VersionsFilter` traduce `reviewedByMe`
+  a `reviewed_by_me` y manda cada estado como un parámetro repetido.
+- Las **escrituras** y `AuthRepository` (que no se muestra en una pantalla)
+  devuelven `Observable`.
+- `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
+  del token `API_BASE_URL`, que `core/http` provee con `/api/dataiq`.
+- Para probarlos: `provideRepositoryTesting()` (`data/testing.ts`) con
+  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`. La base
+  de prueba (`TEST_API_BASE`) es distinta a `/api/dataiq` a propósito: así se
+  comprueba que cada repositorio usa la que recibe.
+
 **El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
 en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
 soltar), en la revisión (dos mesas lado a lado) y en el catálogo de
 instrumental (miniatura). Se construye una sola vez, con variantes, antes que
 las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 `columns`); `used: false` es una mesa que la técnica no lleva.
+
+- **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
+  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `name`, `components`,
+  `instruments`, `cells`). El `name` es lo que dice la leyenda (`itemName()`, en
+  `domain/`); `instruments` son los componentes que no son suturas, los que se
+  dibujan.
+  `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
+  API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
+  uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
+  tiene mesa es solo del listado). El componente (`shared/table-diagram`,
+  `<app-table-diagram [table]>`) no importa `data/`: recibe la `Table` ya armada.
+- **Grilla:** el SVG mide 100 unidades por celda (`viewBox` de
+  `columnas × 100` por `filas × 100`) y se escala al ancho que le dé quien lo use;
+  la mesa toma la proporción de su grilla (`--aspect`). Las líneas de la rejilla
+  son de 1 px a cualquier ancho (`vector-effect: non-scaling-stroke`) y solo van
+  entre celdas, sin borde.
+- **Objetos:** cada objeto con celdas es **una** pieza (`.piece`, con
+  `data-n` = su número), aunque ocupe varias: una zona de clic por celda y un solo
+  número. Las formas de todas las piezas van en una capa aparte (`.shapes`), debajo
+  de las piezas y con una sola sombra: un número nunca queda tapado por la forma de
+  otra pieza, y atenuar las demás no recalcula una sombra por pieza. La primera
+  celda en orden de lectura (`readingOrder()`, en `domain/table.ts`) es la del
+  número, también en la miniatura. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
+  sin número se dibuja sin número. `piece-layout.ts` pone el círculo del número:
+  en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
+  de la línea que une su primera y su última celda si ocupa varias. El círculo
+  (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
+  `ResizeObserver` mide el dibujo y `--number-scale` sale de ese ancho y del de la
+  mesa en celdas, así que otra mesa en el mismo espacio también lo cambia.
+- **Formas** (decidido por Juan el 2026-10-29; ver «Detalle de técnica» en
+  `DESIGN.md`): los dibujos del mockup (16 de acero y 5 planos) están en
+  `drawings.ts` como **datos**, que la plantilla pinta como SVG: sin `innerHTML`.
+  `shape-catalog.ts` elige el dibujo de cada componente por palabras clave de su
+  nombre (sin tildes ni mayúsculas) y arma las formas del objeto: cada dibujo una
+  sola vez (mango y hoja de bisturí son un bisturí), una compresa con portaagujas
+  es la compresa con su hilo, y lo que no tiene dibujo propio es **un recuadro
+  punteado**, nunca la silueta de otro instrumento. Los dibujos son de cirugía
+  abierta: un nombre con «laparoscópico» no toma el dibujo de su homónimo abierto.
+  Las suturas no se dibujan solas ni suman el recuadro punteado: no son un
+  instrumento sin dibujo; un objeto que solo tiene suturas es el recuadro.
+  `placeShapes()` las coloca:
+  en una celda, lo plano al centro y el acero inclinado 40° encima (si son dos,
+  a los lados); en varias, el acero a lo largo de la línea que une sus celdas.
+  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS`, a la
+  tabla de palabras clave y, si es de acero, a `SCALE` (`piece-layout.ts`): el
+  tipo `SteelKey` hace que falte una escala no compile. Las claves de los dibujos
+  van en inglés (`scalpel`, `needleHolder`, `drapePack`…), como el resto del código. Cada diagrama tiene sus propios degradados de acero
+  (`id` únicos), porque puede haber dos en una página.
+- **Leyenda enlazada:** `app-table-legend` lista cada objeto con número
+  (nombre = componentes unidos con «y», o «e» ante el sonido /i/: «Compresa e
+  Hilo») por número. Mesa y leyenda comparten
+  `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
+  o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
+  a la enfocada (por ahora, dentro de cada componente; el foco compartido entre
+  mesa y leyenda está en la fase 4 de la
+  [checklist](../docs/checklist-frontend.md)); la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
+  `highlighted` por mesa, porque cada mesa tiene su propia numeración.
+- **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
+  objeto con número tiene su fila según lo que la fuente dice de él. Con celdas
+  (`placed`) está en la mesa y se señala. Sin celdas pero con componentes
+  (`unplaced`) se sabe qué es, no dónde va: se lista con su nombre, apagado y sin
+  enlace. Sin celdas ni componentes (`gap`) es un número que la fuente da y no
+  deja leer: dice «Sin dato», sin el texto crudo. Las filas apagadas tienen el
+  círculo vacío con filete `filete-2` y no se llegan con Tab: no hay pieza que
+  levantar. Un objeto sin número no tiene fila. La carga inicial de la CURN hoy no
+  trae ningún caso (lo ilegible se corrigió o se propuso, ver
+  [`checklist-backend.md`](../docs/checklist-backend.md)); la regla cubre los que
+  lleguen.
+- **Vista previa** (`variant="preview"`, para la puerta de cuenta; ver «Puerta de
+  cuenta» en `DESIGN.md`): la misma mesa recortada a sus primeras **2,5 filas** y
+  difuminada hacia abajo, centrada y con celdas de **104 px** (en celular, el ancho
+  de la pantalla). Sigue dibujando la grilla y el instrumental, pero sin números,
+  sin enlace con la leyenda (no se señala ni se llega con Tab, y no lleva
+  `data-n`) y oculta a los lectores de pantalla (`aria-hidden`). La geometría sale
+  de CSS: el componente solo fija `--columns`, `--visible-rows` y `data-cropped`, y
+  el 4,5 % de margen y el 91 % del dibujo son variables de Sass en
+  `table-diagram.scss`. El margen de arriba es un `margin` en %, que se mide sobre
+  el ancho, como el alto que le reserva el `aspect-ratio` (un `top` en % se mediría
+  sobre el alto y mostraría más de 2,5 filas). Una mesa de 2 filas o menos se ve entera, sin difuminar.
+  Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
+  revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
+  vez de «Sin mesa» es la página (fase 4).
+- **Miniatura** (`app-table-miniature`, para «Dónde va» del catálogo de
+  instrumental; ver «Catálogo de instrumental» en `DESIGN.md`): es un componente
+  hermano del diagrama, no un SVG, porque lleva su propia estructura: una rejilla
+  de celdas de **22 px** (18 px en celular) con las celdas de **un** objeto
+  encendidas en `marca` y la primera (en orden de lectura) como círculo con su
+  número. Recibe la mesa (`table`, solo para su tamaño), el objeto (`item`) y el
+  turno de su fila en la lista (`index`), que escalona cuándo se enciende cada una
+  (70 ms por turno). Todas las mesas van a la **misma escala**: una mesa ancha se
+  desplaza dentro de su marco, con el borde derecho desvanecido. Es decorativa
+  (`aria-hidden`): quien la use pone al lado, en texto, la técnica, la mesa y el
+  número («Mesa de Mayo · n.° 4»). Un objeto con varias celdas lleva un solo
+  número; sin número, sus celdas se encienden sin círculo.
 
 ### Glosario (interfaz → código y API)
 
@@ -120,16 +237,102 @@ relativas a `/api/dataiq`.
 | `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
 
+Cada ruta carga su pantalla al visitarla (`loadComponent`, en
+`app/app.routes.ts`), y las de gestión llevan su `roleGuard`. El título de la
+pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
+en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
+editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
+«Revisar versión») hasta que su pantalla ponga el nombre real. El router
+(`provideAppRouter`, en `core/router/`) tiene `anchorScrolling`: los enlaces de la
+barra y del pie a `/#camino`, `/#investigacion`, `/#preguntas` y `/#quien` bajan a
+esa sección del inicio, también desde otra página y al tocar de nuevo el mismo
+enlace. Cada sección del inicio lleva `scroll-margin-top: var(--size-navbar)` para
+no quedar bajo la barra fija. Mientras una
+pantalla no se construye, su ruta carga un marcador vacío. Una ruta que no
+existe (`**`, la última) abre «No encontrada»: el aviso es
+`shared/ui/not-found`, que la fase 4 reutiliza para una técnica que no existe.
+
 La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
-`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=`.
+`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
+una ruta propia: ver «Sesión»).
+
+### Barra (`shell/navbar/`)
+
+La barra (`Navbar`) tiene la marca y cuatro menús; cada botón abre su
+desplegable (`NavPanel`), un overlay de CDK a todo el ancho bajo la barra. Solo
+hay uno abierto a la vez; se cierra con Escape (el foco vuelve a su botón), con
+un clic fuera, al elegir una opción o al cambiar de página por otro camino
+(Atrás, un guard, la sesión vencida). Si el foco estaba en el panel, al cerrarse
+vuelve a su botón. Con el teclado el foco entra al primer enlace, y aunque el
+panel queda al final del documento, Tab lo recorre como si estuviera tras su
+botón: Mayús+Tab desde la primera opción vuelve al botón y Tab desde la última
+sigue con lo que viene después. Un segundo clic sobre «Especialidades» lleva al
+catálogo. El contenido de Herramientas, ¿Por qué IQ Platform? y Ayuda está en
+`nav-menus.ts`, con el destino de cada opción (`NavTarget`): rutas de esta app
+(los fragmentos del inicio: `/#camino`, `/#investigacion`, `/#preguntas`,
+`/#quien`) y `/simiq3d/` y `/sivri/` como enlaces normales, con navegación
+completa (Resuelto 17): son otras apps, servidas en el mismo origen por los
+rewrites de Vercel (fase 9). La barra, el menú de celular y el pie dibujan esos
+enlaces con la directiva `NavLink` (`nav-link.ts`, `<a [appNavLink]>`), que abre
+las rutas con el router y deja `href` al navegador. Con `npm start` esas dos rutas no existen: el router
+las toma por una ruta desconocida y abre «No encontrada».
+
+- **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
+  dinámico la primera vez que se abre un menú: la barra está en todas las
+  páginas y no debe engordar el código inicial.
+- **Especialidades** salen de la API (`SpecialtiesNav`): las especialidades son
+  las de `Specialties`, que ya pidió el pie al cargar la app, y sus técnicas
+  (`GET /techniques`) se piden la primera vez que se abre ese desplegable. Cada
+  una lleva a `/tecnicas?especialidad=<id>`: el parámetro es el `id` de la
+  especialidad.
+- «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
+  técnica. Mientras llegan las especialidades, el desplegable dice «Cargando…»;
+  si la API falla, queda vacío (el interceptor ya avisó), y abrirlo de nuevo (o
+  abrir el menú de celular) vuelve a pedir lo que falló.
+- **Sesión:** a la derecha, un visitante ve Ingresar (`/cuenta/ingresar`) y Crear
+  cuenta (`/cuenta/crear`), sin `?volver=`: es un ingreso directo. Con sesión va
+  «Mi cuenta» (avatar con iniciales), que abre `AccountMenu`, un panel anclado a la
+  derecha con nombre, correo, rol y los accesos de gestión del rol
+  (`management-links.ts`: Mis borradores, Por revisar, Instrumental, Usuarios y
+  roles; la página actual lleva `aria-current`). Hasta que `SessionService.loaded()`
+  es `true` no se muestra ni lo uno ni lo otro. El panel se cierra si la sesión
+  cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
+  alto: al abrirlo de nuevo se ancla a la altura nueva. Todavía faltan: la cifra junto a
+  cada acceso, que llega con su pantalla (borradores, por revisar, instrumental), y
+  «Cerrar sesión», de la fase 5.
+- **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
+  menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
+  plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
+  (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
+  ventana vuelve a pasar de 960 px; abrirlo cierra el desplegable de escritorio y
+  al revés, y si la ventana baja de 961 px con un desplegable abierto, este se
+  cierra. Al
+  final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
+  mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
+  solo con el avatar.
+
+### Pie (`shell/footer/`)
+
+El pie oscuro (`Footer`) va en todas las páginas, bajo `<main>`, que crece para
+que el pie quede abajo aunque la página sea corta. Lleva la marca con su frase y
+las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
+Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
+no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
+«Preguntas frecuentes» y «Para docentes» (la opción que va solo en la barra
+lleva `inFooter: false` en `nav-menus.ts`); la política de datos se suma con su
+página (fase 5). Las especialidades las da `Specialties` (`GET /specialties`,
+una sola petición al cargar la app, porque el pie está en todas las páginas, que
+comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si
+fallaron (p. ej. un 5xx en un arranque en frío), se vuelven a pedir al cambiar
+de página.
 
 ### Errores de la API
 
 Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 
-- **401**: no hay sesión o venció (dura 2 horas). Se limpia la cuenta y se
-  lleva a `/cuenta/ingresar?volver=<ruta actual>`. En una página pública, el
-  401 de `GET /auth/me` solo significa visitante.
+- **401**: no hay sesión o venció (dura 2 horas). Si la petición salió con
+  sesión, se limpia la cuenta y se lleva a `/cuenta/ingresar?volver=<ruta
+  actual>`. Un visitante no tiene sesión que vencer: ver las excepciones abajo.
 - **403**: el rol no alcanza (o falta `X-IQ-Client`, que sería un error del
   frontend).
 - **409**: otro cambio llegó primero o el estado no lo permite (otro revisor
@@ -138,6 +341,65 @@ Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
 - **422**: `detail` es una lista. Del dominio llega como lista de textos (lo
   que no cuadra en el contenido); de la validación de FastAPI, como lista de
   objetos con el campo que falló.
+
+Qué texto se muestra (`core/http/error-message.ts`): el `detail` de la API,
+que ya viene en español, si es un texto o una lista de textos. Si no lo es (la
+lista de objetos de FastAPI trae mensajes en inglés) o falta, un texto de
+respaldo con la misma voz impersonal. Sin respuesta (estado 0) dice que no hay
+conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
+servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
+manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
+
+- Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
+  cuenta; lo trata la pantalla:
+  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
+    puesta);
+  - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
+    página pública: no lo saca de ahí;
+  - el de una petición que salió antes de ingresar o salir
+    (`SessionService.generation` cambió): viene de la cookie vieja y no debe
+    borrar la sesión nueva.
+- Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
+  `/cuenta/…` no se vuelve a enviar a ingresar. Si la navegación falla, se queda
+  donde está.
+- Los demás 401 también olvidan la cuenta (`SessionService.clear()`).
+
+**Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
+`NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
+`App` los pasa a `shared/ui/notice-stack`, que solo dibuja: recibe la lista y
+avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
+neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
+sola a los 3,2 s. Un error igual a uno a la vista no se repite, y caben tres
+(`MAX_ERRORS`): si llega otro, se va el más antiguo. Una confirmación igual a
+una a la vista la reemplaza y vuelve a contar su tiempo. Un aviso sin mensajes
+no se muestra. Aspecto y razones: «Avisos» en
+[`DESIGN.md`](../../DESIGN.md).
+
+### Sesión
+
+`SessionService` (`core/session/`) guarda la cuenta en un signal. Se pide a la
+API al arrancar (`provideSession()`), pero **el arranque no espera la
+respuesta**: el backend puede tardar segundos en arrancar en frío y las páginas
+públicas no deben quedar en blanco. Hasta que llega, `loaded()` es `false` (el
+shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión), y
+si la API no responde o da 401, queda como visitante. Solo el 401 es
+definitivo: si la API no respondió (sin conexión o un 5xx en un arranque en
+frío), el próximo `load()` —el de un guard, por ejemplo— vuelve a preguntar.
+Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una respuesta
+tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
+
+- `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
+  la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
+  interceptor ante un 401).
+- `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
+  (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
+  tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
+  aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
+  403). Es solo para
+  no mostrar pantallas que no se pueden usar: la API decide en cada petición.
+- `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
+  que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
+  `//sitio`, `https://…`, `\` ni caracteres de control).
 
 ## Correr el frontend
 

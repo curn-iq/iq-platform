@@ -30,7 +30,7 @@ flowchart LR
 |---|:-:|:-:|:-:|:-:|:-:|
 | Entrar al shell y ver el catálogo de técnicas | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Ver los datos clínicos de una técnica | ✔ | ✔ | ✔ | ✔ | ✔ |
-| Ver el instrumental y las mesas de una técnica | vista previa | ✔ | ✔ | ✔ | ✔ |
+| Ver el instrumental, las suturas, los equipos y las mesas de una técnica | vista previa | ✔ | ✔ | ✔ | ✔ |
 | Usar SIVRI y SIMIQ3D | | ✔ | ✔ | ✔ | ✔ |
 | Funciones personales (p. ej. progreso en SIVRI) | | ✔ | ✔ | ✔ | ✔ |
 | Crear técnicas y editar borradores | | | ✔ | ✔ | ✔ |

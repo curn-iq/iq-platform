@@ -1,0 +1,280 @@
+// Diagrama de mesa: ver «Detalle de técnica» y «Tertiary» (acero) en DESIGN.md. En el
+// detalle la mesa es un diagrama sereno (superficie con filete, rejilla fina, sin
+// paño), no el objeto firma.
+
+// El dibujo se separa del borde de la mesa: 4,5 % por cada lado y 91 % del ancho
+$inset: 0.045;
+$side: 0.91;
+
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--aspect, 1);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+// El dibujo se separa del borde de la mesa para que las piezas no queden pegadas
+svg {
+  position: absolute;
+  inset: $inset * 100%;
+  display: block;
+  width: $side * 100%;
+  height: $side * 100%;
+  overflow: visible;
+}
+
+// ---------- Vista previa de la puerta de cuenta ----------
+// Ver «Puerta de cuenta» en DESIGN.md: la mesa, centrada y con celdas de 104 px en toda
+// técnica (así que mide según sus columnas), se recorta a sus primeras dos filas y media
+// y se difumina hacia abajo. Sin números ni leyenda; la tarjeta de la puerta va debajo.
+
+$preview-cell: 104px;
+
+:host([data-variant='preview']) {
+  // Margen de abajo: solo si la mesa se ve entera (si se recorta, se difumina)
+  --bottom-inset: 0;
+  // El dibujo ocupa el 91 % del ancho: para que cada celda mida 104 px, el ancho es más
+  width: min(100%, calc(var(--columns) * #{$preview-cell} / #{$side}));
+  margin-inline: auto;
+  // Alto: el margen de arriba más las filas que se ven, en proporción al ancho
+  aspect-ratio: calc(
+    1 / (#{$inset} + var(--visible-rows) * #{$side} / var(--columns) + var(--bottom-inset))
+  );
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent);
+  mask-image: linear-gradient(180deg, #000 45%, transparent);
+
+  // Una mesa de dos filas o menos se ve entera: no se recorta ni se difumina
+  &[data-cropped='false'] {
+    --bottom-inset: #{$inset};
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  // El dibujo conserva su alto completo y el recorte lo hace el contenedor. Va en el flujo,
+  // con margen: un margen en % se mide sobre el ancho (como el alto de arriba), y `top` en
+  // % se mediría sobre el alto, que aquí es solo lo que se ve.
+  svg {
+    position: static;
+    height: auto;
+    aspect-ratio: var(--aspect);
+    margin: $inset * 100% auto 0;
+    pointer-events: none;
+  }
+}
+
+.grid-line {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 1;
+  // 1 px en pantalla a cualquier ancho, aunque el dibujo se escale
+  vector-effect: non-scaling-stroke;
+}
+
+// ---------- Degradados del acero (sus ids son propios de cada diagrama) ----------
+
+.stop-light {
+  stop-color: var(--color-steel-light);
+}
+.stop-glint {
+  stop-color: var(--color-steel-glint);
+}
+.stop-steel {
+  stop-color: var(--color-steel);
+}
+.stop-shade {
+  stop-color: var(--color-steel-shade);
+}
+.stop-dim {
+  stop-color: var(--color-steel-dim);
+}
+.stop-white {
+  stop-color: var(--color-surface);
+}
+.stop-blade {
+  stop-color: var(--color-blade-shade);
+}
+
+// ---------- Piezas ----------
+
+// Entrada rápida: las piezas se colocan una tras otra (la forma y su número, a la vez)
+.placing {
+  animation: place 0.35s var(--ease-enter) backwards;
+  animation-delay: calc(var(--i, 0) * 25ms);
+}
+
+.piece {
+  cursor: pointer;
+
+  // El efecto de levantarse y de atenuar las demás es el indicador de foco
+  &:focus {
+    outline: none;
+  }
+}
+
+@keyframes place {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// La zona de clic de cada celda de un objeto: invisible, pero recibe el puntero
+.hit {
+  fill: transparent;
+}
+
+// «Pieza en diagrama» de DESIGN.md: sombra suave, y al señalarla sube y se despega. La
+// sombra en reposo es una sola para toda la capa: con una por pieza, atenuar las demás
+// recalculaba cada sombra en cada cuadro. Las zonas de clic de las piezas van encima.
+.shapes {
+  filter: drop-shadow(0 1px 1px rgba(3, 20, 28, 0.22)) drop-shadow(0 4px 6px rgba(3, 20, 28, 0.08));
+  pointer-events: none;
+}
+
+.shape {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.45s var(--ease-enter),
+    filter 0.45s var(--ease-enter),
+    opacity 0.3s var(--ease-fade);
+}
+
+.shape.active {
+  transform: translate(-3px, -12px);
+  filter: drop-shadow(0 18px 10px rgba(3, 20, 28, 0.45));
+}
+
+// Al señalar una, las demás se atenúan (la tela clara, menos); sus números siguen legibles
+.marking .shape:not(.active) {
+  opacity: 0.38;
+}
+
+.marking .shape.flat:not(.active) {
+  opacity: 0.55;
+}
+
+// ---------- Instrumental en acero ----------
+
+.steel {
+  fill: var(--steel-fill);
+  stroke: var(--color-steel-edge);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.blade {
+  fill: var(--blade-fill);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.box {
+  fill: var(--color-steel-box);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.groove {
+  fill: none;
+  stroke: var(--color-steel-groove);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+}
+
+.tip {
+  fill: none;
+  stroke: var(--steel-fill);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+// ---------- Objetos planos: tela, bandeja y caucho, sin brillo ----------
+
+.cloth {
+  fill: var(--color-flat-cloth);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.fold {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.2;
+}
+
+.weave {
+  fill: none;
+  stroke: var(--color-steel);
+  stroke-width: 0.8;
+}
+
+.tray-rim {
+  fill: var(--color-flat-tray);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.tray-floor {
+  fill: var(--color-flat-tray-bottom);
+}
+
+.rubber {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.rubber-glint {
+  fill: none;
+  stroke: var(--color-surface);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.thread {
+  fill: none;
+  stroke: var(--color-text-subtle);
+  stroke-width: 1.2;
+}
+
+// Lo que no tiene dibujo propio: solo el recuadro punteado, nunca la silueta de otro instrumento
+.unknown {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+// ---------- Número ----------
+
+// El número: círculo `noche` al 72 % con la cifra en blanco. Se reescala (--number-scale)
+// para medir lo mismo en pantalla a cualquier ancho de la mesa.
+.number {
+  transform: scale(var(--number-scale, 1));
+  transform-box: fill-box;
+  transform-origin: center;
+
+  circle {
+    fill: color-mix(in srgb, var(--color-dark) 72%, transparent);
+  }
+
+  text {
+    fill: var(--color-surface);
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+}

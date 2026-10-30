@@ -41,14 +41,19 @@ proyecto de grado). Se marca cada pieza al terminarla.
   marcadores y cuadrícula, emparejamiento, estados y porcentaje por técnica,
   con pruebas automatizadas
 - [ ] Ajustar los umbrales con la sesión de validación
-- [ ] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ)
+- [ ] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ,
+  y CORS para el origen del shell: la página se sirve allí y manda los cuadros
+  al Servidor PC1, que es otro dominio)
 - [ ] Autenticación del celular ante SIVRI: la cookie de sesión no llega al
   dominio del Servidor PC1; la página pide a DataIQ un token corto y lo manda en
   `Authorization: Bearer` (depende de la pieza 10 de la checklist de DataIQ)
 - [ ] Servidor PC1 para las sesiones: un PC del laboratorio con
   Tailscale Funnel (dirección HTTPS fija, plan gratis); SIVRI pide el catálogo
   a DataIQ una vez por sesión
-- [ ] Frontend de SIVRI
+- [ ] Frontend de SIVRI, servido bajo `/sivri/` en el mismo origen que el
+  shell (rewrite del proyecto del shell hacia el de SIVRI). Es el destino de
+  «Comprobar con la cámara» en todas las técnicas de DataIQ, así que dice qué
+  mesas valida (la de Mayo de las cinco técnicas de Cirugía General)
 
 ## 4. Demostración
 

@@ -234,8 +234,9 @@ El registro de conversaciones:
   datos sensibles (Ley 1581 de 2012, art. 5). Por eso el frontend avisa bajo el
   campo del chat: «Tus preguntas se guardan sin tu nombre para medir el chat.
   No escribas datos de pacientes».
-- La política de tratamiento de datos lo declara, con su finalidad (Ley 1581
-  de 2012): es condición para abrir la plataforma a los estudiantes.
+- El [aviso de privacidad](../docs/privacidad.md) lo declara, con su
+  finalidad (Ley 1581 de 2012): es condición para abrir la plataforma a los
+  estudiantes.
 
 ## Cómo se evalúa
 

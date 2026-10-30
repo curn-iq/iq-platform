@@ -239,7 +239,12 @@ navegación (ver más abajo) NO se considera un módulo.
     clasifica diagnósticos, no procedimientos.
   - `users.policy_accepted_at` y `users.policy_version` son la prueba de la
     autorización de tratamiento de datos personales que exige el Decreto 1377
-    de 2013 (art. 8).
+    de 2013 (art. 8). La responsable del tratamiento es la CURN, con su
+    política (Acuerdo 02 de 2017): en los proyectos de sus estudiantes la
+    institución es la responsable (guía de la SIC de 2026, sección 3.9;
+    decidido por Mauricio el 2026-10-29). Lo que se acepta al registrarse es
+    el aviso de [`docs/privacidad.md`](docs/privacidad.md), cuya versión es
+    `POLICY_VERSION`; solo mayores de 18 en el MVP.
   - Roles en el enum `user_role`: ver "Modelo de roles" abajo.
 
 - **Modelo de roles** (decidido por Mauricio el 2026-10-04; diagramas en
@@ -391,9 +396,9 @@ aislada en `app/shell/` para poder separarla si algún día hace falta
 (decidido el 2026-10-11). La sesión es la cookie de «Sesión del navegador»:
 las APIs de DataIQ y SIMIQ3D la reciben por el proxy de Vercel; SIVRI, un
 token corto. Para que los frontends de SIVRI y SIMIQ3D también la usen (el de
-SIVRI, para pedir ese token), tienen que servirse desde ese mismo origen (p.
-ej. bajo `/sivri/*` y `/simiq3d/*`); cómo se sirven está **por definir** con
-esos módulos.
+SIVRI, para pedir ese token), se sirven desde ese mismo origen, bajo
+`/simiq3d/*` y `/sivri/*`: rewrites del proyecto de Vercel del shell hacia el
+de cada módulo, como los de las APIs (decidido por Juan el 2026-10-29).
 
 **Diseño (mockups)**: producto en `PRODUCT.md`, sistema visual en `DESIGN.md`,
 mockups en `diseno/mockups/`; el método está en `.claude/rules/diseno.md`.
@@ -462,6 +467,7 @@ repo, el Drive y las ramas obligaba a actualizar lo mismo en varios sitios).
 | Arquitectura e infraestructura (diagramas) | [`docs/arquitectura.md`](docs/arquitectura.md), con los SVG en `docs/diagramas/` |
 | Esquema de la base de DataIQ | [`dataiq/docs/esquema.dbml`](dataiq/docs/esquema.dbml) y su diagrama (`diagramabd.png`, dbdiagram.io) |
 | Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
+| Aviso de privacidad (lo que acepta quien crea una cuenta) | [`docs/privacidad.md`](docs/privacidad.md) |
 | Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |
 | Avance | Las checklists del repo (p. ej. [`dataiq/docs/checklist-backend.md`](dataiq/docs/checklist-backend.md)) |
 | Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub: uno por semana y uno al cerrar cada corte, con notas generadas de los PR (cómo, en el README) |

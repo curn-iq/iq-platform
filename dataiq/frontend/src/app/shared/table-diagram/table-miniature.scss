@@ -1,0 +1,82 @@
+// Mesa en miniatura: ver «Catálogo de instrumental» en DESIGN.md. Una sola escala para todas
+// las mesas (celdas de 22 px, 18 px en celular): una mesa ancha se desplaza dentro de su marco.
+
+:host {
+  display: block;
+  max-width: 100%;
+  // Tamaño de cada celda; el celular lo achica abajo
+  --cell: 22px;
+}
+
+// El marco desplaza la mesa ancha, con el borde derecho desvanecido. El relleno y el margen
+// negativo dejan espacio para que la animación de las celdas no se recorte en los bordes.
+.frame {
+  display: block;
+  max-width: 100%;
+  margin: -12px 0 -12px -12px;
+  padding: 12px 24px 12px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(var(--columns), var(--cell));
+  gap: 2px;
+  align-content: start;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  background: var(--color-bg);
+}
+
+.cell {
+  display: block;
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: var(--radius-hairline);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  // Las celdas del objeto se encienden una tras otra al abrir la entrada
+  &.on {
+    background: var(--color-accent);
+    box-shadow: none;
+    animation: light-up 0.4s var(--ease-enter) backwards;
+    animation-delay: calc(var(--k, 0) * 70ms);
+  }
+
+  // La celda con el número es un círculo
+  &.numbered {
+    border-radius: var(--radius-pill);
+  }
+}
+
+.number {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-surface);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes light-up {
+  from {
+    background: var(--color-accent-soft);
+    transform: scale(0.6);
+  }
+}
+
+@media (max-width: 760px) {
+  :host {
+    --cell: 18px;
+  }
+
+  .number {
+    font-size: 11.5px;
+  }
+}

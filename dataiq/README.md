@@ -117,6 +117,11 @@ Lo que no es navegador (Swagger, pruebas, servidores, una app) pide el token a
 `POST /auth/token` (formulario OAuth2: `username` = correo, `password`) y lo
 manda en `Authorization: Bearer`; con Bearer no hace falta `X-IQ-Client`.
 
+Un cambio de la API (una ruta o un esquema) va con `npm run api:types` en el
+mismo PR: regenera los tipos del frontend
+([`frontend/README.md`](frontend/README.md#correr-el-frontend)), y el CI falla
+si no coinciden.
+
 Tests y estilo:
 
 ```sh
@@ -165,6 +170,21 @@ Neon (proyecto `dataiq`, PostgreSQL 18, Ohio).
   pisar la que haya editado un revisor; las que son distintas de
   `seed/tecnicas.xlsx` las lista. Para reemplazarlas por las del archivo:
   `uv run python -m seed.load --descriptions`.
+
+- **Suprimir una cuenta**, cuando su titular lo pide por el canal del
+  [aviso de privacidad](../docs/privacidad.md). Desde `dataiq/backend`, con la
+  cadena de Neon solo en esa terminal; pide escribir «suprimir» para confirmar:
+
+  ```fish
+  read -s -x -P "Cadena de Neon: " DATABASE_URL
+  uv run python -m app.adapters.inbound.cli.delete_account <correo>
+  ```
+
+  Si la cuenta no creó ni revisó nada, se borra entera. Si creó o revisó
+  técnicas o versiones, se borran su nombre, su correo y su contraseña, y lo
+  que hizo se conserva sin su nombre; si tenía una sesión abierta, vence sola en
+  menos de 2 horas. La ley da 15 días hábiles para atender el pedido (Ley 1581
+  de 2012, art. 15).
 
 - **Desplegar a mano** (si hiciera falta), desde `dataiq/backend` con la
   sesión de Vercel del dueño del proyecto: `npx vercel@latest deploy --prod`.

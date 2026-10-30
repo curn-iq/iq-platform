@@ -61,6 +61,13 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   quién y desde cuándo, y que expire) para que otro no la tome a la vez. En el
   MVP basta con que aprobar o rechazar fallen si otro revisor ya decidió la
   versión.
+- **Comentarios de revisión aparte**, por sección y por objeto de la mesa, y
+  una nota del autor al enviar a revisión. En el MVP los comentarios van
+  juntos en el motivo de la devolución y no hay nota del autor.
+- **Consultar las técnicas archivadas** (un revisor las ve en el catálogo con
+  su historial). En el MVP la API solo expone lo publicado.
+- **Cambiar el nombre o la especialidad de una técnica publicada.** En el MVP
+  se eligen al crearla y no hay ruta para cambiarlos.
 
 ## Cuentas e inicio de sesión
 
@@ -76,12 +83,28 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   `Domain=dominio.com` y dejar el prefijo `__Host-`. El código del backend no
   cambia.
 - **Recuperar la contraseña por correo.** Hace falta un servicio de envío de
-  correos.
+  correos. En el MVP la pantalla de ingreso no lo ofrece.
+- **Ingresar con Google** (cuentas personales e institucionales). Hace falta
+  OAuth en el backend de DataIQ y declararlo en el aviso de privacidad.
 - **Limitar los intentos de inicio de sesión** para frenar a quien prueba
   contraseñas por fuerza bruta.
 - **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalog/full`, si
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.
+- **Cuentas desde los 14 años.** En el MVP solo se registran mayores de 18
+  ([`privacidad.md`](privacidad.md)). La guía de la Superintendencia de
+  Industria y Comercio sobre datos en universidades (2026) cita un concepto
+  según el cual, en el contexto educativo, un adolescente puede dar la
+  autorización por sí mismo; sirve para el bachiller que quiere conocer la
+  carrera. Cambia el aviso de privacidad y su versión.
+- **Borrar la cuenta desde «Mi cuenta»**, con un plazo para arrepentirse: la
+  cuenta se desactiva y se borra sola al vencer. El plazo no puede pasar de
+  los 15 días hábiles que da la ley para atender un pedido de supresión
+  (Ley 1581 de 2012, art. 15), y necesita una tarea diaria que borre las
+  vencidas. En el MVP la supresión la hace el equipo por terminal
+  (`delete_account`), cuando llega el pedido por el canal del aviso.
+- **Un correo propio del proyecto** para preguntas sobre la plataforma. En el
+  MVP el único canal es el de la CURN, que es la responsable.
 
 ## SIVRI
 
