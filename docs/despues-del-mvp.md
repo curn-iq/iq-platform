@@ -1,52 +1,9 @@
 # Después del MVP
 
-Ideas que no entran al MVP pero que se quieren retomar después. El MVP es una
-sola plataforma, la de la CURN, abierta a estudiantes de cualquier institución
-(decisión del 2026-10-05, ver `CLAUDE.md`).
-
-## Que otras instituciones monten su propia IQ Platform
-
-La idea es seguir el modelo de Moodle, Open edX y DHIS2: el código es abierto
-y cada institución que quiera usar sus propias técnicas descarga el software y
-monta su propia copia, con sus propias cuentas, datos y responsables.
-
-### Cómo lo hacen los proyectos parecidos
-
-| Software | Cómo lo usan las instituciones |
-|---|---|
-| Moodle | Cada institución lo instala en sus servidores. Quien no tiene equipo técnico paga MoodleCloud, el alojamiento que ofrece el propio Moodle, con límites de usuarios y espacio. |
-| Open edX | Cada institución monta su copia o contrata a una empresa que se la opera. edX.org es solo un sitio más que usa ese software. |
-| DHIS2 / OpenMRS | Cada país u hospital es dueño de su copia y de sus datos. Una comunidad y una fundación mantienen el código. |
-
-Lo que tienen en común: documentación de instalación, una comunidad que
-mantiene el código y alguien que opera la plataforma para quien no puede.
-
-Fuentes: [Moodle](https://edzlms.com/moodle-deployment-options-self-hosted-vs-cloud-vs-workplace-how-to-choose-2026-guide/),
-[MoodleCloud](https://www.wooclap.com/en/blog/moodle-pricing/),
-[Open edX](https://openedx.org/get-started/self-managed/),
-[DHIS2](https://en.wikipedia.org/wiki/DHIS2).
-
-### Lo que haría falta
-
-- Una guía de instalación paso a paso (cuentas, claves con que se firman los
-  inicios de sesión, migraciones, primer usuario administrador).
-- Un catálogo base para no arrancar vacío. Las técnicas de la CURN son autoría
-  de su programa de IQ (Ley 23 de 1982): compartirlas requiere su
-  autorización.
-- Forma de cargar técnicas desde la plataforma, no solo con scripts.
-- Definir qué pasa con SIVRI: el modelo de visión se entrena con el
-  instrumental de la CURN y otra institución podría necesitar reentrenarlo.
-- Cada institución responde por los datos personales de sus usuarios
-  (Ley 1581 de 2012) y necesita su propia política de datos.
-- Que el catálogo base tenga los mismos ids en todas las copias: fijarlos en
-  la carga inicial (una columna de ids en `seed/tecnicas.xlsx`). Hoy la carga
-  los genera, y SIVRI y SIMIQ3D traducen su mapeo por nombre del instrumento
-  en cada copia.
-
-### Lo que ya ayuda
-
-- El código es abierto (MIT).
-- Los ids son UUIDv7: no se repiten entre copias.
+Ideas que no entran al MVP pero que se quieren retomar después. Hay una sola
+plataforma, la de la CURN, con registro libre para estudiantes y docentes de
+cualquier institución, que usan el catálogo de la CURN (ver «Opciones
+descartadas»).
 
 ## Gestión de cuentas y revisión
 
@@ -106,6 +63,23 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 - **Un correo propio del proyecto** para preguntas sobre la plataforma. En el
   MVP el único canal es el de la CURN, que es la responsable.
 
+## SIVRI y SIMIQ3D con fuentes propias
+
+Decidido por Mauricio el 2026-10-30: el semestre siguiente al MVP (la fase
+preliminar, ver el [README](../README.md)), SIVRI y SIMIQ3D se rehacen con
+fuentes propias.
+
+- **Fotos propias de todo el instrumental y de las técnicas**, con medidas
+  exactas. En el MVP, los modelos 3D salen de referencias de catálogo de
+  fabricantes y distribuidores.
+- **Medir la mesa de Mayo del laboratorio** (el área entre los marcadores
+  ArUco). En el MVP, SIMIQ3D usa una mesa de tamaño provisional, la misma para
+  todas las técnicas.
+- **Hacia dónde apunta cada instrumento**, según las fotos de las mesas bien
+  armadas: si todos siguen una misma regla, la regla vive en SIMIQ3D; si
+  cambia de un instrumento a otro, es parte del arreglo y va en DataIQ (cambio
+  de su esquema y de su editor). En el MVP, todos apuntan igual.
+
 ## SIVRI
 
 - **Reconocer en el celular** (YOLO exportado a ONNX en el navegador) en vez
@@ -157,10 +131,20 @@ Formas de evaluarlo que van más allá de lo que pide el MVP (revisadas el
   dominio sirve para las APIs en subdominios (ver «Cuentas e inicio de
   sesión»).
 
-## Opciones descartadas para el MVP
+## Opciones descartadas
 
-- **Una plataforma con espacios por institución** (cada una con su catálogo y
-  sus revisores dentro de la misma plataforma): exige cambiar el esquema y el
-  backend, y convierte a la CURN en operadora de otras instituciones. Es el
-  modelo de las empresas que venden alojamiento, no el de un proyecto
-  académico.
+- **Una plataforma por institución**, sea una copia que cada institución
+  instala (como Moodle u Open edX) o espacios por institución dentro de esta,
+  cada uno con su catálogo y sus revisores. Descartada por Mauricio el
+  2026-10-30 (el 2026-10-05 se había dejado para después del MVP):
+  - El registro es libre: un estudiante o un docente de cualquier institución
+    ya puede usar la plataforma de la CURN.
+  - Las técnicas son autoría del programa de Instrumentación Quirúrgica de la
+    CURN (Ley 23 de 1982): otra copia no podría llevar el catálogo sin su
+    autorización y arrancaría vacía.
+  - Preparar instalaciones para terceros (guía, soporte, catálogo base, ids
+    fijos entre copias, reentrenar SIVRI) es el trabajo de una comunidad o una
+    fundación, no el de un proyecto de grado; los espacios por institución,
+    además, exigen cambiar el esquema y el backend.
+  - El código es abierto (MIT): quien quiera montar su propia copia puede
+    hacerlo por su cuenta.

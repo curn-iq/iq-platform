@@ -23,14 +23,6 @@ porqué están en el [README](../README.md).
 - [x] Backend: Python + FastAPI (confirmado por Guebriel)
 - [x] Frontend y visor 3D: Angular + Three.js (decidido por Juan); avance en
   [`checklist-frontend.md`](checklist-frontend.md)
-- [ ] (Opcional) Fotos del instrumental de IQ para ajustar los modelos, si hay
-  tiempo en la primera visita de SIVRI (ver la
-  [checklist de SIVRI](../../sivri/docs/checklist.md))
-- [ ] Medir la mesa de Mayo del laboratorio (el área entre los marcadores
-  ArUco), en la misma visita
-- [ ] Hacia dónde apunta cada instrumento, según las fotos de las mesas bien
-  armadas: si es una regla única queda en SIMIQ3D; si cambia por instrumento,
-  va en DataIQ
 - [x] La descripción breve de los 23 instrumentos en DataIQ
   (`instruments.description`), con fuentes citables (columna
   `fuentes_descripcion` de `seed/tecnicas.xlsx`): es lo que muestra SIMIQ3D al
@@ -41,13 +33,9 @@ porqué están en el [README](../README.md).
 
 ## 3. Diseño y desarrollo
 
-- [ ] Banco de preguntas con su acción correcta (ING con ayuda de IQ), antes
-  de programar el chat
-- [ ] Fotos de catálogo y medidas de cada instrumento, con su fuente
-- [ ] Modelos 3D por familias (cinco bases): el `.blend` de cada familia, el
+- [ ] Banco de preguntas con su acción correcta
+- [x] Modelos 3D por familias (cinco bases): el `.blend` de cada familia, el
   GLB de cada instrumento y la tabla de medidas, en el repo
-- [ ] Visto bueno del programa de IQ a cada modelo (formativo: se corrige y se
-  vuelve a pedir)
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
 - [x] Tailscale Funnel con el filtro con clave (solo el filtro queda publicado)
 - [x] Servidor PC2 sin suspensión por inactividad
@@ -72,9 +60,9 @@ porqué están en el [README](../README.md).
 - [ ] Exactitud del chat sobre el banco de preguntas y sobre el registro de
   las sesiones; ninguna respuesta inventada
 - [ ] Tiempo de respuesta, desde la pregunta hasta la escena
-- [ ] Modelos con visto bueno del programa de IQ (de 23)
-- [ ] Escala de Usabilidad del Sistema (SUS) y prueba piloto, con el resto del
-  ecosistema
+- [ ] Escala de Usabilidad del Sistema (SUS) y prueba piloto en la fase
+  preliminar con el programa de IQ (ver el [README](../../README.md)), con el
+  resto del ecosistema
 - [ ] Al cerrar la evaluación: exportar el registro de conversaciones, borrarlo
   y apagarlo (`CHAT_LOG_ENABLED=false`)
 
