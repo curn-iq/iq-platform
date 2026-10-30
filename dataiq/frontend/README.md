@@ -162,7 +162,9 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   Hilo») por número. Mesa y leyenda comparten
   `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
   o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
-  a la enfocada; la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  a la enfocada (por ahora, dentro de cada componente; el foco compartido entre
+  mesa y leyenda está en la fase 4 de la
+  [checklist](../docs/checklist-frontend.md)); la pieza se levanta, las demás se atenúan al 38 % (la tela,
   al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
   `highlighted` por mesa, porque cada mesa tiene su propia numeración.
 - **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un

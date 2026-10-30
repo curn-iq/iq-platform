@@ -71,6 +71,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [ ] Inicio (`inicio.html`), con las secciones a las que enlazan la barra y el pie (`id` `camino`, `investigacion`, `quien` y `preguntas`), cada una con `scroll-margin-top: var(--size-navbar)` para no quedar bajo la barra fija
 - [ ] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
 - [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; una técnica que no existe (404) muestra «No encontrada»
+- [ ] Foco compartido entre la mesa y su leyenda: hoy cada componente recuerda solo su propio foco, así que si una pieza tiene el foco y el puntero pasa por la leyenda y se va, la pieza se suelta (y al revés). La página, que tiene los dos, guarda qué número tiene el foco y se lo pasa a ambos, con su prueba (hallazgo de la revisión de la fase 3)
 - [ ] Datos clínicos: «Para qué sirve» es `description`, sin la marca «demostración» (Resuelto 23); el resto de campos clínicos de `GET /techniques/{id}`
 - [ ] Instrumental: el instrumental, las suturas por plano, los equipos biomédicos y el equipo médico-quirúrgico, todo detrás de la puerta de cuenta (Resuelto 27). Las suturas se muestran una fila por plano: `data/` separa el `usage` («Piel; Fascia») en planos
 - [ ] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
