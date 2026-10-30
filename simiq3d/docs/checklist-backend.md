@@ -53,7 +53,7 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] `GET /models` con `Cache-Control` y `ETag`
 - [x] Comando `load_models`: de `models/modelos.csv` (nombre o alias) a los ids
   del DataIQ de cada entorno
-- [ ] Cargar el mapeo cuando estén los GLB
+- [x] Cargar el mapeo cuando estén los GLB (23 modelos, en local y en Neon)
 
 ## Registro de conversaciones
 
