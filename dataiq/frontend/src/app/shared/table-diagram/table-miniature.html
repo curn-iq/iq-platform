@@ -1,0 +1,16 @@
+<div class="frame">
+  <div class="grid" aria-hidden="true" [style.--columns]="table().columns">
+    @for (cell of cells(); track $index) {
+      <span
+        class="cell"
+        [class.on]="cell.on"
+        [class.numbered]="cell.numbered"
+        [style.--k]="cell.on ? index() : null"
+      >
+        @if (cell.numbered) {
+          <span class="number">{{ item().legendNumber }}</span>
+        }
+      </span>
+    }
+  </div>
+</div>

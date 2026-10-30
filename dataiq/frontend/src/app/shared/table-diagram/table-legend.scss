@@ -1,0 +1,67 @@
+// Leyenda de la mesa: ver «Detalle de técnica» en DESIGN.md. Filas reguladas por filete;
+// la señalada toma `marca-claro` y su número pasa a un círculo `marca`.
+
+:host {
+  display: block;
+}
+
+ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+}
+
+li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease-fade),
+    background-color 0.2s var(--ease-fade);
+
+  &.active {
+    background: var(--color-accent-soft);
+    color: var(--color-text);
+
+    b {
+      background: var(--color-accent);
+    }
+  }
+}
+
+// Lo que no está en la mesa (un hueco «Sin dato» o un objeto que la fuente no ubica): no hay
+// pieza que levantar, así que no se señala. Círculo vacío con filete `filete-2` y texto `tinta-3`.
+li.off {
+  color: var(--color-text-subtle);
+  cursor: default;
+
+  b {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--color-border-strong);
+    color: var(--color-text-subtle);
+  }
+}
+
+b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  // Es el mismo círculo del número en la mesa: `noche` al 72 %
+  background: color-mix(in srgb, var(--color-dark) 72%, transparent);
+  color: var(--color-surface);
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.2s var(--ease-fade);
+}

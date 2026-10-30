@@ -110,6 +110,101 @@ instrumental (miniatura). Se construye una sola vez, con variantes, antes que
 las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
 `columns`); `used: false` es una mesa que la técnica no lleva.
 
+- **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
+  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `name`, `components`,
+  `instruments`, `cells`). El `name` es lo que dice la leyenda (`itemName()`, en
+  `domain/`); `instruments` son los componentes que no son suturas, los que se
+  dibujan.
+  `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
+  API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
+  uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
+  tiene mesa es solo del listado). El componente (`shared/table-diagram`,
+  `<app-table-diagram [table]>`) no importa `data/`: recibe la `Table` ya armada.
+- **Grilla:** el SVG mide 100 unidades por celda (`viewBox` de
+  `columnas × 100` por `filas × 100`) y se escala al ancho que le dé quien lo use;
+  la mesa toma la proporción de su grilla (`--aspect`). Las líneas de la rejilla
+  son de 1 px a cualquier ancho (`vector-effect: non-scaling-stroke`) y solo van
+  entre celdas, sin borde.
+- **Objetos:** cada objeto con celdas es **una** pieza (`.piece`, con
+  `data-n` = su número), aunque ocupe varias: una zona de clic por celda y un solo
+  número. Las formas de todas las piezas van en una capa aparte (`.shapes`), debajo
+  de las piezas y con una sola sombra: un número nunca queda tapado por la forma de
+  otra pieza, y atenuar las demás no recalcula una sombra por pieza. La primera
+  celda en orden de lectura (`readingOrder()`, en `domain/table.ts`) es la del
+  número, también en la miniatura. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
+  sin número se dibuja sin número. `piece-layout.ts` pone el círculo del número:
+  en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
+  de la línea que une su primera y su última celda si ocupa varias. El círculo
+  (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
+  `ResizeObserver` mide el dibujo y `--number-scale` sale de ese ancho y del de la
+  mesa en celdas, así que otra mesa en el mismo espacio también lo cambia.
+- **Formas** (decidido por Juan el 2026-10-29; ver «Detalle de técnica» en
+  `DESIGN.md`): los dibujos del mockup (16 de acero y 5 planos) están en
+  `drawings.ts` como **datos**, que la plantilla pinta como SVG: sin `innerHTML`.
+  `shape-catalog.ts` elige el dibujo de cada componente por palabras clave de su
+  nombre (sin tildes ni mayúsculas) y arma las formas del objeto: cada dibujo una
+  sola vez (mango y hoja de bisturí son un bisturí), una compresa con portaagujas
+  es la compresa con su hilo, y lo que no tiene dibujo propio es **un recuadro
+  punteado**, nunca la silueta de otro instrumento. Los dibujos son de cirugía
+  abierta: un nombre con «laparoscópico» no toma el dibujo de su homónimo abierto.
+  Las suturas no se dibujan solas ni suman el recuadro punteado: no son un
+  instrumento sin dibujo; un objeto que solo tiene suturas es el recuadro.
+  `placeShapes()` las coloca:
+  en una celda, lo plano al centro y el acero inclinado 40° encima (si son dos,
+  a los lados); en varias, el acero a lo largo de la línea que une sus celdas.
+  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS`, a la
+  tabla de palabras clave y, si es de acero, a `SCALE` (`piece-layout.ts`): el
+  tipo `SteelKey` hace que falte una escala no compile. Las claves de los dibujos
+  van en inglés (`scalpel`, `needleHolder`, `drapePack`…), como el resto del código. Cada diagrama tiene sus propios degradados de acero
+  (`id` únicos), porque puede haber dos en una página.
+- **Leyenda enlazada:** `app-table-legend` lista cada objeto con número
+  (nombre = componentes unidos con «y», o «e» ante el sonido /i/: «Compresa e
+  Hilo») por número. Mesa y leyenda comparten
+  `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
+  o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
+  a la enfocada (por ahora, dentro de cada componente; el foco compartido entre
+  mesa y leyenda está en la fase 4 de la
+  [checklist](../docs/checklist-frontend.md)); la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
+  `highlighted` por mesa, porque cada mesa tiene su propia numeración.
+- **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
+  objeto con número tiene su fila según lo que la fuente dice de él. Con celdas
+  (`placed`) está en la mesa y se señala. Sin celdas pero con componentes
+  (`unplaced`) se sabe qué es, no dónde va: se lista con su nombre, apagado y sin
+  enlace. Sin celdas ni componentes (`gap`) es un número que la fuente da y no
+  deja leer: dice «Sin dato», sin el texto crudo. Las filas apagadas tienen el
+  círculo vacío con filete `filete-2` y no se llegan con Tab: no hay pieza que
+  levantar. Un objeto sin número no tiene fila. La carga inicial de la CURN hoy no
+  trae ningún caso (lo ilegible se corrigió o se propuso, ver
+  [`checklist-backend.md`](../docs/checklist-backend.md)); la regla cubre los que
+  lleguen.
+- **Vista previa** (`variant="preview"`, para la puerta de cuenta; ver «Puerta de
+  cuenta» en `DESIGN.md`): la misma mesa recortada a sus primeras **2,5 filas** y
+  difuminada hacia abajo, centrada y con celdas de **104 px** (en celular, el ancho
+  de la pantalla). Sigue dibujando la grilla y el instrumental, pero sin números,
+  sin enlace con la leyenda (no se señala ni se llega con Tab, y no lleva
+  `data-n`) y oculta a los lectores de pantalla (`aria-hidden`). La geometría sale
+  de CSS: el componente solo fija `--columns`, `--visible-rows` y `data-cropped`, y
+  el 4,5 % de margen y el 91 % del dibujo son variables de Sass en
+  `table-diagram.scss`. El margen de arriba es un `margin` en %, que se mide sobre
+  el ancho, como el alto que le reserva el `aspect-ratio` (un `top` en % se mediría
+  sobre el alto y mostraría más de 2,5 filas). Una mesa de 2 filas o menos se ve entera, sin difuminar.
+  Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
+  revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
+  vez de «Sin mesa» es la página (fase 4).
+- **Miniatura** (`app-table-miniature`, para «Dónde va» del catálogo de
+  instrumental; ver «Catálogo de instrumental» en `DESIGN.md`): es un componente
+  hermano del diagrama, no un SVG, porque lleva su propia estructura: una rejilla
+  de celdas de **22 px** (18 px en celular) con las celdas de **un** objeto
+  encendidas en `marca` y la primera (en orden de lectura) como círculo con su
+  número. Recibe la mesa (`table`, solo para su tamaño), el objeto (`item`) y el
+  turno de su fila en la lista (`index`), que escalona cuándo se enciende cada una
+  (70 ms por turno). Todas las mesas van a la **misma escala**: una mesa ancha se
+  desplaza dentro de su marco, con el borde derecho desvanecido. Es decorativa
+  (`aria-hidden`): quien la use pone al lado, en texto, la técnica, la mesa y el
+  número («Mesa de Mayo · n.° 4»). Un objeto con varias celdas lleva un solo
+  número; sin número, sus celdas se encienden sin círculo.
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |
