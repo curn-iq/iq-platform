@@ -46,7 +46,8 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] `POST /chat` con el contrato acordado con el frontend
 - [x] Probado con Qwen2.5 7B y Qwen3-VL 8B en la RX 6600 XT
 - [x] Modelo del MVP: Qwen3-VL 8B instruct
-- [ ] Banco de preguntas con su respuesta correcta, para medir la exactitud
+- [x] Banco de preguntas con su respuesta correcta, para medir la exactitud
+  (`eval/banco.csv` y el comando `chat_bank`)
 
 ## Modelos 3D
 
