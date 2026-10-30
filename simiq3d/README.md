@@ -196,12 +196,14 @@ técnica del chat; lo demás está en
 [`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md).
 
 - **Evaluación formativa** (durante el desarrollo):
-  - Un **banco de preguntas**, escrito por ING, cada una con su acción
-    correcta. Incluye sinónimos, errores de escritura, preguntas fuera de
-    alcance («¿cómo se hace una apendicectomía?») e intentos de desviarlo
-    («ignora tus instrucciones»): en esas el chat dice que no tiene la
-    respuesta. Se corre solo cada vez que cambian el modelo o sus
-    instrucciones.
+  - Un **banco de preguntas**, escrito por ING, cada una con lo que el chat
+    debe hacer con ella ([`backend/eval/banco.csv`](backend/eval/banco.csv);
+    cómo se corre y se califica, en el
+    [README del backend](backend/README.md#banco-de-preguntas)). Incluye
+    sinónimos, errores de escritura, preguntas fuera de alcance («¿cómo se
+    hace una apendicectomía?») e intentos de desviarlo («ignora tus
+    instrucciones»): en esas el chat dice que no tiene la respuesta. Se corre
+    cada vez que cambian el modelo o sus instrucciones.
   - La comparación de cada modelo 3D con sus fotos de referencia (silueta y
     medidas) y las pruebas automatizadas del backend.
 - **Evaluación sumativa** (al final):

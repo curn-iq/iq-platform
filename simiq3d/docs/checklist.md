@@ -33,7 +33,7 @@ porqué están en el [README](../README.md).
 
 ## 3. Diseño y desarrollo
 
-- [ ] Banco de preguntas con su acción correcta
+- [x] Banco de preguntas con lo que el chat debe hacer con cada una
 - [x] Modelos 3D por familias (cinco bases): el `.blend` de cada familia, el
   GLB de cada instrumento y la tabla de medidas, en el repo
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
