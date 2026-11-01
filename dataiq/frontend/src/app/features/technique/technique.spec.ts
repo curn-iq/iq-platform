@@ -34,6 +34,7 @@ const SPECIALTIES = [
   { id: 'e-1', name: 'Cirugía general' },
   { id: 'e-2', name: 'Urología' },
 ];
+const UNAUTHORIZED = { status: 401, statusText: 'Unauthorized' };
 
 describe('TechniqueDetail', () => {
   let http: HttpTestingController;
@@ -84,6 +85,18 @@ describe('TechniqueDetail', () => {
     }
     await loading;
     // Sin `whenStable`: con las mesas pendientes no termina
+    await Promise.resolve();
+    harness.detectChanges();
+  }
+
+  /** `GET /auth/me` falla sin decir si hay sesión. */
+  async function failSession(): Promise<void> {
+    const session = TestBed.inject(SessionService);
+    const loading = session.load();
+    http
+      .expectOne(`${TEST_API_BASE}/auth/me`)
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await loading;
     await Promise.resolve();
     harness.detectChanges();
   }
@@ -206,6 +219,90 @@ describe('TechniqueDetail', () => {
 
       expect(root.querySelectorAll('.lock')).toHaveLength(0);
     });
+
+    it('si /auth/me falla no se toma por visitante: ni candados ni puerta', async () => {
+      await open(`/tecnicas/${ID}/mesa-de-mayo`);
+      await respond();
+      await failSession();
+
+      expect(root.querySelectorAll('.lock')).toHaveLength(0);
+      expect(root.querySelector('app-technique-gate')).toBeNull();
+      expect(root.querySelector('.actions')).toBeNull();
+    });
+  });
+
+  describe('si la API no responde', () => {
+    const SERVER_ERROR = { status: 500, statusText: 'Server Error' };
+    const retryButton = () => root.querySelector<HTMLButtonElement>('.failed button')!;
+
+    it('la técnica lo dice, deja de cargar y ofrece reintentar', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}`).flush(null, SERVER_ERROR);
+      answerColumn();
+      await settle();
+
+      expect(root.querySelector('h1')!.textContent).toBe('No se pudo cargar la técnica');
+      expect(root.querySelector('.bone')).toBeNull();
+      expect(root.querySelector('article')!.getAttribute('aria-busy')).toBe('false');
+      expect(retryButton().textContent).toBe('Reintentar');
+    });
+
+    it('reintentar vuelve a pedir la técnica y deja el foco en el panel', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}`).flush(null, SERVER_ERROR);
+      answerColumn();
+      await settle();
+
+      retryButton().click();
+      TestBed.tick();
+      await Promise.resolve();
+      harness.detectChanges();
+
+      expect(document.activeElement).toBe(root.querySelector('article'));
+      expect(root.querySelector('.bone')).not.toBeNull();
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}`).flush(TECHNIQUE);
+      await settle();
+      expect(root.querySelector('h1')!.textContent).toBe('Tiroidectomía');
+      expect(root.querySelector('.failed')).toBeNull();
+    });
+
+    it('si fallan las mesas no deja la hoja en blanco, y reintentar las pide de nuevo', async () => {
+      await open(`/tecnicas/${ID}/mesa-de-mayo`);
+      await respond();
+      await loadSession(true);
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(null, SERVER_ERROR);
+      await settle();
+
+      expect(root.querySelector('[role=tabpanel] .failed')).not.toBeNull();
+      expect(root.querySelector('h1')!.textContent).toBe('Tiroidectomía');
+
+      retryButton().click();
+      TestBed.tick();
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}`);
+    });
+
+    it('si /auth/me falla, la hoja que pide cuenta ofrece reintentar y vuelve a preguntar', async () => {
+      await open(`/tecnicas/${ID}/instrumental`);
+      await respond();
+      await failSession();
+
+      retryButton().click();
+      http.expectOne(`${TEST_API_BASE}/auth/me`).flush(null, UNAUTHORIZED);
+      await vi.waitFor(() => expect(TestBed.inject(SessionService).loaded()).toBe(true));
+      await settle();
+
+      expect(root.querySelector('app-technique-gate')).not.toBeNull();
+    });
+
+    it('los datos clínicos no dependen de la sesión: se ven aunque /auth/me falle', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      await respond();
+      await failSession();
+
+      expect(root.querySelector('.failed')).toBeNull();
+      expect(root.querySelector('app-technique-clinical')).not.toBeNull();
+    });
   });
 
   describe('hojas de mesa', () => {
@@ -261,6 +358,31 @@ describe('TechniqueDetail', () => {
       expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe('Sin mesa de reserva.');
     });
 
+    it('una mesa de la que la versión no dice nada no se da por ausente', async () => {
+      await openAs(true, 'mesa-de-reserva');
+      http
+        .expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`)
+        .flush({ ...INSTRUMENTS, zones: INSTRUMENTS.zones.slice(0, 1) });
+      await settle();
+
+      expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe(
+        'Mesa de reserva sin arreglo disponible.',
+      );
+    });
+
+    it('una mesa usada sin tamaño tampoco: falta su arreglo', async () => {
+      await openAs(true, 'mesa-de-mayo');
+      const zones = [{ ...INSTRUMENTS.zones[0], rows: null, columns: null }];
+      http
+        .expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`)
+        .flush({ ...INSTRUMENTS, zones });
+      await settle();
+
+      expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe(
+        'Mesa de Mayo sin arreglo disponible.',
+      );
+    });
+
     it('pasar de una mesa a otra no vuelve a pedir lo de la técnica', async () => {
       await openAs(true, 'mesa-de-mayo');
       http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
@@ -313,6 +435,13 @@ describe('TechniqueDetail', () => {
       await settle();
 
       expect(root.querySelector('app-technique-gate')).toBeNull();
+    });
+
+    it('mientras no se sabe si hay sesión dice «Cargando…», no una hoja en blanco', async () => {
+      await open(`/tecnicas/${ID}/mesa-de-mayo`);
+      await respond();
+
+      expect(root.querySelector('[role=tabpanel] .loading')!.textContent).toBe('Cargando…');
     });
 
     it('mientras no se sabe si hay sesión, tampoco hay puerta', async () => {

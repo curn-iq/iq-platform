@@ -3,12 +3,20 @@
 } @else {
   <div class="app">
     <app-technique-column [currentId]="techniqueId()" [tab]="tab()!.slug" />
-    <article class="panel" aria-labelledby="technique-name" [attr.aria-busy]="!technique()">
+    <article
+      #panel
+      class="panel"
+      tabindex="-1"
+      aria-labelledby="technique-name"
+      [attr.aria-busy]="!technique() && !techniqueFailed()"
+    >
       <header>
         <div class="titles">
           @if (technique(); as technique) {
             <h1 id="technique-name">{{ technique.name }}</h1>
             <p>{{ technique.specialty }}</p>
+          } @else if (techniqueFailed()) {
+            <h1 id="technique-name">No se pudo cargar la técnica</h1>
           } @else {
             <h1 id="technique-name" class="sr-only">Cargando…</h1>
             <span class="bone name" aria-hidden="true"></span>
@@ -42,7 +50,12 @@
         [id]="'panel-' + tab()!.slug"
         [attr.aria-labelledby]="'tab-' + tab()!.slug"
       >
-        @if (gate(); as gate) {
+        @if (failed()) {
+          <div class="failed">
+            <p>No se pudo cargar esta hoja.</p>
+            <button app-button type="button" variant="soft" (click)="retry()">Reintentar</button>
+          </div>
+        } @else if (gate(); as gate) {
           <app-technique-gate
             [preview]="gate.preview"
             [title]="gate.title"

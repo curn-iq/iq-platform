@@ -41,7 +41,7 @@ app-table-diagram {
   }
 }
 
-// La técnica no lleva esta mesa
+// No hay mesa que dibujar: la técnica no la lleva, o falta su arreglo
 .none {
   display: grid;
   place-items: center;

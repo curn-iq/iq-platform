@@ -1,12 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionService } from '../../core/session/session.service';
 import { APP_NAME } from '../../core/title/page-title.strategy';
-import { toTables } from '../../data/tables';
+import { isZoneOmitted, toTables } from '../../data/tables';
 import { TechniquesRepository } from '../../data/techniques.repository';
 import { SIVRI_URL, simiq3dTechniqueUrl } from '../../domain/module-links';
 import { findTechniqueTab, TECHNIQUE_TABS } from '../../domain/technique-tabs';
@@ -20,12 +28,21 @@ import { GatePreview, TechniqueGate } from './technique-gate/technique-gate';
 import { TechniqueInstrumental } from './technique-instrumental/technique-instrumental';
 import { TechniqueTable } from './technique-table/technique-table';
 
-/** Lo que dice la hoja de cada mesa bajo su título y cuando la técnica no la lleva. */
-const TABLE_TEXTS: Record<string, { hint: string; empty: string }> = {
-  'mesa-de-mayo': { hint: 'Señala un número para ubicar su pieza.', empty: 'Sin mesa de Mayo.' },
+/**
+ * Lo que dice la hoja de cada mesa: bajo su título (`hint`), si la técnica no la lleva
+ * (`omitted`) y si no se sabe porque su arreglo no está en los datos (`missing`). No son
+ * lo mismo: decir «Sin mesa» de lo segundo sería un dato falso (regla 1 de `CLAUDE.md`).
+ */
+const TABLE_TEXTS: Record<string, { hint: string; omitted: string; missing: string }> = {
+  'mesa-de-mayo': {
+    hint: 'Señala un número para ubicar su pieza.',
+    omitted: 'Sin mesa de Mayo.',
+    missing: 'Mesa de Mayo sin arreglo disponible.',
+  },
   'mesa-de-reserva': {
     hint: 'Señala un número para ubicar su objeto.',
-    empty: 'Sin mesa de reserva.',
+    omitted: 'Sin mesa de reserva.',
+    missing: 'Mesa de reserva sin arreglo disponible.',
   },
 };
 
@@ -52,7 +69,8 @@ const GATE_TEXTS: Record<string, { preview: GatePreview; title: string; text: st
  * El detalle de una técnica (`/tecnicas/:id/:pestana`, `tecnica.html`): a la izquierda
  * la columna de técnicas y a la derecha el nombre de la técnica con su especialidad,
  * las pestañas y la hoja de la elegida. Una técnica que no existe, o una pestaña que
- * no es una de las cuatro, muestra «No encontrada».
+ * no es una de las cuatro, muestra «No encontrada». Si la API no responde, lo dice y
+ * ofrece reintentar: no se queda cargando para siempre ni pasa por una hoja vacía.
  *
  * La pestaña vive en la URL, así que se puede compartir y Atrás la recuerda.
  * `/tecnicas/:id` redirige a los datos clínicos (ver `app.routes.ts`).
@@ -78,6 +96,7 @@ export class TechniqueDetail {
   private readonly router = inject(Router);
   private readonly title = inject(Title);
   private readonly session = inject(SessionService);
+  private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
 
   private readonly params = toSignal(inject(ActivatedRoute).paramMap, { requireSync: true });
 
@@ -113,6 +132,25 @@ export class TechniqueDetail {
     return error instanceof HttpErrorResponse && error.status === 404;
   });
 
+  // Al reintentar, el recurso conserva el error hasta que llega la respuesta: mientras
+  // tanto se muestra que está cargando, no que falló.
+
+  /** La API no entregó la técnica por algo que no es un 404: no se sabe si existe. */
+  protected readonly techniqueFailed = computed(
+    () => !this.notFound() && !this.resource.isLoading() && this.resource.error() !== undefined,
+  );
+
+  /** Lo que pide la pestaña abierta no llegó, o no se sabe si hay sesión para pedirlo. */
+  private readonly accountFailed = computed(
+    () =>
+      this.tab()?.requiresAccount === true &&
+      (this.session.loadFailed() ||
+        (!this.instruments.isLoading() && this.instruments.error() !== undefined)),
+  );
+
+  /** Algo de lo que muestra la hoja no llegó, y se ofrece reintentar. */
+  protected readonly failed = computed(() => this.techniqueFailed() || this.accountFailed());
+
   /** Las mesas de la técnica, cuando llegan; `undefined` mientras no. */
   protected readonly instrumentsData = computed(() =>
     this.instruments.hasValue() ? this.instruments.value() : undefined,
@@ -128,13 +166,21 @@ export class TechniqueDetail {
     const tab = this.tab();
     const texts = tab && TABLE_TEXTS[tab.slug];
     const tables = this.tables();
-    if (!tab || !texts || !tables) return undefined;
-    return { title: tab.label, ...texts, table: tables.find((table) => table.name === tab.zone) };
+    const zones = this.instrumentsData()?.zones;
+    if (!tab?.zone || !texts || !tables || !zones) return undefined;
+    return {
+      title: tab.label,
+      hint: texts.hint,
+      empty: isZoneOmitted(zones, tab.zone) ? texts.omitted : texts.missing,
+      table: tables.find((table) => table.name === tab.zone),
+    };
   });
 
-  /** Se está pidiendo lo que ve quien tiene cuenta, y la pestaña abierta lo necesita. */
+  /** Se está pidiendo lo que ve quien tiene cuenta, o aún no se sabe si hay sesión para pedirlo. */
   protected readonly accountLoading = computed(
-    () => this.tab()?.requiresAccount === true && this.instruments.isLoading(),
+    () =>
+      this.tab()?.requiresAccount === true &&
+      (this.instruments.isLoading() || (!this.session.loaded() && !this.session.loadFailed())),
   );
 
   /** Sin sesión, las pestañas que piden cuenta llevan un candado (solo cuando ya se sabe que no hay). */
@@ -199,6 +245,17 @@ export class TechniqueDetail {
   private readonly navigated = toSignal(
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)),
   );
+
+  /**
+   * Vuelve a pedir solo lo que falló. El botón desaparece al reintentar, así que el foco
+   * pasa al panel en lugar de caer al inicio de la página.
+   */
+  protected retry(): void {
+    this.panel()?.nativeElement.focus();
+    if (this.resource.error()) this.resource.reload();
+    if (this.instruments.error()) this.instruments.reload();
+    if (this.session.loadFailed()) void this.session.load();
+  }
 
   constructor() {
     effect(() => {

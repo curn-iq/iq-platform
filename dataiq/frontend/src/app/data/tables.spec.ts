@@ -1,5 +1,5 @@
 import type { TechniqueItem, ZoneLayout } from './api/models';
-import { toTables } from './tables';
+import { isZoneOmitted, toTables } from './tables';
 
 const MAYO: ZoneLayout = {
   zone_id: 'z-mayo',
@@ -120,5 +120,23 @@ describe('toTables', () => {
     const notUsed: ZoneLayout = { ...RESERVE, used: false, rows: null, columns: null };
     const [mayo] = toTables([MAYO, notUsed], [listOnly, inUnusedZone]);
     expect(mayo.items).toEqual([]);
+  });
+});
+
+describe('isZoneOmitted', () => {
+  it('solo `used: false` dice que la técnica no lleva la mesa', () => {
+    const zones = [{ ...RESERVE, used: false, rows: null, columns: null }];
+
+    expect(isZoneOmitted(zones, 'Mesa de reserva')).toBe(true);
+  });
+
+  it('una mesa sin fila no dice que no la lleve: falta en los datos', () => {
+    expect(isZoneOmitted([RESERVE], 'Mesa de Mayo')).toBe(false);
+  });
+
+  it('una mesa usada sin tamaño tampoco', () => {
+    const zones = [{ ...MAYO, rows: null, columns: null }];
+
+    expect(isZoneOmitted(zones, 'Mesa de Mayo')).toBe(false);
   });
 });

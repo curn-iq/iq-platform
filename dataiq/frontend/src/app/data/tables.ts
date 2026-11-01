@@ -3,6 +3,15 @@ import type { Table } from '../domain/table';
 import type { TechniqueItem, ZoneLayout } from './api/models';
 
 /**
+ * Si la versión dice que no lleva esa mesa (`used: false`, el «no lleva» de los
+ * documentos de IQ). Sin fila de esa mesa, o usada sin tamaño, no lo dice: la mesa
+ * falta en los datos, que no es lo mismo que no llevarla.
+ */
+export function isZoneOmitted(zones: readonly ZoneLayout[], name: string): boolean {
+  return zones.some((zone) => zone.zone === name && !zone.used);
+}
+
+/**
  * Las mesas que hay que dibujar a partir de `zones` e `items` de la API. Una
  * mesa con `used: false` es una mesa que la técnica no lleva, y una usada sin
  * tamaño no se puede dibujar sin inventarlo: las dos quedan fuera, con sus

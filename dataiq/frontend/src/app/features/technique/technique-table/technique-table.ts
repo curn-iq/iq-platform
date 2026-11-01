@@ -5,8 +5,8 @@ import { TableLegend } from '../../../shared/table-diagram/table-legend';
 
 /**
  * La hoja de una mesa del detalle (Mesa de Mayo o Mesa de reserva): su título, la
- * indicación, la leyenda y el diagrama. Si la técnica no lleva esa mesa, el recuadro
- * dice que no la hay.
+ * indicación, la leyenda y el diagrama. Si no hay mesa que dibujar, un recuadro lo dice
+ * con el texto que le pase la página: que no la lleva, o que falta su arreglo.
  *
  * Esta hoja tiene la mesa y su leyenda, así que guarda el número señalado
  * (`highlighted`) y el de lo que tiene el foco (`focused`) y se los pasa a los dos. Si
@@ -28,9 +28,9 @@ export class TechniqueTable {
   readonly title = input.required<string>();
   /** Lo que dice bajo el título: cómo usar la leyenda. */
   readonly hint = input.required<string>();
-  /** Lo que dice el recuadro cuando la técnica no lleva esta mesa. */
+  /** Lo que dice el recuadro cuando no hay mesa que dibujar. */
   readonly empty = input.required<string>();
-  /** La mesa, o `undefined` si la técnica no la lleva. */
+  /** La mesa, o `undefined` si no hay una que dibujar. */
   readonly table = input<Table>();
 
   protected readonly highlighted = linkedSignal<Table | undefined, number | null>({
