@@ -57,13 +57,23 @@ describe('SessionService', () => {
       expect(session.loaded()).toBe(true);
     });
 
-    it('si la API no responde queda como visitante, sin rechazar', async () => {
+    it('si la API no responde no se sabe si hay sesión, y no se rechaza', async () => {
       const loading = session.load();
       me().error(new ProgressEvent('error'));
       await expect(loading).resolves.toBeUndefined();
 
       expect(session.isLoggedIn()).toBe(false);
-      expect(session.loaded()).toBe(true);
+      expect(session.loaded()).toBe(false);
+      expect(session.loadFailed()).toBe(true);
+    });
+
+    it('un 5xx tampoco dice si hay sesión', async () => {
+      const loading = session.load();
+      me().flush(null, { status: 503, statusText: 'Service Unavailable' });
+      await loading;
+
+      expect(session.loaded()).toBe(false);
+      expect(session.loadFailed()).toBe(true);
     });
 
     it('si la API no respondió, el próximo load() vuelve a preguntar', async () => {
@@ -74,10 +84,41 @@ describe('SessionService', () => {
 
       const second = session.load();
       expect(second).not.toBe(first);
+      expect(session.loadFailed()).toBe(false);
       me().flush(account('reviewer'));
       await second;
 
       expect(session.role()).toBe('reviewer');
+      expect(session.loaded()).toBe(true);
+      expect(session.loadFailed()).toBe(false);
+    });
+
+    it('ingresar después de un fallo deja la sesión sabida y no vuelve a preguntar', async () => {
+      const failed = session.load();
+      me().flush(null, { status: 500, statusText: 'Server Error' });
+      await failed;
+
+      session.login(credentials).subscribe();
+      http.expectOne(`${TEST_API_BASE}/auth/login`).flush(account());
+
+      expect(session.loaded()).toBe(true);
+      expect(session.loadFailed()).toBe(false);
+      await session.load();
+      http.expectNone(`${TEST_API_BASE}/auth/me`);
+      expect(session.isLoggedIn()).toBe(true);
+    });
+
+    it('un fallo tardío de /auth/me no borra un ingreso hecho mientras tanto', async () => {
+      const loading = session.load();
+      const request = me();
+
+      session.login(credentials).subscribe();
+      http.expectOne(`${TEST_API_BASE}/auth/login`).flush(account('contributor'));
+      request.flush(null, { status: 500, statusText: 'Server Error' });
+      await loading;
+
+      expect(session.role()).toBe('contributor');
+      expect(session.loadFailed()).toBe(false);
     });
 
     it('un 401 sí es definitivo: no vuelve a preguntar', async () => {

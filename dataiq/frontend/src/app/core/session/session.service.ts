@@ -14,6 +14,7 @@ export class SessionService {
   private readonly auth = inject(AuthRepository);
   private readonly current = signal<Account | null>(null);
   private readonly done = signal(false);
+  private readonly failed = signal(false);
   private loading: Promise<void> | undefined;
   // Cuenta cuántas veces cambió la cuenta; sirve para no pisar un ingreso con
   // la respuesta tardía de `GET /auth/me`.
@@ -32,15 +33,18 @@ export class SessionService {
   readonly account = this.current.asReadonly();
   /** `true` cuando ya se supo si hay sesión. Antes de eso un visitante y «aún no se sabe» se ven igual. */
   readonly loaded = this.done.asReadonly();
+  /** `true` si la API no respondió a la última pregunta: no se sabe si hay sesión (ver `load`). */
+  readonly loadFailed = this.failed.asReadonly();
   readonly isLoggedIn = computed(() => this.current() !== null);
   readonly role = computed<Role | null>(() => this.current()?.role ?? null);
 
   /**
    * Pide la cuenta a la API, una sola vez: quien llame de nuevo recibe la misma
-   * promesa. Nunca se rechaza: sin sesión, o si la API no responde, queda como
-   * visitante (los errores que no son un 401 ya los avisó el interceptor). Solo
-   * el 401 es definitivo: si la API no respondió (sin conexión, 5xx en un
-   * arranque en frío), la próxima llamada vuelve a preguntar.
+   * promesa. Nunca se rechaza. Un 401 dice que es un visitante, y es definitivo. Si
+   * la API no respondió (sin conexión, 5xx en un arranque en frío) no se sabe si hay
+   * sesión: `loaded` sigue en `false`, `loadFailed` pasa a `true` y la próxima
+   * llamada vuelve a preguntar (el error ya lo avisó el interceptor). Tomar a esa
+   * persona por visitante le mostraría la puerta de cuenta aunque la tenga.
    */
   load(): Promise<void> {
     this.loading ??= this.fetchAccount();
@@ -70,22 +74,32 @@ export class SessionService {
 
   private async fetchAccount(): Promise<void> {
     const seen = this.changes;
+    this.failed.set(false);
     let account: Account | null = null;
+    let answered = true;
     try {
       account = await firstValueFrom(this.auth.me());
     } catch (error) {
       // Un 401 es un visitante; lo demás lo avisó el interceptor y no dice si
       // la cookie sirve, así que se vuelve a preguntar en el próximo `load()`.
-      if (!(error instanceof HttpErrorResponse && error.status === 401)) this.loading = undefined;
+      answered = error instanceof HttpErrorResponse && error.status === 401;
     }
-    if (this.changes === seen) this.current.set(account);
-    this.done.set(true);
+    if (this.changes !== seen) return;
+    if (answered) {
+      this.current.set(account);
+      this.done.set(true);
+    } else {
+      this.loading = undefined;
+      this.failed.set(true);
+    }
   }
 
   // Ingresar, salir u olvidar la cuenta también dicen si hay sesión, aunque la
-  // primera respuesta de `GET /auth/me` no haya llegado.
+  // primera respuesta de `GET /auth/me` no haya llegado o no haya tenido respuesta.
   private replace(account: Account | null): void {
     this.changes++;
+    this.loading ??= Promise.resolve();
+    this.failed.set(false);
     this.current.set(account);
     this.done.set(true);
   }
