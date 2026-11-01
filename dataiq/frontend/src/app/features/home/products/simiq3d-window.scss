@@ -108,7 +108,11 @@
   place-items: center;
   overflow: hidden;
   perspective: 1400px;
-  background: radial-gradient(90% 80% at 50% 45%, var(--color-surface), #e7eef0);
+  background: radial-gradient(
+    90% 80% at 50% 45%,
+    var(--color-surface),
+    var(--color-window-3d-edge)
+  );
 }
 
 .cover {

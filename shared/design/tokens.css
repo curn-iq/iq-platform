@@ -44,6 +44,9 @@
   --noche-2: #0c1e24;
   --filete-noche: #1d353d;
   --niebla-noche: #a9bec5;
+  /* Fondos de las ventanas de maqueta: el centro de la de SIVRI y el borde de la de SIMIQ3D */
+  --noche-visor: #10272e;
+  --vista-3d-borde: #e7eef0;
 
   /* Acero satinado del instrumental */
   --acero-brillo: #fbfdfd;
@@ -148,6 +151,8 @@
   --color-dark-raised: var(--noche-2);
   --color-dark-border: var(--filete-noche);
   --color-dark-text-muted: var(--niebla-noche);
+  --color-camera-glow: var(--noche-visor);
+  --color-window-3d-edge: var(--vista-3d-borde);
 
   /* El acero del instrumental y los objetos planos del diagrama de mesa */
   --color-steel-light: var(--acero-luz);
