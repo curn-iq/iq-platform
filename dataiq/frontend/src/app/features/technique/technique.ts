@@ -12,6 +12,7 @@ import { findTechniqueTab, TECHNIQUE_TABS } from '../../domain/technique-tabs';
 import { isUuid } from '../../domain/uuid';
 import { NotFound } from '../../shared/ui/not-found/not-found';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
+import { TechniqueClinical } from './technique-clinical/technique-clinical';
 import { TechniqueColumn } from './technique-column/technique-column';
 import { TechniqueTable } from './technique-table/technique-table';
 
@@ -35,7 +36,7 @@ const TABLE_TEXTS: Record<string, { hint: string; empty: string }> = {
  */
 @Component({
   selector: 'app-technique',
-  imports: [NotFound, Tabs, TechniqueColumn, TechniqueTable],
+  imports: [NotFound, Tabs, TechniqueClinical, TechniqueColumn, TechniqueTable],
   templateUrl: './technique.html',
   styleUrl: './technique.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

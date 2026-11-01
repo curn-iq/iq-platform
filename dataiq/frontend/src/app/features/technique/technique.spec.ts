@@ -120,6 +120,30 @@ describe('TechniqueDetail', () => {
       expect(current!.textContent!.trim()).toBe('Tiroidectomía');
     });
 
+    it('los datos clínicos salen de la técnica y no piden cuenta', async () => {
+      await respond({
+        ...TECHNIQUE,
+        description: 'Extirpación de la glándula tiroides.',
+        anesthesia: 'General',
+      });
+
+      const sheet = root.querySelector('[role=tabpanel]')!;
+      expect(sheet.querySelector('.purpose p')!.textContent).toBe(
+        'Extirpación de la glándula tiroides.',
+      );
+      expect(sheet.querySelector('.facts dd')!.textContent).toBe('General');
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+    });
+
+    it('otra pestaña no muestra los datos clínicos', async () => {
+      await respond({ ...TECHNIQUE, description: 'Extirpación de la glándula tiroides.' });
+
+      await TestBed.inject(Router).navigateByUrl(`/tecnicas/${ID}/instrumental`);
+      await settle();
+
+      expect(root.querySelector('app-technique-clinical')).toBeNull();
+    });
+
     it('tiene las cuatro pestañas y la hoja de la abierta', async () => {
       await respond();
 

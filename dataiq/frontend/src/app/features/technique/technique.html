@@ -21,7 +21,11 @@
         [id]="'panel-' + tab()!.slug"
         [attr.aria-labelledby]="'tab-' + tab()!.slug"
       >
-        @if (tableSheet(); as sheet) {
+        @if (tab()!.slug === 'datos-clinicos') {
+          @if (technique(); as technique) {
+            <app-technique-clinical [technique]="technique" />
+          }
+        } @else if (tableSheet(); as sheet) {
           <app-technique-table
             [title]="sheet.title"
             [hint]="sheet.hint"
