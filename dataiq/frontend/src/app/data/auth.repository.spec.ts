@@ -69,6 +69,24 @@ describe('AuthRepository', () => {
     request.flush(account, { status: 201, statusText: 'Created' });
   });
 
+  it('register puede pedirse en silencio, para que quien lo pide trate sus errores', () => {
+    const registration = {
+      name: 'Ana',
+      email: 'ana@example.com',
+      password: 'secreto',
+      accepts_policy: true,
+    };
+    repository.register(registration, { quiet: true }).subscribe();
+    const quiet = http.expectOne(`${TEST_API_BASE}/auth/register`);
+    expect(quiet.request.context.get(QUIET_ERRORS)).toBe(true);
+    quiet.flush(account, { status: 201, statusText: 'Created' });
+
+    repository.register(registration).subscribe();
+    const loud = http.expectOne(`${TEST_API_BASE}/auth/register`);
+    expect(loud.request.context.get(QUIET_ERRORS)).toBe(false);
+    loud.flush(account, { status: 201, statusText: 'Created' });
+  });
+
   it('logout hace POST sin cuerpo', () => {
     repository.logout().subscribe();
     const request = http.expectOne(`${TEST_API_BASE}/auth/logout`);

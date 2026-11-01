@@ -1,0 +1,15 @@
+<label>
+  <input
+    #box
+    type="checkbox"
+    [checked]="checked()"
+    [attr.aria-invalid]="error() ? 'true' : null"
+    [attr.aria-describedby]="error() ? errorId : null"
+    (change)="checked.set(box.checked)"
+    (blur)="touch.emit()"
+  />
+  <span class="text"><ng-content /></span>
+</label>
+@if (error(); as message) {
+  <app-field-error [id]="errorId" [message]="message" />
+}

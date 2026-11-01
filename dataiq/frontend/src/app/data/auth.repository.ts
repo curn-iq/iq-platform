@@ -29,9 +29,14 @@ export class AuthRepository {
     return this.http.post<Account>(`${this.base}/auth/login`, credentials);
   }
 
-  /** Crea la cuenta con rol `user`. No inicia sesión. */
-  register(registration: Registration): Observable<Account> {
-    return this.http.post<Account>(`${this.base}/auth/register`, registration);
+  /**
+   * Crea la cuenta con rol `user`. No inicia sesión. Con `quiet`, el interceptor de errores no
+   * avisa si falla (ver `QUIET_ERRORS`): quien lo pide decide qué decir, p. ej. para no repetir
+   * el texto con que la API delata un correo ya registrado.
+   */
+  register(registration: Registration, options: { quiet?: boolean } = {}): Observable<Account> {
+    const context = new HttpContext().set(QUIET_ERRORS, options.quiet === true);
+    return this.http.post<Account>(`${this.base}/auth/register`, registration, { context });
   }
 
   /** Borra la cookie de sesión. */

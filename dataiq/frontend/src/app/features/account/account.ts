@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   afterRenderEffect,
   ChangeDetectionStrategy,
@@ -9,9 +10,14 @@ import {
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { form, FormField } from '@angular/forms/signals';
-import { ActivatedRoute } from '@angular/router';
-import { safeReturnUrl } from '../../core/session/login-path';
+import { form, FormField, submit } from '@angular/forms/signals';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { describeApiError } from '../../core/http/error-message';
+import { NoticeService } from '../../core/notice/notice.service';
+import { returnTarget, safeReturnUrl } from '../../core/session/login-path';
+import { SessionService } from '../../core/session/session.service';
+import { AuthRepository } from '../../data/auth.repository';
 import { TechniquesRepository } from '../../data/techniques.repository';
 import {
   AccountMode,
@@ -22,11 +28,13 @@ import {
 } from '../../domain/account-entry';
 import { mediaQuery, REDUCED_MOTION_QUERY } from '../../shared/media-query';
 import { Button } from '../../shared/ui/button/button';
+import { CheckboxField } from '../../shared/ui/checkbox-field/checkbox-field';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TextField } from '../../shared/ui/text-field/text-field';
 import { LockedTechnique } from './locked-technique';
 import { LoginIllustration } from './login-illustration';
 import { RegisterIllustration } from './register-illustration';
+import { emptyRegistration, registrationSchema } from './registration-form';
 
 /** Cuánto dura el cambio de lado de las mitades (FLIP), según «Ingresar / Crear cuenta (página)» de `DESIGN.md`. */
 const SWAP_MS = 700;
@@ -52,6 +60,16 @@ const TITLES: Record<AccountMode, string> = {
   register: 'Crear una cuenta gratis',
 };
 
+/**
+ * Lo que dice el aviso cuando no se pudo crear la cuenta por un correo repetido, o por algo que
+ * no tiene un texto propio. Es **neutro a propósito**: la API responde 409 con «Ya hay una cuenta
+ * con ese correo», y repetirlo (o marcar el campo del correo) le diría a quien prueba correos cuáles
+ * tienen cuenta. Es una mitigación visual temporal; el 409 sigue en el backend (ver «Hallazgos de
+ * seguridad pendientes» en `dataiq/docs/checklist-backend.md`). Decidido por Juan el 2026-11-01.
+ */
+const REGISTRATION_FAILED =
+  'No se pudo completar el registro. Verificar los datos e intentar de nuevo.';
+
 /** Dónde estaban las dos mitades la última vez que se pintaron. */
 interface Layout {
   readonly inverted: boolean;
@@ -69,17 +87,22 @@ interface Layout {
  * Con el ingreso directo, al pasar a Crear cuenta las mitades cambian de lado (FLIP). Con
  * una técnica no, para que no se mueva lo que la persona quería abrir.
  *
- * Los formularios aún no envían: el registro y el ingreso llegan en sus propias casillas
- * de la fase 5 (`dataiq/docs/checklist-frontend.md`).
+ * **Crear cuenta** valida al enviar (un mensaje bajo cada campo, sin enviar nada si algo falla),
+ * manda el registro con la aceptación del aviso de privacidad (`accepts_policy`), ingresa sola con
+ * las mismas credenciales (la API crea la cuenta pero no inicia sesión) y va a `?volver=` o al
+ * catálogo. El ingreso llega en la casilla siguiente de la fase 5
+ * (`dataiq/docs/checklist-frontend.md`): su formulario todavía no envía.
  */
 @Component({
   selector: 'app-account',
   imports: [
     Button,
+    CheckboxField,
     FormField,
     LockedTechnique,
     LoginIllustration,
     RegisterIllustration,
+    RouterLink,
     Tabs,
     TextField,
   ],
@@ -90,6 +113,10 @@ interface Layout {
 })
 export class AccountEntry {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly notices = inject(NoticeService);
+  private readonly auth = inject(AuthRepository);
+  private readonly session = inject(SessionService);
   private readonly params = toSignal(this.route.paramMap, { requireSync: true });
   private readonly query = toSignal(this.route.queryParamMap, { requireSync: true });
 
@@ -125,7 +152,7 @@ export class AccountEntry {
   protected readonly greeting = computed(() => greeting(this.mode(), this.hour));
 
   protected readonly loginForm = form(signal({ email: '', password: '' }));
-  protected readonly registerForm = form(signal({ name: '', email: '', password: '' }));
+  protected readonly registerForm = form(signal(emptyRegistration()), registrationSchema);
 
   private readonly aside = viewChild.required<ElementRef<HTMLElement>>('aside');
   private readonly pane = viewChild.required<ElementRef<HTMLElement>>('pane');
@@ -152,9 +179,51 @@ export class AccountEntry {
     this.layout = this.measure(this.inverted());
   }
 
-  /** Mientras los formularios no envían, solo evitan que el navegador recargue con los datos en la URL. */
+  /** Mientras el ingreso no envía, solo evita que el navegador recargue con los datos en la URL. */
   protected onSubmit(event: Event): void {
     event.preventDefault();
+  }
+
+  /** Crear cuenta: valida, y si todo está bien crea la cuenta e ingresa. Un segundo envío espera. */
+  protected async onRegister(event: Event): Promise<void> {
+    event.preventDefault();
+    if (this.registerForm().submitting()) return;
+    await submit(this.registerForm, {
+      action: () => this.createAccount(),
+      onInvalid: () => this.registerForm().errorSummary()[0]?.fieldTree?.().focusBoundControl(),
+    });
+  }
+
+  private async createAccount(): Promise<void> {
+    const { name, email, password } = this.registerForm().value();
+    const credentials = { email: email.trim(), password };
+    try {
+      // En silencio: el interceptor no avisa, porque el texto de la API sobre un correo repetido
+      // no se repite (ver `REGISTRATION_FAILED`).
+      await firstValueFrom(
+        this.auth.register(
+          { name: name.trim(), ...credentials, accepts_policy: true },
+          { quiet: true },
+        ),
+      );
+    } catch (error) {
+      this.notices.show('error', registrationErrorMessages(error));
+      return;
+    }
+
+    // La contraseña no se queda en la memoria de la pantalla
+    this.registerForm().reset(emptyRegistration());
+    try {
+      await firstValueFrom(this.session.login(credentials));
+    } catch {
+      // La cuenta ya existe pero no se pudo ingresar (el interceptor avisa si fue un fallo del
+      // servidor): se queda en Ingresar, con a dónde se iba, para intentarlo.
+      await this.router.navigate(['/cuenta', ACCOUNT_SEGMENTS.login], {
+        queryParamsHandling: 'preserve',
+      });
+      return;
+    }
+    await this.router.navigateByUrl(returnTarget(this.query().get('volver')));
   }
 
   private measure(inverted: boolean): Layout {
@@ -172,4 +241,14 @@ export class AccountEntry {
       easing: 'cubic-bezier(.16, 1, .3, 1)',
     });
   }
+}
+
+/**
+ * Lo que se le dice a la persona cuando la API rechazó el registro. Un 409 es un correo repetido
+ * y no se cuenta (`REGISTRATION_FAILED`); el resto, que sí es algo que puede corregir o esperar
+ * (sin conexión, un error del servidor, datos no válidos), dice lo mismo que en toda la aplicación.
+ */
+function registrationErrorMessages(error: unknown): readonly string[] {
+  if (!(error instanceof HttpErrorResponse) || error.status === 409) return [REGISTRATION_FAILED];
+  return describeApiError(error.status, error.error) ?? [REGISTRATION_FAILED];
 }

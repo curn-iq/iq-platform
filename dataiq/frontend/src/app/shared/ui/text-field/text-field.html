@@ -7,6 +7,9 @@
     [attr.autocomplete]="autocomplete() || null"
     [placeholder]="placeholder()"
     [class.revealable]="revealable()"
+    [attr.maxlength]="maxlength() ?? null"
+    [attr.aria-invalid]="error() ? 'true' : null"
+    [attr.aria-describedby]="error() ? id + '-error' : null"
     [value]="value()"
     (input)="value.set(field.value)"
     (blur)="touch.emit()"
@@ -22,3 +25,6 @@
     </button>
   }
 </div>
+@if (error(); as message) {
+  <app-field-error [id]="id + '-error'" [message]="message" />
+}

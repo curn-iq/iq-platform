@@ -2,6 +2,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   input,
   model,
@@ -9,7 +10,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import type { FormValueControl } from '@angular/forms/signals';
+import type { FormValueControl, ValidationError } from '@angular/forms/signals';
+import { FieldError } from '../field-error/field-error';
 
 /** Para que cada campo enlace su propia etiqueta: dos en una página no comparten id. */
 let nextId = 0;
@@ -22,9 +24,13 @@ let nextId = 0;
  *
  * `revealable` (para contraseñas) suma a la derecha «Mostrar» / «Ocultar», que deja ver lo
  * escrito. El botón no le quita el foco a la caja.
+ *
+ * Un error de validación se dice bajo la caja (`app-field-error`) solo cuando el campo se tocó:
+ * al salir de él o al intentar enviar el formulario. Así no se le reclama a quien aún no escribe.
  */
 @Component({
   selector: 'app-text-field',
+  imports: [FieldError],
   templateUrl: './text-field.html',
   styleUrl: './text-field.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +42,11 @@ export class TextField implements FormValueControl<string> {
   readonly autocomplete = input('');
   readonly placeholder = input('');
   readonly revealable = input(false, { transform: booleanAttribute });
+  /** El largo máximo que deja escribir la caja (p. ej. el que acepta la API). */
+  readonly maxlength = input<number>();
+  /** Los errores de validación del campo y si se tocó: los enlaza `[formField]`. */
+  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+  readonly touched = input(false);
   /** Lo escrito: lo enlaza `[formField]`. */
   readonly value = model('');
   /** Avisa que el campo perdió el foco, para que el formulario lo marque como tocado. */
@@ -43,6 +54,10 @@ export class TextField implements FormValueControl<string> {
 
   protected readonly id = `text-field-${nextId++}`;
   protected readonly shown = signal(false);
+  /** El mensaje del primer error, una vez tocado el campo. */
+  protected readonly error = computed(() =>
+    this.touched() ? this.errors().find((error) => error.message)?.message : undefined,
+  );
 
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
 

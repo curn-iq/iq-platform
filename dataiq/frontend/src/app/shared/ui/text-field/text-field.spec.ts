@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField } from '@angular/forms/signals';
+import { form, FormField, validate } from '@angular/forms/signals';
 import { TextField } from './text-field';
 
 @Component({
@@ -18,13 +18,18 @@ import { TextField } from './text-field';
       type="password"
       autocomplete="current-password"
       revealable
+      [maxlength]="20"
       [formField]="credentials.password"
     />
   `,
 })
 class Host {
   readonly model = signal({ email: '', password: '' });
-  readonly credentials = form(this.model);
+  readonly credentials = form(this.model, (path) => {
+    validate(path.email, ({ value }) =>
+      value().includes('@') ? undefined : { kind: 'email', message: 'Escribir un correo válido.' },
+    );
+  });
 }
 
 describe('TextField', () => {
@@ -86,6 +91,57 @@ describe('TextField', () => {
 
     expect(host.credentials.email().touched()).toBe(true);
     expect(host.credentials.password().touched()).toBe(false);
+  });
+
+  describe('errores', () => {
+    const error = () => root().querySelector('app-field-error');
+
+    it('mientras no se toca el campo no dice nada, aunque no sea válido', () => {
+      expect(host.credentials.email().invalid()).toBe(true);
+      expect(error()).toBeNull();
+      expect(input(0).getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('una vez tocado, dice qué corregir bajo la caja', async () => {
+      host.credentials.email().markAsTouched();
+      await fixture.whenStable();
+
+      expect(error()!.textContent!.trim()).toBe('Escribir un correo válido.');
+      expect(input(0).nextElementSibling).toBe(null);
+      expect(root().querySelectorAll('app-text-field')[0].contains(error())).toBe(true);
+    });
+
+    it('la caja queda marcada como inválida y enlazada a su mensaje', async () => {
+      host.credentials.email().markAsTouched();
+      await fixture.whenStable();
+
+      expect(input(0).getAttribute('aria-invalid')).toBe('true');
+      expect(input(0).getAttribute('aria-describedby')).toBe(`${input(0).id}-error`);
+      expect(error()!.id).toBe(`${input(0).id}-error`);
+    });
+
+    it('al corregirlo, el mensaje se va', async () => {
+      host.credentials.email().markAsTouched();
+      await type(input(0), 'ana@example.com');
+
+      expect(error()).toBeNull();
+      expect(input(0).getAttribute('aria-invalid')).toBeNull();
+      expect(input(0).getAttribute('aria-describedby')).toBeNull();
+    });
+
+    it('un campo sin reglas no muestra nada al tocarlo', async () => {
+      host.credentials.password().markAsTouched();
+      await fixture.whenStable();
+
+      expect(
+        root().querySelectorAll('app-text-field')[1].querySelector('app-field-error'),
+      ).toBeNull();
+    });
+  });
+
+  it('maxlength limita lo que se puede escribir', () => {
+    expect(input(0).getAttribute('maxlength')).toBeNull();
+    expect(input(1).getAttribute('maxlength')).toBe('20');
   });
 
   describe('mostrar la contraseña', () => {

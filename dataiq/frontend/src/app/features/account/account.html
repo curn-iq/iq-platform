@@ -47,7 +47,7 @@
             <button app-button type="submit">Ingresar</button>
           </form>
         } @else {
-          <form novalidate (submit)="onSubmit($event)">
+          <form novalidate (submit)="onRegister($event)">
             <app-text-field label="Nombre" autocomplete="name" [formField]="registerForm.name" />
             <app-text-field
               label="Correo"
@@ -61,9 +61,18 @@
               type="password"
               autocomplete="new-password"
               revealable
+              [maxlength]="128"
               [formField]="registerForm.password"
             />
-            <button app-button type="submit">Crear cuenta gratis</button>
+            <app-checkbox-field [formField]="registerForm.acceptsPolicy">
+              Soy mayor de 18 años y acepto el
+              <a routerLink="/politica-de-datos" target="_blank" rel="noopener"
+                >aviso de privacidad</a
+              >.
+            </app-checkbox-field>
+            <button app-button type="submit" [attr.aria-busy]="registerForm().submitting()">
+              Crear cuenta gratis
+            </button>
           </form>
         }
       </div>
