@@ -486,8 +486,8 @@ pantalla no la pierde: la espera es una navegación pendiente, no destruye lo qu
 - **Aviso de sesión sin comprobar** (`shell/session-unavailable/`): lo muestra `App` arriba de
   la ruta mientras `verificationBlocked()`, así ninguna pantalla lo resuelve por su cuenta. Dice
   que no se pudo comprobar la sesión y que la página se abre en cuanto responda el servidor, y
-  ofrece «Reintentar» (`aria-busy` mientras comprueba). Los textos son una propuesta de la
-  casilla 3 de la fase 5, por confirmar con Juan.
+  ofrece «Reintentar» (`aria-busy` mientras comprueba). Los textos los aprobó Juan el
+  2026-11-01 (Resuelto 42).
 - Un `403` es acceso denegado: avisa y conserva la sesión. Un 5xx, la falta de conexión o
   un tiempo agotado tampoco la cierran (lo prueban el interceptor y el servicio).
 - `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
