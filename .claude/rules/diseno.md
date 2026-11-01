@@ -37,7 +37,7 @@ marcadas como tales.
   archivos.
 - **Datos reales**: técnicas, instrumental y mesas salen del dataset de
   DataIQ (regla 1 de `CLAUDE.md`). Lo que la fuente no trae se marca (p. ej.
-  «sin mesa»), nunca se rellena.
+  «sin arreglo disponible»), nunca se rellena.
 - **Voz impersonal y en español** («Ver técnica», «Crear cuenta gratis»).
 - Pensado para computador y celular por igual.
 
