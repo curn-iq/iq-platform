@@ -81,7 +81,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 ### Fase 5 — Cuenta
 
 - [x] Página del aviso de privacidad (`/politica-de-datos`), enlazada desde el pie; el texto sale de [`docs/privacidad.md`](../../docs/privacidad.md) (Resuelto 30 y 41). El enlace desde el registro va con su casilla de aceptación
-- [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20)
+- [x] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20). Los formularios envían con las casillas del registro y del ingreso
 - [ ] Revisar `sessionGuard` y `roleGuard` cuando no se sabe si hay sesión (`loadFailed()`, Resuelto 40): hoy, si `GET /auth/me` no responde, una ruta de gestión lleva a `/cuenta/ingresar` aunque la persona tenga sesión. Decidirlo junto con la pantalla de cuenta (pendiente de la revisión de la fase 4)
 - [ ] Registro con la aceptación obligatoria del aviso (Decreto 1377): una casilla que dice que la persona es mayor de 18 años y acepta el aviso, enlazado a `/politica-de-datos`; la API exige `accepts_policy` (Resuelto 30)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
@@ -115,7 +115,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [ ] Usuarios y roles: personas por rol, buscador, ficha con la fecha de registro y la política aceptada, cambio de rol confirmado
 - [ ] La cuenta propia no cambia su rol (el backend responde 409)
 - [ ] Sin suspender ni historial de roles en el MVP (`docs/despues-del-mvp.md`)
-- [ ] Revisar al final el peso del código (`npm run build`): el código inicial (342 kB, con 300 kB de presupuesto) y los estilos que pasan de 4 kB (`hero-stage.scss`, `research.scss` y `catalog.scss`). Bajarlos, o subir el presupuesto con su motivo anotado aquí, antes de la fase 9
+- [ ] Revisar al final el peso del código (`npm run build`): el código inicial (349 kB tras la casilla de la pantalla de cuenta, con 300 kB de presupuesto) y los estilos que pasan de 4 kB (`hero-stage.scss`, `research.scss` y `catalog.scss`). Bajarlos, o subir el presupuesto con su motivo anotado aquí, antes de la fase 9
 
 ### Fase 9 — Despliegue (Corte 3)
 

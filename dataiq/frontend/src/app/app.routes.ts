@@ -1,5 +1,6 @@
-import { Routes } from '@angular/router';
+import { CanMatchFn, ResolveFn, Routes } from '@angular/router';
 import { roleGuard } from './core/session/session.guards';
+import { accountModeOf } from './domain/account-entry';
 import { DEFAULT_TECHNIQUE_TAB } from './domain/technique-tabs';
 
 // Las URL van en español (son parte de la interfaz) y cada pantalla se carga
@@ -8,6 +9,12 @@ import { DEFAULT_TECHNIQUE_TAB } from './domain/technique-tabs';
 // editor, revisión) llevan un título genérico hasta que su fase ponga el nombre (el
 // detalle de técnica ya lo pone).
 // Tabla de rutas y accesos: README del frontend, «Rutas».
+/** Solo `/cuenta/ingresar` y `/cuenta/crear` son de la cuenta; cualquier otro segmento es «No encontrada». */
+const accountMatch: CanMatchFn = (_route, segments) =>
+  accountModeOf(segments[1]?.path) !== undefined;
+const accountTitle: ResolveFn<string> = (route) =>
+  accountModeOf(route.paramMap.get('modo')) === 'register' ? 'Crear cuenta' : 'Ingresar';
+
 const contributor = roleGuard('contributor');
 const reviewer = roleGuard('reviewer');
 const admin = roleGuard('admin');
@@ -26,13 +33,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/technique/technique').then((m) => m.TechniqueDetail),
   },
   {
-    path: 'cuenta/ingresar',
-    title: 'Ingresar',
-    loadComponent: () => import('./features/account/account').then((m) => m.AccountEntry),
-  },
-  {
-    path: 'cuenta/crear',
-    title: 'Crear cuenta',
+    // Ingresar y crear la cuenta son una sola ruta con un parámetro: así pasar de una a otra
+    // no vuelve a crear la pantalla, y la raya de las pestañas y el cambio de lado se animan.
+    path: 'cuenta/:modo',
+    title: accountTitle,
+    canMatch: [accountMatch],
     loadComponent: () => import('./features/account/account').then((m) => m.AccountEntry),
   },
   {

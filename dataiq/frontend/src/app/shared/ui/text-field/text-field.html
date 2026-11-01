@@ -1,0 +1,24 @@
+<label [for]="id">{{ label() }}</label>
+<div class="control">
+  <input
+    #field
+    [id]="id"
+    [type]="shown() ? 'text' : type()"
+    [attr.autocomplete]="autocomplete() || null"
+    [placeholder]="placeholder()"
+    [class.revealable]="revealable()"
+    [value]="value()"
+    (input)="value.set(field.value)"
+    (blur)="touch.emit()"
+  />
+  @if (revealable()) {
+    <button
+      type="button"
+      [attr.aria-controls]="id"
+      (mousedown)="$event.preventDefault()"
+      (click)="toggle()"
+    >
+      {{ shown() ? 'Ocultar' : 'Mostrar' }}
+    </button>
+  }
+</div>

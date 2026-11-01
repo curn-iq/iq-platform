@@ -40,6 +40,8 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/gestion/instrumental/abc', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/usuarios', Users, 'Usuarios y roles · IQ Platform'],
   ['/no-existe', NotFoundPage, 'No encontrada · IQ Platform'],
+  ['/cuenta/registro', NotFoundPage, 'No encontrada · IQ Platform'],
+  ['/cuenta', NotFoundPage, 'No encontrada · IQ Platform'],
   ['/gestion/otra/cosa', NotFoundPage, 'No encontrada · IQ Platform'],
 ];
 
@@ -99,6 +101,17 @@ describe('rutas', () => {
     expect(component).toBeInstanceOf(screen);
     expect(router.url).toBe(url);
     expect(document.title).toBe(title);
+  });
+
+  it('ingresar y crear cuenta son la misma pantalla: pasar de una a otra no la vuelve a crear', async () => {
+    await loadSession(null);
+    const harness = await RouterTestingHarness.create();
+
+    const login = await harness.navigateByUrl('/cuenta/ingresar?volver=%2Ftecnicas');
+    const register = await harness.navigateByUrl('/cuenta/crear?volver=%2Ftecnicas');
+
+    expect(register).toBe(login);
+    expect(document.title).toBe('Crear cuenta · IQ Platform');
   });
 
   it('una técnica sin pestaña abre los datos clínicos', async () => {

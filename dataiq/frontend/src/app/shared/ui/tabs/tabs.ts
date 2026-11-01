@@ -25,6 +25,8 @@ export interface TabItem {
   readonly link: readonly unknown[];
   /** Lleva un candado: sin cuenta solo se ve una vista previa. */
   readonly locked?: boolean;
+  /** `'preserve'` conserva la consulta de la URL al pasar a la pestaña (p. ej. `?volver=`). */
+  readonly queryParamsHandling?: 'preserve' | 'merge';
 }
 
 /**
@@ -89,7 +91,10 @@ export class Tabs {
     event.preventDefault();
     // El enlace es el mismo elemento antes y después de navegar: el foco puede pasar ya
     this.links()[target].nativeElement.focus();
-    void this.router.navigate([...this.tabs()[target].link]);
+    const { link, queryParamsHandling } = this.tabs()[target];
+    void (queryParamsHandling
+      ? this.router.navigate([...link], { queryParamsHandling })
+      : this.router.navigate([...link]));
   }
 
   private place(): void {

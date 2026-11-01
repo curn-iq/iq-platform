@@ -1,0 +1,72 @@
+<div class="entry" [class.inverted]="inverted()">
+  <section
+    #aside
+    class="aside"
+    [attr.aria-labelledby]="hasTechnique() ? 'technique-name' : 'entry-greeting'"
+    [attr.aria-busy]="hasTechnique() && !loadedTechnique()"
+  >
+    @if (hasTechnique()) {
+      <app-locked-technique
+        [name]="loadedTechnique()?.name"
+        [specialty]="loadedTechnique()?.specialty"
+      />
+    } @else {
+      <div class="greeting">
+        <p class="greeting-title" id="entry-greeting">{{ greeting() }}</p>
+        @if (mode() === 'login') {
+          <figure app-login-illustration></figure>
+        } @else {
+          <figure app-register-illustration></figure>
+        }
+      </div>
+    }
+  </section>
+
+  <section #pane class="pane" aria-labelledby="entry-title">
+    <div class="form-column">
+      <h1 id="entry-title">{{ title() }}</h1>
+      <app-tabs label="Cuenta" [tabs]="tabs" [current]="mode()" />
+
+      <div role="tabpanel" [id]="'panel-' + mode()" [attr.aria-labelledby]="'tab-' + mode()">
+        @if (mode() === 'login') {
+          <form novalidate (submit)="onSubmit($event)">
+            <app-text-field
+              label="Correo"
+              type="email"
+              autocomplete="email"
+              placeholder="nombre@correo.com"
+              [formField]="loginForm.email"
+            />
+            <app-text-field
+              label="Contraseña"
+              type="password"
+              autocomplete="current-password"
+              revealable
+              [formField]="loginForm.password"
+            />
+            <button app-button type="submit">Ingresar</button>
+          </form>
+        } @else {
+          <form novalidate (submit)="onSubmit($event)">
+            <app-text-field label="Nombre" autocomplete="name" [formField]="registerForm.name" />
+            <app-text-field
+              label="Correo"
+              type="email"
+              autocomplete="email"
+              placeholder="nombre@correo.com"
+              [formField]="registerForm.email"
+            />
+            <app-text-field
+              label="Contraseña"
+              type="password"
+              autocomplete="new-password"
+              revealable
+              [formField]="registerForm.password"
+            />
+            <button app-button type="submit">Crear cuenta gratis</button>
+          </form>
+        }
+      </div>
+    </div>
+  </section>
+</div>
