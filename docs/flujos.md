@@ -5,9 +5,6 @@ cada persona y cómo una técnica pasa de borrador a publicada. Los diagramas
 están en [Mermaid](https://mermaid.js.org/): GitHub los dibuja al abrir este
 archivo.
 
-El detalle de cada rol está en el "Modelo de roles" de
-[`CLAUDE.md`](../CLAUDE.md).
-
 Hay una versión visual de estos diagramas, para presentar:
 <https://claude.ai/artifact/779R1z8d3pd6srkbtiohpk> (privada; se comparte desde
 su menú). Este archivo es la fuente: si cambia una decisión, se cambia primero
@@ -40,6 +37,20 @@ flowchart LR
 | Archivar una técnica publicada | | | | ✔ | ✔ |
 | Crear y editar instrumental | | | | ✔ | ✔ |
 | Gestionar roles | | | | | ✔ |
+
+Decidido por Mauricio el 2026-10-04 (con los cambios del 2026-10-06). El
+software sirve a cualquier persona: estudiantes de cualquier institución, o
+alguien sin institución. El riesgo que se controla no es la lectura sino la
+**publicación** de técnicas incorrectas:
+
+- Lo de un colaborador queda en borrador hasta que un revisor lo aprueba; un
+  colaborador nunca publica lo suyo.
+- Un revisor es docente o instrumentador titulado: un admin le asigna el rol
+  después de verificarlo. La decanatura del programa también es revisor. Un
+  revisor publica lo suyo directamente, sin que otro lo revise.
+- Admin es el equipo operativo del proyecto.
+- Sin cuenta se ven el catálogo y los datos clínicos: pedir la cuenta antes de
+  mostrar cualquier contenido desalentaba el uso (cambio del 2026-10-06).
 
 ## 2. Navegación
 

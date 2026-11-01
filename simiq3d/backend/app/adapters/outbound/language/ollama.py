@@ -10,8 +10,10 @@ import httpx
 from app.adapters.outbound.language.fake import TemplateChat
 from app.domain import tools
 from app.domain.catalog import (
+    PLACE_PHRASES,
     Catalog,
     find_instrument,
+    find_technique,
     in_scope,
     item_with,
     normalize,
@@ -19,7 +21,13 @@ from app.domain.catalog import (
 )
 from app.domain.chat import ChatAction, Reply, Vocabulary, the
 from app.domain.grounding import unsupported
-from app.domain.names import asks_to_describe, contains, instrument_in
+from app.domain.guards import before_the_model
+from app.domain.names import (
+    asks_to_describe,
+    contains,
+    instruments_in,
+    technique_in,
+)
 from app.ports.chat import ModelUnavailable
 
 logger = logging.getLogger(__name__)
@@ -37,8 +45,13 @@ Reglas:
 antes de responder, las veces que haga falta.
 - Si una herramienta devuelve "quizas" en vez del dato, no supongas: pregunta \
 «¿Quizás te refieres a …?».
+- Si una herramienta devuelve "fuera_de_alcance" (la técnica es de otra \
+especialidad o DataIQ no la tiene), responde en una frase que SIMIQ3D solo cubre \
+la mesa de Mayo de las técnicas de Cirugía General. No ofrezcas otras técnicas.
 - Si la pregunta no trata de estas técnicas o de su instrumental, o te pide otra \
 cosa, dilo en una frase.
+- La mesa de Mayo y el instrumental de una técnica se consultan con \
+get_technique; find_instrument es para un instrumento.
 - Cuando hables de una técnica o de dónde va un instrumento, llama a show_in_3d \
 para que el visor lo muestre.
 - Para decir dónde va algo, usa la ubicacion (la zona de la mesa), lo que \
@@ -53,7 +66,8 @@ el dato, responde eso; después puedes decir dónde va.
 
 - Termina siempre llamando a reply con la respuesta en español, breve (una a \
 tres frases), sin inventar nada que no esté en lo que devolvieron las \
-herramientas.
+herramientas. Si piden el instrumental o lo que lleva la mesa, nombra todos sus \
+objetos.
 - Si DataIQ no tiene un dato, dilo así."""
 
 TOOLS = [
@@ -161,12 +175,22 @@ class OllamaAgent:
     async def reply(
         self, question: str, catalog: Catalog, open_technique_id: UUID | None
     ) -> Reply:
+        # Una técnica de otra especialidad, o «el bisturí» de una mesa que lleva
+        # dos: se responde con reglas fijas, sin el modelo.
+        early = before_the_model(question, catalog, open_technique_id)
+        if early:
+            return replace(early, answered_by=self._fallback.name)
         open_technique = technique_by_id(catalog, open_technique_id)
         context = (
             f"Técnica abierta en el visor: {open_technique.name}.\n"
             if open_technique
             else ""
         )
+        # «la cirugía para quitar la mama»: sin la pista, el modelo inventa un
+        # nombre («mamoplastia») y lo busca.
+        described = _described(question, catalog)
+        if described:
+            context += f"La pregunta describe la técnica {described.name}.\n"
         messages = [
             {"role": "system", "content": SYSTEM},
             {"role": "user", "content": f"{context}{question}"},
@@ -277,7 +301,7 @@ class OllamaAgent:
             logger.warning("Respuesta sin respaldo en DataIQ: %s", problems)
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
-            scene = _implied_scene(text, catalog, open_technique_id)
+            scene = _implied_scene(text, question, results, catalog, open_technique_id)
         if did_you_mean:
             return Reply(
                 ChatAction.clarify,
@@ -357,11 +381,32 @@ _TOOL_NAMES = re.compile(
 )
 
 
+# «Puedo resaltarlo para ti»: lo que se muestra ya lo hizo el visor.
+_OFFER = re.compile(
+    r"(?i)\bpuedo (?:resaltar|mostrar|ayudar|indicar|darte|explicar)|"
+    r"\bsi (?:necesitas|quieres|deseas)\b|¿\s*quieres\b"
+)
+
+
+def _plain_places(text: str) -> str:
+    """«va en la ubicación "arriba a la derecha"» → «va arriba a la derecha»: el
+    modelo copia la clave de la consulta y las comillas."""
+    for phrase in PLACE_PHRASES:
+        text = re.sub(
+            rf'\ben la (?:ubicaci[oó]n|posici[oó]n|zona)\s+"?{re.escape(phrase)}"?',
+            phrase,
+            text,
+            flags=re.IGNORECASE,
+        )
+    return text.replace('"', "")
+
+
 def _clean(text: str) -> tuple[str, list[str]]:
     """Quita lo que no es para el estudiante: las «Sugerencias:» que el modelo
-    escribe dentro del texto (pasan a ser opciones), las líneas con nombres de
-    herramientas y el formato Markdown."""
-    text = text.replace("**", "").strip()
+    escribe dentro del texto (pasan a ser opciones), las frases con nombres de
+    herramientas o que ofrecen mostrar lo que ya se muestra, las comillas y el
+    formato Markdown."""
+    text = _plain_places(text.replace("**", "").strip())
     suggestions: list[str] = []
     match = re.search(r"(?i)\bsugerencias?\s*:", text)
     if match:
@@ -371,7 +416,16 @@ def _clean(text: str) -> tuple[str, list[str]]:
             piece = piece.strip(" -•\t")
             if piece and not _TOOL_NAMES.search(piece):
                 suggestions.append(piece)
-    lines = [line for line in text.splitlines() if not _TOOL_NAMES.search(line)]
+    # Solo las frases que mencionan una herramienta («con el comando
+    # show_in_3d»): el resto de la línea es la respuesta.
+    lines = []
+    for line in text.splitlines():
+        sentences = re.split(r"(?<=[.!?])\s+", line)
+        kept = [
+            s for s in sentences if not _TOOL_NAMES.search(s) and not _OFFER.search(s)
+        ]
+        if kept:
+            lines.append(" ".join(kept))
     text = "\n".join(lines).strip()
     # Las preguntas que deja al final del texto también son sugerencias.
     while (match := re.search(r"\s*(¿[^¿]*\?)\s*$", text)) and match.start() > 0:
@@ -380,25 +434,50 @@ def _clean(text: str) -> tuple[str, list[str]]:
     return text, suggestions
 
 
+def _described(question: str, catalog: Catalog):
+    """La técnica que la pregunta describe sin nombrar ninguna, si la hay."""
+    if technique_in(question, Vocabulary.from_catalog(catalog)):
+        return None
+    return tools.technique_described(catalog, question)
+
+
 def _implied_scene(
-    text: str, catalog: Catalog, open_technique_id
+    text: str, question: str, results: list[dict], catalog: Catalog, open_technique_id
 ) -> tools.Scene | None:
-    """Si el modelo no llamó a show_in_3d, la escena sale de lo que dice: la
-    técnica abierta, o la única técnica que nombra; y, si nombra un instrumento
-    de esa mesa, se resalta."""
-    said = normalize(text)
-    named = [
-        t for t in in_scope(catalog) if contains(said, normalize(t.name).split()[0])
+    """Si el modelo no llamó a show_in_3d, la escena sale de la técnica que
+    nombra la pregunta; si no nombra ninguna, la abierta en el visor; si no hay,
+    la única que nombra la respuesta o, si no, la única que consultó. Se resalta
+    el instrumento por el que se preguntó, si va en esa mesa: la respuesta
+    nombra también a sus vecinos («la Babcock va junto a la Kelly Adson»). Si la
+    pregunta no nombra ninguno, el primero que nombra la respuesta."""
+
+    def named_in(words: str) -> list:
+        said = normalize(words)
+        return [
+            t for t in in_scope(catalog) if contains(said, normalize(t.name).split()[0])
+        ]
+
+    consulted = list(
+        {r["tecnica"]: r for r in results if "mesa_de_mayo" in r and "tecnica" in r}
+    )
+    candidates = [
+        named_in(question),
+        [_described(question, catalog)],
+        [technique_by_id(catalog, open_technique_id)],
+        named_in(text),
+        [find_technique(catalog, name) for name in consulted],
     ]
-    technique = technique_by_id(catalog, open_technique_id) or (
-        named[0] if len(named) == 1 else None
+    technique = next(
+        (c[0] for c in candidates if len(c) == 1 and c[0] is not None), None
     )
     if technique is None:
         return None
-    name = instrument_in(text, Vocabulary.from_catalog(catalog))
-    instrument = find_instrument(catalog, name)
-    if instrument and item_with(technique, instrument.id):
-        return tools.Scene(technique, instrument)
+    vocabulary = Vocabulary.from_catalog(catalog)
+    asked = instruments_in(question, vocabulary)
+    for name in asked or instruments_in(text, vocabulary)[:1]:
+        instrument = find_instrument(catalog, name)
+        if instrument and item_with(technique, instrument.id):
+            return tools.Scene(technique, instrument)
     return tools.Scene(technique)
 
 

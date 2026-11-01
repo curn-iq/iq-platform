@@ -1,6 +1,6 @@
 import pytest
 
-from app.adapters.outbound.language.fake import FakeModel
+from app.adapters.outbound.language.fake import FakeModel, TemplateChat
 from app.domain.chat import ChatAction, Choice, ClinicalField, Vocabulary, answer
 from tests.sample import CATALOG
 
@@ -101,3 +101,22 @@ async def test_every_option_the_chat_offers_is_understood():
         for option in reply.options:
             choice = await fake(option, open_name)
             assert choice.action != ChatAction.no_answer, option
+
+
+@pytest.mark.anyio
+async def test_the_templates_say_a_technique_is_of_another_specialty():
+    reply = await TemplateChat().reply(
+        "¿Qué lleva la mesa de Mayo de la cesárea?", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.no_answer
+    assert reply.reply.startswith("Cesárea es una técnica de Ginecología.")
+
+
+@pytest.mark.anyio
+async def test_the_templates_find_a_technique_by_its_description():
+    reply = await TemplateChat().reply(
+        "Quiero ver la mesa de la cirugía para quitar la vesícula", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.show_technique

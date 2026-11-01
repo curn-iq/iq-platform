@@ -58,5 +58,31 @@ Dónde corre cada pieza en producción y cómo llega ahí:
   para correrlo fuera de Vercel, por ejemplo en Cloud Run si la institución
   lo financia ([`despues-del-mvp.md`](despues-del-mvp.md)).
 
-El porqué de cada elección y lo que se descartó está en `CLAUDE.md`
-(«Infraestructura de despliegue»).
+## Por qué así
+
+Decidido por Mauricio el 2026-10-14: solo servicios gratuitos que no exigen
+tarjeta de crédito, porque el equipo no dispone de recursos para prepagar un
+servicio en la nube. Límites verificados en la documentación oficial de cada
+proveedor en octubre de 2026.
+
+| Pieza | Servicio | Por qué y con qué límites |
+|---|---|---|
+| Backends de DataIQ y SIMIQ3D | Vercel Hobby, funciones de Python (región `cle1`, junto a Neon) | Cupo mensual de la cuenta: 4 horas de CPU activa (la espera por la base de datos no cuenta), 1 millón de invocaciones y 100 GB de transferencia. Escala a cero; el arranque en frío tarda segundos. Con `DATABASE_POOL=false`, cada función abre y cierra su conexión para no acumular conexiones en Neon. Hobby es solo para uso no comercial (un proyecto de grado cumple) y de una sola persona: los proyectos están en la cuenta de Mauricio |
+| Frontends | Vercel Hobby (100 GB de transferencia al mes, que comparten los rewrites hacia las APIs) | Hobby no conecta un proyecto a un repositorio de una organización de GitHub: se despliega con el CLI de Vercel desde GitHub Actions, con el secreto `VERCEL_TOKEN` |
+| Bases de datos | Neon Free, un proyecto por módulo (región `aws-us-east-2`, Ohio: no hay región en Sudamérica) | 0,5 GB de almacenamiento, 100 CU-hora y 5 GB de transferencia al mes por proyecto, con scale-to-zero. Al pasar el plan no se cobra: el cómputo se suspende hasta el ciclo siguiente, y por encima de 0,5 GB fallan las escrituras |
+| Backend de SIVRI | Servidor PC1: un PC del laboratorio con Tailscale Funnel (dirección HTTPS fija `*.ts.net`, plan gratuito) | SIVRI se usa en sesiones de laboratorio, y ningún servicio gratuito sin tarjeta ofrece CPU sostenida para YOLO. Detalle: [`sivri/docs/checklist.md`](../sivri/docs/checklist.md) |
+| Modelo de lenguaje de SIMIQ3D | Servidor PC2: un PC de escritorio con GPU, con Ollama y Tailscale Funnel, detrás de un filtro con clave | Si el Servidor PC2 se apaga, solo deja de funcionar el chat. Detalle: [`simiq3d/servidor-pc2/README.md`](../simiq3d/servidor-pc2/README.md) |
+| Imagen del backend de DataIQ | GitHub Container Registry (ghcr.io), pública | Vercel no la usa; sirve para correr el backend fuera de Vercel |
+| CI/CD | GitHub Actions | En cada PR, estilo y pruebas; en cada push a `main`, despliegue a Vercel e imagen a ghcr.io. No hay rama `dev`: `main` es producción y nada entra sin PR y CI. Las previews por PR, con una rama `dev` de la base en Neon, se agregan cuando haya usuarios que proteger |
+
+Se descartaron:
+
+- **Google Cloud Run:** en Colombia, crear la cuenta de facturación exige un
+  prepago de COP 100.000. Queda como opción si la institución lo financia
+  ([`despues-del-mvp.md`](despues-del-mvp.md)).
+- **Azure for Students:** regiones restringidas por suscripción.
+- **Render y similares:** 512 MB y 0,1 CPU, se suspenden por inactividad y
+  pueden exigir tarjeta.
+- **Hugging Face Spaces:** su cómputo gratuito no sirve para SIVRI.
+- **El crédito de GCP de USD 300 por 90 días:** vence.
+- **Oracle Cloud y Koyeb:** exigen tarjeta.

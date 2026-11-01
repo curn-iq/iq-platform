@@ -109,14 +109,24 @@ las plantillas.
 
 1. Si un nombre parece mal escrito, responde «¿Quizás quisiste decir…?» con la
    pregunta corregida (`app/domain/names.py`).
-2. Con `LANGUAGE_MODEL=ollama`, el **agente** (`adapters/outbound/language/ollama.py`)
+2. **Reglas fijas** (`app/domain/guards.py`), antes del modelo y también en las
+   plantillas: si la pregunta nombra una técnica de otra especialidad («la
+   cesárea»), dice que SIMIQ3D solo cubre la mesa de Mayo de Cirugía General;
+   si nombra un instrumento por su familia («el bisturí», «la pinza») en una
+   mesa que lleva varios, pregunta cuál, con cada uno como opción.
+3. Con `LANGUAGE_MODEL=ollama`, el **agente** (`adapters/outbound/language/ollama.py`)
    deja que el modelo use las consultas de `app/domain/tools.py` y redacte la
    respuesta. Antes de enviarla, `app/domain/grounding.py` verifica que cada
    nombre, número y ubicación esté en lo consultado, que los conteos («7
    objetos») sean un total de los resultados y que no hable de la cuadrícula.
    Si no pasa, si no consultó nada o si no termina en 30 segundos
    (`LLM_DEADLINE`), responden las plantillas.
-3. Las **plantillas** (`app/domain/chat.py`, con las reglas de
+   Las consultas aceptan los nombres como se dicen («el mango número 7»), y
+   una técnica descrita sin nombrarla («la cirugía para quitar la vesícula»),
+   por las palabras de su descripción en DataIQ que solo están en ella; de una
+   técnica de otra especialidad, o que DataIQ no tiene, responden que está
+   fuera de alcance.
+4. Las **plantillas** (`app/domain/chat.py`, con las reglas de
    `adapters/outbound/language/fake.py`) arman la respuesta solo con datos de
    DataIQ. Son el motor con `LANGUAGE_MODEL=fake` y el respaldo del agente.
 
@@ -174,11 +184,55 @@ uv run python -m app.adapters.inbound.cli.chat_log exportar registro.csv
 uv run python -m app.adapters.inbound.cli.chat_log exportar sesion.csv \
     --desde 2026-11-02T14:30 --hasta 2026-11-02T17:00
 uv run python -m app.adapters.inbound.cli.chat_log borrar
+
+# Banco de preguntas: corre eval/banco.csv contra el chat y mide su exactitud
+uv run python -m app.adapters.inbound.cli.chat_bank --salida resultados.csv
 ```
 
-`load_models` pide una cuenta de DataIQ (o el token en `DATAIQ_TOKEN`) para
-traducir cada nombre al id de ese entorno; si un nombre no existe, no carga
-nada y dice cuál.
+`load_models` y `chat_bank` piden una cuenta de DataIQ (o el token en
+`DATAIQ_TOKEN`). `load_models` traduce cada nombre al id de ese entorno; si un
+nombre no existe, no carga nada y dice cuál.
+
+## Banco de preguntas
+
+[`eval/banco.csv`](eval/banco.csv) tiene las preguntas con que se mide la
+exactitud del chat (evaluación formativa: ver
+[`../README.md`](../README.md), «Cómo se evalúa»). Cada fila trae la
+pregunta, la técnica abierta en el visor si la hay (`tecnica_abierta`), el
+tipo de pregunta (`tipo`: directa, sinónimo, paráfrasis, error de escritura,
+seguimiento, ambigua, fuera de alcance o intento de desviarlo) y lo que el
+chat debe hacer (`espera`), con los nombres que hacen falta para calificarla
+(`tecnica`, `instrumento`, `dato`, `otra_tecnica`).
+
+`chat_bank` hace cada pregunta como la ruta del chat (corrector, agente y
+plantillas), con el motor de `LANGUAGE_MODEL`, pero sin HTTP: no gasta el tope
+de preguntas ni escribe en el registro. El banco guarda nombres, no datos: lo
+que se compara (número de objetos, datos clínicos, descripciones) sale del
+catálogo de DataIQ al correr, y si un nombre ya no está en DataIQ, no corre.
+
+| `espera` | Es correcta si… |
+|---|---|
+| `mostrar` | el visor abre esa técnica |
+| `ubicar` | el visor abre esa técnica y resalta ese instrumento |
+| `no_va` | no resalta el instrumento en esa técnica (no va en su mesa) |
+| `varias_mesas` | pide precisar en qué técnica, o nombra todas las técnicas donde va |
+| `describir` | el texto trae al menos el 40 % de las palabras de cinco letras o más de la descripción de DataIQ, o casi toda una de sus frases (el 60 %): «¿Para qué sirve…?» se responde con una frase |
+| `dato` | el texto trae al menos el 40 % de las palabras de cinco letras o más del dato clínico de DataIQ (`dato`: `description`, `indications`, `complications`, `anesthesia_position`, o `anesthesia` y `patient_position` por separado) |
+| `listar` | nombra todos los instrumentos de la mesa de Mayo |
+| `contar_objetos`, `contar_tecnicas` | dice el número correcto, en cifras o en letras |
+| `mas_objetos` | nombra la técnica con más objetos en la mesa de Mayo |
+| `solo_en`, `comparten`, `diferencias` | nombra los instrumentos que corresponden y ninguno de los que no |
+| `aclarar` | pide precisar (incluye el «¿Quizás quisiste decir…?» del corrector). Si la pregunta es ambigua, `instrumento` trae las opciones separadas por «\|», y también es correcto nombrarlas todas |
+| `fuera` | no abre nada en el visor y dice que no tiene la respuesta |
+
+Lo que hace el visor sale de la acción, como en el contrato de `POST /chat`:
+`answer`, `clarify` y `no_answer` no lo cambian aunque traigan ids. Imprime la
+exactitud total, por `espera` y por tipo, quién respondió (el modelo, las
+plantillas o el corrector) y el tiempo por pregunta; `--salida` guarda cada
+respuesta con su calificación y su motivo, para revisarla a mano. La
+calificación compara nombres, números y palabras, no el sentido: una respuesta
+que la calificación da por buena puede tener una afirmación falsa, y por eso se
+revisa el detalle.
 
 ## Estructura
 
@@ -191,6 +245,7 @@ app/
 │   └── outbound/   DataIQ, Ollama y plantillas, PostgreSQL, JWKS
 ├── config.py
 └── main.py
+eval/               banco de preguntas del chat
 migrations/         Alembic
 tests/              dominio, adaptadores y API
 ```

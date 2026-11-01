@@ -13,8 +13,9 @@ web
 
 - Mockups: HTML y CSS estáticos, publicados como Artifacts de Claude. Su código
   vive en `diseno/mockups/`.
-- Frontend de producción: Angular, una sola app con el shell y DataIQ
-  (`dataiq/frontend`). Se despliega en Vercel (plan Hobby).
+- Frontend de producción: Angular. Una app con el shell y DataIQ
+  (`dataiq/frontend`) y otra con SIMIQ3D (`simiq3d/frontend`, con Three.js),
+  servidas en el mismo origen. Se despliegan en Vercel (plan Hobby).
 - Datos: la API de DataIQ (FastAPI + PostgreSQL). Los mockups usan el dataset
   real que ya está cargado en la base local.
 
@@ -95,11 +96,12 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 - Los datos nunca se inventan. Lo que la fuente no trae completo queda fuera y
   se dice.
 - Interfaz en español.
-- Código abierto (MIT). En el MVP hay una sola plataforma, la de la CURN,
-  abierta a estudiantes de cualquier institución; que otras instituciones
-  monten la suya queda para después (`docs/despues-del-mvp.md`).
-- Alcance de los mockups actuales: el shell y DataIQ. SIVRI y SIMIQ3D aparecen
-  solo como módulos del ecosistema, sin pantallas propias.
+- Código abierto (MIT). Hay una sola plataforma, la de la CURN, con registro
+  libre para estudiantes y docentes de cualquier institución; no hay una
+  plataforma por institución (descartado, ver `docs/despues-del-mvp.md`).
+- Alcance de los mockups actuales: el shell, DataIQ y SIMIQ3D
+  (`simiq3d.html`). SIVRI aparece solo como módulo del ecosistema, sin
+  pantallas propias.
 - Decisión abierta: el nombre del ecosistema (los mockups usan un nombre de
   trabajo, marcado como provisional).
 
@@ -131,11 +133,12 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 
 ## Evidence on Hand
 
-- Dataset real de la instancia de la CURN (sirve para los mockups; sus
+- Dataset real de la CURN (sirve para los mockups; sus
   cifras no se muestran en la web pública): 18 técnicas en 5 especialidades;
-  21 mesas de 15 técnicas, con 200 objetos ubicados en 201 celdas; catálogo de
-  143 instrumentos (94 normalizados y 49 por clasificar) con 149 variantes de
-  nombre. Ejemplo de referencia: la mesa de Mayo de Tiroidectomía.
+  34 mesas, con 375 objetos ubicados en 378 celdas (las que la fuente no trae
+  completas van propuestas y marcadas así); catálogo de 146 instrumentos (97
+  clasificados y 49 por clasificar). Ejemplo de referencia: la mesa de Mayo de
+  Tiroidectomía.
 - Los datos clínicos de cada técnica (anestesia, posición del paciente,
   indicaciones, complicaciones, técnica quirúrgica) vienen del documento de
   IQ del Drive y ya están cargados en la base.

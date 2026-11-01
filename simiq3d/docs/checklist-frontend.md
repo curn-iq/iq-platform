@@ -20,7 +20,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [ ] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo crea el primer frontend que llegue a su fase 0 (este o el de DataIQ)
 - [ ] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens
 - [ ] Instalar `three` y sus tipos; presupuesto aparte para el chunk del visor
-- [ ] `npm run models`: comprime `simiq3d/models/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build
+- [ ] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build
 - [ ] Script de npm que genera los tipos de la API de DataIQ desde su `/openapi.json` (y los de SIMIQ3D cuando exista su API)
 - [ ] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen)
 

@@ -1,7 +1,9 @@
 from uuid import UUID
 
+from app.domain import tools
 from app.domain.catalog import Catalog, technique_by_id
 from app.domain.chat import ChatAction, Choice, Reply, Vocabulary, answer
+from app.domain.guards import before_the_model
 from app.domain.names import (
     asks_for_list,
     asks_to_describe,
@@ -19,9 +21,15 @@ class FakeModel:
     name = "fake"
 
     async def choose(
-        self, question: str, vocabulary: Vocabulary, open_technique: str | None
+        self,
+        question: str,
+        vocabulary: Vocabulary,
+        open_technique: str | None,
+        described: str | None = None,
     ) -> Choice:
-        technique = technique_in(question, vocabulary)
+        """`described`: la técnica que la pregunta describe sin nombrarla («la
+        cirugía para quitar la vesícula»), si la hay."""
+        technique = technique_in(question, vocabulary) or described
         instrument = instrument_in(question, vocabulary)
         field = field_in(question)
 
@@ -62,10 +70,22 @@ class TemplateChat:
     async def reply(
         self, question: str, catalog: Catalog, open_technique_id: UUID | None
     ) -> Reply:
+        early = before_the_model(question, catalog, open_technique_id)
+        if early:
+            return early
+        vocabulary = Vocabulary.from_catalog(catalog)
         open_technique = technique_by_id(catalog, open_technique_id)
+        described = None
+        if technique_in(question, vocabulary) is None:
+            # Si describe la técnica sin nombrarla («la cirugía para quitar la
+            # vesícula»), cuál es. No con una técnica abierta ni si nombra un
+            # instrumento: ahí la pregunta es por esa mesa o por el instrumento.
+            if open_technique is None and instrument_in(question, vocabulary) is None:
+                described = tools.technique_described(catalog, question)
         choice = await self._model.choose(
             question,
-            Vocabulary.from_catalog(catalog),
+            vocabulary,
             open_technique.name if open_technique else None,
+            described.name if described else None,
         )
         return answer(choice, catalog, open_technique_id)

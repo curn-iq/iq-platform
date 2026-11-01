@@ -24,3 +24,6 @@ __pycache__/
 
 # Vínculo local con el proyecto de Vercel (lo crea `vercel link`)
 .vercel/
+
+# Instrucciones personales para Claude Code en este proyecto (no se versionan)
+CLAUDE.local.md

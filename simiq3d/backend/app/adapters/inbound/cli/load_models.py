@@ -31,7 +31,7 @@ from app.config import config
 from app.domain.catalog import normalize
 from app.domain.models3d import ModelFile
 
-# simiq3d/models/modelos.csv, junto a los GLB
+# simiq3d/models/modelos.csv; los GLB están en simiq3d/models/glb/
 DEFAULT_FILE = Path(__file__).resolve().parents[5] / "models" / "modelos.csv"
 
 

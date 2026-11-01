@@ -1,6 +1,9 @@
+from dataclasses import replace
+
 from app.domain import tools
+from app.domain.catalog import Catalog, Instrument
 from app.domain.grounding import unsupported
-from tests.sample import ALLIS, CATALOG, COLECISTECTOMIA, KELLY
+from tests.sample import ALLIS, CATALOG, COLECISTECTOMIA, KELLY, MASTECTOMIA, uid
 
 
 def test_finding_an_instrument_lists_its_tables_and_counts_them():
@@ -181,3 +184,90 @@ def test_counts_from_comparisons_and_lists_are_accepted():
         "6",
         "6 instrumentos",
     ]
+
+
+def test_3d_is_not_a_number_to_check():
+    results = [tools.get_technique(CATALOG, "Colecistectomía")]
+
+    assert unsupported("Ya está abierta en el visor 3D.", results, CATALOG) == []
+    assert unsupported("¿Quieres verla en 3D?", results, CATALOG) == []
+    assert unsupported("Mide 3 cm.", results, CATALOG) == ["3"]
+
+
+def test_a_technique_is_found_by_what_its_description_says():
+    found = tools.resolve_technique(CATALOG, "la cirugía para quitar la vesícula")
+
+    assert found == COLECISTECTOMIA
+
+
+def test_instrument_names_in_a_description_do_not_point_to_a_technique():
+    # Como la colecistectomía, que se hace por una incisión de Kocher, siendo
+    # «Kocher» un instrumento de estas mesas.
+    kelly = replace(COLECISTECTOMIA, description="Por incisión de Kelly.")
+    catalog = Catalog((kelly, MASTECTOMIA), CATALOG.instruments)
+
+    assert tools.technique_described(catalog, "la Kelly") is None
+
+
+def test_a_technique_of_another_specialty_is_out_of_scope():
+    result = tools.get_technique(CATALOG, "cesárea")
+
+    assert result["fuera_de_alcance"] is True
+    assert "Cesárea es una técnica de Ginecología" in result["error"]
+    assert "quizas" not in result
+
+
+def test_only_a_misspelling_gets_suggestions():
+    unknown = tools.get_technique(CATALOG, "apendicectomía")
+    misspelled = tools.get_technique(CATALOG, "colecistetomia")
+
+    assert unknown["fuera_de_alcance"] is True
+    assert "quizas" not in unknown
+    assert misspelled["quizas"] == ["Colecistectomía"]
+
+
+def test_a_technique_asked_as_an_instrument_says_how_to_consult_it():
+    result = tools.find_instrument(CATALOG, "mastectomía")
+
+    assert "es una técnica" in result["error"]
+    assert "get_technique" in result["error"]
+
+
+def test_common_words_are_not_taken_for_instruments():
+    extra = (
+        Instrument(uid(50), "Separador abdominal", (), None),
+        Instrument(uid(51), "Portaagujas largo", (), None),
+        Instrument(uid(52), "Instrumental", (), None),
+        Instrument(uid(53), "Pinza de Campo", (), None),
+    )
+    catalog = Catalog(CATALOG.techniques, CATALOG.instruments + extra)
+    results = [tools.get_technique(catalog, "Colecistectomía")]
+
+    text = "El instrumental es más largo para la pared abdominal y el campo operatorio."
+    assert unsupported(text, results, catalog) == []
+    assert unsupported("Lleva la Pinza de Campo.", results, catalog) == [
+        "Pinza de Campo"
+    ]
+    assert unsupported("Lleva la de Campo.", results, catalog) == ["Pinza de Campo"]
+
+
+def test_the_number_word_is_not_an_invented_instrument():
+    results = [tools.get_technique(CATALOG, "Colecistectomía")]
+
+    assert unsupported("El mango número 5 no está.", results, CATALOG) == []
+
+
+def test_a_short_word_matches_the_beginning_of_a_description_word():
+    breast = replace(MASTECTOMIA, description="Extirpación de la glándula mamaria.")
+    catalog = Catalog((COLECISTECTOMIA, breast), CATALOG.instruments)
+
+    assert tools.technique_described(catalog, "la mesa para quitar la mama") == breast
+    assert tools.technique_described(catalog, "¿Para qué sirve la mesa?") is None
+
+
+def test_a_vague_same_place_is_a_generalization_too():
+    results = [tools.find_instrument(CATALOG, "Kelly")]
+
+    assert unsupported(
+        "En las demás va en ubicaciones similares.", results, CATALOG
+    ) == ["generaliza una ubicación que cambia entre técnicas"]
