@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { TabItem, tabIndexAfterKey, Tabs } from './tabs';
+import { tabIndexAfterEvent, tabIndexAfterKey } from './tab-keys';
+import { TabItem, Tabs } from './tabs';
 
 const ITEMS: TabItem[] = [
   { key: 'one', label: 'Uno', link: ['/x', 'one'] },
@@ -174,5 +175,22 @@ describe('tabIndexAfterKey', () => {
   it('otra tecla no mueve nada', () => {
     expect(tabIndexAfterKey(1, 'Enter', 4)).toBeNull();
     expect(tabIndexAfterKey(1, 'ArrowDown', 4)).toBeNull();
+  });
+});
+
+describe('tabIndexAfterEvent', () => {
+  const press = (key: string, modifiers: KeyboardEventInit = {}) =>
+    new KeyboardEvent('keydown', { key, ...modifiers });
+
+  it('una tecla sola funciona igual que tabIndexAfterKey', () => {
+    expect(tabIndexAfterEvent(1, press('ArrowRight'), 4)).toBe(2);
+    expect(tabIndexAfterEvent(1, press('End'), 4)).toBe(3);
+  });
+
+  it('con un modificador es un atajo de otra cosa: Alt+Izquierda es Atrás', () => {
+    expect(tabIndexAfterEvent(1, press('ArrowLeft', { altKey: true }), 4)).toBeNull();
+    expect(tabIndexAfterEvent(1, press('ArrowRight', { ctrlKey: true }), 4)).toBeNull();
+    expect(tabIndexAfterEvent(1, press('ArrowLeft', { metaKey: true }), 4)).toBeNull();
+    expect(tabIndexAfterEvent(1, press('Home', { shiftKey: true }), 4)).toBeNull();
   });
 });

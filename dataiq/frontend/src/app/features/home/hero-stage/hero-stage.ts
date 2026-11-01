@@ -11,6 +11,7 @@ import {
   type ElementRef,
 } from '@angular/core';
 import { REDUCED_MOTION_QUERY, mediaQuery } from '../../../shared/media-query';
+import { tabIndexAfterEvent } from '../../../shared/ui/tabs/tab-keys';
 import { DEMO_TABLE, MISPLACED_NUMBER } from '../demo-table';
 import { HomeTable, type TableView } from '../home-table/home-table';
 import { StageRail } from '../stage-rail/stage-rail';
@@ -38,10 +39,11 @@ const TABS: readonly Tab[] = [
  * El escenario de la portada, según «Escenario de la mesa» de `DESIGN.md`: la
  * misma mesa de ejemplo en tres vistas (referencia, 3D y cámara). El selector
  * cambia solo cada 5,5 s con un trazo de progreso bajo la pestaña activa; se
- * pausa al pasar el puntero y se detiene al interactuar. Con movimiento
- * reducido no corre. Tocar una pieza la marca y el riel la muestra de cerca;
- * «Ver las 10 piezas» abre la leyenda sobre la mesa. Lo que muestran 3D y
- * cámara es demostración y se dice.
+ * pausa con el puntero encima o el foco dentro y se detiene al interactuar. Con
+ * movimiento reducido no corre. Tocar una pieza la marca y el riel la muestra de
+ * cerca; «Ver las 10 piezas» abre la leyenda sobre la mesa, que se cierra con
+ * Escape. Lo que muestran 3D y cámara es demostración y se dice. Mientras cambia
+ * sola, la línea de estado no se anuncia: sería interrumpir cada 5,5 s.
  */
 @Component({
   selector: 'app-hero-stage',
@@ -77,6 +79,8 @@ export class HeroStage {
 
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
   private cycleTimer: ReturnType<typeof setInterval> | null = null;
+  /** Lo que tiene pausado el cambio. Con los dos, sigue pausado hasta que se vayan ambos. */
+  private readonly holds = new Set<'pointer' | 'focus'>();
   private scanTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly tabButtons = viewChildren<ElementRef<HTMLButtonElement>>('tab');
@@ -132,9 +136,9 @@ export class HeroStage {
   }
 
   protected onTabKeydown(event: KeyboardEvent, index: number): void {
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    const target = tabIndexAfterEvent(index, event, TABS.length);
+    if (target === null) return;
     event.preventDefault();
-    const target = (index + (event.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length;
     this.choose(TABS[target].view);
     this.tabButtons()[target]?.nativeElement.focus();
   }
@@ -156,16 +160,37 @@ export class HeroStage {
     this.stopCycle();
   }
 
-  /** El puntero entra al escenario: el cambio y su trazo se pausan. */
-  protected pause(): void {
+  /** Un dedo no se queda encima: tocar no pausa, y al soltar no habría nada que lo reanude. */
+  protected onPointerEnter(event: PointerEvent): void {
+    if (event.pointerType !== 'touch') this.hold('pointer');
+  }
+
+  protected onPointerLeave(): void {
+    this.release('pointer');
+  }
+
+  protected onFocusIn(): void {
+    this.hold('focus');
+  }
+
+  /** El foco solo se va si pasa a algo fuera del escenario. */
+  protected onFocusOut(event: FocusEvent): void {
+    const stage = event.currentTarget as HTMLElement;
+    if (!stage.contains(event.relatedTarget as Node | null)) this.release('focus');
+  }
+
+  /** El cambio y su trazo se pausan. */
+  private hold(reason: 'pointer' | 'focus'): void {
     if (!this.autoplay()) return;
+    this.holds.add(reason);
     this.paused.set(true);
     this.stopCycle();
   }
 
-  /** El puntero sale: el trazo vuelve a empezar y el cambio sigue. */
-  protected resume(): void {
-    if (!this.autoplay()) return;
+  /** Si ya nada lo pausa, el trazo vuelve a empezar y el cambio sigue. */
+  private release(reason: 'pointer' | 'focus'): void {
+    this.holds.delete(reason);
+    if (!this.autoplay() || !this.paused() || this.holds.size > 0) return;
     this.paused.set(false);
     this.epoch.update((value) => value + 1);
     this.startCycle();
@@ -183,9 +208,15 @@ export class HeroStage {
     this.rail().focusShowAll();
   }
 
+  /** Escape cierra la lista, esté donde esté el foco dentro del escenario. */
+  protected onEscape(): void {
+    if (this.listOpen()) this.closeList();
+  }
+
+  /** Cerrar la lista quita el botón que tenía el foco: lo recibe el que la abre. */
   protected chooseFromList(number: number): void {
     this.selected.set(number);
     this.stopAutoplay();
-    this.listOpen.set(false);
+    this.closeList();
   }
 }

@@ -151,6 +151,16 @@ describe('HomeTable', () => {
 
       expect(fixture.componentInstance.selected()).toBeNull();
     });
+
+    it('un clic tampoco: ni elige la pieza ni avisa', async () => {
+      await mount();
+      piece(4).dispatchEvent(new MouseEvent('click'));
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.selected()).toBeNull();
+      expect(fixture.componentInstance.activated).toEqual([]);
+      expect(piece(4).classList.contains('selected')).toBe(false);
+    });
   });
 
   it('la vista queda en el atributo del anfitrión, para agrandar las piezas en 3D', async () => {

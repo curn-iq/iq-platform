@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { REDUCED_MOTION_QUERY, mediaQuery } from '../../media-query';
+import { tabIndexAfterEvent } from './tab-keys';
 
 /** Una pestaña: cada una es un enlace, así que la URL dice cuál está abierta. */
 export interface TabItem {
@@ -83,7 +84,7 @@ export class Tabs {
   }
 
   protected select(event: KeyboardEvent, index: number): void {
-    const target = tabIndexAfterKey(index, event.key, this.tabs().length);
+    const target = tabIndexAfterEvent(index, event, this.tabs().length);
     if (target === null) return;
     event.preventDefault();
     // El enlace es el mismo elemento antes y después de navegar: el foco puede pasar ya
@@ -107,24 +108,5 @@ export class Tabs {
       // Se deja pintar la primera posición sin transición antes de activarla
       afterNextRender(() => this.lineReady.set(true), { injector: this.injector });
     }
-  }
-}
-
-/**
- * La pestaña a la que lleva una tecla desde la de `index`: Derecha e Izquierda dan
- * la vuelta, Inicio y Fin van a los extremos. Con cualquier otra tecla, `null`.
- */
-export function tabIndexAfterKey(index: number, key: string, count: number): number | null {
-  switch (key) {
-    case 'ArrowRight':
-      return (index + 1) % count;
-    case 'ArrowLeft':
-      return (index + count - 1) % count;
-    case 'Home':
-      return 0;
-    case 'End':
-      return count - 1;
-    default:
-      return null;
   }
 }

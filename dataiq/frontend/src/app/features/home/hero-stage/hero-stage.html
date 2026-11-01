@@ -1,4 +1,12 @@
-<div class="stage" [class.scanning]="scanning()" (mouseenter)="pause()" (mouseleave)="resume()">
+<div
+  class="stage"
+  [class.scanning]="scanning()"
+  (pointerenter)="onPointerEnter($event)"
+  (pointerleave)="onPointerLeave()"
+  (focusin)="onFocusIn()"
+  (focusout)="onFocusOut($event)"
+  (keydown.escape)="onEscape()"
+>
   <div class="selector" role="tablist" aria-label="Ver la mesa como">
     @for (tab of tabs; track tab.view; let index = $index) {
       <button
@@ -84,7 +92,8 @@
     (listToggled)="toggleList()"
   />
 
-  <p class="status" aria-live="polite">
+  <!-- Solo se anuncia lo que eligió la persona, no cada cambio automático -->
+  <p class="status" [attr.aria-live]="autoplay() ? 'off' : 'polite'">
     @switch (view()) {
       @case ('reference') {
         <span class="state">

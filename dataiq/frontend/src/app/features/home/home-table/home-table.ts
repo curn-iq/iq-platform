@@ -254,7 +254,9 @@ export class HomeTable {
     if (this.interactive()) this.selected.set(number);
   }
 
+  /** Un clic, Enter o Espacio en una pieza. La mesa decorativa no reacciona a nada. */
   protected activate(number: number): void {
+    if (!this.interactive()) return;
     this.selected.set(number);
     this.activated.emit(number);
   }

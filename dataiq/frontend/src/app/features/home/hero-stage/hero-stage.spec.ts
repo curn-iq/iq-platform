@@ -100,14 +100,61 @@ describe('HeroStage', () => {
       await mount();
       const stage = root().querySelector('.stage')!;
 
-      stage.dispatchEvent(new MouseEvent('mouseenter'));
+      stage.dispatchEvent(new MouseEvent('pointerenter'));
       await tick(CYCLE_MS * 2);
       expect(view()).toBe('reference');
       expect(root().querySelector('.progress')!.classList.contains('paused')).toBe(true);
 
-      stage.dispatchEvent(new MouseEvent('mouseleave'));
+      stage.dispatchEvent(new MouseEvent('pointerleave'));
       await tick(CYCLE_MS);
       expect(view()).toBe('3d');
+    });
+
+    it('tocar con el dedo no lo pausa', async () => {
+      await mount();
+      const stage = root().querySelector('.stage')!;
+
+      stage.dispatchEvent(Object.assign(new MouseEvent('pointerenter'), { pointerType: 'touch' }));
+      await tick(CYCLE_MS);
+
+      expect(view()).toBe('3d');
+    });
+
+    it('se pausa mientras el foco está dentro, aunque pase de un control a otro', async () => {
+      await mount();
+      const stage = root().querySelector('.stage')!;
+
+      tab(0).dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      tab(0).dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: piece(1) }));
+      await tick(CYCLE_MS * 2);
+      expect(view()).toBe('reference');
+
+      stage.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }));
+      await tick(CYCLE_MS);
+      expect(view()).toBe('3d');
+    });
+
+    it('con el foco dentro, sacar el puntero no lo reanuda', async () => {
+      await mount();
+      const stage = root().querySelector('.stage')!;
+
+      stage.dispatchEvent(new MouseEvent('pointerenter'));
+      tab(0).dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      stage.dispatchEvent(new MouseEvent('pointerleave'));
+      await tick(CYCLE_MS * 2);
+
+      expect(view()).toBe('reference');
+    });
+
+    it('la línea de estado no se anuncia mientras cambia sola, y sí al elegir', async () => {
+      await mount();
+      const status = () => root().querySelector('.status')!.getAttribute('aria-live');
+      expect(status()).toBe('off');
+
+      tab(1).click();
+      await settle();
+
+      expect(status()).toBe('polite');
     });
 
     it('al interactuar se detiene para siempre', async () => {
@@ -126,8 +173,8 @@ describe('HeroStage', () => {
       tab(1).click();
       await settle();
 
-      stage.dispatchEvent(new MouseEvent('mouseenter'));
-      stage.dispatchEvent(new MouseEvent('mouseleave'));
+      stage.dispatchEvent(new MouseEvent('pointerenter'));
+      stage.dispatchEvent(new MouseEvent('pointerleave'));
       await tick(CYCLE_MS * 2);
       expect(view()).toBe('3d');
     });
@@ -164,9 +211,33 @@ describe('HeroStage', () => {
       expect(view()).toBe('reference');
     });
 
+    it('Inicio y Fin van a las pestañas de los extremos', async () => {
+      await mount();
+      tab(0).dispatchEvent(new KeyboardEvent('keydown', { key: 'End', cancelable: true }));
+      await settle();
+      expect(view()).toBe('camera');
+
+      tab(2).dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', cancelable: true }));
+      await settle();
+      expect(view()).toBe('reference');
+    });
+
     it('otras teclas no hacen nada', async () => {
       await mount();
       const event = new KeyboardEvent('keydown', { key: 'a', cancelable: true });
+      tab(0).dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(view()).toBe('reference');
+    });
+
+    it('Alt+Izquierda es Atrás del navegador: no cambia de vista', async () => {
+      await mount();
+      const event = new KeyboardEvent('keydown', {
+        key: 'ArrowLeft',
+        altKey: true,
+        cancelable: true,
+      });
       tab(0).dispatchEvent(event);
 
       expect(event.defaultPrevented).toBe(false);
@@ -314,6 +385,27 @@ describe('HeroStage', () => {
       expect(list()).toBeNull();
       expect(piece(8).getAttribute('aria-pressed')).toBe('true');
       expect(rail().querySelector('.reference .number')!.textContent!.trim()).toBe('8');
+    });
+
+    it('elegir una pieza devuelve el foco al botón que abre la lista', async () => {
+      showAll().click();
+      await settle();
+      list()!.querySelectorAll('li button')[7].dispatchEvent(new MouseEvent('click'));
+      await settle();
+
+      expect(document.activeElement).toBe(showAll());
+    });
+
+    it('Escape la cierra y devuelve el foco al botón que la abre', async () => {
+      showAll().click();
+      await settle();
+      list()!
+        .querySelector('.close')!
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await settle();
+
+      expect(list()).toBeNull();
+      expect(document.activeElement).toBe(showAll());
     });
 
     it('«Cerrar la lista» la cierra y devuelve el foco al botón que la abre', async () => {
