@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from './api-base-url';
+import { QUIET_ERRORS } from './http-context';
 import type { Account, Credentials, Registration } from './api/models';
 
 /**
@@ -14,9 +15,13 @@ export class AuthRepository {
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL);
 
-  /** La cuenta de quien hace la petición. Responde 401 si no hay sesión. */
-  me(): Observable<Account> {
-    return this.http.get<Account>(`${this.base}/auth/me`);
+  /**
+   * La cuenta de quien hace la petición. Responde 401 si no hay sesión. Con `quiet`, si falla
+   * no se avisa el error (es un reintento automático: ver `QUIET_ERRORS`).
+   */
+  me(options: { quiet?: boolean } = {}): Observable<Account> {
+    const context = new HttpContext().set(QUIET_ERRORS, options.quiet === true);
+    return this.http.get<Account>(`${this.base}/auth/me`, { context });
   }
 
   /** Deja la cookie de sesión y devuelve la cuenta. */

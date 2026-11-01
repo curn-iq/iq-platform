@@ -1,8 +1,9 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { QUIET_ERRORS } from '../../data/http-context';
 import { NoticeService } from '../notice/notice.service';
 import { LOGIN_PATH } from '../session/login-path';
 import { SessionService } from '../session/session.service';
@@ -245,6 +246,43 @@ describe('errorInterceptor', () => {
       expect(messages()).toEqual([
         ['El servidor no pudo responder. Intentar de nuevo en un momento.'],
       ]);
+    });
+  });
+
+  describe('un fallo de comunicación no cierra la sesión', () => {
+    it.each([
+      [0, 'sin conexión'],
+      [500, 'un error del servidor'],
+      [503, 'un servidor que arranca en frío'],
+      [504, 'un tiempo agotado'],
+    ])('con %i (%s) la cuenta sigue y no se lleva a ingresar', (status) => {
+      const session = signIn();
+
+      fail('/api/dataiq/versions', status, null);
+
+      expect(session.isLoggedIn()).toBe(true);
+      expect(router.url).toBe('/tecnicas?especialidad=urologia');
+    });
+  });
+
+  describe('peticiones en silencio', () => {
+    it('una petición marcada con QUIET_ERRORS no avisa del fallo, y el error llega a quien llamó', () => {
+      let seen: HttpErrorResponse | undefined;
+      client
+        .get('/api/dataiq/auth/me', { context: new HttpContext().set(QUIET_ERRORS, true) })
+        .subscribe({ error: (e: HttpErrorResponse) => (seen = e) });
+      http
+        .expectOne('/api/dataiq/auth/me')
+        .flush(null, { status: 503, statusText: 'Service Unavailable' });
+
+      expect(notices.notices()).toEqual([]);
+      expect(seen?.status).toBe(503);
+    });
+
+    it('sin la marca, el mismo fallo sí avisa', () => {
+      fail('/api/dataiq/auth/me', 503, null);
+
+      expect(messages()).toHaveLength(1);
     });
   });
 

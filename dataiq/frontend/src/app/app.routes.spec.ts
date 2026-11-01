@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { NoticeService } from './core/notice/notice.service';
 import { SessionService } from './core/session/session.service';
 import { provideTitle } from './core/title/title.providers';
 import type { Account } from './data/api/models';
@@ -28,8 +29,6 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/', Home, 'IQ Platform'],
   ['/tecnicas', Catalog, 'Catálogo de técnicas · IQ Platform'],
   [`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`, TechniqueDetail, 'Técnica · IQ Platform'],
-  ['/cuenta/ingresar', AccountEntry, 'Ingresar · IQ Platform'],
-  ['/cuenta/crear', AccountEntry, 'Crear cuenta · IQ Platform'],
   ['/politica-de-datos', Privacy, 'Aviso de privacidad · IQ Platform'],
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
@@ -102,6 +101,31 @@ describe('rutas', () => {
     expect(router.url).toBe(url);
     expect(document.title).toBe(title);
   });
+
+  it.each([
+    ['/cuenta/ingresar', 'Ingresar · IQ Platform'],
+    ['/cuenta/crear', 'Crear cuenta · IQ Platform'],
+  ])('%s abre la pantalla de cuenta a un visitante', async (url, title) => {
+    await loadSession(null);
+
+    const harness = await RouterTestingHarness.create();
+    const component = await harness.navigateByUrl(url);
+
+    expect(component).toBeInstanceOf(AccountEntry);
+    expect(document.title).toBe(title);
+  });
+
+  it.each(['/cuenta/ingresar', '/cuenta/crear'])(
+    'quien ya tiene sesión no ve %s: va a donde iba, sin avisos',
+    async (url) => {
+      await loadSession('user');
+
+      await router.navigateByUrl(`${url}?volver=%2Ftecnicas%2F${TECHNIQUE_ID}%2Finstrumental`);
+
+      expect(router.url).toBe(`/tecnicas/${TECHNIQUE_ID}/instrumental`);
+      expect(TestBed.inject(NoticeService).notices()).toEqual([]);
+    },
+  );
 
   it('ingresar y crear cuenta son la misma pantalla: pasar de una a otra no la vuelve a crear', async () => {
     await loadSession(null);

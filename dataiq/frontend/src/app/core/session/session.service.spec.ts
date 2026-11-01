@@ -1,6 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import type { Account } from '../../data/api/models';
+import { QUIET_ERRORS } from '../../data/http-context';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { SessionService } from './session.service';
@@ -253,6 +254,245 @@ describe('SessionService', () => {
       expect(session.hasRole('contributor')).toBe(true);
       expect(session.hasRole('reviewer')).toBe(true);
       expect(session.hasRole('admin')).toBe(false);
+    });
+  });
+
+  describe('status', () => {
+    it('antes de saber nada es «loading»', () => {
+      expect(session.status()).toBe('loading');
+    });
+
+    it('con una cuenta es «authenticated»', async () => {
+      const loading = session.load();
+      me().flush(account());
+      await loading;
+
+      expect(session.status()).toBe('authenticated');
+    });
+
+    it('un 401 es «unauthenticated»: la sesión no es válida', async () => {
+      const loading = session.load();
+      me().flush(null, unauthorized);
+      await loading;
+
+      expect(session.status()).toBe('unauthenticated');
+    });
+
+    it.each([
+      ['un 5xx', { status: 503, statusText: 'Service Unavailable' }],
+      ['un tiempo agotado de la puerta de enlace', { status: 504, statusText: 'Gateway Timeout' }],
+    ])('%s es «verification_unavailable», no «unauthenticated»', async (_name, response) => {
+      const loading = session.load();
+      me().flush(null, response);
+      await loading;
+
+      expect(session.status()).toBe('verification_unavailable');
+    });
+
+    it('sin conexión es «verification_unavailable»', async () => {
+      const loading = session.load();
+      me().error(new ProgressEvent('error'));
+      await loading;
+
+      expect(session.status()).toBe('verification_unavailable');
+    });
+
+    it('al volver a preguntar pasa por «loading» y termina en lo que respondió la API', async () => {
+      const failed = session.load();
+      me().flush(null, { status: 503, statusText: 'Service Unavailable' });
+      await failed;
+
+      const again = session.load();
+      expect(session.status()).toBe('loading');
+      me().flush(account());
+      await again;
+
+      expect(session.status()).toBe('authenticated');
+    });
+  });
+
+  describe('si la API no responde nunca', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('pasados 15 s se da por no disponible y se cancela la petición', async () => {
+      const loading = session.load();
+      const request = me();
+
+      await vi.advanceTimersByTimeAsync(14_999);
+      expect(session.status()).toBe('loading');
+
+      await vi.advanceTimersByTimeAsync(1);
+      await loading;
+
+      expect(request.cancelled).toBe(true);
+      expect(session.status()).toBe('verification_unavailable');
+    });
+  });
+
+  describe('verified', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    const unavailable = { status: 503, statusText: 'Service Unavailable' };
+    /** Deja correr lo que queda pendiente tras responder una petición. */
+    const settle = () => vi.advanceTimersByTimeAsync(0);
+
+    function watch() {
+      const seen = { emitted: 0, completed: false };
+      const subscription = session.verified().subscribe({
+        next: () => seen.emitted++,
+        complete: () => (seen.completed = true),
+      });
+      return { seen, subscription };
+    }
+
+    it('con una cuenta emite una vez y completa', async () => {
+      const { seen } = watch();
+      me().flush(account());
+      await settle();
+
+      expect(seen).toEqual({ emitted: 1, completed: true });
+      expect(session.isLoggedIn()).toBe(true);
+    });
+
+    it('un 401 también es una respuesta: emite, y no hay cuenta', async () => {
+      const { seen } = watch();
+      me().flush(null, unauthorized);
+      await settle();
+
+      expect(seen).toEqual({ emitted: 1, completed: true });
+      expect(session.status()).toBe('unauthenticated');
+    });
+
+    it('mientras la primera consulta va en camino todavía no hay aviso de indisponibilidad', () => {
+      watch();
+
+      expect(session.status()).toBe('loading');
+      expect(session.verificationBlocked()).toBe(false);
+      me().flush(account());
+    });
+
+    it('si la API no responde, no emite: espera, y avisa que la comprobación está detenida', async () => {
+      const { seen } = watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      expect(seen.emitted).toBe(0);
+      expect(session.verificationBlocked()).toBe(true);
+    });
+
+    it('vuelve a preguntar sola, en silencio y cada vez más despacio, hasta que responde', async () => {
+      const { seen } = watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      // 5 s, 10 s y 20 s después de cada fallo
+      for (const wait of [5_000, 10_000, 20_000]) {
+        await vi.advanceTimersByTimeAsync(wait - 1);
+        http.expectNone(`${TEST_API_BASE}/auth/me`);
+        await vi.advanceTimersByTimeAsync(1);
+        const retry = me();
+        expect(retry.request.context.get(QUIET_ERRORS)).toBe(true);
+        retry.flush(null, unavailable);
+        await settle();
+      }
+      expect(seen.emitted).toBe(0);
+
+      await vi.advanceTimersByTimeAsync(30_000);
+      me().flush(account('reviewer'));
+      await settle();
+
+      expect(seen).toEqual({ emitted: 1, completed: true });
+      expect(session.role()).toBe('reviewer');
+      expect(session.verificationBlocked()).toBe(false);
+    });
+
+    it('la espera no pasa de 30 s', async () => {
+      watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      for (const wait of [5_000, 10_000, 20_000, 30_000, 30_000]) {
+        await vi.advanceTimersByTimeAsync(wait);
+        me().flush(null, unavailable);
+        await settle();
+      }
+    });
+
+    it('«retry» vuelve a preguntar al momento, con aviso si falla (lo pidió la persona)', async () => {
+      watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      session.retry();
+      const request = me();
+
+      expect(request.request.context.get(QUIET_ERRORS)).toBe(false);
+      expect(session.status()).toBe('loading');
+      request.flush(account());
+      await settle();
+      expect(session.isLoggedIn()).toBe(true);
+    });
+
+    it('al volver la conexión («online») vuelve a preguntar sin esperar', async () => {
+      const { seen } = watch();
+      me().error(new ProgressEvent('error'));
+      await settle();
+
+      window.dispatchEvent(new Event('online'));
+      me().flush(account());
+      await settle();
+
+      expect(seen.emitted).toBe(1);
+    });
+
+    it('si se pide «retry» mientras ya pregunta, no se duplica la petición', async () => {
+      watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      session.retry();
+      session.retry();
+
+      expect(http.match(`${TEST_API_BASE}/auth/me`)).toHaveLength(1);
+    });
+
+    it('si se cancela (otra navegación), deja de preguntar y quita el aviso', async () => {
+      const { subscription } = watch();
+      me().flush(null, unavailable);
+      await settle();
+      expect(session.verificationBlocked()).toBe(true);
+
+      subscription.unsubscribe();
+      await vi.advanceTimersByTimeAsync(60_000);
+
+      http.expectNone(`${TEST_API_BASE}/auth/me`);
+      expect(session.verificationBlocked()).toBe(false);
+    });
+
+    it('con varias rutas esperando, el aviso sigue hasta que se va la última', async () => {
+      const first = watch();
+      const second = watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      first.subscription.unsubscribe();
+      expect(session.verificationBlocked()).toBe(true);
+      second.subscription.unsubscribe();
+      expect(session.verificationBlocked()).toBe(false);
+    });
+
+    it('ingresar mientras espera cuenta como respuesta', async () => {
+      const { seen } = watch();
+      me().flush(null, unavailable);
+      await settle();
+
+      session.login(credentials).subscribe();
+      http.expectOne(`${TEST_API_BASE}/auth/login`).flush(account());
+      await settle();
+
+      expect(seen.emitted).toBe(1);
     });
   });
 });

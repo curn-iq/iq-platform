@@ -1,5 +1,5 @@
 import { CanMatchFn, ResolveFn, Routes } from '@angular/router';
-import { roleGuard } from './core/session/session.guards';
+import { guestGuard, roleGuard } from './core/session/session.guards';
 import { accountModeOf } from './domain/account-entry';
 import { DEFAULT_TECHNIQUE_TAB } from './domain/technique-tabs';
 
@@ -38,6 +38,7 @@ export const routes: Routes = [
     path: 'cuenta/:modo',
     title: accountTitle,
     canMatch: [accountMatch],
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/account/account').then((m) => m.AccountEntry),
   },
   {

@@ -1,5 +1,8 @@
 <app-navbar />
 <main>
+  @if (session.verificationBlocked()) {
+    <app-session-unavailable [busy]="session.status() === 'loading'" (retry)="session.retry()" />
+  }
   <router-outlet />
 </main>
 <app-footer />

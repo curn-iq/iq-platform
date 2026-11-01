@@ -14,3 +14,17 @@ export function safeReturnUrl(value: string | null | undefined): string | undefi
   if (value.startsWith('//') || /[\u0000-\u001f\u007f\\]/.test(value)) return undefined;
   return value;
 }
+
+/** A dónde se va tras ingresar si no se venía de otra parte: el catálogo. */
+export const DEFAULT_RETURN_PATH = '/tecnicas';
+
+/**
+ * A dónde lleva `?volver=` a quien ya tiene sesión: la ruta si es de esta app (ver
+ * `safeReturnUrl`), y si no, o si es de la cuenta (que lo devolvería a ella en círculos), el
+ * catálogo.
+ */
+export function returnTarget(value: string | null | undefined): string {
+  const url = safeReturnUrl(value);
+  const inAccount = url !== undefined && /^\/cuenta(?:[/?#]|$)/.test(url);
+  return url === undefined || inAccount ? DEFAULT_RETURN_PATH : url;
+}

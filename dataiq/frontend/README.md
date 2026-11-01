@@ -55,7 +55,7 @@ src/
     │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
     │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
-    │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   ├── session/        SessionService (la cuenta y su estado), sessionGuard, roleGuard(min), guestGuard
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
@@ -70,7 +70,7 @@ src/
     │   │                   notice stack (los avisos: error y confirmación)
     │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
-    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
+    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie, aviso de sesión sin comprobar
     └── features/
         ├── home/  catalog/  technique/  account/  privacy/
         └── management/
@@ -285,7 +285,7 @@ relativas a `/api/dataiq`.
 | `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
 | `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
-| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
+| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
 | `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
 | `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
@@ -449,15 +449,47 @@ vuelve a preguntar; lo llaman los guards y `provideSession()`, al cambiar de
 página. Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una
 respuesta tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
 
+**Estado** (`status()`, decidido por Juan el 2026-11-01, Resuelto 42 de la
+[checklist](../docs/checklist-frontend.md)): `loading` (se está comprobando),
+`authenticated`, `unauthenticated` (solo el 401: el JWT dura 2 horas y no se renueva, así
+que no hay nada que intentar antes) y `verification_unavailable` (sin conexión, un 5xx
+o un tiempo agotado). Esto último **no** dice que la sesión haya vencido: nunca cierra la
+sesión ni manda a ingresar. `GET /auth/me` espera 15 s como máximo (`timeout`) y pasa a
+no disponible, para que una API colgada no deje la app esperando.
+
+**Comprobación con espera** (`verified()`, la que usan los guards): emite cuando ya se sabe
+(sesión o 401). Si la API no responde **no emite**: la navegación queda pendiente con su
+URL (nada de la pantalla protegida se crea ni se pide), y `verificationBlocked()` pasa a
+`true`, con lo que `App` muestra el aviso «No se pudo comprobar la sesión» (ver abajo).
+Mientras espera, vuelve a preguntar sola **en silencio** (`QUIET_ERRORS`: un reintento
+automático no repite el aviso de error) a los 5, 10, 20 y 30 s (y cada 30 s después), al
+volver la conexión (`online`) y cuando se pide con `retry()` («Reintentar», que sí avisa si
+falla). Al responder, la navegación sigue a la ruta que se había pedido; si otra
+navegación la cancela, deja de preguntar y el aviso se va. Quien ya tiene su información en
+pantalla no la pierde: la espera es una navegación pendiente, no destruye lo que se ve.
+
 - `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
   la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
   interceptor ante un 401).
 - `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
-  (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
+  (`verified()`). Al visitante (401) lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
   tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
   aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
-  403). Es solo para
-  no mostrar pantallas que no se pueden usar: la API decide en cada petición.
+  403). Es solo para no mostrar pantallas que no se pueden usar: la API decide en cada
+  petición, y el rol que guarda el navegador nunca da un permiso por sí solo.
+- `guestGuard`, en la ruta de la cuenta (`/cuenta/ingresar`, `/cuenta/crear`): a quien ya
+  tiene sesión lo lleva a donde iba (`?volver=`, por `returnTarget()`; nunca a otra pantalla
+  de la cuenta, que lo devolvería en círculos) o al catálogo, **sin ningún aviso**: decirle a
+  una URL que ya hay una sesión sería dar información de más. Quien quiera crear otra cuenta
+  cierra antes la sesión desde «Mi cuenta». No espera la comprobación: si no se sabe,
+  esa pantalla es adonde va quien no tiene sesión.
+- **Aviso de sesión sin comprobar** (`shell/session-unavailable/`): lo muestra `App` arriba de
+  la ruta mientras `verificationBlocked()`, así ninguna pantalla lo resuelve por su cuenta. Dice
+  que no se pudo comprobar la sesión y que la página se abre en cuanto responda el servidor, y
+  ofrece «Reintentar» (`aria-busy` mientras comprueba). Los textos son una propuesta de la
+  casilla 3 de la fase 5, por confirmar con Juan.
+- Un `403` es acceso denegado: avisa y conserva la sesión. Un 5xx, la falta de conexión o
+  un tiempo agotado tampoco la cierran (lo prueban el interceptor y el servicio).
 - `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
   que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
   `//sitio`, `https://…`, `\` ni caracteres de control).

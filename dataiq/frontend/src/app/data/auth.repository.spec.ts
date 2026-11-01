@@ -1,6 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { AuthRepository } from './auth.repository';
+import { QUIET_ERRORS } from './http-context';
 import { Account } from './api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from './testing';
 
@@ -26,6 +27,18 @@ describe('AuthRepository', () => {
     expect(request.request.method).toBe('GET');
     request.flush(account);
     expect(result).toEqual(account);
+  });
+
+  it('me puede pedirse en silencio: quien lo marca no quiere un aviso si falla', () => {
+    repository.me({ quiet: true }).subscribe();
+    const quiet = http.expectOne(`${TEST_API_BASE}/auth/me`);
+    expect(quiet.request.context.get(QUIET_ERRORS)).toBe(true);
+    quiet.flush(account);
+
+    repository.me().subscribe();
+    const loud = http.expectOne(`${TEST_API_BASE}/auth/me`);
+    expect(loud.request.context.get(QUIET_ERRORS)).toBe(false);
+    loud.flush(account);
   });
 
   it('login manda el correo y la contraseña y devuelve la cuenta', () => {
