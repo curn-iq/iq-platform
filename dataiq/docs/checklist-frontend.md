@@ -69,7 +69,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 ### Fase 4 — Páginas públicas
 
 - [x] Inicio (`inicio.html`), con las secciones a las que enlazan la barra y el pie (`id` `camino`, `investigacion`, `quien` y `preguntas`), cada una con `scroll-margin-top: var(--size-navbar)` para no quedar bajo la barra fija
-- [ ] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
+- [x] Catálogo de técnicas: filtro por especialidad (`GET /specialties`), buscador sin tildes con resaltado, lista agrupada, estado vacío
 - [ ] Detalle de técnica: columna de técnicas, pestañas Datos clínicos / Instrumental / Mesa de Mayo / Mesa de reserva; una técnica que no existe (404) muestra «No encontrada»
 - [ ] Foco compartido entre la mesa y su leyenda: hoy cada componente recuerda solo su propio foco, así que si una pieza tiene el foco y el puntero pasa por la leyenda y se va, la pieza se suelta (y al revés). La página, que tiene los dos, guarda qué número tiene el foco y se lo pasa a ambos, con su prueba (hallazgo de la revisión de la fase 3)
 - [ ] Datos clínicos: «Para qué sirve» es `description`, sin la marca «demostración» (Resuelto 23); el resto de campos clínicos de `GET /techniques/{id}`
@@ -162,6 +162,7 @@ Entre la documentación, los mockups y la API.
 | 29 | El editor tomaba cada sutura como plano + un texto; la API pide `name`, `gauge`, `needle_type` y `usage` (la carga inicial pone el plano en `usage`) | Una fila por plano con sutura, calibre y aguja. `data/` junta en una sola sutura los planos que comparten esos tres datos, con los planos en `usage` separados por «; » (como la carga inicial: la API rechaza una sutura repetida), y al leer los vuelve a separar (decidido por Juan el 2026-10-29) |
 | 30 | El registro exige aceptar la política de tratamiento de datos, pero su texto no estaba en el repo; tenía que declarar el registro anónimo del chat de SIMIQ3D (#29) | El aviso de privacidad, en [`docs/privacidad.md`](../../docs/privacidad.md) (versión 1.0, la de `POLICY_VERSION`): la responsable es la CURN, con su política (Acuerdo 02 de 2017); solo mayores de 18; declara el registro del chat y dónde se guardan los datos (#32, decidido por Mauricio el 2026-10-29) |
 | 31 | La portada y las ventanas del inicio dibujan la mesa de Tiroidectomía con su leyenda, pero la API solo entrega las mesas con cuenta (#27); y «Conocer DataIQ / SIMIQ3D / SIVRI», «Ver la investigación» e «Ir a la ayuda» llevaban a «#» | La portada y las ventanas dibujan una **mesa de Mayo de ejemplo**, que no es de ninguna técnica del catálogo y se marca «demostración» (`features/home/demo-table.ts`). «Conocer DataIQ» va a `/tecnicas`, «Conocer SIMIQ3D» a `/simiq3d/` y «Conocer SIVRI» a `/sivri/` (navegación completa, #17). «Ver la investigación» e «Ir a la ayuda» no se muestran: no hay esas páginas y llevarían a la misma sección en que están (decidido por Juan el 2026-10-31) |
+| 32 | El estado vacío del catálogo del mockup dice «Prueba con otra palabra…», en segunda persona; `PRODUCT.md` pide voz impersonal | «Probar con otra palabra o revisar la especialidad elegida.» (propuesto al hacer el catálogo, el 2026-10-31; por confirmar con Juan) |
 
 ### Por confirmar
 

@@ -59,13 +59,13 @@ src/
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad
+    │                       por especialidad, búsqueda sin tildes
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
+    │   ├── ui/             button, arrow link, search field, avatar, brand mark, not-found, tabs con raya, segmented control,
     │   │                   status pill, progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
@@ -216,6 +216,15 @@ El inicio (`/`, `inicio.html`) son seis secciones, cada una un componente con su
 - **Carril de herramientas** (`products`): en escritorio la sección queda fija y el carril se traslada con el scroll (`rail-scroll.ts`: avance, trazos y traslado); en celular y con movimiento reducido es un desplazamiento horizontal con `scroll-snap`. «Conocer DataIQ» va a `/tecnicas` por el router; «Conocer SIMIQ3D» y «Conocer SIVRI», a `/simiq3d/` y `/sivri/` con navegación completa.
 - **Técnicas por especialidad**: `HomeCatalog` (provisto en `Home`) pide `GET /techniques` y `GET /specialties` una sola vez para esta sección y para la ventana de DataIQ, y las agrupa con `groupBySpecialty()` (`domain/technique-groups.ts`). Cada técnica enlaza a `/tecnicas/:id`.
 - **Espiral de la investigación** (`research`): la geometría y el tiempo están en `spiral.ts` (puro, con pruebas); el componente solo pinta cada cuadro. Corre mientras se ve (`IntersectionObserver`); con movimiento reducido se queda en su dibujo completo.
+
+### Catálogo (`features/catalog/`)
+
+El catálogo (`/tecnicas`, `catalogo.html`) pide `GET /techniques` y `GET /specialties` y los muestra con el filtro de especialidades a la izquierda («Todas» y las de la API, con una placa que se desliza a la elegida) y, a la derecha, el buscador y la lista agrupada. Lo puro vive en `domain/`: `groupBySpecialty()` (`technique-groups.ts`) agrupa, y `filterGroups()` y `highlight()` (`technique-search.ts`) filtran y resaltan sin tildes ni mayúsculas; `plain()` quita las tildes **letra por letra**, así que un índice del texto plano vale en el original. Buscar el nombre de una especialidad trae todas sus técnicas.
+
+- **La especialidad elegida va en la URL** (`?especialidad=<id>`), por eso la barra y el pie llegan al catálogo ya filtrado. `selectedId` es un `linkedSignal` de la URL: la sigue cuando cambia y, al elegir, se pone al momento y la URL la alcanza (`replaceUrl`, sin sumar entradas al historial). Un `id` que no existe es como no haber elegido. La búsqueda no va en la URL.
+- **Al buscar o filtrar** las filas que siguen a la vista se deslizan a su sitio y las nuevas entran subiendo (FLIP, con la Web Animations API). Con movimiento reducido no se anima.
+- **Estados:** mientras llegan las dos listas dice «Cargando…»; si no hay coincidencias, el estado vacío nombra la búsqueda y ofrece «Ver todas las técnicas»; si la API falla no dice «no hay técnicas», porque no se sabe.
+- Cada técnica enlaza a `/tecnicas/:id` (el detalle, casilla siguiente, completa la ruta con su pestaña).
 
 ### Glosario (interfaz → código y API)
 

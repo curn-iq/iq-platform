@@ -1,0 +1,102 @@
+<section id="catalogo" aria-labelledby="catalog-title">
+  <div class="head">
+    <div class="titles">
+      <h1 id="catalog-title">Técnicas</h1>
+      <p class="text">Cada técnica, con su instrumental y su mesa.</p>
+    </div>
+    <div class="search" role="search">
+      <app-search-field
+        label="Buscar una técnica o especialidad"
+        placeholder="Buscar técnica o especialidad"
+        [value]="query()"
+        (valueChange)="search($event)"
+      />
+    </div>
+  </div>
+  <div class="body">
+    <nav #filter class="filter" aria-label="Especialidad">
+      <span
+        class="plate"
+        aria-hidden="true"
+        [class.ready]="plateReady()"
+        [style.height.px]="plateHeight()"
+        [style.transform]="'translateY(' + plateTop() + 'px)'"
+      ></span>
+      <ul>
+        <li>
+          <button
+            #filterButton
+            type="button"
+            [attr.aria-pressed]="selectedIndex() === 0"
+            (click)="chooseSpecialty(null)"
+          >
+            <span>Todas</span>
+            <ng-container *ngTemplateOutlet="arrow" />
+          </button>
+        </li>
+        @for (specialty of specialties(); track specialty.id; let index = $index) {
+          <li>
+            <button
+              #filterButton
+              type="button"
+              [attr.aria-pressed]="selectedIndex() === index + 1"
+              (click)="chooseSpecialty(specialty.id)"
+            >
+              <span>{{ specialty.name }}</span>
+              <ng-container *ngTemplateOutlet="arrow" />
+            </button>
+          </li>
+        }
+      </ul>
+    </nav>
+    <div class="list" aria-live="polite">
+      @for (group of groups(); track group.specialty) {
+        <section class="group">
+          <h2>{{ group.specialty }}</h2>
+          <ul>
+            @for (technique of group.techniques; track technique.id) {
+              <li #row [attr.data-id]="technique.id">
+                <a class="technique" [routerLink]="['/tecnicas', technique.id]">
+                  <span>
+                    @for (segment of technique.segments; track $index) {
+                      @if (segment.match) {
+                        <mark>{{ segment.text }}</mark>
+                      } @else {
+                        <span>{{ segment.text }}</span>
+                      }
+                    }
+                  </span>
+                  <ng-container *ngTemplateOutlet="arrow" />
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+      @if (loaded() && groups().length === 0) {
+        <div class="empty">
+          <h2>{{ emptyTitle() }}</h2>
+          <p>Probar con otra palabra o revisar la especialidad elegida.</p>
+          <button app-button variant="soft" type="button" (click)="showAll()">
+            Ver todas las técnicas
+          </button>
+        </div>
+      } @else if (loading()) {
+        <p class="loading">Cargando…</p>
+      }
+    </div>
+  </div>
+</section>
+
+<ng-template #arrow>
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+    <path
+      d="M3 8h9M8.5 4L12.5 8l-4 4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</ng-template>
