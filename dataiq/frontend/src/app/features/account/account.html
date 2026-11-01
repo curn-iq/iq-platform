@@ -29,7 +29,7 @@
 
       <div role="tabpanel" [id]="'panel-' + mode()" [attr.aria-labelledby]="'tab-' + mode()">
         @if (mode() === 'login') {
-          <form novalidate (submit)="onSubmit($event)">
+          <form novalidate (submit)="onLogin($event)">
             <app-text-field
               label="Correo"
               type="email"
@@ -44,7 +44,9 @@
               revealable
               [formField]="loginForm.password"
             />
-            <button app-button type="submit">Ingresar</button>
+            <button app-button type="submit" [attr.aria-busy]="loginForm().submitting()">
+              Ingresar
+            </button>
           </form>
         } @else {
           <form novalidate (submit)="onRegister($event)">

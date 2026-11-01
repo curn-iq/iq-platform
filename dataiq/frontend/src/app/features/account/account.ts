@@ -31,6 +31,7 @@ import { Button } from '../../shared/ui/button/button';
 import { CheckboxField } from '../../shared/ui/checkbox-field/checkbox-field';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TextField } from '../../shared/ui/text-field/text-field';
+import { emptyLogin, loginSchema } from './login-form';
 import { LockedTechnique } from './locked-technique';
 import { LoginIllustration } from './login-illustration';
 import { RegisterIllustration } from './register-illustration';
@@ -90,8 +91,9 @@ interface Layout {
  * **Crear cuenta** valida al enviar (un mensaje bajo cada campo, sin enviar nada si algo falla),
  * manda el registro con la aceptación del aviso de privacidad (`accepts_policy`), ingresa sola con
  * las mismas credenciales (la API crea la cuenta pero no inicia sesión) y va a `?volver=` o al
- * catálogo. El ingreso llega en la casilla siguiente de la fase 5
- * (`dataiq/docs/checklist-frontend.md`): su formulario todavía no envía.
+ * catálogo. **Ingresar** valida igual, manda `POST /auth/login` y va al mismo sitio; con una
+ * contraseña incorrecta dice lo que responde la API («Correo o contraseña incorrectos», que no
+ * delata si el correo existe), deja el correo, vacía la contraseña y le da el foco.
  */
 @Component({
   selector: 'app-account',
@@ -151,7 +153,7 @@ export class AccountEntry {
   private readonly hour = new Date().getHours();
   protected readonly greeting = computed(() => greeting(this.mode(), this.hour));
 
-  protected readonly loginForm = form(signal({ email: '', password: '' }));
+  protected readonly loginForm = form(signal(emptyLogin()), loginSchema);
   protected readonly registerForm = form(signal(emptyRegistration()), registrationSchema);
 
   private readonly aside = viewChild.required<ElementRef<HTMLElement>>('aside');
@@ -179,9 +181,34 @@ export class AccountEntry {
     this.layout = this.measure(this.inverted());
   }
 
-  /** Mientras el ingreso no envía, solo evita que el navegador recargue con los datos en la URL. */
-  protected onSubmit(event: Event): void {
+  /** Ingresar: valida, y si todo está bien ingresa y va a donde se iba. Un segundo envío espera. */
+  protected async onLogin(event: Event): Promise<void> {
     event.preventDefault();
+    if (this.loginForm().submitting()) return;
+    await submit(this.loginForm, {
+      action: () => this.signIn(),
+      onInvalid: () => this.loginForm().errorSummary()[0]?.fieldTree?.().focusBoundControl(),
+    });
+  }
+
+  private async signIn(): Promise<void> {
+    const { email, password } = this.loginForm().value();
+    try {
+      await firstValueFrom(this.session.login({ email: email.trim(), password }));
+    } catch (error) {
+      // Solo un 401 es una contraseña incorrecta, y el interceptor lo deja a la pantalla; cualquier
+      // otro fallo (sin conexión, un error del servidor) ya lo avisó el interceptor y se conserva
+      // lo escrito para volver a intentarlo.
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.notices.show('error', describeApiError(401, error.error) ?? []);
+        // El correo se queda; la contraseña, no, y el foco va a ella para escribirla de nuevo
+        this.loginForm().reset({ email, password: '' });
+        this.loginForm.password().focusBoundControl();
+      }
+      return;
+    }
+    this.loginForm().reset(emptyLogin());
+    await this.continueAfterSignIn();
   }
 
   /** Crear cuenta: valida, y si todo está bien crea la cuenta e ingresa. Un segundo envío espera. */
@@ -223,6 +250,11 @@ export class AccountEntry {
       });
       return;
     }
+    await this.continueAfterSignIn();
+  }
+
+  /** Ya hay sesión: a donde se iba (`?volver=`, solo si es de esta app y no de la cuenta) o al catálogo. */
+  private async continueAfterSignIn(): Promise<void> {
     await this.router.navigateByUrl(returnTarget(this.query().get('volver')));
   }
 
