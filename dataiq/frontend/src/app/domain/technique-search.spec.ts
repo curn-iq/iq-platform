@@ -20,6 +20,15 @@ describe('plain', () => {
     expect(plain('Cesárea de Ñandú')).toBe('cesarea de nandu');
     expect(plain('Cesárea de Ñandú').length).toBe('Cesárea de Ñandú'.length);
   });
+
+  it('quita la tilde también si viene aparte de su letra (NFD)', () => {
+    expect(plain('Cirugía')).toBe('cirugia');
+  });
+
+  it('un carácter de dos unidades se conserva y no corre el largo', () => {
+    expect(plain('a😀b')).toBe('a😀b');
+    expect(plain('A😀B').length).toBe('A😀B'.length);
+  });
 });
 
 describe('highlight', () => {
@@ -37,6 +46,20 @@ describe('highlight', () => {
 
   it('conserva las letras originales dentro del tramo resaltado', () => {
     expect(highlight('Cesárea', 'ESAREA')[1]).toEqual({ text: 'esárea', match: true });
+  });
+
+  it('resalta bien un nombre con la tilde aparte (NFD), sin correr el tramo', () => {
+    expect(highlight('Cirugía general', 'general')).toEqual([
+      { text: 'Cirugía ', match: false },
+      { text: 'general', match: true },
+    ]);
+  });
+
+  it('resalta bien lo que va después de un carácter de dos unidades', () => {
+    expect(highlight('😀 Cesárea', 'sarea')).toEqual([
+      { text: '😀 Ce', match: false },
+      { text: 'sárea', match: true },
+    ]);
   });
 
   it('sin coincidencia o sin búsqueda, devuelve el nombre entero', () => {

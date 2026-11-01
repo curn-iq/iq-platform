@@ -2,13 +2,19 @@ import type { TechniqueGroup } from './technique-groups';
 
 /**
  * El texto sin tildes ni mayúsculas, **letra por letra**: el resultado mide lo
- * mismo que el original, así que un índice del uno vale en el otro (para resaltar
- * lo que coincide con la búsqueda sin importar las tildes).
+ * mismo que el texto en NFC, así que un índice del uno vale en el otro (para
+ * resaltar lo que coincide con la búsqueda sin importar las tildes). Primero se
+ * compone: una «í» pegada de un PDF o de macOS puede venir como «i» más su tilde.
  */
 export function plain(text: string): string {
-  return Array.from(text)
-    .map((letter) => letter.normalize('NFD')[0].toLowerCase()[0])
-    .join('');
+  return Array.from(text.normalize('NFC'), plainLetter).join('');
+}
+
+/** Una letra sin tilde ni mayúscula, de igual largo: un emoji son dos unidades y las conserva. */
+function plainLetter(letter: string): string {
+  const [base] = Array.from(letter.normalize('NFD'));
+  const lower = base.toLowerCase();
+  return lower.length === letter.length ? lower : letter;
 }
 
 /** Un tramo de un nombre; `match` es el que coincide con la búsqueda. */
@@ -19,14 +25,15 @@ export interface Segment {
 
 /** El nombre partido en lo que coincide con la búsqueda (la primera vez) y lo demás. */
 export function highlight(text: string, query: string): Segment[] {
+  const composed = text.normalize('NFC');
   const needle = plain(query.trim());
-  const start = needle ? plain(text).indexOf(needle) : -1;
+  const start = needle ? plain(composed).indexOf(needle) : -1;
   if (start === -1) return [{ text, match: false }];
   const end = start + needle.length;
   return [
-    { text: text.slice(0, start), match: false },
-    { text: text.slice(start, end), match: true },
-    { text: text.slice(end), match: false },
+    { text: composed.slice(0, start), match: false },
+    { text: composed.slice(start, end), match: true },
+    { text: composed.slice(end), match: false },
   ].filter((segment) => segment.text !== '');
 }
 
