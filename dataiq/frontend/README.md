@@ -164,9 +164,8 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   Hilo») por número. Mesa y leyenda comparten
   `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
   o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
-  a la enfocada (por ahora, dentro de cada componente; el foco compartido entre
-  mesa y leyenda está en la fase 4 de la
-  [checklist](../docs/checklist-frontend.md)); la pieza se levanta, las demás se atenúan al 38 % (la tela,
+  a la enfocada, porque el número con el foco también se comparte con
+  `[(focused)]` (lo guarda quien las use; ver «Detalle de técnica»); la pieza se levanta, las demás se atenúan al 38 % (la tela,
   al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
   `highlighted` por mesa, porque cada mesa tiene su propia numeración.
 - **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
@@ -234,7 +233,9 @@ El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a
 - **«No encontrada»** (`shared/ui/not-found`) cuando la API responde 404, la pestaña no es una de las cuatro o el `id` no es un UUID (`domain/uuid.ts`: un id imposible ni se pide, porque la API respondería 422 y el interceptor lo avisaría como error). Otros errores (5xx, sin conexión) los avisa el interceptor y la página queda sin nombre. Cambiar de pestaña no vuelve a pedir la técnica: el `id` que alimenta el `httpResource` es un `computed`, que no cambia con la pestaña.
 - **Título de la pestaña del navegador:** el nombre de la técnica. El router pone el título genérico de la ruta justo antes de `NavigationEnd`, y un efecto de la página lo cambia por el nombre cuando llega y tras cada navegación (si no, cambiar de pestaña lo devolvería a «Técnica»).
 - **Celular:** la columna se pliega en un selector («Cirugía general · Tiroidectomía») y la tira de pestañas se desplaza hasta la elegida.
-- **Lo que llega después:** la hoja de cada pestaña (datos clínicos, instrumental, mesas), el foco compartido entre mesa y leyenda, la puerta de cuenta y los botones «Ver en 3D» y «Comprobar con la cámara» son las casillas siguientes de la fase 4.
+- **Hojas de mesa** (`technique-table/`, una por Mesa de Mayo y Mesa de reserva): título, indicación, leyenda y diagrama de `shared/table-diagram`, o «Sin mesa de Mayo.» si la técnica no la lleva. Las mesas salen de `GET /techniques/{id}/instruments` (`toTables()`), que **pide cuenta**: sin sesión no se pide, y la vista previa de la puerta es otra casilla. Se piden solo al abrir una pestaña que lo necesita, y pasar de una mesa a otra no lo repite (el `id` del recurso es un `computed`). La mesa de la pestaña es la zona cuyo nombre es `zone` de la pestaña (`domain/technique-tabs.ts`).
+- **Foco compartido entre mesa y leyenda:** la hoja de mesa guarda `highlighted` (el número señalado) y `focused` (el de lo que tiene el foco) y se los pasa a `app-table-diagram` y a `app-table-legend` con `[(highlighted)]` y `[(focused)]`. Antes cada componente recordaba solo su foco, y una pieza enfocada se soltaba al pasar el puntero por la leyenda y irse (y al revés; hallazgo de la revisión de la fase 3). Cada mesa tiene su numeración: cada hoja tiene sus dos números, y cambiar de técnica los borra (`linkedSignal`).
+- **Lo que llega después:** la hoja de datos clínicos y la de instrumental, la puerta de cuenta (y su vista previa de las mesas) y los botones «Ver en 3D» y «Comprobar con la cámara» son las casillas siguientes de la fase 4.
 
 ### Glosario (interfaz → código y API)
 

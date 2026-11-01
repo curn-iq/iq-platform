@@ -73,6 +73,21 @@ describe('TechniqueDetail', () => {
     http.expectOne(`${TEST_API_BASE}/specialties`).flush(SPECIALTIES);
   }
 
+  async function loadSession(logged: boolean): Promise<void> {
+    const session = TestBed.inject(SessionService);
+    const loading = session.load();
+    const request = http.expectOne(`${TEST_API_BASE}/auth/me`);
+    if (logged) {
+      request.flush({ id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'user' });
+    } else {
+      request.flush(null, { status: 401, statusText: 'Unauthorized' });
+    }
+    await loading;
+    // Sin `whenStable`: con las mesas pendientes no termina
+    await Promise.resolve();
+    harness.detectChanges();
+  }
+
   afterEach(() => {
     http?.match(() => true);
   });
@@ -145,19 +160,6 @@ describe('TechniqueDetail', () => {
   });
 
   describe('candado de las pestañas', () => {
-    async function loadSession(logged: boolean): Promise<void> {
-      const session = TestBed.inject(SessionService);
-      const loading = session.load();
-      const request = http.expectOne(`${TEST_API_BASE}/auth/me`);
-      if (logged) {
-        request.flush({ id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'user' });
-      } else {
-        request.flush(null, { status: 401, statusText: 'Unauthorized' });
-      }
-      await loading;
-      await settle();
-    }
-
     it('un visitante ve los candados de lo que pide cuenta', async () => {
       await open(`/tecnicas/${ID}/datos-clinicos`);
       await respond();
@@ -179,6 +181,85 @@ describe('TechniqueDetail', () => {
       await respond();
 
       expect(root.querySelectorAll('.lock')).toHaveLength(0);
+    });
+  });
+
+  describe('hojas de mesa', () => {
+    const INSTRUMENTS = {
+      zones: [
+        { zone_id: 'z-mayo', zone: 'Mesa de Mayo', used: true, rows: 4, columns: 6 },
+        { zone_id: 'z-reserva', zone: 'Mesa de reserva', used: false, rows: null, columns: null },
+      ],
+      items: [
+        {
+          id: 'i-1',
+          zone_id: 'z-mayo',
+          zone: 'Mesa de Mayo',
+          legend_number: 1,
+          source_text: 'Pinza Kelly',
+          components: [{ name: 'Pinza Kelly', instrument_id: 'x', suture_id: null }],
+          cells: [{ row: 1, column: 1 }],
+        },
+      ],
+      sutures: [],
+      equipment: [],
+      devices: [],
+    };
+
+    async function openAs(logged: boolean, tab: string): Promise<void> {
+      await open(`/tecnicas/${ID}/${tab}`);
+      await respond();
+      await loadSession(logged);
+    }
+
+    it('con sesión, la mesa de Mayo trae su leyenda y su diagrama', async () => {
+      await openAs(true, 'mesa-de-mayo');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
+      await settle();
+
+      expect(root.querySelector('[role=tabpanel] h2')!.textContent).toBe('Mesa de Mayo');
+      expect(root.querySelectorAll('[role=tabpanel] app-table-legend li')).toHaveLength(1);
+      expect(root.querySelector('[role=tabpanel] app-table-diagram')).not.toBeNull();
+    });
+
+    it('dice «Cargando…» mientras llegan las mesas', async () => {
+      await openAs(true, 'mesa-de-mayo');
+
+      expect(root.querySelector('[role=tabpanel] .loading')!.textContent).toBe('Cargando…');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+    });
+
+    it('una mesa que la técnica no lleva dice que no la hay', async () => {
+      await openAs(true, 'mesa-de-reserva');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
+      await settle();
+
+      expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe('Sin mesa de reserva.');
+    });
+
+    it('pasar de una mesa a otra no vuelve a pedir lo de la técnica', async () => {
+      await openAs(true, 'mesa-de-mayo');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
+      await settle();
+
+      await TestBed.inject(Router).navigateByUrl(`/tecnicas/${ID}/mesa-de-reserva`);
+      await settle();
+
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+      expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe('Sin mesa de reserva.');
+    });
+
+    it('sin sesión no se piden las mesas (la vista previa es de otra casilla)', async () => {
+      await openAs(false, 'mesa-de-mayo');
+
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+      expect(root.querySelector('[role=tabpanel]')!.textContent!.trim()).toBe('');
+    });
+
+    it('los datos clínicos no piden las mesas', async () => {
+      await openAs(true, 'datos-clinicos');
+
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
     });
   });
 

@@ -1,0 +1,12 @@
+@if (table(); as table) {
+  <div class="table">
+    <div class="info">
+      <h2>{{ title() }}</h2>
+      <p>{{ hint() }}</p>
+      <app-table-legend [table]="table" [(highlighted)]="highlighted" [(focused)]="focused" />
+    </div>
+    <app-table-diagram [table]="table" [(highlighted)]="highlighted" [(focused)]="focused" />
+  </div>
+} @else {
+  <p class="none">{{ empty() }}</p>
+}

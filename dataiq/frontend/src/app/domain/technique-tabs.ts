@@ -6,14 +6,21 @@ export interface TechniqueTab {
   readonly label: string;
   /** `true` si sin cuenta solo se ve una vista previa (`docs/flujos.md`). */
   readonly requiresAccount: boolean;
+  /** El nombre de la mesa que muestra (`zone` de la API), o `null` si no es una pestaña de mesa. */
+  readonly zone: string | null;
 }
 
 /** Las pestañas del detalle, en el orden en que se muestran. */
 export const TECHNIQUE_TABS: readonly TechniqueTab[] = [
-  { slug: 'datos-clinicos', label: 'Datos clínicos', requiresAccount: false },
-  { slug: 'instrumental', label: 'Instrumental', requiresAccount: true },
-  { slug: 'mesa-de-mayo', label: 'Mesa de Mayo', requiresAccount: true },
-  { slug: 'mesa-de-reserva', label: 'Mesa de reserva', requiresAccount: true },
+  { slug: 'datos-clinicos', label: 'Datos clínicos', requiresAccount: false, zone: null },
+  { slug: 'instrumental', label: 'Instrumental', requiresAccount: true, zone: null },
+  { slug: 'mesa-de-mayo', label: 'Mesa de Mayo', requiresAccount: true, zone: 'Mesa de Mayo' },
+  {
+    slug: 'mesa-de-reserva',
+    label: 'Mesa de reserva',
+    requiresAccount: true,
+    zone: 'Mesa de reserva',
+  },
 ];
 
 /** La pestaña con la que abre una técnica (`/tecnicas/:id` redirige a ella). */

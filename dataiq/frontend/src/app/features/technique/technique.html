@@ -20,7 +20,18 @@
         role="tabpanel"
         [id]="'panel-' + tab()!.slug"
         [attr.aria-labelledby]="'tab-' + tab()!.slug"
-      ></section>
+      >
+        @if (tableSheet(); as sheet) {
+          <app-technique-table
+            [title]="sheet.title"
+            [hint]="sheet.hint"
+            [empty]="sheet.empty"
+            [table]="sheet.table"
+          />
+        } @else if (tableLoading()) {
+          <p class="loading">Cargando…</p>
+        }
+      </section>
     </article>
   </div>
 }

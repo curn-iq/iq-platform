@@ -65,3 +65,17 @@ b {
   font-variant-numeric: tabular-nums;
   transition: background-color 0.2s var(--ease-fade);
 }
+
+// Tableta: la leyenda va debajo de la mesa y se reparte en dos columnas; en celular, en una
+@media (max-width: 1100px) {
+  ol {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 24px;
+  }
+}
+
+@media (max-width: 760px) {
+  ol {
+    grid-template-columns: 1fr;
+  }
+}

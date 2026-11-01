@@ -67,8 +67,8 @@ let nextGradient = 0;
  * en toda mesa, mide según sus columnas. Una mesa sin objetos se dibuja igual: así
  * un visitante no sabe si la técnica la tiene.
  *
- * `highlighted` es el número señalado: con `[(highlighted)]` se enlaza con
- * `app-table-legend`. La pieza señalada se levanta y las demás se atenúan; pasar
+ * `highlighted` es el número señalado y `focused` el de la pieza con el foco: con
+ * `[(highlighted)]` y `[(focused)]` se enlazan con `app-table-legend`. La pieza señalada se levanta y las demás se atenúan; pasar
  * el puntero o enfocar una pieza la señala. El ancho lo decide quien lo use.
  */
 @Component({
@@ -90,6 +90,12 @@ export class TableDiagram {
   readonly variant = input<TableDiagramVariant>('full');
   /** El número señalado, o `null` si no hay ninguno. */
   readonly highlighted = model<number | null>(null);
+  /**
+   * El número de la pieza que tiene el foco: sigue señalada aunque el puntero pase por otra
+   * y se vaya. Quien use el diagrama lo comparte con la leyenda con `[(focused)]`; sin
+   * enlazarlo, el diagrama recuerda solo el suyo.
+   */
+  readonly focused = model<number | null>(null);
 
   protected readonly preview = computed(() => this.variant() === 'preview');
   protected readonly visibleRows = computed(() => Math.min(this.table().rows, PREVIEW_ROWS));
@@ -147,9 +153,6 @@ export class TableDiagram {
    */
   protected readonly numberScale = computed(() => numberScale(this.svgWidth(), this.width()));
 
-  /** El número de la pieza que tiene el foco: sigue señalada aunque el puntero pase y se vaya. */
-  private focused: number | null = null;
-
   private readonly svg = viewChild.required<ElementRef<SVGSVGElement>>('svg');
 
   constructor() {
@@ -172,17 +175,17 @@ export class TableDiagram {
 
   /** Se va el puntero: se vuelve a la pieza con el foco, salvo que ya se haya señalado otra. */
   protected leave(number: number | null): void {
-    if (number !== null && this.highlighted() === number) this.highlighted.set(this.focused);
+    if (number !== null && this.highlighted() === number) this.highlighted.set(this.focused());
   }
 
   protected focus(number: number | null): void {
-    this.focused = number;
+    this.focused.set(number);
     this.enter(number);
   }
 
   /** Se va el foco: se suelta, salvo que ya se haya señalado otra pieza. */
   protected blur(number: number | null): void {
-    this.focused = null;
+    this.focused.set(null);
     if (number !== null && this.highlighted() === number) this.highlighted.set(null);
   }
 }

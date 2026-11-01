@@ -17,6 +17,15 @@ describe('TECHNIQUE_TABS', () => {
     ]);
   });
 
+  it('las dos pestañas de mesa dicen qué mesa muestran, con el nombre de la API', () => {
+    expect(TECHNIQUE_TABS.map((tab) => tab.zone)).toEqual([
+      null,
+      null,
+      'Mesa de Mayo',
+      'Mesa de reserva',
+    ]);
+  });
+
   it('abre en los datos clínicos', () => {
     expect(DEFAULT_TECHNIQUE_TAB).toBe('datos-clinicos');
   });
