@@ -80,10 +80,10 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 5 — Cuenta
 
-- [ ] Página del aviso de privacidad, enlazada desde el registro y el pie; el texto sale de [`docs/privacidad.md`](../../docs/privacidad.md) (Resuelto 30)
+- [x] Página del aviso de privacidad (`/politica-de-datos`), enlazada desde el pie; el texto sale de [`docs/privacidad.md`](../../docs/privacidad.md) (Resuelto 30 y 41). El enlace desde el registro va con su casilla de aceptación
 - [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20)
 - [ ] Revisar `sessionGuard` y `roleGuard` cuando no se sabe si hay sesión (`loadFailed()`, Resuelto 40): hoy, si `GET /auth/me` no responde, una ruta de gestión lleva a `/cuenta/ingresar` aunque la persona tenga sesión. Decidirlo junto con la pantalla de cuenta (pendiente de la revisión de la fase 4)
-- [ ] Registro con la aceptación obligatoria del aviso (Decreto 1377): una casilla que dice que la persona es mayor de 18 años y acepta el aviso; la API exige `accepts_policy` (Resuelto 30)
+- [ ] Registro con la aceptación obligatoria del aviso (Decreto 1377): una casilla que dice que la persona es mayor de 18 años y acepta el aviso, enlazado a `/politica-de-datos`; la API exige `accepts_policy` (Resuelto 30)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
 - [ ] Salir (`POST /auth/logout`) desde «Mi cuenta»
 
@@ -174,6 +174,7 @@ Entre la documentación, los mockups y la API.
 | 39 | La documentación decía que `scroll-margin-top` deja cada sección bajo la barra fija, pero el router calcula la posición por su cuenta y no lo mira (hallazgo de la revisión de la fase 4, medido en el navegador) | `provideAppRouter` le da al router el alto real de la barra (`setOffset`; decidido por Juan el 2026-11-01). `Home` vuelve a bajar al fragmento cuando llega la lista de especialidades, porque Safari no tiene anclaje de scroll, salvo que la persona ya se haya movido |
 | 40 | `SessionService` tomaba por visitante a quien `GET /auth/me` no le respondía (5xx, sin conexión), y el detalle le mostraba la puerta de cuenta aunque la tuviera; con otros errores que no fueran 404, el detalle se quedaba en esqueleto o en blanco (hallazgos de la revisión de la fase 4) | Solo un 401 dice que es un visitante (decidido por Juan el 2026-11-01). Si la API no respondió no se sabe: `loaded()` sigue en `false`, `loadFailed()` pasa a `true` y se vuelve a preguntar al cambiar de página. El detalle dice que no pudo cargar y ofrece «Reintentar» |
 | 36 | La puerta de cuenta debía mostrar un vistazo «real» (dos filas de instrumentos y las primeras filas de cada mesa), pero `GET /techniques/{id}/instruments` pide cuenta y ninguna ruta pública trae objetos ni el tamaño de las mesas (Resuelto 27) | Sin sesión, el vistazo no lleva datos (decidido por Juan el 2026-11-01): cada mesa es una cuadrícula vacía de 7 columnas con la variante `preview` (dos filas y media, difuminada) e Instrumental, dos filas de tres barras `filete`; la tarjeta va debajo. Es la misma en toda técnica, así que no revela si le falta una mesa. El vistazo con datos reales queda para cuando el backend ofrezca una vista previa pública (primeros objetos y tamaño de cada mesa, sin cuenta) |
+| 41 | Ningún documento decía cómo llega `docs/privacidad.md` a la página (está fuera de `dataiq/frontend`), cuál es su ruta, su diseño (no tiene mockup) ni cómo se llama su enlace en el pie | Decidido por Juan el 2026-11-01: el build importa el documento tal cual (`loader` de `.md` en `angular.json`) y `domain/markdown.ts` lo vuelve nodos, sin copiar el texto ni usar `innerHTML`; la ruta es `/politica-de-datos`; el diseño es el titular lateral del catálogo, anotado en `DESIGN.md` («Aviso de privacidad (página)»); el enlace del pie dice «Aviso de privacidad» y va en la franja de abajo, junto al derecho de autor |
 
 ### Por confirmar
 

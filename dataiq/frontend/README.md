@@ -59,7 +59,7 @@ src/
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad, búsqueda sin tildes, pestañas del detalle
+    │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
@@ -72,7 +72,7 @@ src/
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
     └── features/
-        ├── home/  catalog/  technique/  account/
+        ├── home/  catalog/  technique/  account/  privacy/
         └── management/
             ├── drafts/  editor/  review/  instruments/  users/
 ```
@@ -241,6 +241,14 @@ El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a
 - **Puerta de cuenta** (`technique-gate/`, Resuelto 36): sin sesión, Instrumental, Mesa de Mayo y Mesa de reserva muestran un vistazo difuminado y, debajo, la tarjeta («Crear cuenta gratis» y «Ya tengo cuenta»), ambos a `/cuenta/...?volver=<la pestaña>`. El vistazo no lleva datos (la API los entrega solo con cuenta): una cuadrícula vacía con la variante `preview` de `app-table-diagram`, o barras en lugar de objetos, igual en toda técnica, así que no revela si le falta una mesa. Solo aparece cuando ya se sabe que no hay sesión (`SessionService.loaded()`), y sin sesión no se pide `/instruments`. Mientras no se sabe, la hoja dice «Cargando…»; si `GET /auth/me` falló por algo que no es un 401, tampoco se sabe (`loadFailed()`): no hay puerta ni candados, y la hoja ofrece «Reintentar».
 - **«Ver en 3D» y «Comprobar con la cámara»** (cabecera, `domain/module-links.ts`): con sesión son enlaces normales (`href`, no `routerLink`) a `/simiq3d/tecnicas/:id` y `/sivri/`, porque SIMIQ3D y SIVRI son apps aparte servidas en el mismo origen (Resuelto 17) y el router de esta no las conoce; sin sesión, `routerLink` a `/cuenta/crear?volver=<la pestaña>`. Están en toda técnica (si el módulo no cubre una, su pantalla lo dice) y no se muestran hasta que `SessionService.loaded()` es verdadero. En desarrollo (`ng serve`) esas dos rutas no existen: hace falta el rewrite de Vercel o los módulos corriendo en el mismo origen.
 
+### Aviso de privacidad (`features/privacy/`)
+
+El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs/privacidad.md), que el registro obliga a aceptar (Resuelto 30 de la [checklist](../docs/checklist-frontend.md)). La ruta, el diseño y el enlace del pie los decidió Juan el 2026-11-01 (Resuelto 41); el diseño está en «Aviso de privacidad (página)» de [`DESIGN.md`](../../DESIGN.md).
+
+- **El texto no se copia.** `angular.json` carga los `.md` como texto (`loader`), la página importa el documento de la raíz del repo y `domain/markdown.ts` (`parseMarkdown()`, sin Angular y con pruebas) lo vuelve nodos: titulares, párrafos, listas con viñetas o numeradas, tablas, negrita, cursiva y enlaces. La plantilla los pinta como elementos, sin `innerHTML`, y un enlace solo se dibuja si va a `https:` o `mailto:`. Cambiar `docs/privacidad.md` cambia la página; `POLICY_VERSION` del backend cambia en el mismo PR (`.claude/rules/dataiq.md`).
+- **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
+- **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |
@@ -266,6 +274,7 @@ relativas a `/api/dataiq`.
 | `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
+| `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
 | `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
 | `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
@@ -360,8 +369,8 @@ las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
 Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
 no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
 «Preguntas frecuentes» y «Para docentes» (la opción que va solo en la barra
-lleva `inFooter: false` en `nav-menus.ts`); la política de datos se suma con su
-página (fase 5). Las especialidades las da `Specialties` (`GET /specialties`,
+lleva `inFooter: false` en `nav-menus.ts`); «Aviso de privacidad», que abre su
+página, va en la franja de abajo, junto al derecho de autor. Las especialidades las da `Specialties` (`GET /specialties`,
 una sola petición al cargar la app, porque el pie está en todas las páginas, que
 comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si
 fallaron (p. ej. un 5xx en un arranque en frío), se vuelven a pedir al cambiar

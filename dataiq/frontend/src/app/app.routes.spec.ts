@@ -18,6 +18,7 @@ import { Instruments } from './features/management/instruments/instruments';
 import { Review } from './features/management/review/review';
 import { Users } from './features/management/users/users';
 import { NotFoundPage } from './features/not-found/not-found';
+import { Privacy } from './features/privacy/privacy';
 import { TechniqueDetail } from './features/technique/technique';
 
 const TECHNIQUE_ID = '019a0c1e-7b3d-7c2a-9e4f-0a1b2c3d4e5f';
@@ -29,6 +30,7 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   [`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`, TechniqueDetail, 'Técnica · IQ Platform'],
   ['/cuenta/ingresar', AccountEntry, 'Ingresar · IQ Platform'],
   ['/cuenta/crear', AccountEntry, 'Crear cuenta · IQ Platform'],
+  ['/politica-de-datos', Privacy, 'Aviso de privacidad · IQ Platform'],
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
   ['/gestion/editor/abc/1', Editor, 'Editar técnica · IQ Platform'],

@@ -36,6 +36,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/account/account').then((m) => m.AccountEntry),
   },
   {
+    path: 'politica-de-datos',
+    title: 'Aviso de privacidad',
+    loadComponent: () => import('./features/privacy/privacy').then((m) => m.Privacy),
+  },
+  {
     path: 'gestion/borradores',
     title: 'Mis borradores',
     canActivate: [contributor],
