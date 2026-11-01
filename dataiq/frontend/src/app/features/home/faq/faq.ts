@@ -20,7 +20,7 @@ const GROUPS: readonly Group[] = [
       {
         question: '¿Qué puedo ver sin cuenta?',
         answer:
-          'El catálogo de técnicas. Para abrir una técnica y usar SIMIQ3D y SIVRI se crea una cuenta.',
+          'El catálogo de técnicas y los datos clínicos de cada una. Para ver su instrumental y sus mesas, y para usar SIMIQ3D y SIVRI, se crea una cuenta.',
       },
     ],
   },
