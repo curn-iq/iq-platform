@@ -81,6 +81,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 - [ ] Página del aviso de privacidad, enlazada desde el registro y el pie; el texto sale de [`docs/privacidad.md`](../../docs/privacidad.md) (Resuelto 30)
 - [ ] Ingresar y Crear cuenta en una pantalla, con la técnica que se quería abrir a la izquierda o el saludo según la hora. Sin «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20)
+- [ ] Revisar `sessionGuard` y `roleGuard` cuando no se sabe si hay sesión (`loadFailed()`, Resuelto 40): hoy, si `GET /auth/me` no responde, una ruta de gestión lleva a `/cuenta/ingresar` aunque la persona tenga sesión. Decidirlo junto con la pantalla de cuenta (pendiente de la revisión de la fase 4)
 - [ ] Registro con la aceptación obligatoria del aviso (Decreto 1377): una casilla que dice que la persona es mayor de 18 años y acepta el aviso; la API exige `accepts_policy` (Resuelto 30)
 - [ ] Volver a `?volver=` al ingresar; al catálogo si se entró directo
 - [ ] Salir (`POST /auth/logout`) desde «Mi cuenta»

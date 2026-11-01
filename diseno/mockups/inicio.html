@@ -808,7 +808,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
         </div>
       </div>
 
-      <p class="estado" aria-live="polite">
+      <p class="estado" id="estado" aria-live="off">
         <span class="estado-referencia"><b>Tiroidectomía · Mesa de Mayo</b>Tocar una pieza para verla de cerca.</span>
         <span class="estado-3d"><b>La misma mesa, en 3D</b><span class="demo">SIMIQ3D · demostración</span></span>
         <span class="estado-camara"><b class="bien">9 en su lugar</b><b class="mal">1 por mover</b><span class="demo">SIVRI · demostración</span></span>
@@ -1272,7 +1272,7 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     li.children[0].textContent = o[0];
     li.children[1].textContent = o[3];
     li.children[2].textContent = "«" + o[4] + "»";
-    li.addEventListener("click", function () { marcar(o[0]); detenerCiclo(); verLista(false); });
+    li.addEventListener("click", function () { marcar(o[0]); detenerCiclo(); cerrarLista(); });
     leyenda.appendChild(li);
   });
   var actual = 0;
@@ -1290,13 +1290,20 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   var lista = document.getElementById("lista-piezas"), verTodas = document.getElementById("ver-todas");
   function verLista(si) { lista.hidden = !si; verTodas.setAttribute("aria-expanded", String(si)); }
   verTodas.addEventListener("click", function () { detenerCiclo(); verLista(lista.hidden); });
-  document.getElementById("cerrar-lista").addEventListener("click", function () { verLista(false); verTodas.focus(); });
+  function cerrarLista() { verLista(false); verTodas.focus(); }
+  document.getElementById("cerrar-lista").addEventListener("click", cerrarLista);
+  escenario.addEventListener("keydown", function (e) { if (e.key === "Escape" && !lista.hidden) cerrarLista(); });
 
   var VISTAS = ["referencia", "3d", "camara"];
   var pestanas = escenario.querySelectorAll(".selector [role=tab]");
   var CICLO = 5500, temporizador = null, ciclando = !reducido;
+  // Mientras cambia sola, la línea de estado no se anuncia: interrumpiría cada 5,5 s
+  var estado = document.getElementById("estado");
+  function anunciarEstado() { estado.setAttribute("aria-live", ciclando ? "off" : "polite"); }
+  anunciarEstado();
   function mostrar(vista) {
     escenario.dataset.vista = vista;
+    anunciarEstado();
     if (vista !== "referencia") verLista(false);
     pestanas.forEach(function (t) {
       var si = t.dataset.vista === vista;
@@ -1318,13 +1325,16 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
   }
   function siguiente() { mostrar(VISTAS[(VISTAS.indexOf(escenario.dataset.vista) + 1) % 3]); }
   function iniciarCiclo() { if (!ciclando) return; clearInterval(temporizador); temporizador = setInterval(siguiente, CICLO); }
-  function detenerCiclo() { ciclando = false; clearInterval(temporizador); pestanas.forEach(function (t) { t.classList.remove("corriendo"); }); }
+  function detenerCiclo() { ciclando = false; clearInterval(temporizador); anunciarEstado(); pestanas.forEach(function (t) { t.classList.remove("corriendo"); }); }
   escenario.style.setProperty("--ciclo", CICLO + "ms");
   pestanas.forEach(function (t, i) {
     t.addEventListener("click", function () { detenerCiclo(); mostrar(t.dataset.vista); });
     t.addEventListener("keydown", function (e) {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      var j = (i + (e.key === "ArrowRight" ? 1 : 2)) % 3;
+      // Con un modificador es un atajo del navegador: Alt+Izquierda es Atrás
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      var j = { ArrowRight: (i + 1) % 3, ArrowLeft: (i + 2) % 3, Home: 0, End: 2 }[e.key];
+      if (j === undefined) return;
+      e.preventDefault();
       detenerCiclo(); mostrar(VISTAS[j]); pestanas[j].focus();
     });
   });
@@ -1336,9 +1346,26 @@ h1 .l:nth-child(3) > span { animation-delay: .14s; }
     g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); marcar(n); detenerCiclo(); } });
   });
   marcar(7);
-  // Pausa mientras el puntero está sobre el escenario
-  escenario.addEventListener("mouseenter", function () { if (ciclando) { clearInterval(temporizador); escenario.querySelectorAll(".avance").forEach(function (a) { a.style.animationPlayState = "paused"; }); } });
-  escenario.addEventListener("mouseleave", function () { if (ciclando) { escenario.querySelectorAll(".avance").forEach(function (a) { a.style.animationPlayState = ""; }); mostrar(escenario.dataset.vista); iniciarCiclo(); } });
+  // Pausa con el puntero encima o el foco dentro, hasta que se vayan los dos. Un dedo no
+  // se queda encima: tocar no pausa
+  var pausas = { puntero: false, foco: false }, pausado = false;
+  function pausar(motivo) {
+    if (!ciclando) return;
+    pausas[motivo] = true; pausado = true;
+    clearInterval(temporizador);
+    escenario.querySelectorAll(".avance").forEach(function (a) { a.style.animationPlayState = "paused"; });
+  }
+  function seguir(motivo) {
+    pausas[motivo] = false;
+    if (!ciclando || !pausado || pausas.puntero || pausas.foco) return;
+    pausado = false;
+    escenario.querySelectorAll(".avance").forEach(function (a) { a.style.animationPlayState = ""; });
+    mostrar(escenario.dataset.vista); iniciarCiclo();
+  }
+  escenario.addEventListener("pointerenter", function (e) { if (e.pointerType !== "touch") pausar("puntero"); });
+  escenario.addEventListener("pointerleave", function () { seguir("puntero"); });
+  escenario.addEventListener("focusin", function () { pausar("foco"); });
+  escenario.addEventListener("focusout", function (e) { if (!escenario.contains(e.relatedTarget)) seguir("foco"); });
 
   /* ---------- Mesas pequeñas de las maquetas ---------- */
   document.querySelectorAll(".mini-mesa").forEach(function (svg) {
