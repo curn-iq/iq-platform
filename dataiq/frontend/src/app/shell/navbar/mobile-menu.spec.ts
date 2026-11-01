@@ -7,6 +7,7 @@ import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { handledByRouter } from '../testing';
 import { MobileMenu } from './mobile-menu';
+import { SignOut } from './sign-out';
 
 @Component({ template: '' })
 class Blank {}
@@ -179,6 +180,41 @@ describe('MobileMenu', () => {
         ['Por revisar', '/gestion/revision'],
         ['Instrumental', '/gestion/instrumental'],
       ]);
+    });
+
+    describe('cerrar sesión', () => {
+      const exit = () => actions()?.querySelector<HTMLButtonElement>('button.exit') ?? null;
+
+      it('con sesión va al final de las acciones, después de quién es y de los accesos', async () => {
+        await loadSession('reviewer');
+
+        expect(exit()!.textContent!.trim()).toBe('Cerrar sesión');
+        expect(actions()!.lastElementChild).toBe(exit());
+      });
+
+      it('un usuario sin gestión también puede salir', async () => {
+        await loadSession('user');
+
+        expect(exit()).not.toBeNull();
+      });
+
+      it('un visitante no la ve', async () => {
+        await loadSession(null);
+
+        expect(exit()).toBeNull();
+      });
+
+      it('al tocarla, cierra la sesión y avisa con `chosen` para que el menú se cierre', async () => {
+        await loadSession('contributor');
+        const run = vi.spyOn(TestBed.inject(SignOut), 'run').mockResolvedValue();
+        let chosen = 0;
+        fixture.componentInstance.chosen.subscribe(() => chosen++);
+
+        exit()!.click();
+
+        expect(run).toHaveBeenCalledTimes(1);
+        expect(chosen).toBe(1);
+      });
     });
 
     it('un usuario sin gestión solo ve quién es', async () => {

@@ -1,6 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom, fromEvent, Observable, Subject, tap, timeout } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  fromEvent,
+  Observable,
+  of,
+  Subject,
+  tap,
+  throwError,
+  timeout,
+} from 'rxjs';
 import type { Account, Credentials } from '../../data/api/models';
 import { AuthRepository } from '../../data/auth.repository';
 import { hasAtLeast, Role } from '../../domain/role';
@@ -145,9 +155,20 @@ export class SessionService {
     return this.auth.login(credentials).pipe(tap((account) => this.replace(account)));
   }
 
-  /** Sale: la API borra la cookie. Si falla, la cuenta sigue, porque la cookie sigue. */
+  /**
+   * Sale: la API borra la cookie. Si falla (sin conexión, un error del servidor), la cuenta sigue,
+   * porque la cookie sigue. Un 401 es que la sesión ya había vencido: no hay nada que cerrar, así
+   * que también sale y no es un error.
+   */
   logout(): Observable<void> {
-    return this.auth.logout().pipe(tap(() => this.replace(null)));
+    return this.auth.logout().pipe(
+      catchError((error: unknown) =>
+        error instanceof HttpErrorResponse && error.status === 401
+          ? of(undefined)
+          : throwError(() => error),
+      ),
+      tap(() => this.replace(null)),
+    );
   }
 
   /** Olvida la cuenta sin hablar con la API (p. ej. cuando una petición responde 401). */

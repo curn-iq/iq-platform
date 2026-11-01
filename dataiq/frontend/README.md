@@ -255,6 +255,18 @@ Ingresar y Crear cuenta son una sola pantalla (`AccountEntry`, `cuenta.html`) en
 - **Crear cuenta** (Resuelto 43): valida al enviar con Signal Forms (`registrationSchema`, en `registration-form.ts`; las reglas puras de correo y contraseña, en `domain/registration.ts`): un mensaje bajo cada campo, el foco al primero con error y nada enviado si algo falla. La casilla «Soy mayor de 18 años y acepto el aviso de privacidad.» empieza sin marcar y enlaza `/politica-de-datos` en otra pestaña, para no perder lo escrito. Envía `POST /auth/register` con `accepts_policy: true` y el nombre y el correo sin espacios de más (la contraseña, tal cual); la API crea la cuenta pero no inicia sesión, así que ingresa sola con las mismas credenciales y va a `?volver=` o al catálogo (`returnTarget()`); si el ingreso falla, queda en Ingresar con lo que iba a abrir. Al crearse se vacía el formulario: la contraseña no se queda en la memoria de la pantalla. Un segundo envío mientras va el primero no hace nada.
 - **Correo repetido: mitigación visual temporal** (Resuelto 43). La API responde 409 «Ya hay una cuenta con ese correo», que le dice a quien prueba correos cuáles tienen cuenta (enumeración de usuarios). La petición de registro va en silencio (`QUIET_ERRORS`: el interceptor no muestra el texto de la API) y la pantalla da un aviso neutro, igual para un 409 y para lo que no tiene un texto propio: «No se pudo completar el registro. Verificar los datos e intentar de nuevo.». No marca el campo del correo ni ofrece recuperar la contraseña. Es una mitigación, no la solución: el 409 sigue en el backend, y el pendiente (respuestas uniformes y límite de intentos) está en [`checklist-backend.md`](../docs/checklist-backend.md). Los demás 409 de la aplicación no cambian, y los demás errores del registro (sin conexión, un error del servidor, datos no válidos) dicen lo de siempre.
 
+#### Salir
+
+«Cerrar sesión» está al final del panel de «Mi cuenta» (un botón, no un enlace, con su ícono y
+separado por un filete) y del menú de celular, para cualquier rol (Resuelto 45 de la
+[checklist](../docs/checklist-frontend.md)). Lo hace `SignOut` (`shell/navbar/sign-out.ts`):
+`POST /auth/logout`, que borra la cookie `HttpOnly`; al salir se olvida la cuenta y **se lleva al
+inicio**, como en los mockups, también desde una pantalla de gestión, que ya no es de quien salió.
+Un 401 es que la sesión ya había vencido: también sale, sin aviso. Si no se pudo cerrar (sin conexión,
+un error del servidor) el interceptor ya avisó, la cuenta sigue —la cookie sigue, así que no se
+simula una salida que no ocurrió— y se queda donde está para intentarlo de nuevo. Un segundo toque
+mientras va la petición no pide otra vez (`aria-busy`).
+
 ### Aviso de privacidad (`features/privacy/`)
 
 El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs/privacidad.md), que el registro obliga a aceptar (Resuelto 30 de la [checklist](../docs/checklist-frontend.md)). La ruta, el diseño y el enlace del pie los decidió Juan el 2026-11-01 (Resuelto 41); el diseño está en «Aviso de privacidad (página)» de [`DESIGN.md`](../../DESIGN.md).
@@ -361,9 +373,9 @@ las toma por una ruta desconocida y abre «No encontrada».
   `false`, `loadFailed()` pasa a `true` y se vuelve a preguntar al cambiar de página
   (`provideSession`). El panel se cierra si la sesión
   cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
-  alto: al abrirlo de nuevo se ancla a la altura nueva. Todavía faltan: la cifra junto a
-  cada acceso, que llega con su pantalla (borradores, por revisar, instrumental), y
-  «Cerrar sesión», de la fase 5.
+  alto: al abrirlo de nuevo se ancla a la altura nueva. Al final lleva «Cerrar sesión»
+  (ver «Salir», abajo). Todavía falta la cifra junto a cada acceso, que llega con su pantalla
+  (borradores, por revisar, instrumental).
 - **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
   menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
@@ -416,8 +428,9 @@ manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
 
 - Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
   cuenta; lo trata la pantalla:
-  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
-    puesta);
+  - el de `GET /auth/me` (visitante), el de `POST /auth/login` (contraseña mal
+    puesta) y el de `POST /auth/logout` (una sesión que ya había vencido: quien sale
+    igual queda fuera, y lo trata `SessionService.logout()`);
   - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
     página pública: no lo saca de ahí;
   - el de una petición que salió antes de ingresar o salir

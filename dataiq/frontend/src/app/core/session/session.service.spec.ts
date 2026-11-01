@@ -207,6 +207,27 @@ describe('SessionService', () => {
       expect(session.account()).toBeNull();
     });
 
+    it('un 401 es que la sesión ya había vencido: igual sale, sin error', () => {
+      const done = vi.fn();
+      const failed = vi.fn();
+      session.logout().subscribe({ next: done, error: failed, complete: () => done('complete') });
+      http.expectOne(`${TEST_API_BASE}/auth/logout`).flush(null, unauthorized);
+
+      expect(failed).not.toHaveBeenCalled();
+      expect(done).toHaveBeenCalledWith('complete');
+      expect(session.account()).toBeNull();
+      expect(session.status()).toBe('unauthenticated');
+    });
+
+    it('sin conexión, la cuenta sigue y el error le llega a quien llamó', () => {
+      const failed = vi.fn();
+      session.logout().subscribe({ error: failed });
+      http.expectOne(`${TEST_API_BASE}/auth/logout`).error(new ProgressEvent('error'));
+
+      expect(failed).toHaveBeenCalledTimes(1);
+      expect(session.isLoggedIn()).toBe(true);
+    });
+
     it('si falla, la cuenta sigue, porque la cookie sigue', () => {
       session.logout().subscribe({ error: () => undefined });
       http

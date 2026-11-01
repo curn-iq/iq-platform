@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import type { Account } from '../../data/api/models';
 import { ROLE_LABELS } from '../../shared/role-labels';
 import { Avatar } from '../../shared/ui/avatar/avatar';
 import { managementLinks } from './management-links';
+import { SignOut } from './sign-out';
 
 /**
  * El panel de «Mi cuenta»: quién es la persona, su rol y los accesos de gestión
- * que el rol permite. Lo dibuja `Navbar` en un overlay anclado a la derecha, bajo
- * la barra. Ver «Mi cuenta (menú)» en `DESIGN.md`.
+ * que el rol permite, y al final «Cerrar sesión». Lo dibuja `Navbar` en un overlay anclado a la
+ * derecha, bajo la barra. Ver «Mi cuenta (menú)» en `DESIGN.md`.
  */
 @Component({
   selector: 'app-account-menu',
@@ -24,12 +25,20 @@ import { managementLinks } from './management-links';
   },
 })
 export class AccountMenu {
+  protected readonly signOut = inject(SignOut);
+
   readonly account = input.required<Account>();
-  /** Se eligió un acceso: el panel se cierra. */
+  /** Se eligió un acceso o se salió: el panel se cierra. */
   readonly chosen = output<void>();
 
   protected readonly roleLabel = computed(() => ROLE_LABELS[this.account().role]);
   protected readonly links = computed(() => managementLinks(this.account().role));
+
+  /** Cierra la sesión y el panel; `SignOut` lleva al inicio si salió. */
+  protected exit(): void {
+    void this.signOut.run();
+    this.chosen.emit();
+  }
 
   protected onClick(event: Event): void {
     if ((event.target as Element).closest('a')) this.chosen.emit();
