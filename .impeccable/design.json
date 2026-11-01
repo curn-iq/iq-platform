@@ -743,7 +743,7 @@
       {
         "name": "ciclo-vistas",
         "value": "5500ms",
-        "purpose": "Cambio automático Referencia/3D/Cámara; pausa al pasar el puntero, se detiene al interactuar."
+        "purpose": "Cambio automático Referencia/3D/Cámara; pausa con el puntero encima o el foco dentro, se detiene al interactuar."
       },
       {
         "name": "coreografia-carga",
@@ -1023,7 +1023,7 @@
       "name": "Sin mesa y plantilla",
       "kind": "card",
       "refersTo": "sin-mesa",
-      "description": "Lo que la fuente no trae se marca, nunca se rellena: recuadro «Sin mesa de …» con filete filete-2 y plantilla con barras filete y la marca «demostración».",
+      "description": "Lo que la fuente no trae se marca, nunca se rellena: recuadro con filete filete-2 («Sin mesa de …» si la técnica no la lleva, «… sin arreglo disponible» si falta su arreglo) y plantilla con barras filete y la marca «demostración».",
       "html": "<div class=\"ds-col\"><p class=\"ds-sin\">Sin mesa de reserva.</p><div class=\"ds-plant\"><h3>Hemicolectomía derecha <span class=\"ds-demo\">demostración</span></h3><span class=\"ds-hueso\" style=\"width:72%\"></span><span class=\"ds-hueso\" style=\"width:58%\"></span><span class=\"ds-hueso\" style=\"width:86%\"></span></div></div>",
       "css": ":host{--fondo:#f3f6f6;--superficie:#fff;--hover-neutro:#e6eded;--filete:#dbe4e6;--filete-2:#c4d1d4;--tinta:#0a1b22;--tinta-2:#364b53;--tinta-3:#566a72;--marca:#0d6a5e;--marca-hondo:#08463e;--marca-claro:#ddefeb;--marca-claro-hover:#cfe7e1;--menta:#38e2b3;--alerta-noche:#ff6b6b;--noche:#061217;--noche-2:#0c1e24;--filete-noche:#1d353d;--niebla-noche:#a9bec5;--expo:cubic-bezier(.16,1,.3,1);--cuarta:cubic-bezier(.25,1,.5,1);font-family:'Host Grotesk','Helvetica Neue',Arial,sans-serif;color:var(--tinta)} .ds-col{display:grid;gap:28px;max-width:520px} .ds-sin{display:grid;place-items:center;min-height:220px;margin:0;border-radius:14px;box-shadow:inset 0 0 0 1.5px var(--filete-2);color:var(--tinta-3);font-size:16px} .ds-plant h3{margin:0 0 12px;font-size:40px;line-height:1;font-weight:650;letter-spacing:-.04em} .ds-demo{margin-left:12px;font-family:'Martian Mono',ui-monospace,monospace;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--tinta-3);vertical-align:middle} .ds-hueso{display:block;height:12px;margin:5px 0;border-radius:8px;background:var(--filete)}"
     },

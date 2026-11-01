@@ -1,0 +1,189 @@
+<section id="investigacion" aria-labelledby="research-title">
+  <div class="inv">
+    <div class="text">
+      <h2 id="research-title">Con respuesta inmediata, se aprende antes.</h2>
+      <ul class="conclusions">
+        <li>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+            <path
+              d="M15 3L6 16h7l-2 9 9-13h-7z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span
+            ><b>La respuesta inmediata</b> es lo que más pesa al aprender un procedimiento.</span
+          >
+        </li>
+        <li>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+            <rect
+              x="3.5"
+              y="7.5"
+              width="21"
+              height="15"
+              rx="3"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+            <path
+              d="M9.5 15.2l3 3 6-6.4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span
+            ><b>Un sistema automático</b> puede darla con la precisión de un evaluador, sin esperar
+            turno.</span
+          >
+        </li>
+        <li>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+            <circle cx="14" cy="14" r="10" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path
+              d="M14 8.5v5.8l3.6 2.4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span><b>Repasar con juego</b> ayuda a reconocer el instrumental y a recordarlo.</span>
+        </li>
+      </ul>
+    </div>
+    <figure
+      #figure
+      class="spiral"
+      aria-label="Animación: un pulso de luz sube en espiral, cada vez más rápido, y en cada vuelta se suma un logro: instrumental reconocido, posiciones memorizadas, mesa completa sin errores, un paso adelante"
+      [class.complete]="frame().complete"
+      [class.fading]="frame().fading"
+    >
+      <svg [attr.viewBox]="viewBox()" aria-hidden="true">
+        <defs>
+          <linearGradient
+            id="spiral-beam"
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="150"
+            x2="0"
+            y2="-120"
+          >
+            <stop offset="0" class="accent" />
+            <stop offset="1" class="accent" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="spiral-ambient">
+            <stop offset="0" class="accent" stop-opacity=".07" />
+            <stop offset=".55" class="accent" stop-opacity=".025" />
+            <stop offset="1" class="accent" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <ellipse
+          cx="380"
+          cy="350"
+          rx="420"
+          ry="360"
+          fill="url(#spiral-ambient)"
+          [attr.opacity]="frame().ambient"
+        />
+        <g class="motes">
+          @for (mote of moteViews(); track $index) {
+            <circle
+              [attr.cx]="mote.x"
+              [attr.cy]="mote.y"
+              [attr.r]="mote.radius"
+              [attr.opacity]="mote.opacity"
+            />
+          }
+        </g>
+        <path class="guide back" [attr.d]="geometry.guideBack" />
+        <path class="light back" [attr.d]="frame().lightBack" />
+        <g>
+          @for (level of geometry.levels; track $index) {
+            <ellipse
+              class="level"
+              [class.flash]="frame().lap > $index"
+              [attr.cx]="level.cx"
+              [attr.cy]="level.cy"
+              [attr.rx]="level.rx"
+              [attr.ry]="level.ry"
+            />
+          }
+        </g>
+        <path class="guide front" [attr.d]="geometry.guideFront" />
+        <path class="light front" [attr.d]="frame().lightFront" />
+        <path class="tail" [attr.d]="frame().tail" />
+        <path
+          class="beam"
+          [attr.d]="geometry.beam"
+          [attr.stroke-dasharray]="beamLength"
+          [attr.stroke-dashoffset]="frame().beamOffset"
+        />
+        <g>
+          @for (station of geometry.stations; track $index) {
+            <g class="station" [class.lit]="frame().lit[$index]">
+              <circle class="ring" [attr.cx]="station.x" [attr.cy]="station.y" r="5.5" />
+              <circle class="node" [attr.cx]="station.x" [attr.cy]="station.y" r="5.5" />
+            </g>
+          }
+        </g>
+        <circle
+          class="pulse-halo"
+          r="14"
+          [attr.cx]="frame().pulse.x"
+          [attr.cy]="frame().pulse.y"
+          [style.opacity]="frame().pulse.visible ? null : 0"
+        />
+        <circle
+          class="pulse"
+          [attr.cx]="frame().pulse.x"
+          [attr.cy]="frame().pulse.y"
+          [attr.r]="frame().pulse.radius"
+          [style.opacity]="frame().pulse.visible ? null : 0"
+        />
+        <g class="achievements">
+          @for (achievement of geometry.achievements; track achievement.text) {
+            <g [attr.transform]="'translate(' + achievement.x + ' ' + achievement.y + ')'">
+              <g
+                class="achievement"
+                [class.final]="achievement.final"
+                [class.visible]="frame().achieved[$index]"
+              >
+                <rect class="pill" height="44" rx="22" [attr.width]="achievement.width" />
+                <circle class="chip" cx="22" cy="22" r="11" />
+                <path class="tick" d="M16.8 22.2l3.6 3.6 6.6-7" />
+                <text x="42" y="23">{{ achievement.text }}</text>
+              </g>
+            </g>
+          }
+        </g>
+      </svg>
+      <!-- En celular los logros van como lista bajo la espiral -->
+      <ol class="achievements-list" aria-hidden="true">
+        @for (text of achievements; track text) {
+          <li [class.final]="$index === lastAchievement" [class.visible]="frame().achieved[$index]">
+            <span class="chip">
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <path
+                  d="M2.5 6.2l2.4 2.4 4.6-4.9"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span>{{ text }}</span>
+          </li>
+        }
+      </ol>
+    </figure>
+  </div>
+</section>

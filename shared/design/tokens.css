@@ -32,6 +32,8 @@
   --niebla-pano: #e6f3f0;
   --brillo-pano: rgba(255, 255, 255, 0.12);
   --sombra-pano: rgba(0, 0, 0, 0.14);
+  /* Tela no tejida de la funda: solo en el objeto, nunca en la página */
+  --tela: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.32' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeDiffuseLighting surfaceScale='1.6' lighting-color='%23a2a2a2'%3E%3CfeDistantLight azimuth='235' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23f)'/%3E%3C/svg%3E");
 
   /* Cámara: la menta y el rojo solo existen dentro de la cámara */
   --menta: #38e2b3;
@@ -42,6 +44,9 @@
   --noche-2: #0c1e24;
   --filete-noche: #1d353d;
   --niebla-noche: #a9bec5;
+  /* Fondos de las ventanas de maqueta: el centro de la de SIVRI y el borde de la de SIMIQ3D */
+  --noche-visor: #10272e;
+  --vista-3d-borde: #e7eef0;
 
   /* Acero satinado del instrumental */
   --acero-brillo: #fbfdfd;
@@ -146,6 +151,8 @@
   --color-dark-raised: var(--noche-2);
   --color-dark-border: var(--filete-noche);
   --color-dark-text-muted: var(--niebla-noche);
+  --color-camera-glow: var(--noche-visor);
+  --color-window-3d-edge: var(--vista-3d-borde);
 
   /* El acero del instrumental y los objetos planos del diagrama de mesa */
   --color-steel-light: var(--acero-luz);
@@ -161,6 +168,17 @@
   --color-flat-cloth: var(--tela-plana);
   --color-flat-tray: var(--bandeja-borde);
   --color-flat-tray-bottom: var(--bandeja-fondo);
+
+  /* La funda de Mayo, el objeto de la portada y de las ventanas de producto */
+  --color-cover: var(--pano);
+  --color-cover-edge: var(--canto-pano);
+  --color-cover-sheen: var(--brillo-pano);
+  --color-cover-shade: var(--sombra-pano);
+  --texture-cover: var(--tela);
+
+  /* La cámara: la menta detecta y el rojo marca lo que está fuera de lugar */
+  --color-detection: var(--menta);
+  --color-misplaced: var(--alerta-noche);
 
   --font-body: var(--letra);
   --font-data: var(--datos);

@@ -1,0 +1,98 @@
+// Hoja de instrumental: ver «Detalle de técnica (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+// Lista en tres columnas reguladas por filete
+.objects {
+  columns: 3 220px;
+  column-gap: 40px;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+
+  li {
+    break-inside: avoid;
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 16px;
+  }
+}
+
+.more {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 32px 48px;
+  align-items: start;
+  margin-top: 40px;
+}
+
+.supplies {
+  display: grid;
+  gap: 24px;
+
+  p {
+    margin-top: 6px;
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+// Una fila por plano: el plano en 600 `tinta-2` y la sutura en `tinta`
+.sutures {
+  margin: 12px 0 0;
+  border-top: 1px solid var(--color-border);
+
+  div {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+
+    &.no-plane {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  dt {
+    color: var(--color-text-muted);
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
+
+// ---------- Tableta y celular ----------
+
+@media (max-width: 1100px) {
+  .more {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .sutures div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}

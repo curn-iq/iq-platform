@@ -1,0 +1,50 @@
+<div #list class="tabs" role="tablist" [attr.aria-label]="label()">
+  @for (tab of tabs(); track tab.key; let index = $index) {
+    <a
+      #tab
+      role="tab"
+      [id]="'tab-' + tab.key"
+      [routerLink]="tab.link"
+      [attr.aria-selected]="index === currentIndex()"
+      [attr.aria-controls]="'panel-' + tab.key"
+      [attr.tabindex]="index === currentIndex() ? 0 : -1"
+      (keydown)="select($event, index)"
+    >
+      {{ tab.label }}
+      @if (tab.locked) {
+        <svg
+          class="lock"
+          width="13"
+          height="13"
+          viewBox="0 0 16 16"
+          role="img"
+          aria-label="Requiere cuenta"
+        >
+          <rect
+            x="3.5"
+            y="7"
+            width="9"
+            height="7"
+            rx="1.6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          />
+          <path
+            d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          />
+        </svg>
+      }
+    </a>
+  }
+  <span
+    class="line"
+    aria-hidden="true"
+    [class.ready]="lineReady()"
+    [style.width.px]="lineWidth()"
+    [style.transform]="'translateX(' + lineLeft() + 'px)'"
+  ></span>
+</div>

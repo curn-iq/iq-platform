@@ -1,0 +1,54 @@
+<section
+  #section
+  id="camino"
+  aria-labelledby="products-title"
+  [class.native]="!horizontal()"
+  [style.height.px]="sectionHeight()"
+>
+  <div class="sticky">
+    <div class="head">
+      <h2 id="products-title">Tres formas de<br />recorrer una técnica.</h2>
+      <p class="text">Se empieza por cualquiera.</p>
+      <div class="steps" aria-hidden="true">
+        @for (product of products; track product.id; let index = $index) {
+          <div [class.current]="current() === index">
+            <i [style.--p]="fill(index)"></i>{{ product.name }}
+          </div>
+        }
+      </div>
+    </div>
+    <div #rail class="rail" [style.transform]="railTransform()">
+      @for (product of products; track product.id) {
+        <article class="product" [attr.aria-labelledby]="'product-' + product.id">
+          <div class="info">
+            <h3 [id]="'product-' + product.id">{{ product.name }}</h3>
+            <p class="tagline">{{ product.tagline }}</p>
+            <ul class="capabilities">
+              @for (capability of product.capabilities; track capability) {
+                <li>{{ capability }}</li>
+              }
+            </ul>
+            @if (product.route; as route) {
+              <a app-arrow-link [routerLink]="route">{{ product.link }}</a>
+            } @else {
+              <a app-arrow-link [href]="product.href">{{ product.link }}</a>
+            }
+          </div>
+          <div class="visual">
+            @switch (product.id) {
+              @case ('dataiq') {
+                <app-dataiq-window />
+              }
+              @case ('simiq3d') {
+                <app-simiq3d-window />
+              }
+              @case ('sivri') {
+                <app-sivri-window />
+              }
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

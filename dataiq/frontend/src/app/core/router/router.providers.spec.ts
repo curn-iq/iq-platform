@@ -2,7 +2,7 @@ import { ViewportScroller } from '@angular/common';
 import { ApplicationRef, Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { Router, RouterOutlet } from '@angular/router';
-import { provideAppRouter } from './router.providers';
+import { navbarOffset, provideAppRouter } from './router.providers';
 
 @Component({ template: '<section id="camino"></section><section id="preguntas"></section>' })
 class Home {}
@@ -71,5 +71,27 @@ describe('provideAppRouter', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(scrollToAnchor).not.toHaveBeenCalled();
+  });
+
+  it('la sección queda bajo la barra fija, no tapada por ella', () => {
+    const navbar = document.createElement('app-navbar');
+    vi.spyOn(navbar, 'getBoundingClientRect').mockReturnValue({ height: 72 } as DOMRect);
+    document.body.appendChild(navbar);
+    const section = document.querySelector('#preguntas')!;
+    vi.spyOn(section, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 500 } as DOMRect);
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    scrollToAnchor.mockRestore();
+
+    app.injector.get(ViewportScroller).scrollToAnchor('preguntas');
+
+    expect(scrollTo).toHaveBeenCalledWith({ left: 0, top: 428 });
+    navbar.remove();
+    scrollTo.mockRestore();
+  });
+});
+
+describe('navbarOffset', () => {
+  it('sin barra no hay nada que descontar', () => {
+    expect(navbarOffset()).toEqual([0, 0]);
   });
 });

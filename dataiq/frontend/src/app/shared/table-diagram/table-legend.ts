@@ -5,7 +5,7 @@ import type { Table } from '../../domain/table';
 /**
  * La leyenda numerada de una mesa, según «Detalle de técnica» de `DESIGN.md`:
  * cada objeto con su número y su nombre, enlazada con `app-table-diagram`. Se
- * enlazan con `[(highlighted)]`: señalar un número (con el puntero o el
+ * enlazan con `[(highlighted)]` y `[(focused)]`: señalar un número (con el puntero o el
  * teclado) marca su fila aquí y levanta su pieza en la mesa, y al revés.
  *
  * Solo las filas de objetos que están en la mesa se señalan. Un objeto que la
@@ -22,11 +22,14 @@ export class TableLegend {
   readonly table = input.required<Table>();
   /** El número señalado, o `null` si no hay ninguno. */
   readonly highlighted = model<number | null>(null);
+  /**
+   * El número de la fila que tiene el foco: sigue señalada aunque el puntero pase por otra y se
+   * vaya. Quien use la leyenda lo comparte con el diagrama con `[(focused)]`: así, si el foco
+   * está en una pieza y el puntero pasa por la leyenda, la pieza no se suelta.
+   */
+  readonly focused = model<number | null>(null);
 
   protected readonly rows = computed(() => legendEntries(this.table().items));
-
-  /** El número de la fila que tiene el foco: sigue señalada aunque el puntero pase y se vaya. */
-  private focused: number | null = null;
 
   protected enter(number: number): void {
     this.highlighted.set(number);
@@ -34,17 +37,17 @@ export class TableLegend {
 
   /** Se va el puntero: se vuelve a la fila con el foco, salvo que ya se haya señalado otra. */
   protected leave(number: number): void {
-    if (this.highlighted() === number) this.highlighted.set(this.focused);
+    if (this.highlighted() === number) this.highlighted.set(this.focused());
   }
 
   protected focus(number: number): void {
-    this.focused = number;
+    this.focused.set(number);
     this.highlighted.set(number);
   }
 
   /** Se va el foco: se suelta, salvo que ya se haya señalado otra fila. */
   protected blur(number: number): void {
-    this.focused = null;
+    this.focused.set(null);
     if (this.highlighted() === number) this.highlighted.set(null);
   }
 }

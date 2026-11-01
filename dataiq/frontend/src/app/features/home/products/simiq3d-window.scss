@@ -1,0 +1,169 @@
+@use '../window' as w;
+
+:host {
+  display: grid;
+  min-height: 0;
+}
+
+.window {
+  @include w.window;
+}
+
+.bar {
+  @include w.window-bar;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  min-height: 0;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 18px;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.bubble {
+  max-width: 90%;
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-xl);
+  font-size: 14.5px;
+  line-height: 1.45;
+
+  &.me {
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    background: var(--color-accent);
+    color: var(--color-surface);
+  }
+
+  &.iq {
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+  }
+}
+
+.suggestions {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 12.5px;
+    font-weight: 650;
+  }
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  span {
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0 6px 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-subtle);
+  font-size: 14px;
+
+  span:last-child {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-control-sm);
+    background: var(--color-accent);
+    color: var(--color-surface);
+  }
+}
+
+// La escena: la funda gira un poco, como si se rodeara con el ratón
+.scene {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  perspective: 1400px;
+  background: radial-gradient(
+    90% 80% at 50% 45%,
+    var(--color-surface),
+    var(--color-window-3d-edge)
+  );
+}
+
+.cover {
+  @include w.mini-cover;
+  width: 64%;
+  transform-style: preserve-3d;
+  animation: turn 9s var(--ease-swing) infinite alternate;
+}
+
+@keyframes turn {
+  from {
+    transform: rotateX(46deg) rotateZ(-36deg);
+  }
+  to {
+    transform: rotateX(40deg) rotateZ(-14deg);
+  }
+}
+
+.balloon {
+  position: absolute;
+  top: 12%;
+  right: 8%;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow:
+    0 6px 14px -8px rgba(10, 27, 34, 0.35),
+    inset 0 0 0 1px var(--color-border);
+  font-size: 14px;
+  line-height: 1.4;
+
+  strong {
+    display: block;
+    font-size: 15px;
+  }
+
+  span {
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 650;
+  }
+}
+
+@media (max-width: 760px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 220px;
+  }
+
+  .chat {
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}

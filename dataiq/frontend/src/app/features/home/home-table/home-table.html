@@ -1,0 +1,113 @@
+<svg
+  [attr.viewBox]="'0 0 ' + size() + ' ' + size()"
+  [style.--steel-fill]="'url(#' + steelId + ')'"
+  [style.--blade-fill]="'url(#' + bladeId + ')'"
+  [attr.role]="interactive() ? 'group' : null"
+  [attr.aria-label]="interactive() ? table().name : null"
+  [attr.aria-hidden]="interactive() ? null : 'true'"
+>
+  <defs app-steel-gradients [steelId]="steelId" [bladeId]="bladeId" />
+  @if (grid()) {
+    <g class="grid" aria-hidden="true">
+      @for (line of gridLines(); track line) {
+        <path [attr.d]="'M' + line + ' 0V' + size() + 'M0 ' + line + 'H' + size()" />
+      }
+    </g>
+  }
+  @for (piece of pieces(); track piece.number) {
+    <g
+      class="piece"
+      [class.selected]="piece.number === selected()"
+      [class.interactive]="interactive()"
+      [style.--i]="$index"
+      [attr.data-n]="piece.number"
+      [attr.tabindex]="interactive() ? 0 : null"
+      [attr.role]="interactive() ? 'button' : null"
+      [attr.aria-label]="interactive() ? piece.label : null"
+      [attr.aria-pressed]="interactive() ? piece.number === selected() : null"
+      (mouseenter)="pick(piece.number)"
+      (focus)="pick(piece.number)"
+      (click)="activate(piece.number)"
+      (keydown.enter)="activate(piece.number); $event.preventDefault()"
+      (keydown.space)="activate(piece.number); $event.preventDefault()"
+    >
+      @if (interactive()) {
+        <rect
+          class="hit"
+          [attr.x]="piece.hit.x + 4"
+          [attr.y]="piece.hit.y + 4"
+          [attr.width]="cell - 8"
+          [attr.height]="cell - 8"
+          rx="10"
+        />
+      }
+      <g [attr.transform]="isDisplaced(piece.number) ? 'translate(' + cell + ' 0)' : null">
+        <g #shape class="shape">
+          @for (shape of piece.shapes; track $index) {
+            <g [attr.transform]="shape.transform" [attr.data-drawing]="shape.key">
+              <g app-drawing-parts [parts]="shape.parts" />
+            </g>
+          }
+        </g>
+      </g>
+      @if (numbers()) {
+        <g class="number">
+          <circle [attr.cx]="piece.numberAt.x" [attr.cy]="piece.numberAt.y" r="16" />
+          <text [attr.x]="piece.numberAt.x" [attr.y]="piece.numberAt.y + 0.5">
+            {{ piece.number }}
+          </text>
+        </g>
+      }
+    </g>
+  }
+  @if (detectable()) {
+    <g
+      class="detections"
+      aria-hidden="true"
+      [class.on]="detecting()"
+      [class.scanned]="scanned()"
+      [style.--label-size.px]="fontSize()"
+    >
+      @for (detection of detections(); track detection.number) {
+        <g
+          class="det"
+          [class.error]="detection.error"
+          [style.--i]="$index"
+          [style.--per]="detection.perimeter"
+        >
+          <rect
+            class="box"
+            [attr.x]="detection.box.x"
+            [attr.y]="detection.box.y"
+            [attr.width]="detection.box.width"
+            [attr.height]="detection.box.height"
+            rx="6"
+          />
+          <g class="label">
+            <rect
+              [attr.x]="detection.label.x"
+              [attr.y]="detection.label.y"
+              [attr.width]="detection.label.width"
+              [attr.height]="detection.label.height"
+              rx="4"
+            />
+            <text [attr.x]="detection.textX" [attr.y]="detection.textY">{{ detection.text }}</text>
+          </g>
+        </g>
+        @if (detection.target; as target) {
+          <rect
+            class="target"
+            [attr.x]="target.box.x"
+            [attr.y]="target.box.y"
+            [attr.width]="target.box.width"
+            [attr.height]="target.box.height"
+            rx="6"
+          />
+          <text class="target-label" [attr.x]="target.labelX" [attr.y]="target.labelY">
+            Va aquí
+          </text>
+        }
+      }
+    </g>
+  }
+</svg>

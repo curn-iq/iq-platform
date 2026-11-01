@@ -1,0 +1,96 @@
+@use '../window' as w;
+
+:host {
+  display: grid;
+  min-height: 0;
+}
+
+// La de SIVRI es oscura: `noche-2` con el pie de conteos
+.window {
+  display: grid;
+  grid-template-rows: 44px minmax(0, 1fr) 56px;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-dark-border);
+  border-radius: var(--radius-window);
+  background: var(--color-dark-raised);
+}
+
+.bar {
+  @include w.window-bar;
+  border-color: var(--color-dark-border);
+  background: var(--color-dark);
+  color: var(--color-surface);
+
+  .demo {
+    color: var(--color-dark-text-muted);
+  }
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-dark-text-muted);
+  font-size: 13px;
+  font-weight: 550;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-detection);
+  }
+}
+
+.frame {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: 18px;
+  background: radial-gradient(80% 70% at 50% 45%, var(--color-camera-glow), var(--color-dark));
+  container-type: size;
+}
+
+.cover {
+  @include w.mini-cover;
+  width: min(100cqw, 100cqh);
+  filter: saturate(0.55) brightness(0.86);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px;
+  border-top: 1px solid var(--color-dark-border);
+  color: var(--color-dark-text-muted);
+  font-size: 14px;
+
+  b {
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ok b {
+    color: var(--color-detection);
+  }
+
+  .no b {
+    color: var(--color-misplaced);
+  }
+}
+
+// Es parte de la maqueta, no un botón: no hace nada
+.again {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  margin-left: auto;
+  padding: 0 14px;
+  border-radius: var(--radius-control-sm);
+  background: var(--color-detection);
+  color: var(--color-dark);
+  font-weight: 650;
+}

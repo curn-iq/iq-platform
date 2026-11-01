@@ -1,0 +1,17 @@
+<div class="window">
+  <div class="bar">
+    <span class="live">En vivo</span>{{ tableName }}<span class="demo">demostración</span>
+  </div>
+  <div class="frame">
+    <div class="cover">
+      <app-home-table [detectable]="true" [detecting]="true" [displaced]="true" />
+    </div>
+  </div>
+  <div class="foot">
+    <span class="ok"
+      ><b>{{ inPlace }}</b> en su lugar</span
+    >
+    <span class="no"><b>1</b> por mover</span>
+    <span class="again">Revisar de nuevo</span>
+  </div>
+</div>

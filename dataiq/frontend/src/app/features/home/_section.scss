@@ -1,0 +1,87 @@
+// Lo que comparten las secciones del inicio: ver «Layout» y «The Fondos Neutros Rule» en
+// DESIGN.md.
+
+// Rejilla de 12 columnas con el medianil de 24 px.
+@mixin grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-column-gap);
+}
+
+// El titular de sección: 650, -0.04em, que termina en punto.
+@mixin section-title {
+  margin: 0;
+  font-size: clamp(38px, 4.2vw, 68px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+@mixin section-text {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+// Una sección con su tramo de color: `--color` es su fondo, `--antes` y `--despues` los de
+// sus vecinas, y `--fa` y `--fb` lo que mide el fundido arriba y abajo. El cambio al vecino
+// ocurre dentro de los rellenos de ambas secciones (nunca debajo del contenido): media curva
+// suave a cada lado del límite, que se encuentran en la mezcla de los dos colores,
+// interpolada en OKLab, en una capa detrás del contenido.
+@mixin tramo {
+  --fa: 0px;
+  --fb: 0px;
+  --antes: var(--color);
+  --despues: var(--color);
+  --arriba: color-mix(in oklab, var(--antes), var(--color));
+  --abajo: color-mix(in oklab, var(--color), var(--despues));
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      in oklab,
+      var(--arriba) 0,
+      color-mix(in oklab, var(--color) 44%, var(--arriba)) calc(var(--fa) * 0.25),
+      color-mix(in oklab, var(--color) 75%, var(--arriba)) calc(var(--fa) * 0.5),
+      color-mix(in oklab, var(--color) 94%, var(--arriba)) calc(var(--fa) * 0.75),
+      var(--color) var(--fa),
+      var(--color) calc(100% - var(--fb)),
+      color-mix(in oklab, var(--abajo) 6%, var(--color)) calc(100% - var(--fb) * 0.75),
+      color-mix(in oklab, var(--abajo) 25%, var(--color)) calc(100% - var(--fb) * 0.5),
+      color-mix(in oklab, var(--abajo) 56%, var(--color)) calc(100% - var(--fb) * 0.25),
+      var(--abajo) 100%
+    );
+  }
+}
+
+// Una sección normal: respira con `seccion` arriba y abajo, y el fundido ocurre en ese relleno.
+// El ancla de la barra y el pie baja hasta aquí sin quedar bajo la barra fija.
+@mixin section {
+  @include tramo;
+  --fa: var(--space-section);
+  --fb: var(--fa);
+  padding: var(--fa) var(--space-gutter) var(--fb);
+  scroll-margin-top: var(--size-navbar);
+}
+
+@mixin compact {
+  --fa: var(--space-section-compact);
+}
+
+// La marca «demostración»: Martian Mono, la voz de la máquina.
+@mixin demo-tag {
+  color: var(--color-text-subtle);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  line-height: 1.4;
+}

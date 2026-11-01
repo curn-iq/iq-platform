@@ -1,0 +1,32 @@
+@for (part of parts(); track $index) {
+  @switch (part.shape) {
+    @case ('path') {
+      <svg:path
+        [attr.class]="part.style"
+        [attr.d]="part.d"
+        [attr.fill-rule]="part.evenodd ? 'evenodd' : null"
+        [attr.transform]="part.transform"
+      />
+    }
+    @case ('rect') {
+      <svg:rect
+        [attr.class]="part.style"
+        [attr.x]="part.x"
+        [attr.y]="part.y"
+        [attr.width]="part.width"
+        [attr.height]="part.height"
+        [attr.rx]="part.rx"
+        [attr.transform]="part.transform"
+      />
+    }
+    @case ('circle') {
+      <svg:circle
+        [attr.class]="part.style"
+        [attr.cx]="part.cx"
+        [attr.cy]="part.cy"
+        [attr.r]="part.r"
+        [attr.transform]="part.transform"
+      />
+    }
+  }
+}

@@ -6,12 +6,13 @@ import { TableDiagram } from './table-diagram';
 @Component({
   imports: [TableDiagram],
   template:
-    '<app-table-diagram [table]="table" [variant]="variant" [(highlighted)]="highlighted" />',
+    '<app-table-diagram [table]="table" [variant]="variant" [(highlighted)]="highlighted" [(focused)]="focused" />',
 })
 class Host {
   table: Table = makeTable();
   variant: 'full' | 'preview' = 'full';
   highlighted: number | null = null;
+  focused: number | null = null;
 }
 
 function makeTable(overrides: Partial<Table> = {}): Table {
@@ -354,6 +355,30 @@ describe('TableDiagram', () => {
         const fixture = await mount(makeTable({ items }));
         const root: HTMLElement = fixture.nativeElement;
         piece(root, 1).dispatchEvent(new FocusEvent('focus'));
+        piece(root, 2).dispatchEvent(new MouseEvent('mouseenter'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(2);
+        piece(root, 2).dispatchEvent(new MouseEvent('mouseleave'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.highlighted).toBe(1);
+      });
+
+      it('el número de la pieza con el foco sale a quien lo enlaza, y al perder el foco se vacía', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        piece(root, 2).dispatchEvent(new FocusEvent('focus'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.focused).toBe(2);
+        piece(root, 2).dispatchEvent(new FocusEvent('blur'));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.focused).toBeNull();
+      });
+
+      it('si el foco está en otra parte (una fila de la leyenda), el puntero vuelve a él al irse', async () => {
+        const fixture = await mount(makeTable({ items }));
+        const root: HTMLElement = fixture.nativeElement;
+        fixture.componentInstance.focused = 1;
+        await fixture.whenStable();
         piece(root, 2).dispatchEvent(new MouseEvent('mouseenter'));
         await fixture.whenStable();
         expect(fixture.componentInstance.highlighted).toBe(2);

@@ -1,0 +1,149 @@
+// Detalle de técnica: la ventana de DataIQ a pantalla completa. Ver «Detalle de técnica
+// (página)» en DESIGN.md. La columna de técnicas va fija a la izquierda y el panel de la
+// técnica a la derecha.
+
+:host {
+  display: block;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: var(--size-technique-column) minmax(0, 1fr);
+  align-content: start;
+  min-height: calc(100svh - var(--size-navbar));
+  border-bottom: 1px solid var(--color-border);
+}
+
+.panel {
+  min-width: 0;
+  padding: 28px clamp(24px, 3vw, 48px) 40px;
+
+  // Recibe el foco al reintentar, solo para que no se pierda: no es un control
+  &:focus {
+    outline: none;
+  }
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+// Nombre y especialidad a la izquierda, las acciones de los módulos a la derecha
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  // La etiqueta del módulo: `marca-hondo` sobre el suave y `marca-claro-hover` sobre el verde
+  small {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  [data-variant='primary'] small {
+    color: var(--color-accent-soft-hover);
+  }
+
+  [data-variant='soft'] small {
+    color: var(--color-accent-strong);
+    font-weight: 450;
+  }
+}
+
+header p {
+  margin: 10px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 17px;
+}
+
+// Mientras llega la técnica: barras `filete` donde irán el nombre y la especialidad
+.bone {
+  display: block;
+  border-radius: 8px;
+  background: var(--color-border);
+
+  &.name {
+    width: min(100%, 360px);
+    height: 40px;
+  }
+
+  &.specialty {
+    width: 160px;
+    height: 17px;
+    margin-top: 10px;
+  }
+}
+
+.loading {
+  margin: 0;
+  color: var(--color-text-subtle);
+}
+
+// La API no respondió: el recuadro de «Sin mesa», con su botón para reintentar
+.failed {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 220px;
+  border-radius: var(--radius-xl);
+  box-shadow: inset 0 0 0 1.5px var(--color-border-strong);
+  color: var(--color-text-subtle);
+  font-size: 16px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ---------- Tableta ----------
+
+@media (max-width: 1100px) {
+  .app {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+// ---------- Celular: la columna se pliega en un selector sobre el panel ----------
+
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel {
+    padding: 24px var(--space-gutter) 32px;
+  }
+
+  .actions {
+    width: 100%;
+
+    a {
+      flex: 1 1 100%;
+    }
+  }
+}

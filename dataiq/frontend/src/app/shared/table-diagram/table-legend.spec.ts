@@ -5,11 +5,13 @@ import { TableLegend } from './table-legend';
 
 @Component({
   imports: [TableLegend],
-  template: '<app-table-legend [table]="table" [(highlighted)]="highlighted" />',
+  template:
+    '<app-table-legend [table]="table" [(highlighted)]="highlighted" [(focused)]="focused" />',
 })
 class Host {
   table: Table = makeTable();
   highlighted: number | null = null;
+  focused: number | null = null;
 }
 
 function makeItem(overrides: Partial<TableItem> = {}): TableItem {
@@ -144,6 +146,33 @@ describe('TableLegend', () => {
     const row = rows(fixture.nativeElement)[0];
     row.dispatchEvent(new FocusEvent('focus'));
     row.dispatchEvent(new MouseEvent('mouseenter'));
+    row.dispatchEvent(new MouseEvent('mouseleave'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.highlighted).toBe(4);
+  });
+
+  it('el número de la fila con el foco sale a quien lo enlaza, y al perder el foco se vacía', async () => {
+    const fixture = await mount([makeItem({ legendNumber: 4 })]);
+    const row = rows(fixture.nativeElement)[0];
+    row.dispatchEvent(new FocusEvent('focus'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.focused).toBe(4);
+    row.dispatchEvent(new FocusEvent('blur'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.focused).toBeNull();
+  });
+
+  it('si el foco está en otra parte (una pieza de la mesa), el puntero vuelve a él al irse', async () => {
+    const fixture = await mount([
+      makeItem({ id: 'a', legendNumber: 4 }),
+      makeItem({ id: 'b', legendNumber: 5 }),
+    ]);
+    fixture.componentInstance.focused = 4;
+    await fixture.whenStable();
+    const row = rows(fixture.nativeElement)[1];
+    row.dispatchEvent(new MouseEvent('mouseenter'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.highlighted).toBe(5);
     row.dispatchEvent(new MouseEvent('mouseleave'));
     await fixture.whenStable();
     expect(fixture.componentInstance.highlighted).toBe(4);

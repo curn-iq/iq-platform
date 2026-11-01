@@ -1,0 +1,40 @@
+@if (sheet(); as sheet) {
+  <div class="clinical" [class.single]="sheet.notes.length === 0">
+    @if (sheet.purpose || sheet.facts.length > 0) {
+      <div>
+        @if (sheet.purpose) {
+          <section class="purpose">
+            <h2>Para qué sirve</h2>
+            <p>{{ sheet.purpose }}</p>
+          </section>
+        }
+        @if (sheet.facts.length > 0) {
+          <dl class="facts">
+            @for (fact of sheet.facts; track fact.label) {
+              <div [class.wide]="fact.wide">
+                <dt>{{ fact.label }}</dt>
+                <dd>{{ fact.value }}</dd>
+              </div>
+            }
+          </dl>
+        }
+      </div>
+    }
+    @if (sheet.notes.length > 0) {
+      <div class="notes">
+        @for (note of sheet.notes; track note.label) {
+          <section>
+            <h2>{{ note.label }}</h2>
+            <p>{{ note.text }}</p>
+          </section>
+        }
+      </div>
+    }
+  </div>
+  @if (sheet.source) {
+    <p class="source">
+      <span>Fuente</span>
+      {{ sheet.source }}
+    </p>
+  }
+}

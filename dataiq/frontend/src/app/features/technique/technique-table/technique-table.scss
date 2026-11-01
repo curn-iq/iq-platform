@@ -1,0 +1,88 @@
+// Hoja de una mesa: ver «Detalle de técnica (página)» en DESIGN.md. La mesa ocupa como
+// máximo el 46 % del ancho y toma la proporción de su cuadrícula; cada mesa va con su
+// título, su indicación y su leyenda a la derecha.
+
+:host {
+  display: block;
+}
+
+.table {
+  --table-side: min(46%, calc((100svh - 360px) * var(--aspect)), calc(440px * var(--aspect)));
+
+  display: grid;
+  grid-template-columns: var(--table-side) minmax(220px, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+
+app-table-diagram {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.info {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+  }
+}
+
+// No hay mesa que dibujar: la técnica no la lleva, o falta su arreglo
+.none {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  margin: 0;
+  border-radius: var(--radius-xl);
+  box-shadow: inset 0 0 0 1.5px var(--color-border-strong);
+  color: var(--color-text-subtle);
+  font-size: 16px;
+}
+
+// ---------- Tableta y celular: la leyenda pasa debajo de la mesa ----------
+
+@media (max-width: 1100px) {
+  .table {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  // Los hijos de la columna de información pasan a ser de la rejilla, para ordenarlos entre la mesa
+  .info {
+    display: contents;
+
+    h2 {
+      order: 1;
+    }
+
+    p {
+      order: 2;
+    }
+
+    app-table-legend {
+      order: 4;
+    }
+  }
+
+  app-table-diagram {
+    grid-column: auto;
+    grid-row: auto;
+    order: 3;
+    width: min(100%, calc(440px * var(--aspect)));
+    margin-block: 12px 6px;
+  }
+}

@@ -1,0 +1,88 @@
+@if (notFound()) {
+  <app-not-found />
+} @else {
+  <div class="app">
+    <app-technique-column [currentId]="techniqueId()" [tab]="tab()!.slug" />
+    <article
+      #panel
+      class="panel"
+      tabindex="-1"
+      aria-labelledby="technique-name"
+      [attr.aria-busy]="!technique() && !techniqueFailed()"
+    >
+      <header>
+        <div class="titles">
+          @if (technique(); as technique) {
+            <h1 id="technique-name">{{ technique.name }}</h1>
+            <p>{{ technique.specialty }}</p>
+          } @else if (techniqueFailed()) {
+            <h1 id="technique-name">No se pudo cargar la técnica</h1>
+          } @else {
+            <h1 id="technique-name" class="sr-only">Cargando…</h1>
+            <span class="bone name" aria-hidden="true"></span>
+            <span class="bone specialty" aria-hidden="true"></span>
+          }
+        </div>
+        @if (actions(); as actions) {
+          <div class="actions">
+            @for (action of actions.items; track action.module) {
+              @if (actions.external) {
+                <a app-button [variant]="action.variant" [href]="action.href"
+                  >{{ action.label }} <small>{{ action.module }}</small></a
+                >
+              } @else {
+                <a
+                  app-button
+                  routerLink="/cuenta/crear"
+                  [variant]="action.variant"
+                  [queryParams]="{ volver: actions.returnTo }"
+                  >{{ action.label }} <small>{{ action.module }}</small></a
+                >
+              }
+            }
+          </div>
+        }
+      </header>
+      <app-tabs label="Contenido de la técnica" [tabs]="tabItems()" [current]="tab()!.slug" />
+      <section
+        class="sheet"
+        role="tabpanel"
+        [id]="'panel-' + tab()!.slug"
+        [attr.aria-labelledby]="'tab-' + tab()!.slug"
+      >
+        @if (failed()) {
+          <div class="failed">
+            <p>No se pudo cargar esta hoja.</p>
+            <button app-button type="button" variant="soft" (click)="retry()">Reintentar</button>
+          </div>
+        } @else if (gate(); as gate) {
+          <app-technique-gate
+            [preview]="gate.preview"
+            [title]="gate.title"
+            [text]="gate.text"
+            [returnTo]="gate.returnTo"
+          />
+        } @else if (tab()!.slug === 'datos-clinicos') {
+          @if (technique(); as technique) {
+            <app-technique-clinical [technique]="technique" />
+          }
+        } @else if (tab()!.slug === 'instrumental') {
+          @if (instrumentsData(); as data) {
+            <app-technique-instrumental [instruments]="data" />
+          } @else if (accountLoading()) {
+            <p class="loading">Cargando…</p>
+          }
+        } @else if (tableSheet(); as sheet) {
+          <app-technique-table
+            [title]="sheet.title"
+            [hint]="sheet.hint"
+            [empty]="sheet.empty"
+            [table]="sheet.table"
+          />
+        } @else if (accountLoading()) {
+          <p class="loading">Cargando…</p>
+        }
+      </section>
+    </article>
+  </div>
+}

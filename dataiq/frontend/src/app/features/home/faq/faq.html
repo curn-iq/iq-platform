@@ -1,0 +1,45 @@
+<section id="preguntas" aria-labelledby="faq-title">
+  <div class="faq">
+    <header>
+      <h2 id="faq-title">Preguntas frecuentes.</h2>
+    </header>
+    <div class="groups">
+      @for (group of groups; track group.title) {
+        <details class="group" [open]="group.open">
+          <summary>
+            {{ group.title }}
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+              <path
+                d="M5.5 8.5L11 14l5.5-5.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </summary>
+          <div class="questions">
+            @for (item of group.questions; track item.question) {
+              <details>
+                <summary>
+                  {{ item.question }}
+                  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                    <path
+                      d="M10 4v12M4 10h12"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </summary>
+                <p>{{ item.answer }}</p>
+              </details>
+            }
+          </div>
+        </details>
+      }
+    </div>
+  </div>
+</section>
