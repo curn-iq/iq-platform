@@ -27,6 +27,36 @@ h1 {
   letter-spacing: -0.04em;
 }
 
+// Nombre y especialidad a la izquierda, las acciones de los módulos a la derecha
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  // La etiqueta del módulo: `marca-hondo` sobre el suave y `marca-claro-hover` sobre el verde
+  small {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  [data-variant='primary'] small {
+    color: var(--color-accent-soft-hover);
+  }
+
+  [data-variant='soft'] small {
+    color: var(--color-accent-strong);
+    font-weight: 450;
+  }
+}
+
 header p {
   margin: 10px 0 0;
   color: var(--color-text-subtle);
@@ -85,5 +115,13 @@ header p {
 
   .panel {
     padding: 24px var(--space-gutter) 32px;
+  }
+
+  .actions {
+    width: 100%;
+
+    a {
+      flex: 1 1 100%;
+    }
   }
 }

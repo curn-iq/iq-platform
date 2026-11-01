@@ -5,13 +5,34 @@
     <app-technique-column [currentId]="techniqueId()" [tab]="tab()!.slug" />
     <article class="panel" aria-labelledby="technique-name" [attr.aria-busy]="!technique()">
       <header>
-        @if (technique(); as technique) {
-          <h1 id="technique-name">{{ technique.name }}</h1>
-          <p>{{ technique.specialty }}</p>
-        } @else {
-          <h1 id="technique-name" class="sr-only">Cargando…</h1>
-          <span class="bone name" aria-hidden="true"></span>
-          <span class="bone specialty" aria-hidden="true"></span>
+        <div class="titles">
+          @if (technique(); as technique) {
+            <h1 id="technique-name">{{ technique.name }}</h1>
+            <p>{{ technique.specialty }}</p>
+          } @else {
+            <h1 id="technique-name" class="sr-only">Cargando…</h1>
+            <span class="bone name" aria-hidden="true"></span>
+            <span class="bone specialty" aria-hidden="true"></span>
+          }
+        </div>
+        @if (actions(); as actions) {
+          <div class="actions">
+            @for (action of actions.items; track action.module) {
+              @if (actions.external) {
+                <a app-button [variant]="action.variant" [href]="action.href"
+                  >{{ action.label }} <small>{{ action.module }}</small></a
+                >
+              } @else {
+                <a
+                  app-button
+                  routerLink="/cuenta/crear"
+                  [variant]="action.variant"
+                  [queryParams]="{ volver: actions.returnTo }"
+                  >{{ action.label }} <small>{{ action.module }}</small></a
+                >
+              }
+            }
+          </div>
         }
       </header>
       <app-tabs label="Contenido de la técnica" [tabs]="tabItems()" [current]="tab()!.slug" />

@@ -2,14 +2,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionService } from '../../core/session/session.service';
 import { APP_NAME } from '../../core/title/page-title.strategy';
 import { toTables } from '../../data/tables';
 import { TechniquesRepository } from '../../data/techniques.repository';
+import { SIVRI_URL, simiq3dTechniqueUrl } from '../../domain/module-links';
 import { findTechniqueTab, TECHNIQUE_TABS } from '../../domain/technique-tabs';
 import { isUuid } from '../../domain/uuid';
+import { Button } from '../../shared/ui/button/button';
 import { NotFound } from '../../shared/ui/not-found/not-found';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TechniqueClinical } from './technique-clinical/technique-clinical';
@@ -58,7 +60,9 @@ const GATE_TEXTS: Record<string, { preview: GatePreview; title: string; text: st
 @Component({
   selector: 'app-technique',
   imports: [
+    Button,
     NotFound,
+    RouterLink,
     Tabs,
     TechniqueClinical,
     TechniqueColumn,
@@ -135,6 +139,38 @@ export class TechniqueDetail {
 
   /** Sin sesión, las pestañas que piden cuenta llevan un candado (solo cuando ya se sabe que no hay). */
   protected readonly locked = computed(() => this.session.loaded() && !this.session.isLoggedIn());
+
+  /**
+   * «Ver en 3D» y «Comprobar con la cámara», en toda técnica (si el módulo no cubre una, su propia
+   * pantalla lo dice, Resuelto 17). Con sesión llevan al módulo, con navegación completa; sin ella,
+   * a crear la cuenta, con la pestaña a la que volver. Hasta que se sabe si hay sesión no se
+   * muestran, para no llevar a quien sí la tiene a la cuenta.
+   */
+  protected readonly actions = computed(() => {
+    const id = this.techniqueId();
+    const tab = this.tab();
+    if (!id || !tab || !this.session.loaded()) return undefined;
+    const module = this.session.isLoggedIn()
+      ? { external: true as const }
+      : { external: false as const, returnTo: `/tecnicas/${id}/${tab.slug}` };
+    return {
+      ...module,
+      items: [
+        {
+          label: 'Ver en 3D',
+          module: 'SIMIQ3D',
+          variant: 'soft' as const,
+          href: simiq3dTechniqueUrl(id),
+        },
+        {
+          label: 'Comprobar con la cámara',
+          module: 'SIVRI',
+          variant: 'primary' as const,
+          href: SIVRI_URL,
+        },
+      ],
+    };
+  });
 
   /**
    * La puerta de cuenta de la pestaña abierta: solo sin sesión y en las que piden cuenta. El

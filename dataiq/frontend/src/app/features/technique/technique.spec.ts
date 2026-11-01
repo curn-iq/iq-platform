@@ -384,6 +384,76 @@ describe('TechniqueDetail', () => {
     });
   });
 
+  describe('«Ver en 3D» y «Comprobar con la cámara»', () => {
+    const actions = () =>
+      Array.from(root.querySelectorAll<HTMLAnchorElement>('header .actions a')).map((a) => [
+        a.textContent!.replace(/\s+/g, ' ').trim(),
+        a.getAttribute('href'),
+      ]);
+
+    it('con sesión llevan a SIMIQ3D (con la técnica) y a SIVRI, con navegación completa', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      await respond();
+      await loadSession(true);
+
+      expect(actions()).toEqual([
+        ['Ver en 3D SIMIQ3D', `/simiq3d/tecnicas/${ID}`],
+        ['Comprobar con la cámara SIVRI', '/sivri/'],
+      ]);
+    });
+
+    it('sin sesión llevan a crear la cuenta, con la pestaña a la que volver', async () => {
+      await open(`/tecnicas/${ID}/instrumental`);
+      await respond();
+      await loadSession(false);
+
+      const volver = '?volver=%2Ftecnicas%2F' + ID + '%2Finstrumental';
+      expect(actions()).toEqual([
+        ['Ver en 3D SIMIQ3D', '/cuenta/crear' + volver],
+        ['Comprobar con la cámara SIVRI', '/cuenta/crear' + volver],
+      ]);
+    });
+
+    it('mientras no se sabe si hay sesión no se muestran', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      await respond();
+
+      expect(root.querySelector('header .actions')).toBeNull();
+    });
+
+    it('están aunque la técnica aún no haya llegado', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      answerColumn();
+      await loadSession(true);
+
+      expect(root.querySelector('.bone')).not.toBeNull();
+      expect(actions()).toHaveLength(2);
+    });
+
+    it('el suave es «Ver en 3D» y el verde, «Comprobar con la cámara»', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      await respond();
+      await loadSession(true);
+
+      const variants = Array.from(root.querySelectorAll('header .actions a')).map((a) =>
+        a.getAttribute('data-variant'),
+      );
+      expect(variants).toEqual(['soft', 'primary']);
+    });
+
+    it('una técnica que no existe no los lleva', async () => {
+      await open(`/tecnicas/${ID}/datos-clinicos`);
+      http
+        .expectOne(`${TEST_API_BASE}/techniques/${ID}`)
+        .flush(null, { status: 404, statusText: 'Not Found' });
+      answerColumn();
+      await settle();
+      await loadSession(true);
+
+      expect(root.querySelector('header .actions')).toBeNull();
+    });
+  });
+
   describe('«No encontrada»', () => {
     it('una técnica que no existe (404)', async () => {
       await open(`/tecnicas/${ID}/datos-clinicos`);

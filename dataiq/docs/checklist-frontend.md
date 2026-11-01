@@ -75,7 +75,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Datos clínicos: «Para qué sirve» es `description`, sin la marca «demostración» (Resuelto 23); el resto de campos clínicos de `GET /techniques/{id}`
 - [x] Instrumental: el instrumental, las suturas por plano, los equipos biomédicos y el equipo médico-quirúrgico, todo detrás de la puerta de cuenta (Resuelto 27). Las suturas se muestran una fila por plano: `data/` separa el `usage` («Piel; Fascia») en planos
 - [x] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
-- [ ] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`) y «Comprobar con la cámara» a `/sivri/` (SIVRI reconoce la técnica sola). Se muestran en todas las técnicas: si el módulo no cubre una (el MVP de los dos es la mesa de Mayo de Cirugía General), su propia pantalla lo dice (Resuelto 17)
+- [x] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`) y «Comprobar con la cámara» a `/sivri/` (SIVRI reconoce la técnica sola). Se muestran en todas las técnicas: si el módulo no cubre una (el MVP de los dos es la mesa de Mayo de Cirugía General), su propia pantalla lo dice (Resuelto 17)
 
 ### Fase 5 — Cuenta
 
