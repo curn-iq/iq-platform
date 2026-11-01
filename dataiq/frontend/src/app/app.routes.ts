@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/session/session.guards';
+import { DEFAULT_TECHNIQUE_TAB } from './domain/technique-tabs';
 
 // Las URL van en español (son parte de la interfaz) y cada pantalla se carga
 // al visitarla. Los títulos son los de los mockups, sin el « · IQ Platform»
 // que pone `PageTitleStrategy`; el inicio no lleva. Las rutas con dato (técnica,
-// editor, revisión) llevan un título genérico hasta que su fase ponga el nombre.
+// editor, revisión) llevan un título genérico hasta que su fase ponga el nombre (el
+// detalle de técnica ya lo pone).
 // Tabla de rutas y accesos: README del frontend, «Rutas».
 const contributor = roleGuard('contributor');
 const reviewer = roleGuard('reviewer');
@@ -17,6 +19,7 @@ export const routes: Routes = [
     title: 'Catálogo de técnicas',
     loadComponent: () => import('./features/catalog/catalog').then((m) => m.Catalog),
   },
+  { path: 'tecnicas/:id', pathMatch: 'full', redirectTo: `tecnicas/:id/${DEFAULT_TECHNIQUE_TAB}` },
   {
     path: 'tecnicas/:id/:pestana',
     title: 'Técnica',

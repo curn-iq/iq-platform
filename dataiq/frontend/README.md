@@ -59,13 +59,13 @@ src/
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad, búsqueda sin tildes
+    │                       por especialidad, búsqueda sin tildes, pestañas del detalle
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, arrow link, search field, avatar, brand mark, not-found, tabs con raya, segmented control,
+    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
     │   │                   status pill, progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
@@ -224,7 +224,17 @@ El catálogo (`/tecnicas`, `catalogo.html`) pide `GET /techniques` y `GET /speci
 - **La especialidad elegida va en la URL** (`?especialidad=<id>`), por eso la barra y el pie llegan al catálogo ya filtrado. `selectedId` es un `linkedSignal` de la URL: la sigue cuando cambia y, al elegir, se pone al momento y la URL la alcanza (`replaceUrl`, sin sumar entradas al historial). Un `id` que no existe es como no haber elegido. La búsqueda no va en la URL.
 - **Al buscar o filtrar** las filas que siguen a la vista se deslizan a su sitio y las nuevas entran subiendo (FLIP, con la Web Animations API). Con movimiento reducido no se anima.
 - **Estados:** mientras llegan las dos listas dice «Cargando…»; si no hay coincidencias, el estado vacío nombra la búsqueda y ofrece «Ver todas las técnicas»; si la API falla no dice «no hay técnicas», porque no se sabe.
-- Cada técnica enlaza a `/tecnicas/:id` (el detalle, casilla siguiente, completa la ruta con su pestaña).
+- Cada técnica enlaza a `/tecnicas/:id`, que redirige a su primera pestaña (ver «Detalle de técnica»).
+
+### Detalle de técnica (`features/technique/`)
+
+El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a la izquierda la **columna de técnicas** (`technique-column/`, con su buscador compacto y todas las técnicas agrupadas por especialidad, la abierta marcada) y a la derecha el nombre de la técnica con su especialidad, las pestañas y la hoja de la elegida. Pide `GET /techniques/{id}` (los datos clínicos, públicos) y la columna, las mismas dos listas del catálogo.
+
+- **La URL manda.** La pestaña vive en la ruta (`datos-clinicos`, `instrumental`, `mesa-de-mayo`, `mesa-de-reserva`; `domain/technique-tabs.ts`), así que se comparte y Atrás la recuerda. `/tecnicas/:id` redirige a `datos-clinicos` (`app.routes.ts`). Las pestañas son `shared/ui/tabs` (`app-tabs`): enlaces con `role="tab"`, la raya de 2 px que se desliza, flechas/Inicio/Fin, candado en las que piden cuenta; la hoja va en un `role="tabpanel"` con `id="panel-<key>"`.
+- **«No encontrada»** (`shared/ui/not-found`) cuando la API responde 404, la pestaña no es una de las cuatro o el `id` no es un UUID (`domain/uuid.ts`: un id imposible ni se pide, porque la API respondería 422 y el interceptor lo avisaría como error). Otros errores (5xx, sin conexión) los avisa el interceptor y la página queda sin nombre. Cambiar de pestaña no vuelve a pedir la técnica: el `id` que alimenta el `httpResource` es un `computed`, que no cambia con la pestaña.
+- **Título de la pestaña del navegador:** el nombre de la técnica. El router pone el título genérico de la ruta justo antes de `NavigationEnd`, y un efecto de la página lo cambia por el nombre cuando llega y tras cada navegación (si no, cambiar de pestaña lo devolvería a «Técnica»).
+- **Celular:** la columna se pliega en un selector («Cirugía general · Tiroidectomía») y la tira de pestañas se desplaza hasta la elegida.
+- **Lo que llega después:** la hoja de cada pestaña (datos clínicos, instrumental, mesas), el foco compartido entre mesa y leyenda, la puerta de cuenta y los botones «Ver en 3D» y «Comprobar con la cámara» son las casillas siguientes de la fase 4.
 
 ### Glosario (interfaz → código y API)
 
@@ -250,7 +260,7 @@ relativas a `/api/dataiq`.
 |---|---|---|---|
 | `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
-| `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
+| `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
 | `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
 | `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
@@ -263,7 +273,7 @@ Cada ruta carga su pantalla al visitarla (`loadComponent`, en
 pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
 en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
 editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
-«Revisar versión») hasta que su pantalla ponga el nombre real. El router
+«Revisar versión») hasta que su pantalla ponga el nombre real; el detalle de técnica ya lo pone. El router
 (`provideAppRouter`, en `core/router/`) tiene `anchorScrolling`: los enlaces de la
 barra y del pie a `/#camino`, `/#investigacion`, `/#preguntas` y `/#quien` bajan a
 esa sección del inicio, también desde otra página y al tocar de nuevo el mismo

@@ -14,6 +14,12 @@ class Host {
   query = signal('');
 }
 
+@Component({
+  imports: [SearchField],
+  template: '<app-search-field label="Buscar" size="compact" />',
+})
+class CompactHost {}
+
 describe('SearchField', () => {
   async function mount() {
     const fixture = TestBed.createComponent(Host);
@@ -35,6 +41,15 @@ describe('SearchField', () => {
     expect(input().placeholder).toBe('Buscar técnica');
     expect(label.textContent).toBe('Buscar una técnica');
     expect(label.getAttribute('for')).toBe(input().id);
+  });
+
+  it('es grande salvo que se pida compacto', async () => {
+    const { root } = await mount();
+    expect(root.querySelector('app-search-field')!.classList).not.toContain('compact');
+
+    const compact = TestBed.createComponent(CompactHost);
+    await compact.whenStable();
+    expect(compact.nativeElement.querySelector('app-search-field').classList).toContain('compact');
   });
 
   it('cada campo tiene su propio id', async () => {

@@ -20,11 +20,13 @@ import { Users } from './features/management/users/users';
 import { NotFoundPage } from './features/not-found/not-found';
 import { TechniqueDetail } from './features/technique/technique';
 
+const TECHNIQUE_ID = '019a0c1e-7b3d-7c2a-9e4f-0a1b2c3d4e5f';
+
 /** Cada ruta, su pantalla y el título de su pestaña. */
 const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/', Home, 'IQ Platform'],
   ['/tecnicas', Catalog, 'Catálogo de técnicas · IQ Platform'],
-  ['/tecnicas/abc/datos-clinicos', TechniqueDetail, 'Técnica · IQ Platform'],
+  [`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`, TechniqueDetail, 'Técnica · IQ Platform'],
   ['/cuenta/ingresar', AccountEntry, 'Ingresar · IQ Platform'],
   ['/cuenta/crear', AccountEntry, 'Crear cuenta · IQ Platform'],
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
@@ -54,8 +56,9 @@ describe('rutas', () => {
   });
 
   afterEach(() => {
-    // El inicio pide el catálogo público al abrirse; a estas pruebas no les importa su respuesta
-    http.match(({ url }) => url.endsWith('/techniques') || url.endsWith('/specialties'));
+    // El inicio y el detalle piden el catálogo público al abrirse; a estas pruebas no les importa
+    // su respuesta
+    http.match(({ url }) => /\/(techniques(\/[^/]+)?|specialties)$/.test(url));
     http.verify();
   });
 
@@ -73,14 +76,14 @@ describe('rutas', () => {
   }
 
   it('todas las pantallas se cargan al visitarlas', () => {
-    for (const route of routes) {
+    for (const route of routes.filter((r) => !r.redirectTo)) {
       expect(route.component, route.path).toBeUndefined();
       expect(route.loadComponent, route.path).toBeTypeOf('function');
     }
   });
 
   it('todas las rutas llevan título, menos el inicio', () => {
-    for (const route of routes.filter((r) => r.path !== '')) {
+    for (const route of routes.filter((r) => r.path !== '' && !r.redirectTo)) {
       expect(route.title, route.path).toBeTruthy();
     }
   });
@@ -94,6 +97,14 @@ describe('rutas', () => {
     expect(component).toBeInstanceOf(screen);
     expect(router.url).toBe(url);
     expect(document.title).toBe(title);
+  });
+
+  it('una técnica sin pestaña abre los datos clínicos', async () => {
+    await loadSession(null);
+
+    await router.navigateByUrl(`/tecnicas/${TECHNIQUE_ID}`);
+
+    expect(router.url).toBe(`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`);
   });
 
   describe('accesos', () => {

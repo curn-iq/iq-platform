@@ -1,0 +1,53 @@
+<nav class="column" [class.open]="open()" aria-label="Técnicas">
+  <button
+    type="button"
+    class="toggle"
+    aria-controls="technique-column-body"
+    [attr.aria-expanded]="open()"
+    (click)="open.set(!open())"
+  >
+    <span>{{ currentLabel() }}</span>
+    <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true">
+      <path
+        d="M2.5 4.5L6 8l3.5-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+  <div class="body" id="technique-column-body">
+    <div class="search" role="search">
+      <app-search-field
+        size="compact"
+        label="Buscar una técnica"
+        placeholder="Buscar técnica"
+        [(value)]="query"
+      />
+    </div>
+    @for (group of groups(); track group.specialty) {
+      <section>
+        <h2>{{ group.specialty }}</h2>
+        <ul>
+          @for (technique of group.techniques; track technique.id) {
+            <li>
+              <a
+                [routerLink]="['/tecnicas', technique.id, tab()]"
+                [attr.aria-current]="technique.id === currentId() ? 'page' : null"
+                (click)="open.set(false)"
+                >{{ technique.name }}</a
+              >
+            </li>
+          }
+        </ul>
+      </section>
+    }
+    @if (loaded() && groups().length === 0) {
+      <p class="empty" aria-live="polite">{{ emptyTitle() }}</p>
+    } @else if (loading()) {
+      <p class="loading">Cargando…</p>
+    }
+  </div>
+</nav>

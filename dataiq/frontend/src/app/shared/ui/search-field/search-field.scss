@@ -69,6 +69,38 @@ input {
   }
 }
 
+// Compacto (columna de técnicas del detalle)
+:host(.compact) {
+  .lens {
+    left: 13px;
+    width: 16px;
+    height: 16px;
+  }
+
+  input {
+    height: 42px;
+    padding: 0 12px 0 38px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: inset 0 0 0 1px var(--color-border);
+    font-size: 15px;
+
+    &:not(:placeholder-shown) {
+      padding-right: 40px;
+    }
+
+    &:focus {
+      box-shadow: inset 0 0 0 2px var(--color-accent);
+    }
+  }
+
+  .clear {
+    right: 4px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
