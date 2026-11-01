@@ -1,0 +1,41 @@
+@if (preview() === 'objects') {
+  <ul class="objects" aria-hidden="true">
+    @for (placeholder of placeholders; track placeholder) {
+      <li><span class="bone"></span></li>
+    }
+  </ul>
+} @else {
+  <app-table-diagram variant="preview" [table]="blankTable" />
+}
+<div class="gate">
+  <span class="lock" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 16 16">
+      <rect
+        x="3.5"
+        y="7"
+        width="9"
+        height="7"
+        rx="1.6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+      />
+      <path
+        d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+      />
+    </svg>
+  </span>
+  <strong>{{ title() }}</strong>
+  <p>{{ text() }}</p>
+  <div class="actions">
+    <a app-button routerLink="/cuenta/crear" [queryParams]="{ volver: returnTo() }"
+      >Crear cuenta gratis</a
+    >
+    <a class="login" routerLink="/cuenta/ingresar" [queryParams]="{ volver: returnTo() }"
+      >Ya tengo cuenta</a
+    >
+  </div>
+</div>

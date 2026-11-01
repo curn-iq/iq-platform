@@ -1,0 +1,105 @@
+// Puerta de cuenta: ver «Puerta de cuenta» en DESIGN.md. El vistazo se difumina hacia abajo
+// y la tarjeta va debajo, centrada, sin tapar nada.
+
+:host {
+  display: block;
+}
+
+// Vistazo del instrumental: dos filas de tres barras, difuminadas hacia abajo
+.objects {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 40px;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+  mask-image: linear-gradient(180deg, #000 45%, transparent);
+
+  li {
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.bone {
+  display: block;
+  width: 70%;
+  height: 12px;
+  margin-block: 5px;
+  border-radius: 8px;
+  background: var(--color-border);
+}
+
+.gate {
+  width: min(340px, 88%);
+  margin: 24px auto 0;
+  padding: 22px 22px 18px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-soft);
+  text-align: center;
+}
+
+.lock {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+p {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+
+  [app-button] {
+    width: 100%;
+  }
+}
+
+.login {
+  padding: 8px;
+  color: var(--color-accent);
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+// ---------- Celular: tres barras, una por fila ----------
+
+@media (max-width: 760px) {
+  .objects {
+    grid-template-columns: minmax(0, 1fr);
+
+    li:nth-child(n + 4) {
+      display: none;
+    }
+  }
+}

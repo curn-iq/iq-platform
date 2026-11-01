@@ -273,11 +273,60 @@ describe('TechniqueDetail', () => {
       expect(root.querySelector('[role=tabpanel] .none')!.textContent).toBe('Sin mesa de reserva.');
     });
 
-    it('sin sesión no se piden las mesas (la vista previa es de otra casilla)', async () => {
+    it('sin sesión no se piden las mesas: la puerta de cuenta, con su vistazo', async () => {
       await openAs(false, 'mesa-de-mayo');
 
       http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
-      expect(root.querySelector('[role=tabpanel]')!.textContent!.trim()).toBe('');
+      const sheet = root.querySelector('[role=tabpanel]')!;
+      expect(sheet.querySelector('app-technique-gate strong')!.textContent).toBe(
+        'Ver la mesa de Mayo',
+      );
+      expect(sheet.querySelector('app-table-diagram')!.getAttribute('data-variant')).toBe(
+        'preview',
+      );
+      expect(sheet.querySelector('app-technique-table')).toBeNull();
+    });
+
+    it('la puerta de la mesa de reserva es la misma, sin decir si la técnica la lleva', async () => {
+      await openAs(false, 'mesa-de-reserva');
+
+      const sheet = root.querySelector('[role=tabpanel]')!;
+      expect(sheet.querySelector('app-technique-gate strong')!.textContent).toBe(
+        'Ver la mesa de reserva',
+      );
+      expect(sheet.textContent).not.toMatch(/Sin mesa/);
+      expect(sheet.querySelector('app-table-diagram')).not.toBeNull();
+    });
+
+    it('«Ya tengo cuenta» vuelve a la pestaña que se quería abrir', async () => {
+      await openAs(false, 'mesa-de-mayo');
+
+      const login = root.querySelector<HTMLAnchorElement>('app-technique-gate .login')!;
+      expect(login.getAttribute('href')).toBe(
+        '/cuenta/ingresar?volver=%2Ftecnicas%2F' + ID + '%2Fmesa-de-mayo',
+      );
+    });
+
+    it('con sesión no hay puerta', async () => {
+      await openAs(true, 'mesa-de-mayo');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
+      await settle();
+
+      expect(root.querySelector('app-technique-gate')).toBeNull();
+    });
+
+    it('mientras no se sabe si hay sesión, tampoco hay puerta', async () => {
+      await open(`/tecnicas/${ID}/mesa-de-mayo`);
+      await respond();
+
+      expect(root.querySelector('app-technique-gate')).toBeNull();
+    });
+
+    it('los datos clínicos no llevan puerta, ni a un visitante', async () => {
+      await openAs(false, 'datos-clinicos');
+
+      expect(root.querySelector('app-technique-gate')).toBeNull();
+      expect(root.querySelector('app-technique-clinical')).not.toBeNull();
     });
 
     it('con sesión, Instrumental trae los objetos y las suturas por plano', async () => {
@@ -304,11 +353,16 @@ describe('TechniqueDetail', () => {
       http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`);
     });
 
-    it('sin sesión Instrumental queda vacío y no pide nada', async () => {
+    it('sin sesión Instrumental muestra la puerta, con barras en lugar de objetos, y no pide nada', async () => {
       await openAs(false, 'instrumental');
 
       http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
-      expect(root.querySelector('[role=tabpanel]')!.textContent!.trim()).toBe('');
+      const sheet = root.querySelector('[role=tabpanel]')!;
+      expect(sheet.querySelector('app-technique-gate strong')!.textContent).toBe(
+        'Ver el instrumental completo',
+      );
+      expect(sheet.querySelectorAll('.objects .bone')).toHaveLength(6);
+      expect(sheet.querySelector('app-technique-instrumental')).toBeNull();
     });
 
     it('de Instrumental a una mesa no vuelve a pedir lo de la técnica', async () => {

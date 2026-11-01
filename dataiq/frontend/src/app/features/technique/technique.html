@@ -21,7 +21,14 @@
         [id]="'panel-' + tab()!.slug"
         [attr.aria-labelledby]="'tab-' + tab()!.slug"
       >
-        @if (tab()!.slug === 'datos-clinicos') {
+        @if (gate(); as gate) {
+          <app-technique-gate
+            [preview]="gate.preview"
+            [title]="gate.title"
+            [text]="gate.text"
+            [returnTo]="gate.returnTo"
+          />
+        } @else if (tab()!.slug === 'datos-clinicos') {
           @if (technique(); as technique) {
             <app-technique-clinical [technique]="technique" />
           }

@@ -14,6 +14,7 @@ import { NotFound } from '../../shared/ui/not-found/not-found';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TechniqueClinical } from './technique-clinical/technique-clinical';
 import { TechniqueColumn } from './technique-column/technique-column';
+import { GatePreview, TechniqueGate } from './technique-gate/technique-gate';
 import { TechniqueInstrumental } from './technique-instrumental/technique-instrumental';
 import { TechniqueTable } from './technique-table/technique-table';
 
@@ -23,6 +24,25 @@ const TABLE_TEXTS: Record<string, { hint: string; empty: string }> = {
   'mesa-de-reserva': {
     hint: 'Señala un número para ubicar su objeto.',
     empty: 'Sin mesa de reserva.',
+  },
+};
+
+/** Lo que dice la puerta de cuenta de cada pestaña que la lleva (sin prometer contenido). */
+const GATE_TEXTS: Record<string, { preview: GatePreview; title: string; text: string }> = {
+  instrumental: {
+    preview: 'objects',
+    title: 'Ver el instrumental completo',
+    text: 'Con una cuenta gratuita se abre el instrumental de esta técnica.',
+  },
+  'mesa-de-mayo': {
+    preview: 'table',
+    title: 'Ver la mesa de Mayo',
+    text: 'Con una cuenta gratuita se abre la mesa de Mayo de esta técnica.',
+  },
+  'mesa-de-reserva': {
+    preview: 'table',
+    title: 'Ver la mesa de reserva',
+    text: 'Con una cuenta gratuita se abre la mesa de reserva de esta técnica.',
   },
 };
 
@@ -42,6 +62,7 @@ const TABLE_TEXTS: Record<string, { hint: string; empty: string }> = {
     Tabs,
     TechniqueClinical,
     TechniqueColumn,
+    TechniqueGate,
     TechniqueInstrumental,
     TechniqueTable,
   ],
@@ -114,6 +135,18 @@ export class TechniqueDetail {
 
   /** Sin sesión, las pestañas que piden cuenta llevan un candado (solo cuando ya se sabe que no hay). */
   protected readonly locked = computed(() => this.session.loaded() && !this.session.isLoggedIn());
+
+  /**
+   * La puerta de cuenta de la pestaña abierta: solo sin sesión y en las que piden cuenta. El
+   * vistazo es el mismo en toda técnica, así que no revela si le falta una mesa.
+   */
+  protected readonly gate = computed(() => {
+    const tab = this.tab();
+    const id = this.techniqueId();
+    const texts = tab && GATE_TEXTS[tab.slug];
+    if (!this.locked() || !texts || !id) return undefined;
+    return { ...texts, returnTo: `/tecnicas/${id}/${tab.slug}` };
+  });
 
   protected readonly tabItems = computed<TabItem[]>(() =>
     TECHNIQUE_TABS.map((tab) => ({
