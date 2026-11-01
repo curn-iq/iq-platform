@@ -25,6 +25,12 @@
           @if (technique(); as technique) {
             <app-technique-clinical [technique]="technique" />
           }
+        } @else if (tab()!.slug === 'instrumental') {
+          @if (instrumentsData(); as data) {
+            <app-technique-instrumental [instruments]="data" />
+          } @else if (accountLoading()) {
+            <p class="loading">Cargando…</p>
+          }
         } @else if (tableSheet(); as sheet) {
           <app-technique-table
             [title]="sheet.title"
@@ -32,7 +38,7 @@
             [empty]="sheet.empty"
             [table]="sheet.table"
           />
-        } @else if (tableLoading()) {
+        } @else if (accountLoading()) {
           <p class="loading">Cargando…</p>
         }
       </section>

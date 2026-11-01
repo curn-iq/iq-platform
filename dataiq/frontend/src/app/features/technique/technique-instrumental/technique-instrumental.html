@@ -1,0 +1,44 @@
+@if (sheet(); as sheet) {
+  @if (sheet.objects.length > 0) {
+    <ul class="objects">
+      @for (object of sheet.objects; track $index) {
+        <li>{{ object }}</li>
+      }
+    </ul>
+  }
+  @if (sheet.equipment.length > 0 || sheet.devices.length > 0 || sheet.sutures.length > 0) {
+    <div class="more">
+      @if (sheet.equipment.length > 0 || sheet.devices.length > 0) {
+        <div class="supplies">
+          @if (sheet.equipment.length > 0) {
+            <section>
+              <h2>Equipos biomédicos</h2>
+              <p>{{ sheet.equipment.join(', ') }}</p>
+            </section>
+          }
+          @if (sheet.devices.length > 0) {
+            <section>
+              <h2>Equipo médico-quirúrgico</h2>
+              <p>{{ sheet.devices.join(', ') }}</p>
+            </section>
+          }
+        </div>
+      }
+      @if (sheet.sutures.length > 0) {
+        <section>
+          <h2>Suturas</h2>
+          <dl class="sutures">
+            @for (row of sheet.sutures; track $index) {
+              <div [class.no-plane]="row.plane === null">
+                @if (row.plane !== null) {
+                  <dt>{{ row.plane }}</dt>
+                }
+                <dd>{{ row.text }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+      }
+    </div>
+  }
+}

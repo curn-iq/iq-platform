@@ -280,6 +280,49 @@ describe('TechniqueDetail', () => {
       expect(root.querySelector('[role=tabpanel]')!.textContent!.trim()).toBe('');
     });
 
+    it('con sesión, Instrumental trae los objetos y las suturas por plano', async () => {
+      await openAs(true, 'instrumental');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush({
+        ...INSTRUMENTS,
+        sutures: [
+          { id: 's-1', name: 'Seda', gauge: '2/0', needle_type: null, usage: 'Piel; Fascia' },
+        ],
+      });
+      await settle();
+
+      const sheet = root.querySelector('[role=tabpanel]')!;
+      expect(sheet.querySelectorAll('app-technique-instrumental .objects li')).toHaveLength(1);
+      expect(Array.from(sheet.querySelectorAll('.sutures dt')).map((dt) => dt.textContent)).toEqual(
+        ['Piel', 'Fascia'],
+      );
+    });
+
+    it('dice «Cargando…» mientras llega el instrumental', async () => {
+      await openAs(true, 'instrumental');
+
+      expect(root.querySelector('[role=tabpanel] .loading')!.textContent).toBe('Cargando…');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+    });
+
+    it('sin sesión Instrumental queda vacío y no pide nada', async () => {
+      await openAs(false, 'instrumental');
+
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+      expect(root.querySelector('[role=tabpanel]')!.textContent!.trim()).toBe('');
+    });
+
+    it('de Instrumental a una mesa no vuelve a pedir lo de la técnica', async () => {
+      await openAs(true, 'instrumental');
+      http.expectOne(`${TEST_API_BASE}/techniques/${ID}/instruments`).flush(INSTRUMENTS);
+      await settle();
+
+      await TestBed.inject(Router).navigateByUrl(`/tecnicas/${ID}/mesa-de-mayo`);
+      await settle();
+
+      http.expectNone(`${TEST_API_BASE}/techniques/${ID}/instruments`);
+      expect(root.querySelector('[role=tabpanel] app-table-legend')).not.toBeNull();
+    });
+
     it('los datos clínicos no piden las mesas', async () => {
       await openAs(true, 'datos-clinicos');
 

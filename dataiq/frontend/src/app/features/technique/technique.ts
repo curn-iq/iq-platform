@@ -14,6 +14,7 @@ import { NotFound } from '../../shared/ui/not-found/not-found';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TechniqueClinical } from './technique-clinical/technique-clinical';
 import { TechniqueColumn } from './technique-column/technique-column';
+import { TechniqueInstrumental } from './technique-instrumental/technique-instrumental';
 import { TechniqueTable } from './technique-table/technique-table';
 
 /** Lo que dice la hoja de cada mesa bajo su título y cuando la técnica no la lleva. */
@@ -36,7 +37,14 @@ const TABLE_TEXTS: Record<string, { hint: string; empty: string }> = {
  */
 @Component({
   selector: 'app-technique',
-  imports: [NotFound, Tabs, TechniqueClinical, TechniqueColumn, TechniqueTable],
+  imports: [
+    NotFound,
+    Tabs,
+    TechniqueClinical,
+    TechniqueColumn,
+    TechniqueInstrumental,
+    TechniqueTable,
+  ],
   templateUrl: './technique.html',
   styleUrl: './technique.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -81,10 +89,13 @@ export class TechniqueDetail {
   });
 
   /** Las mesas de la técnica, cuando llegan; `undefined` mientras no. */
+  protected readonly instrumentsData = computed(() =>
+    this.instruments.hasValue() ? this.instruments.value() : undefined,
+  );
+
   private readonly tables = computed(() => {
-    if (!this.instruments.hasValue()) return undefined;
-    const { zones, items } = this.instruments.value();
-    return toTables(zones, items);
+    const data = this.instrumentsData();
+    return data && toTables(data.zones, data.items);
   });
 
   /** La hoja de una mesa: lo que dice y su mesa. `undefined` si la pestaña no es de una mesa o aún no llegan. */
@@ -96,9 +107,9 @@ export class TechniqueDetail {
     return { title: tab.label, ...texts, table: tables.find((table) => table.name === tab.zone) };
   });
 
-  /** Se están pidiendo las mesas, y la pestaña abierta es una de ellas. */
-  protected readonly tableLoading = computed(
-    () => this.tab()?.zone != null && this.instruments.isLoading(),
+  /** Se está pidiendo lo que ve quien tiene cuenta, y la pestaña abierta lo necesita. */
+  protected readonly accountLoading = computed(
+    () => this.tab()?.requiresAccount === true && this.instruments.isLoading(),
   );
 
   /** Sin sesión, las pestañas que piden cuenta llevan un candado (solo cuando ya se sabe que no hay). */
