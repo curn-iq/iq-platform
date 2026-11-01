@@ -12,6 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { Table } from '../../domain/table';
+import { DrawingParts } from './drawing-parts';
 import { DRAWINGS, type Part } from './drawings';
 import {
   CELL,
@@ -22,6 +23,7 @@ import {
   type PlacedShape,
 } from './piece-layout';
 import { shapesFor } from './shape-catalog';
+import { SteelGradients } from './steel-gradients';
 
 /** Una forma ya colocada, con las partes de su dibujo (el recuadro punteado no tiene). */
 interface DrawnShape extends PlacedShape {
@@ -71,6 +73,7 @@ let nextGradient = 0;
  */
 @Component({
   selector: 'app-table-diagram',
+  imports: [DrawingParts, SteelGradients],
   templateUrl: './table-diagram.html',
   styleUrl: './table-diagram.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

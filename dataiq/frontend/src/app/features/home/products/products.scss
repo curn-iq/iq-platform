@@ -1,0 +1,237 @@
+@use '../section' as s;
+
+// «Tres formas de recorrer una técnica»: las herramientas se recorren de lado a lado.
+// Ver «Carril» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+section {
+  @include s.tramo;
+  --antes: var(--color-bg);
+  --color: var(--color-surface);
+  --despues: var(--color-bg);
+  --fa: 96px;
+  --fb: 96px;
+  scroll-margin-top: var(--size-navbar);
+}
+
+// En escritorio la sección queda fija bajo la barra y el carril se traslada con el scroll
+.sticky {
+  position: sticky;
+  top: var(--size-navbar);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: calc(100svh - var(--size-navbar));
+  padding: 48px 0 32px;
+  overflow: hidden;
+}
+
+.head {
+  @include s.grid-12;
+  align-items: end;
+  padding-inline: var(--space-gutter);
+}
+
+h2 {
+  @include s.section-title;
+  grid-column: 1 / 7;
+}
+
+.text {
+  @include s.section-text;
+  grid-column: 7 / 10;
+}
+
+// Los tres trazos de progreso de 3 px, uno por herramienta
+.steps {
+  grid-column: 10 / 13;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  div {
+    display: grid;
+    gap: 8px;
+    color: var(--color-text-subtle);
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.3s var(--ease-fade);
+
+    &.current {
+      color: var(--color-text);
+    }
+  }
+
+  i {
+    display: block;
+    height: 3px;
+    border-radius: var(--radius-stroke);
+    background: var(--color-border);
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      display: block;
+      height: 100%;
+      background: var(--color-accent);
+      transform: scaleX(var(--p, 0));
+      transform-origin: left;
+    }
+  }
+}
+
+.rail {
+  display: flex;
+  gap: var(--size-rail);
+  min-height: 0;
+  margin-top: 36px;
+  padding-inline: var(--space-gutter);
+  will-change: transform;
+
+  &::after {
+    content: '';
+    flex: none;
+    width: calc(var(--space-gutter) - var(--size-rail));
+  }
+}
+
+.product {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 40px;
+  width: min(1180px, calc(100vw - 2 * var(--space-gutter) - 96px));
+  min-height: 0;
+  padding: 8px 0;
+
+  & + & {
+    padding-left: var(--size-rail);
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+}
+
+// «Headline de producto» y «Lema» de DESIGN.md
+h3 {
+  margin: 0;
+  font-size: clamp(40px, 3.6vw, 60px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.tagline {
+  max-width: 26ch;
+  margin: 0;
+  font-size: clamp(19px, 1.5vw, 23px);
+  font-weight: 550;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.capabilities {
+  margin: 6px 0 0;
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+  list-style: none;
+
+  li {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+.info a {
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+.visual {
+  display: grid;
+  min-height: 0;
+}
+
+// ---------- Tableta ----------
+
+@media (max-width: 760px) {
+  .native .text {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1100px) {
+  h2 {
+    grid-column: 1 / -1;
+  }
+
+  .text {
+    grid-column: 1 / 8;
+    margin-top: 18px;
+  }
+
+  .steps {
+    grid-column: 8 / 13;
+  }
+
+  .product {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(760px, 84vw);
+  }
+
+  .visual {
+    min-height: 340px;
+  }
+}
+
+// ---------- Sin traslado por scroll: celular y movimiento reducido ----------
+// El carril es un desplazamiento horizontal con `scroll-snap`, con tarjetas de 82vw.
+
+.native {
+  .sticky {
+    position: static;
+    height: auto;
+    padding-block: 72px 24px;
+  }
+
+  .steps {
+    display: none;
+  }
+
+  .rail {
+    gap: 20px;
+    padding-bottom: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--space-gutter);
+    scrollbar-width: none;
+
+    &::after {
+      width: 1px;
+    }
+  }
+
+  .product,
+  .product + .product {
+    width: 82vw;
+    gap: 24px;
+    padding: 8px 0;
+    border-left: 0;
+    scroll-snap-align: start;
+  }
+
+  .visual {
+    min-height: 320px;
+  }
+}

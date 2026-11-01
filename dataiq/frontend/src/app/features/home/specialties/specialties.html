@@ -1,0 +1,36 @@
+<section id="especialidades" aria-labelledby="specialties-title">
+  <div class="head">
+    <h2 id="specialties-title">Técnicas por especialidad.</h2>
+    <a app-arrow-link routerLink="/tecnicas">Ver todas las técnicas</a>
+  </div>
+  <div class="columns">
+    @for (group of catalog.groups(); track group.specialty) {
+      <div class="column">
+        <h3>{{ group.specialty }}</h3>
+        <ul>
+          @for (technique of group.techniques; track technique.id) {
+            <li>
+              <a [routerLink]="['/tecnicas', technique.id]">
+                <span>{{ technique.name }}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M3 8h9M8.5 4L12.5 8l-4 4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    } @empty {
+      @if (catalog.loading()) {
+        <p class="loading">Cargando…</p>
+      }
+    }
+  </div>
+</section>

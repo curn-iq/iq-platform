@@ -1,0 +1,521 @@
+// Escenario de la portada: la misma mesa en tres vistas. Ver «Escenario de la mesa» en
+// DESIGN.md. El paño verde y la textura son del objeto (la funda), nunca de la página.
+
+:host {
+  display: block;
+  animation: appear 1s var(--ease-enter) 0.15s backwards;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(120px, 10vw, 150px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px 22px;
+  height: clamp(620px, calc(100svh - var(--size-navbar) - 56px), 880px);
+  padding: 18px 20px 16px;
+  border-radius: var(--radius-stage);
+  background: linear-gradient(180deg, var(--color-surface) 0%, #eef3f4 100%);
+  box-shadow: var(--shadow-stage);
+  overflow: hidden;
+
+  // En la cámara el escenario pasa a noche
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      120% 90% at 40% 40%,
+      var(--color-dark-raised),
+      var(--color-dark) 70%
+    );
+    opacity: 0;
+    transition: opacity 0.7s var(--ease-fade);
+  }
+}
+
+:host([data-view='camera']) .stage::before {
+  opacity: 1;
+}
+
+// ---------- Selector Referencia · 3D · Cámara ----------
+
+.selector {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  padding: 5px;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+  transition: background 0.6s var(--ease-fade);
+
+  button {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 9px;
+    height: 46px;
+    padding: 12px 18px 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-subtle);
+    font: inherit;
+    line-height: 1.4;
+    cursor: pointer;
+    transition:
+      background 0.3s var(--ease-fade),
+      color 0.3s var(--ease-fade);
+
+    &:hover {
+      color: var(--color-text);
+    }
+
+    &[aria-selected='true'] {
+      background: var(--color-surface);
+      color: var(--color-text);
+      box-shadow: 0 1px 2px color-mix(in srgb, var(--color-text) 10%, transparent);
+    }
+  }
+
+  b {
+    font-size: 16px;
+    font-weight: 650;
+  }
+
+  span {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.75;
+  }
+}
+
+:host([data-view='camera']) .selector {
+  background: color-mix(in srgb, var(--color-surface) 7%, transparent);
+
+  button {
+    color: var(--color-dark-text-muted);
+
+    &[aria-selected='true'] {
+      background: var(--color-dark-raised);
+      color: var(--color-surface);
+      box-shadow: inset 0 0 0 1px var(--color-dark-border);
+    }
+  }
+}
+
+// El trazo de progreso de 2 px bajo la pestaña activa
+.progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: var(--radius-hairline);
+  background: color-mix(in srgb, var(--color-text) 10%, transparent);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0.45;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: advance var(--cycle, 5500ms) linear forwards;
+  }
+
+  &.paused::after {
+    animation-play-state: paused;
+  }
+}
+
+:host([data-view='camera']) .progress {
+  background: color-mix(in srgb, var(--color-surface) 14%, transparent);
+}
+
+@keyframes advance {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+// ---------- La escena: la funda ----------
+
+.scene {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  perspective: 1800px;
+  perspective-origin: 50% 25%;
+  container-type: size;
+}
+
+.cover {
+  --base-delay: 0.6s;
+  position: relative;
+  width: min(100cqw, 100cqh);
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-cover);
+  background-image:
+    linear-gradient(150deg, var(--color-cover-sheen), transparent 40%, var(--color-cover-shade)),
+    var(--texture-cover);
+  background-blend-mode: soft-light, soft-light;
+  box-shadow: var(--shadow-cover);
+  transform-style: preserve-3d;
+  transition:
+    transform 1.2s var(--ease-enter),
+    filter 0.7s var(--ease-fade),
+    box-shadow 1.2s var(--ease-enter);
+
+  // Borde interior blanco al 20 %
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: var(--radius-xs);
+    border: 1.5px solid color-mix(in srgb, var(--color-surface) 20%, transparent);
+    pointer-events: none;
+  }
+
+  // El canto de la funda, 16 px detrás
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-cover-edge);
+    transform: translateZ(-16px);
+    pointer-events: none;
+  }
+}
+
+:host([data-view='3d']) .cover {
+  transform: rotateX(44deg) rotateZ(-28deg) scale(0.74);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    26px 50px 50px -20px rgba(10, 27, 34, 0.4);
+}
+
+// En la cámara la funda se desatura, como vista por una cámara
+:host([data-view='camera']) .cover {
+  filter: saturate(0.55) brightness(0.86) contrast(1.08);
+  transform: scale(0.95);
+}
+
+// ---------- Visor de cámara ----------
+
+.viewfinder {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-fade);
+
+  i {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 2px solid color-mix(in srgb, var(--color-surface) 70%, transparent);
+
+    &:nth-child(1) {
+      top: 0;
+      left: 0;
+      border-right: 0;
+      border-bottom: 0;
+      border-radius: 8px 0 0 0;
+    }
+    &:nth-child(2) {
+      top: 0;
+      right: 0;
+      border-left: 0;
+      border-bottom: 0;
+      border-radius: 0 8px 0 0;
+    }
+    &:nth-child(3) {
+      bottom: 0;
+      left: 0;
+      border-right: 0;
+      border-top: 0;
+      border-radius: 0 0 0 8px;
+    }
+    &:nth-child(4) {
+      bottom: 0;
+      right: 0;
+      border-left: 0;
+      border-top: 0;
+      border-radius: 0 0 8px 0;
+    }
+  }
+}
+
+:host([data-view='camera']) .viewfinder {
+  opacity: 1;
+}
+
+.sweep {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 0;
+  height: 72px;
+  margin-top: -72px;
+  background: linear-gradient(
+    color-mix(in srgb, var(--color-detection) 0%, transparent),
+    color-mix(in srgb, var(--color-detection) 16%, transparent)
+  );
+  border-bottom: 2px solid var(--color-detection);
+  opacity: 0;
+}
+
+.scanning .sweep {
+  animation: sweep 1.1s var(--ease-swing) forwards;
+}
+
+@keyframes sweep {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+// ---------- Las diez piezas, sobre la mesa ----------
+
+.pieces {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 18px 20px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-floating);
+  animation: appear 0.4s var(--ease-enter);
+}
+
+.pieces-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  p {
+    margin: 0;
+    font-weight: 650;
+  }
+}
+
+.close {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: var(--radius-control-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover);
+  }
+}
+
+ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 14px;
+  align-content: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+}
+
+li button {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 0 6px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-fade);
+
+  &:hover,
+  &.active {
+    background: var(--color-accent-soft);
+  }
+
+  b {
+    color: var(--color-accent);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  span {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+}
+
+// ---------- Riel y línea de estado ----------
+
+.rail {
+  grid-column: 2;
+  grid-row: 2 / 4;
+}
+
+.status {
+  position: relative;
+  grid-column: 1;
+  grid-row: 3;
+  min-height: 26px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+.state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  animation: fade 0.4s var(--ease-fade);
+
+  b {
+    color: var(--color-text);
+    font-weight: 650;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// La marca «demostración»: Martian Mono, la voz de la máquina
+.demo {
+  color: var(--color-text-subtle);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+:host([data-view='camera']) .status {
+  color: var(--color-dark-text-muted);
+
+  b {
+    color: inherit;
+  }
+
+  .good {
+    color: var(--color-detection);
+  }
+
+  .bad {
+    color: var(--color-misplaced);
+  }
+
+  .demo {
+    color: var(--color-dark-text-muted);
+  }
+}
+
+// ---------- Tableta y celular ----------
+
+@media (max-width: 1100px) {
+  .stage {
+    height: auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  .scene {
+    aspect-ratio: 1;
+    container-type: inline-size;
+  }
+
+  .cover {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-panel);
+  }
+
+  .selector {
+    width: 100%;
+
+    button {
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      height: 54px;
+      padding: 8px 6px 0;
+    }
+  }
+
+  :host([data-view='3d']) .cover {
+    transform: rotateX(40deg) rotateZ(-24deg) scale(0.78);
+  }
+
+  .status {
+    grid-row: 3;
+  }
+
+  .rail {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  ol {
+    grid-template-columns: 1fr;
+  }
+}

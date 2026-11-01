@@ -1,0 +1,86 @@
+// El material de cada parte de un dibujo: ver «Tertiary» (acero) en DESIGN.md.
+
+// ---------- Instrumental en acero ----------
+
+.steel {
+  fill: var(--steel-fill);
+  stroke: var(--color-steel-edge);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.blade {
+  fill: var(--blade-fill);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.box {
+  fill: var(--color-steel-box);
+  stroke: var(--color-steel-line);
+  stroke-width: 0.55;
+}
+
+.groove {
+  fill: none;
+  stroke: var(--color-steel-groove);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+}
+
+.tip {
+  fill: none;
+  stroke: var(--steel-fill);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+// ---------- Objetos planos: tela, bandeja y caucho, sin brillo ----------
+
+.cloth {
+  fill: var(--color-flat-cloth);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.fold {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.2;
+}
+
+.weave {
+  fill: none;
+  stroke: var(--color-steel);
+  stroke-width: 0.8;
+}
+
+.tray-rim {
+  fill: var(--color-flat-tray);
+  stroke: var(--color-steel-shade);
+  stroke-width: 1.4;
+}
+
+.tray-floor {
+  fill: var(--color-flat-tray-bottom);
+}
+
+.rubber {
+  fill: none;
+  stroke: var(--color-steel-shade);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.rubber-glint {
+  fill: none;
+  stroke: var(--color-surface);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.thread {
+  fill: none;
+  stroke: var(--color-text-subtle);
+  stroke-width: 1.2;
+}

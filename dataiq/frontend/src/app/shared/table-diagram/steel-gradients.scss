@@ -1,0 +1,23 @@
+// Las paradas de los degradados del acero y de la hoja.
+
+.stop-light {
+  stop-color: var(--color-steel-light);
+}
+.stop-glint {
+  stop-color: var(--color-steel-glint);
+}
+.stop-steel {
+  stop-color: var(--color-steel);
+}
+.stop-shade {
+  stop-color: var(--color-steel-shade);
+}
+.stop-dim {
+  stop-color: var(--color-steel-dim);
+}
+.stop-white {
+  stop-color: var(--color-surface);
+}
+.stop-blade {
+  stop-color: var(--color-blade-shade);
+}

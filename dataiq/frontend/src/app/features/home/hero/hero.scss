@@ -1,0 +1,135 @@
+@use '../section' as s;
+
+// Portada: titular a la izquierda, la mesa a la derecha. Ver «Layout» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+section {
+  @include s.grid-12;
+  @include s.tramo;
+  --color: var(--color-bg);
+  --despues: var(--color-surface);
+  --fb: 96px;
+  align-items: center;
+  min-height: calc(100svh - var(--size-navbar));
+  padding: 28px var(--space-gutter);
+  scroll-margin-top: var(--size-navbar);
+}
+
+.head {
+  grid-column: 1 / 6;
+  display: grid;
+  gap: 28px;
+  align-content: center;
+  padding-right: 8px;
+}
+
+app-hero-stage {
+  grid-column: 6 / 13;
+}
+
+// «Headline» de DESIGN.md: el titular de portada, en tres líneas que suben al cargar
+h1 {
+  margin: 0;
+  font-size: clamp(46px, 5.6vw, 100px);
+  font-weight: 650;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  margin-top: -0.06em;
+  padding: 0.06em 0 0.04em;
+
+  > span {
+    display: inline-block;
+    animation: rise 1s var(--ease-enter) backwards;
+  }
+
+  &:nth-child(2) > span {
+    animation-delay: 0.07s;
+  }
+
+  &:nth-child(3) > span {
+    animation-delay: 0.14s;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.lede {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  line-height: 1.55;
+  animation: appear 0.9s var(--ease-enter) 0.3s backwards;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 22px;
+  animation: appear 0.9s var(--ease-enter) 0.4s backwards;
+}
+
+// La flecha del botón avanza 3 px al pasar el puntero («Buttons» en DESIGN.md)
+a[app-button] svg {
+  transition: transform 0.35s var(--ease-enter);
+}
+
+a[app-button]:hover svg {
+  transform: translateX(3px);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Tableta: el titular arriba, el escenario debajo, a todo el ancho
+@media (max-width: 1100px) {
+  section {
+    row-gap: 40px;
+    min-height: 0;
+    padding-block: 48px 40px;
+  }
+
+  .head,
+  app-hero-stage {
+    grid-column: 1 / -1;
+  }
+
+  .lede {
+    max-width: 52ch;
+  }
+}
+
+@media (max-width: 760px) {
+  section {
+    padding-block: 36px 32px;
+  }
+
+  .actions a[app-button] {
+    width: 100%;
+  }
+}

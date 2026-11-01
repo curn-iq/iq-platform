@@ -1,0 +1,142 @@
+@use '../section' as s;
+
+// Técnicas por especialidad: el catálogo, a lo ancho. Ver «Catálogo por especialidad» en
+// DESIGN.md.
+
+:host {
+  display: block;
+}
+
+section {
+  @include s.section;
+  --antes: var(--color-surface);
+  --color: var(--color-bg);
+  --despues: var(--color-surface);
+}
+
+.head {
+  @include s.grid-12;
+  align-items: end;
+}
+
+h2 {
+  @include s.section-title;
+  grid-column: 1 / 7;
+}
+
+.head a {
+  grid-column: 10 / 13;
+  justify-self: end;
+  padding-bottom: 6px;
+}
+
+// Cinco columnas abiertas por un filete de 2 px en `tinta`
+.columns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: 120px;
+  margin-top: 48px;
+  border-top: 2px solid var(--color-text);
+}
+
+.loading {
+  margin: 22px 0 0;
+  color: var(--color-text-subtle);
+}
+
+.column {
+  padding: 22px 22px 8px 0;
+
+  & + & {
+    padding-left: 22px;
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Cada técnica es una fila con filete arriba; al señalarla pasa a `marca` y aparece la flecha
+li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 15.5px;
+  text-decoration: none;
+  transition: color 0.2s var(--ease-fade);
+
+  svg {
+    flex: none;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 0.2s var(--ease-fade),
+      transform 0.35s var(--ease-enter);
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+
+    svg {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  h2 {
+    grid-column: 1 / -1;
+  }
+
+  .head a {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: 18px;
+  }
+
+  .columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .column:nth-child(4) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+// Celular: las especialidades pasan a una fila horizontal con `scroll-snap` de 74vw
+@media (max-width: 760px) {
+  .columns {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .column,
+  .column + .column,
+  .column:nth-child(4) {
+    flex: none;
+    width: 74vw;
+    padding: 22px 0 8px;
+    border-left: 0;
+    scroll-snap-align: start;
+  }
+}

@@ -1,0 +1,97 @@
+<div class="panel reference">
+  <div class="macro">
+    <!-- Se vuelve a crear con cada pieza para que su entrada se anime otra vez -->
+    @for (item of [selected()]; track item?.id) {
+      <svg
+        class="enter"
+        viewBox="-24 -6 48 112"
+        aria-hidden="true"
+        [style.--steel-fill]="'url(#' + steelId + ')'"
+        [style.--blade-fill]="'url(#' + bladeId + ')'"
+      >
+        <defs app-steel-gradients [steelId]="steelId" [bladeId]="bladeId" />
+        <g app-drawing-parts [parts]="selectedParts()" />
+      </svg>
+    }
+  </div>
+  <p class="number">{{ selected()?.legendNumber }}</p>
+  <p class="name">{{ selected()?.name }}</p>
+  <button
+    #showAll
+    type="button"
+    class="show-all"
+    aria-controls="stage-pieces"
+    [attr.aria-expanded]="listOpen()"
+    (click)="listToggled.emit()"
+  >
+    Ver las {{ pieceCount() }} piezas
+  </button>
+</div>
+
+<div class="panel three-d">
+  <div class="controls" aria-hidden="true">
+    <span>
+      <svg width="18" height="18" viewBox="0 0 20 20">
+        <path
+          d="M15.5 7.5A6 6 0 1 0 16 12"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+        <path
+          d="M16 3.5v4.2h-4.2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Girar
+    </span>
+    <span>
+      <svg width="18" height="18" viewBox="0 0 20 20">
+        <circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path
+          d="M13 13l4 4M9 6.5v5M6.5 9h5"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+      Acercar
+    </span>
+    <span>
+      <svg width="18" height="18" viewBox="0 0 20 20">
+        <path
+          d="M6 3.5l9 5.2-4.2 1.2-2 4.1z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Tocar
+    </span>
+  </div>
+  <p>Cada pieza muestra su nombre y una descripción breve.</p>
+</div>
+
+<div class="panel camera">
+  <div class="macro">
+    <svg
+      class="enter"
+      viewBox="-24 -6 48 112"
+      aria-hidden="true"
+      [style.--steel-fill]="'url(#' + misplacedSteelId + ')'"
+      [style.--blade-fill]="'url(#' + misplacedBladeId + ')'"
+    >
+      <defs app-steel-gradients [steelId]="misplacedSteelId" [bladeId]="misplacedBladeId" />
+      <g app-drawing-parts [parts]="misplacedParts()" />
+    </svg>
+  </div>
+  <p class="number">{{ misplaced()?.legendNumber }}</p>
+  <p class="name">{{ misplaced()?.name }}</p>
+  <p class="hint">Mover una celda a la izquierda.</p>
+</div>

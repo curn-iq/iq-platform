@@ -1,0 +1,111 @@
+<div class="stage" [class.scanning]="scanning()" (mouseenter)="pause()" (mouseleave)="resume()">
+  <div class="selector" role="tablist" aria-label="Ver la mesa como">
+    @for (tab of tabs; track tab.view; let index = $index) {
+      <button
+        #tab
+        type="button"
+        role="tab"
+        aria-controls="stage-scene"
+        [attr.aria-selected]="view() === tab.view"
+        [attr.tabindex]="view() === tab.view ? 0 : -1"
+        (click)="choose(tab.view)"
+        (keydown)="onTabKeydown($event, index)"
+      >
+        <b>{{ tab.title }}</b
+        ><span>{{ tab.tool }}</span>
+        @if (autoplay() && view() === tab.view) {
+          <!-- Se vuelve a crear cuando el trazo debe empezar de nuevo -->
+          @for (key of [epoch()]; track key) {
+            <i class="progress" [class.paused]="paused()"></i>
+          }
+        }
+      </button>
+    }
+  </div>
+
+  <div id="stage-scene" class="scene" role="tabpanel">
+    <div class="cover">
+      <app-home-table
+        [view]="view()"
+        [grid]="true"
+        [numbers]="true"
+        [interactive]="true"
+        [detectable]="true"
+        [detecting]="view() === 'camera'"
+        [scanned]="scanned()"
+        [displaced]="view() === 'camera'"
+        [(selected)]="selected"
+        (activated)="stopAutoplay()"
+      />
+    </div>
+    <div class="viewfinder" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><span class="sweep"></span>
+    </div>
+    @if (listOpen()) {
+      <div id="stage-pieces" class="pieces">
+        <div class="pieces-head">
+          <p>{{ table.name }}</p>
+          <button type="button" class="close" aria-label="Cerrar la lista" (click)="closeList()">
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path
+                d="M3 3l8 8M11 3l-8 8"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <ol>
+          @for (item of table.items; track item.id) {
+            <li>
+              <button
+                type="button"
+                [class.active]="item.legendNumber === selected()"
+                (click)="chooseFromList(item.legendNumber!)"
+              >
+                <b>{{ item.legendNumber }}</b>
+                <span>{{ item.name }}</span>
+              </button>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+  </div>
+
+  <app-stage-rail
+    class="rail"
+    [view]="view()"
+    [selected]="selectedItem()"
+    [misplaced]="misplacedItem()"
+    [pieceCount]="table.items.length"
+    [listOpen]="listOpen()"
+    (listToggled)="toggleList()"
+  />
+
+  <p class="status" aria-live="polite">
+    @switch (view()) {
+      @case ('reference') {
+        <span class="state">
+          <b>{{ table.name }}</b>
+          Tocar una pieza para verla de cerca.
+          <span class="demo">demostración</span>
+        </span>
+      }
+      @case ('3d') {
+        <span class="state">
+          <b>La misma mesa, en 3D</b>
+          <span class="demo">SIMIQ3D · demostración</span>
+        </span>
+      }
+      @case ('camera') {
+        <span class="state">
+          <b class="good">{{ table.items.length - 1 }} en su lugar</b>
+          <b class="bad">1 por mover</b>
+          <span class="demo">SIVRI · demostración</span>
+        </span>
+      }
+    }
+  </p>
+</div>

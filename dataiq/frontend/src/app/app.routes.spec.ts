@@ -53,7 +53,11 @@ describe('rutas', () => {
     router = TestBed.inject(Router);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    // El inicio pide el catálogo público al abrirse; a estas pruebas no les importa su respuesta
+    http.match(({ url }) => url.endsWith('/techniques') || url.endsWith('/specialties'));
+    http.verify();
+  });
 
   /** Responde `GET /auth/me` con una cuenta del rol, o con un 401 si es un visitante. */
   async function loadSession(role: Role | null): Promise<void> {

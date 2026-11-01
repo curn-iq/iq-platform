@@ -58,15 +58,17 @@ src/
     │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
-    │                       y transiciones, avance por sección
+    │                       y transiciones, avance por sección, técnicas agrupadas
+    │                       por especialidad
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, avatar, brand mark, not-found, tabs con raya, segmented control, status pill,
-    │   │                   progress mark (22 px), search field, demo tag, floating panel,
+    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
+    │   │                   status pill, progress mark (22 px), search field, demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
+    │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
     └── features/
@@ -204,6 +206,16 @@ las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
   (`aria-hidden`): quien la use pone al lado, en texto, la técnica, la mesa y el
   número («Mesa de Mayo · n.° 4»). Un objeto con varias celdas lleva un solo
   número; sin número, sus celdas se encienden sin círculo.
+
+### Inicio (`features/home/`)
+
+El inicio (`/`, `inicio.html`) son seis secciones, cada una un componente con su fondo y su fundido hacia las vecinas (`_section.scss`; ver «The Fondos Neutros Rule» en [`DESIGN.md`](../../DESIGN.md)): la portada (`inicio`), «Tres formas de recorrer una técnica» (`camino`), las técnicas por especialidad (`especialidades`), lo que dice la investigación (`investigacion`), para quién es (`quien`) y las preguntas frecuentes (`preguntas`). Los `id` son los que enlazan la barra y el pie, y cada sección lleva `scroll-margin-top: var(--size-navbar)`.
+
+- **Mesa de ejemplo** (decidido por Juan el 2026-10-31, Resuelto 31 de la [checklist](../docs/checklist-frontend.md)): la API solo entrega las mesas con cuenta, así que la portada y las ventanas de los productos dibujan una **mesa de Mayo de ejemplo** (`demo-table.ts`), que no es de ninguna técnica y se marca «demostración». `app-home-table` la dibuja con los dibujos del acero del diagrama de mesa (`shared/table-diagram`: `DrawingParts` y `SteelGradients` los comparten el diagrama y el inicio) y, si se pide, la capa de la cámara: cajas, etiquetas que no se pisan (`detections.ts`) y el destino «Va aquí» de la pieza fuera de lugar.
+- **Escenario de la portada** (`hero-stage`, con su riel en `stage-rail`): el selector Referencia · 3D · Cámara cambia solo cada 5,5 s, se pausa al pasar el puntero y se detiene al interactuar; con movimiento reducido no corre. Tocar una pieza la elige y el riel la muestra de cerca.
+- **Carril de herramientas** (`products`): en escritorio la sección queda fija y el carril se traslada con el scroll (`rail-scroll.ts`: avance, trazos y traslado); en celular y con movimiento reducido es un desplazamiento horizontal con `scroll-snap`. «Conocer DataIQ» va a `/tecnicas` por el router; «Conocer SIMIQ3D» y «Conocer SIVRI», a `/simiq3d/` y `/sivri/` con navegación completa.
+- **Técnicas por especialidad**: `HomeCatalog` (provisto en `Home`) pide `GET /techniques` y `GET /specialties` una sola vez para esta sección y para la ventana de DataIQ, y las agrupa con `groupBySpecialty()` (`domain/technique-groups.ts`). Cada técnica enlaza a `/tecnicas/:id`.
+- **Espiral de la investigación** (`research`): la geometría y el tiempo están en `spiral.ts` (puro, con pruebas); el componente solo pinta cada cuadro. Corre mientras se ve (`IntersectionObserver`); con movimiento reducido se queda en su dibujo completo.
 
 ### Glosario (interfaz → código y API)
 

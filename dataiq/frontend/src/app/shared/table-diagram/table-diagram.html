@@ -9,36 +9,7 @@
   [attr.aria-label]="preview() ? null : table().name"
   [attr.aria-hidden]="preview() ? 'true' : null"
 >
-  <defs>
-    <linearGradient
-      class="steel-gradient"
-      [id]="steelId"
-      gradientUnits="userSpaceOnUse"
-      x1="-8"
-      y1="0"
-      x2="8"
-      y2="0"
-    >
-      <stop class="stop-light" offset="0" />
-      <stop class="stop-glint" offset=".32" />
-      <stop class="stop-steel" offset=".56" />
-      <stop class="stop-shade" offset=".74" />
-      <stop class="stop-dim" offset="1" />
-    </linearGradient>
-    <linearGradient
-      class="blade-gradient"
-      [id]="bladeId"
-      gradientUnits="userSpaceOnUse"
-      x1="-3"
-      y1="0"
-      x2="5"
-      y2="0"
-    >
-      <stop class="stop-glint" offset="0" />
-      <stop class="stop-white" offset=".5" />
-      <stop class="stop-blade" offset="1" />
-    </linearGradient>
-  </defs>
+  <defs app-steel-gradients [steelId]="steelId" [bladeId]="bladeId" />
   <g class="grid" aria-hidden="true">
     @for (x of columnLines(); track x) {
       <path class="grid-line" data-axis="column" [attr.d]="'M' + x + ' 0V' + height()" />
@@ -73,38 +44,7 @@
                 [attr.data-drawing]="shape.key"
                 [attr.data-kind]="shape.kind"
               >
-                @for (part of shape.parts; track $index) {
-                  @switch (part.shape) {
-                    @case ('path') {
-                      <path
-                        [attr.class]="part.style"
-                        [attr.d]="part.d"
-                        [attr.fill-rule]="part.evenodd ? 'evenodd' : null"
-                        [attr.transform]="part.transform"
-                      />
-                    }
-                    @case ('rect') {
-                      <rect
-                        [attr.class]="part.style"
-                        [attr.x]="part.x"
-                        [attr.y]="part.y"
-                        [attr.width]="part.width"
-                        [attr.height]="part.height"
-                        [attr.rx]="part.rx"
-                        [attr.transform]="part.transform"
-                      />
-                    }
-                    @case ('circle') {
-                      <circle
-                        [attr.class]="part.style"
-                        [attr.cx]="part.cx"
-                        [attr.cy]="part.cy"
-                        [attr.r]="part.r"
-                        [attr.transform]="part.transform"
-                      />
-                    }
-                  }
-                }
+                <g app-drawing-parts [parts]="shape.parts" />
               </g>
             }
           }

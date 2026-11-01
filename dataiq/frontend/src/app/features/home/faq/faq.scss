@@ -1,0 +1,141 @@
+@use '../section' as s;
+
+// Preguntas frecuentes: compactas, un grupo expandible por tema. Ver «Titular Lateral» en
+// DESIGN.md.
+
+:host {
+  display: block;
+}
+
+// La última sección: su fondo termina en `noche`, que es el del pie
+section {
+  @include s.section;
+  @include s.compact;
+  --antes: var(--color-bg);
+  --color: var(--color-surface);
+  --despues: var(--color-dark);
+  // Termina del todo en `noche`: el pie empieza ahí, sin escalón
+  --abajo: var(--color-dark);
+}
+
+.faq {
+  @include s.grid-12;
+  row-gap: 32px;
+  align-items: start;
+}
+
+header {
+  grid-column: 1 / 6;
+  display: grid;
+  gap: 22px;
+  justify-items: start;
+}
+
+h2 {
+  @include s.section-title;
+}
+
+.groups {
+  grid-column: 7 / 13;
+  border-top: 1px solid var(--color-text);
+}
+
+summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  svg {
+    flex: none;
+    color: var(--color-accent);
+  }
+}
+
+.group {
+  border-bottom: 1px solid var(--color-border-strong);
+
+  > summary {
+    padding: 22px 0;
+    font-size: 24px;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+
+    svg {
+      transition: transform 0.4s var(--ease-enter);
+    }
+  }
+
+  &[open] > summary svg {
+    transform: rotate(180deg);
+  }
+}
+
+.questions {
+  margin-bottom: 20px;
+  padding-left: 24px;
+  border-left: 1px solid var(--color-border);
+  animation: appear 0.4s var(--ease-enter);
+
+  details + details {
+    border-top: 1px solid var(--color-border);
+  }
+
+  summary {
+    padding: 14px 0;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+
+    svg {
+      transition: transform 0.35s var(--ease-enter);
+    }
+  }
+
+  details[open] summary svg {
+    transform: rotate(45deg);
+  }
+
+  p {
+    max-width: 56ch;
+    margin: 0;
+    padding: 0 40px 16px 0;
+    color: var(--color-text-muted);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  header,
+  .groups {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .questions {
+    padding-left: 16px;
+
+    p {
+      padding-right: 0;
+    }
+  }
+}

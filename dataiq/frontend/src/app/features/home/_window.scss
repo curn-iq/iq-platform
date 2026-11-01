@@ -1,0 +1,57 @@
+// Lo que comparten las ventanas de producto del carril: ver «Ventana de producto» en
+// «Cards / Containers» de DESIGN.md. Son interfaces a escala reducida, con la marca
+// «demostración» a la derecha.
+
+// La funda pequeña: el paño verde con su textura, donde va la mesa de ejemplo.
+@mixin mini-cover {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  background-color: var(--color-cover);
+  background-image: var(--texture-cover);
+  background-blend-mode: soft-light;
+  box-shadow: 0 10px 22px -12px rgba(10, 27, 34, 0.5);
+}
+
+// La barra de 44 px de la ventana: tres puntos, el nombre y «demostración».
+@mixin window-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 14px;
+  font-weight: 650;
+
+  .dots {
+    display: flex;
+    gap: 6px;
+
+    i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--color-border-strong);
+    }
+  }
+
+  .demo {
+    margin-left: auto;
+    color: var(--color-text-subtle);
+    font-family: var(--font-data);
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+}
+
+// La ventana: 16 px de radio, filete y `fondo`.
+@mixin window {
+  display: grid;
+  grid-template-rows: 44px minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-window);
+  background: var(--color-bg);
+}
