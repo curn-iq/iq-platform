@@ -50,8 +50,10 @@ import { ObjectPicker } from './object-picker/object-picker';
 /** Qué mesa arma el paso: la de Mayo o la de reserva. */
 export type TableKind = keyof typeof ZONE_NAMES;
 
-/** Lo que tapa la barra de abajo del editor, en píxeles, al decidir si «Qué va aquí» cabe bajo una celda. */
-const BOTTOM_BAR = 90;
+/** Lo que se deja libre contra el menú de arriba y la barra de abajo al mostrar «Qué va aquí», en píxeles. */
+const VIEW_MARGIN = 8;
+/** Hasta este ancho de ventana el menú de arriba es el del celular. */
+const MOBILE_WIDTH = 760;
 
 /** Cuántos «más usados» se ofrecen como atajo en la mesa de reserva. */
 const QUICK_COUNT = 7;
@@ -338,13 +340,20 @@ export class TableStep {
     this.change((data, ref) => placeObject(data, ref.id, index, row, column));
   }
 
-  /** Abre «Qué va aquí» bajo la celda, o sobre ella si abajo no cabe. */
+  /**
+   * Abre «Qué va aquí» bajo la celda o, si abajo no cabe, sobre ella; nunca encima de la celda: puede
+   * salirse de la mesa. Abajo no cabe si el panel pasaría de donde empieza la barra de abajo del editor en
+   * su sitio natural (al final de la página, pegada al contenido: lo tapa aunque la ventana tenga sitio).
+   * Después se desplaza la página lo justo para que el panel se vea entre el menú de arriba y esa barra.
+   */
   private openChoice(cell: Cell, button: HTMLElement): void {
     const stage = button.closest<HTMLElement>('.stage');
     const grid = button.parentElement;
     if (!stage || !grid) return;
     const left = grid.offsetLeft + button.offsetLeft;
     const top = grid.offsetTop + button.offsetTop;
+    const band = this.visibleBand();
+    const box = button.getBoundingClientRect();
     this.choice.set({
       row: cell.row,
       column: cell.column,
@@ -355,26 +364,49 @@ export class TableStep {
       () => {
         const panel = this.host.nativeElement.querySelector<HTMLElement>('.choice');
         if (!panel) return;
-        const maxLeft = stage.clientWidth - panel.offsetWidth;
-        // Bajo la celda; si abajo no cabe en la ventana y arriba hay más sitio, sobre ella. Nunca encima de
-        // la celda: puede salirse de la mesa. Lo que queda fuera de la ventana se lleva a la vista.
-        const box = button.getBoundingClientRect();
-        const below = window.innerHeight - BOTTOM_BAR - box.bottom;
-        const above = box.top - window.innerHeight * 0.1;
-        const fitsBelow = panel.offsetHeight + 6 <= below;
-        const goesAbove = !fitsBelow && above > below;
-        const panelTop = goesAbove ? top - panel.offsetHeight - 6 : top + button.offsetHeight + 6;
+        const height = panel.offsetHeight;
+        const above = box.bottom + 6 + height > band.flowBottom;
+        const panelTop = above ? top - height - 6 : top + button.offsetHeight + 6;
         this.choice.set({
           row: cell.row,
           column: cell.column,
-          left: Math.max(0, Math.min(left, maxLeft)),
+          left: Math.max(0, Math.min(left, stage.clientWidth - panel.offsetWidth)),
           top: panelTop,
         });
+        // Dónde queda el panel en la ventana, sin esperar a que Angular lo mueva
+        const viewportTop = box.top + (panelTop - top);
+        this.scrollIntoBand(viewportTop, height, box.height > 0);
         panel.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
-        if (typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ block: 'nearest' });
       },
       { injector: this.injector },
     );
+  }
+
+  /**
+   * Lo que se ve de la ventana, en píxeles: `top` es bajo el menú de arriba; `bottom`, sobre la barra del
+   * editor pegada al borde de abajo; `flowBottom`, donde empieza esa barra en su sitio natural, justo tras
+   * el contenido (al final de la página se queda ahí y no sube más).
+   */
+  private visibleBand(): { top: number; bottom: number; flowBottom: number } {
+    const token = window.innerWidth <= MOBILE_WIDTH ? '--size-navbar-mobile' : '--size-navbar';
+    const navbar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(token));
+    const bar = document.querySelector<HTMLElement>('.footer');
+    const flow = bar?.previousElementSibling?.getBoundingClientRect().bottom;
+    const stuck = window.innerHeight - (bar?.offsetHeight ?? 0);
+    return {
+      top: (Number.isFinite(navbar) ? navbar : 0) + VIEW_MARGIN,
+      bottom: stuck - VIEW_MARGIN,
+      flowBottom: Math.min(stuck, flow ?? stuck) - VIEW_MARGIN,
+    };
+  }
+
+  /** Desplaza la página lo justo para que un bloque de esa altura, a esa distancia del borde de arriba, se vea entero. */
+  private scrollIntoBand(top: number, height: number, laidOut: boolean): void {
+    if (!laidOut || typeof window.scrollBy !== 'function') return;
+    const band = this.visibleBand();
+    let shift = Math.max(0, top + height - band.bottom);
+    if (top - shift < band.top) shift = top - band.top;
+    if (shift !== 0) window.scrollBy({ top: shift, behavior: 'instant' });
   }
 
   protected closeChoice(): void {

@@ -379,6 +379,23 @@ describe('TableStep', () => {
       expect(root.querySelector('.choice')).toBeNull();
     });
 
+    const boxAt = (top: number) =>
+      ({ top, bottom: top + 60, left: 0, right: 60, width: 60, height: 60 }) as DOMRect;
+
+    it('«Qué va aquí» se abre bajo la celda si ahí cabe', async () => {
+      await mount(armed());
+      cell(1, 1).getBoundingClientRect = () => boxAt(100);
+      await click(cell(1, 1));
+      expect(one('.choice').style.top).toBe('6px');
+    });
+
+    it('si bajo la celda no cabe en lo que se ve de la ventana, se abre sobre ella', async () => {
+      await mount(armed());
+      cell(4, 1).getBoundingClientRect = () => boxAt(window.innerHeight - 70);
+      await click(cell(4, 1));
+      expect(one('.choice').style.top).toBe('-6px');
+    });
+
     it('sin objetos, «Qué va aquí» manda a agregarlos primero', async () => {
       await mount();
       await click(cell(1, 1));
