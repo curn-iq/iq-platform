@@ -41,7 +41,9 @@ form {
   }
 }
 
-.history-button {
+.history-button,
+.last,
+.last-options {
   display: none;
 }
 
@@ -186,6 +188,64 @@ textarea {
 
   form > .history-button + .box {
     grid-column: 2;
+  }
+
+  // La última respuesta, en dos líneas como máximo; al tocarla se abre el historial
+  .last {
+    display: block;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    text-align: left;
+    cursor: pointer;
+
+    b {
+      color: var(--color-text);
+      font-weight: 650;
+    }
+  }
+
+  // Mientras llega la respuesta, aunque la ficha esté abierta: si no, en
+  // celular nada diría que la pregunta se está respondiendo
+  .waiting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .last-text {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .last-options {
+    display: flex;
+    gap: 8px;
+    margin: -2px 0 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(90deg, #000 82%, transparent);
+
+    .option {
+      flex: none;
+    }
+  }
+
+  :host(.no-last) {
+    .last:not(.waiting),
+    .last-options {
+      display: none;
+    }
   }
 
   .welcome {

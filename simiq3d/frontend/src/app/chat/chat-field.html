@@ -21,6 +21,22 @@
       <h2>Elige una técnica para verla en 3D</h2>
     </div>
   } @else {
+    @if (busy()) {
+      <button type="button" class="last waiting" (click)="openHistory.emit()">
+        <b>SIMIQ3D:</b> <app-typing />
+      </button>
+    } @else if (last(); as reply) {
+      <button type="button" class="last" (click)="openHistory.emit()">
+        <span class="last-text"><b>SIMIQ3D:</b> {{ reply.text }}</span>
+      </button>
+      @if (reply.options.length) {
+        <div class="last-options">
+          @for (option of reply.options; track option) {
+            <button type="button" class="option" (click)="ask.emit(option)">{{ option }}</button>
+          }
+        </div>
+      }
+    }
     <button
       type="button"
       class="history-button"
@@ -42,10 +58,8 @@
     <textarea
       #area
       rows="1"
-      [placeholder]="
-        disabled() ? 'El chat no está disponible' : 'Pregunta por una técnica o un instrumento'
-      "
-      [disabled]="disabled()"
+      placeholder="Pregunta por una técnica o un instrumento"
+      maxlength="500"
       (input)="onInput($event)"
       (keydown)="onKeydown($event)"
     ></textarea>
@@ -53,7 +67,7 @@
       type="submit"
       class="send"
       aria-label="Enviar pregunta"
-      [disabled]="disabled() || !text().trim()"
+      [disabled]="busy() || !text().trim()"
     >
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <path

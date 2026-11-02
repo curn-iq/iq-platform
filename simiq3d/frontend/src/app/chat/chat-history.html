@@ -1,5 +1,8 @@
 <div class="head">
   <span class="title">Preguntar</span>
+  @if (notice()) {
+    <span class="status">No disponible</span>
+  }
   <button type="button" class="close" aria-label="Cerrar historial" (click)="close.emit()">
     <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
       <path
@@ -11,4 +14,103 @@
     </svg>
   </button>
 </div>
-<ol class="messages" aria-live="polite"></ol>
+
+<ol class="messages" #list aria-live="polite">
+  @for (message of messages(); track message.id) {
+    @if (message.from === 'person') {
+      <li class="message person">
+        <span class="who"
+          ><i aria-hidden="true">{{ initials() }}</i
+          >Tú</span
+        >
+        <p class="text">{{ message.text }}</p>
+      </li>
+    } @else {
+      <li class="message">
+        <span class="who"><i aria-hidden="true">S</i>SIMIQ3D</span>
+        <p class="text">{{ message.reply.reply }}</p>
+        @if (listFor(message); as pieces) {
+          @if (pieces.length) {
+            <app-piece-list [items]="pieces" (choose)="choose.emit($event)" />
+          }
+        }
+        @if (chips().get(message.id); as chip) {
+          <span class="chip">
+            @if (chip.changed) {
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <path
+                  d="M3 7.4l2.6 2.4L11 4.4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            } @else {
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <circle
+                  cx="7"
+                  cy="7"
+                  r="5.4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M7 6.3v3.4M7 4.4v.1"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            <span>{{ chip.label }}</span>
+          </span>
+        }
+        @if (message.reply.options.length) {
+          <div class="options">
+            @for (option of message.reply.options; track option) {
+              <button type="button" class="option" (click)="ask.emit(option)">{{ option }}</button>
+            }
+          </div>
+        }
+      </li>
+    }
+  }
+  @if (pending()) {
+    <li class="message">
+      <span class="who"><i aria-hidden="true">S</i>SIMIQ3D</span>
+      <app-typing class="typing" />
+    </li>
+  }
+</ol>
+
+<div class="foot">
+  @if (notice(); as current) {
+    <div class="notice" role="status">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <path
+          d="M10 6v4.6M10 13.6v.1"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+      <div>
+        <strong>{{ current.title }}</strong>
+        {{ current.line }}
+      </div>
+    </div>
+  }
+  @if (!messages().length && suggestions().length) {
+    <div class="suggestions">
+      @for (suggestion of suggestions(); track suggestion) {
+        <button type="button" class="suggestion" (click)="ask.emit(suggestion)">
+          {{ suggestion }}
+        </button>
+      }
+    </div>
+  }
+</div>

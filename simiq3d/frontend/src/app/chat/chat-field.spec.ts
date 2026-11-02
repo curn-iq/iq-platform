@@ -2,9 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import { ChatField } from './chat-field';
 
 describe('ChatField', () => {
-  async function render(disabled = false) {
+  async function render(busy = false) {
     const fixture = TestBed.createComponent(ChatField);
-    fixture.componentRef.setInput('disabled', disabled);
+    fixture.componentRef.setInput('busy', busy);
     const asked: string[] = [];
     fixture.componentInstance.ask.subscribe((question) => asked.push(question));
     await fixture.whenStable();
@@ -35,14 +35,31 @@ describe('ChatField', () => {
     expect(asked).toEqual([]);
   });
 
-  it('no envía una pregunta vacía ni con el chat no disponible', async () => {
+  it('no envía una pregunta vacía ni mientras espera la respuesta', async () => {
     const empty = await render();
     empty.type('   ');
     empty.press();
     expect(empty.asked).toEqual([]);
 
-    const unavailable = await render(true);
-    expect(unavailable.area.placeholder).toBe('El chat no está disponible');
+    const waiting = await render(true);
+    waiting.type('¿Dónde va la Kelly?');
+    waiting.press();
+    expect(waiting.asked).toEqual([]);
+  });
+
+  it('mientras espera, los tres puntos van en lugar de la última respuesta', async () => {
+    const fixture = TestBed.createComponent(ChatField);
+    fixture.componentRef.setInput('last', { text: 'La Pinza Kelly es el número 9.', options: [] });
+    fixture.componentRef.setInput('busy', true);
+    await fixture.whenStable();
+    const last = (fixture.nativeElement as HTMLElement).querySelector('.last');
+    expect(last?.querySelector('[aria-label="SIMIQ3D está respondiendo"]')).not.toBeNull();
+    expect(last?.textContent).not.toContain('La Pinza Kelly es el número 9.');
+  });
+
+  it('admite hasta 500 caracteres, como la API', async () => {
+    const { area } = await render();
+    expect(area.maxLength).toBe(500);
   });
 
   it('dice bajo el campo que las preguntas se guardan sin el nombre', async () => {
