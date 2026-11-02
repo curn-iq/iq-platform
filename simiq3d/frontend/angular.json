@@ -30,7 +30,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "../../shared/design/tokens.css",
+              "../../shared/design/base.css",
+              "src/styles/theme.scss"
             ],
             "baseHref": "/simiq3d/"
           },

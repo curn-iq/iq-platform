@@ -1,0 +1,20 @@
+// Tema de SIMIQ3D sobre los tokens de shared/design/ (ver «Sistema visual
+// compartido» en CLAUDE.md). Solo sobrescribe propiedades CSS, nunca define
+// estilos de componentes.
+//
+// SIMIQ3D cambia el verde de interfaz por el azul de quirófano, para que se
+// sienta otro módulo (DESIGN.md, «SIMIQ3D: explorar en 3D»). El acento es una
+// familia y se cambia completa; el foco la sigue solo. El verde se queda en el
+// logo y en la funda de la mesa, que tienen sus propios nombres.
+:root {
+  --color-accent: var(--quirofano);
+  --color-accent-strong: var(--quirofano-hondo);
+  --color-accent-soft: var(--quirofano-claro);
+  --color-accent-soft-hover: var(--quirofano-claro-hover);
+  --color-bg: var(--fondo-quirofano);
+  --color-hover: var(--hover-quirofano);
+  --color-border: var(--filete-quirofano);
+  --color-border-strong: var(--filete-2-quirofano);
+  --color-text-muted: var(--tinta-2-quirofano);
+  --color-text-subtle: var(--tinta-3-quirofano);
+}
