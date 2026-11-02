@@ -3,25 +3,31 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   input,
   linkedSignal,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ChatField } from '../chat/chat-field';
-import { ChatHistory } from '../chat/chat-history';
+import { ChatHistory, ChatNames } from '../chat/chat-history';
+import { SessionService } from '../core/session/session.service';
 import { DataIQRepository } from '../data/dataiq.repository';
 import { toMayoTable } from '../data/mayo-table';
 import { Simiq3dRepository } from '../data/simiq3d.repository';
 import { placeItems } from '../domain/placement';
+import { suggestions } from '../domain/suggestions';
+import { initials } from '../shared/initials';
 import { mediaQuery, MOBILE_QUERY } from '../shared/media-query';
 import type { FreeArea, SceneView } from '../viewer/mayo-scene';
 import { Viewer } from '../viewer/viewer';
 import { CanvasHead } from './canvas-head/canvas-head';
+import { ConversationService } from './conversation.service';
 import { InstrumentCard } from './instrument-card/instrument-card';
 import { Legend } from './legend/legend';
 import { TechniqueSheet } from './technique-sheet/technique-sheet';
@@ -63,6 +69,8 @@ export class ExplorePage {
   private readonly dataiq = inject(DataIQRepository);
   private readonly simiq3d = inject(Simiq3dRepository);
   private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
+  protected readonly conversation = inject(ConversationService);
   protected readonly mobile = mediaQuery(MOBILE_QUERY);
 
   protected readonly techniques = this.dataiq.techniques();
@@ -132,6 +140,35 @@ export class ExplorePage {
   /** Alto del campo de pregunta, que en celular tapa la parte de abajo del lienzo. */
   protected readonly fieldHeight = signal(150);
 
+  /** La bienvenida: sin técnica abierta y sin haber preguntado nada. */
+  protected readonly welcome = computed(
+    () => this.state() === 'empty' && this.conversation.messages().length === 0,
+  );
+  /** Tres preguntas para empezar, con nombres de DataIQ (`domain/suggestions.ts`). */
+  protected readonly suggestions = computed(() => {
+    const technique = this.technique();
+    const mayo = this.mayo();
+    return suggestions(
+      this.covered().map((t) => t.name),
+      technique && mayo ? { name: technique.name, items: mayo.items } : undefined,
+    );
+  });
+  /** Los nombres de DataIQ para el chip de cada respuesta. */
+  protected readonly names = computed<ChatNames>(() => ({
+    techniques: new Map((this.techniques.value() ?? []).map((t) => [t.id, t.name])),
+    instruments: new Map((this.instruments.value() ?? []).map((i) => [i.id, i.name])),
+  }));
+  protected readonly initials = computed(() => initials(this.session.account()?.name ?? ''));
+  /** En celular, la última respuesta va encima del campo. */
+  protected readonly lastReply = computed(() => {
+    const last = [...this.conversation.messages()]
+      .reverse()
+      .find((message) => message.from === 'simiq3d');
+    return last?.from === 'simiq3d'
+      ? { text: last.reply.reply, options: last.reply.options }
+      : null;
+  });
+
   protected readonly title = computed(() => this.technique()?.name ?? 'Explorar en 3D');
   protected readonly meta = computed(() =>
     this.state() === 'table' && this.technique()
@@ -165,6 +202,37 @@ export class ExplorePage {
       observer.observe(this.field().nativeElement);
       destroyRef.onDestroy(() => observer.disconnect());
     });
+
+    // Lo que pide la respuesta del chat: abrir su técnica y, cuando llega su mesa,
+    // señalar el instrumento (y abrir su ficha, si se pidió). Nunca sale del texto.
+    effect(() => {
+      const change = this.conversation.scene();
+      if (!change) return;
+      const id = this.id();
+      if (change.technique && change.technique !== id) {
+        untracked(() => this.open(change.technique!));
+        return;
+      }
+      if (change.instrument === null) {
+        untracked(() => this.conversation.takeScene());
+        return;
+      }
+      const mayo = this.mayo();
+      if (mayo === undefined) return;
+      untracked(() => {
+        const item = mayo?.items.find((i) => i.instrumentIds.includes(change.instrument!));
+        if (item) {
+          this.selected.set(item.id);
+          this.cardOpen.set(change.card);
+        }
+        this.conversation.takeScene();
+      });
+    });
+  }
+
+  /** Una pregunta al chat, con la técnica abierta. */
+  protected ask(question: string): void {
+    void this.conversation.ask(question, this.id() ?? null);
   }
 
   protected open(id: string): void {

@@ -91,6 +91,35 @@ describe('ExplorePage', () => {
     expect(page.textContent).not.toMatch(/fila|columna/i);
   });
 
+  it('la respuesta del chat señala el instrumento en su mesa y abre su ficha', async () => {
+    const page = await open('t-1');
+    const area = page.querySelector('textarea')!;
+    area.value = '¿Qué es la Kelly?';
+    area.dispatchEvent(new Event('input'));
+    area.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
+
+    const request = TestBed.inject(HttpTestingController).expectOne(`${TEST_SIMIQ3D}/chat`);
+    expect(request.request.body).toEqual({ question: '¿Qué es la Kelly?', technique_id: 't-1' });
+    request.flush({
+      action: 'describe_instrument',
+      technique_id: 't-1',
+      instrument_id: 'i-kelly',
+      field: null,
+      reply: 'La Pinza Kelly es una pinza hemostática.',
+      options: [],
+    });
+    await new Promise((resolve) => setTimeout(resolve));
+    TestBed.tick();
+
+    expect(page.querySelector('app-legend .piece')?.getAttribute('aria-current')).toBe('true');
+    expect(page.querySelector('app-instrument-card')?.textContent).toContain(
+      'Pinza hemostática curva.',
+    );
+    expect(page.querySelector('app-chat-history .chip')?.textContent).toContain(
+      'Describir · Pinza Kelly',
+    );
+  });
+
   it('una técnica que SIMIQ3D no cubre lo dice y ofrece las que sí', async () => {
     const page = await open('t-9');
     expect(page.querySelector('.scope')?.textContent).toContain(
