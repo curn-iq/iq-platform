@@ -41,6 +41,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
 - [x] Liberar la memoria al cambiar de técnica (la geometría de cada modelo queda en la biblioteca para reutilizarla)
 - [x] Sin WebGL: aviso y enlace a la mesa en DataIQ
+- [x] Las piezas quedan dentro de la mesa y no se tapan entre sí: cada una se corre lo justo desde el centro de su celda (`domain/arrangement.ts`; decidido por Mauricio el 2026-11-01)
 - [x] Página técnica para ver el visor con datos reales (`explore/`): técnicas, visor y leyenda; la pantalla final es la fase 4
 - [ ] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar
 

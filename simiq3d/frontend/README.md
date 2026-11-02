@@ -110,6 +110,13 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
   instrumentos independientes en la misma celda van uno al lado del otro.
 - **Todos apuntan igual**, a lo largo de X. Hacia dónde apunta cada uno es
   para después del MVP.
+- **Dentro de la mesa y sin taparse:** `domain/arrangement.ts` parte del
+  centro de las celdas de cada objeto y lo corre lo justo para que quede
+  entero sobre la mesa (a 1 cm del borde) y a 3 mm de cualquier otra pieza.
+  Dos piezas que se tapan se separan por el lado en que menos se tapan; como
+  son largas y delgadas, casi siempre es a lo ancho, así que cada una sigue en
+  su fila y en el mismo orden. Las medidas de cada pieza salen del modelo
+  armado, en la escena.
 
 ### El chat
 

@@ -163,6 +163,12 @@ hacia dónde apunta:
   centro.
 - **Todos los instrumentos apuntan igual.** Hacia dónde apunta cada uno es
   para después del MVP.
+- **Dentro de la mesa y sin taparse** (decidido por Mauricio el
+  2026-11-01): una pieza que se saldría por el borde, o que taparía a otra
+  hasta no distinguir cuál es cuál, se corre lo justo, hacia adentro o a lo
+  ancho, junto a su vecina. En una mesa real ninguna pieza cuelga del borde y,
+  aunque estén juntas, se distinguen. Las demás quedan en el centro de su
+  celda.
 - **Objetos compuestos:** el mango con su hoja va en la celda como un
   mango, con la hoja montada en él: la hoja se cuelga del nodo `blade_mount`
   de su mango ([`models/README.md`](models/README.md), «Mango y hoja»). Dos
