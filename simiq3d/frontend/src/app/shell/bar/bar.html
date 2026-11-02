@@ -1,0 +1,23 @@
+<header class="bar">
+  <a class="brand" [href]="shell + '/'" aria-label="IQ Platform, inicio">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true" focusable="false">
+      <rect class="tile" width="30" height="30" rx="8" />
+      <path class="grid" d="M9 9h12M9 15h12M9 21h12M9 9v12M15 9v12M21 9v12" stroke-width="1.2" />
+      <circle class="dot" cx="15" cy="15" r="3.2" />
+      <circle class="spark" cx="21" cy="9" r="2" />
+    </svg>
+    IQ Platform
+  </a>
+  <span class="module">SIMIQ3D</span>
+  <nav class="nav" aria-label="Principal">
+    <a [href]="shell + '/tecnicas'">Técnicas</a>
+    <a routerLink="/" aria-current="page">Explorar en 3D</a>
+    <a [href]="shell + '/#camino'">Herramientas</a>
+  </nav>
+  @if (session.account(); as account) {
+    <span class="account" [title]="account.name">
+      <span class="avatar" aria-hidden="true">{{ letters() }}</span>
+      <span class="account-text">Mi cuenta</span>
+    </span>
+  }
+</header>

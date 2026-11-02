@@ -35,9 +35,10 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 Dónde corre cada pieza en producción y cómo llega ahí:
 
 - **Vercel** (plan Hobby) tiene un proyecto por pieza que se despliega aparte:
-  el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend, el de
-  SIMIQ3D su frontend y su backend, y `dataiq-backend` la API como funciones
-  de Python en la región `cle1`. El navegador llega a la API por un rewrite
+  el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend, los de
+  SIMIQ3D su frontend (`simiq3d-frontend`, un sitio estático) y su backend
+  (`simiq3d-backend`), y `dataiq-backend` la API, los dos backends como
+  funciones de Python en la región `cle1`. El navegador llega a la API por un rewrite
   del mismo dominio (`/api/dataiq/*`), así que la cookie de sesión viaja sin
   CORS. Los frontends de SIMIQ3D y SIVRI también se abren por ese dominio,
   con rewrites del proyecto del shell (`/simiq3d/*` y `/sivri/*`) hacia el
@@ -86,3 +87,51 @@ Se descartaron:
 - **Hugging Face Spaces:** su cómputo gratuito no sirve para SIVRI.
 - **El crédito de GCP de USD 300 por 90 días:** vence.
 - **Oracle Cloud y Koyeb:** exigen tarjeta.
+
+## Límite de intentos de autenticación
+
+Decidido por Mauricio Lugo el 2026-11-01, para cumplir el nivel 1 de
+[OWASP ASVS 5.0](https://github.com/OWASP/ASVS/blob/master/5.0/en/0x15-V6-Authentication.md)
+en autenticación: el requisito 6.1.1 pide documentar cómo se frena la prueba
+masiva de contraseñas y cómo eso evita bloquear la cuenta de otra persona, y
+el 6.3.1, aplicarlo. Se hace con una regla de rate limiting del firewall de
+Vercel en el proyecto `dataiq-backend`, incluida en el plan Hobby (una regla
+por proyecto y 1.000.000 de solicitudes permitidas; verificado en la
+documentación de Vercel el 2026-11-01). No necesita código.
+
+- **Qué cuenta:** las peticiones `POST` a `/auth/login`, `/auth/register` y
+  `/auth/token`, por IP, en una ventana fija de 10 minutos (el máximo de
+  Hobby).
+- **Cuánto:** 100 peticiones por IP en cada ventana. Desde la 101, el
+  firewall responde 429 sin llegar a la función, hasta que empieza la ventana
+  siguiente.
+- **Por qué 100:** un curso en una sala de la CURN sale a internet con una
+  sola IP, y un límite bajo bloquearía la clase entera. 100 en 10 minutos deja
+  ingresar y registrarse a un curso, y frena la prueba masiva de contraseñas y
+  de correos.
+- **Sin bloquear cuentas:** el contador es por IP, no por cuenta, así que
+  nadie puede bloquear la cuenta de otra persona; quien pasa el límite espera
+  a la ventana siguiente.
+- **Dónde va:** en el proyecto del backend, porque ahí llega quien llama a la
+  API directo. Vercel reemplaza `X-Forwarded-For` en lo que le llega desde
+  otro proxy
+  ([encabezados de la petición](https://vercel.com/docs/headers/request-headers)):
+  si una petición que pasa por el rewrite del shell llega al backend con la IP
+  de Vercel y no con la del navegador, todas las personas contarían como una.
+  En ese caso la regla se pasa al proyecto del shell (ruta
+  `/api/dataiq/auth/…`), que sí ve la IP real.
+
+La regla vive en Vercel, no en el repo. Este comando la crea igual, con el CLI
+de Vercel y la cuenta de Mauricio; `firewall diff` muestra el cambio y
+`firewall publish` lo aplica:
+
+```sh
+npx --yes vercel@64.0.2 firewall rules add "Límite de intentos de autenticación" \
+  --project dataiq-backend \
+  --condition '{"type":"method","op":"eq","value":"POST"}' \
+  --condition '{"type":"path","op":"inc","value":["/auth/login","/auth/register","/auth/token"]}' \
+  --action rate_limit --rate-limit-window 600 --rate-limit-requests 100 \
+  --rate-limit-keys ip --rate-limit-action rate_limit --yes
+npx --yes vercel@64.0.2 firewall diff --project dataiq-backend
+npx --yes vercel@64.0.2 firewall publish --project dataiq-backend --yes
+```

@@ -36,14 +36,31 @@ from app.domain.names import (
 _NOT_A_LIST = re.compile(r"\b(?:no lleve|no tenga|comun|comparten|diferen|cuant)")
 # «el bisturí», «la pinza»: un instrumento nombrado por su familia, sin decir cuál.
 _FAMILY = re.compile(r"\b(?:el|la)\s+(bisturi|mango|hoja|pinza|tijera|separador)\b")
+# Los tiempos quirúrgicos y el orden en que se usa el instrumental: DataIQ no los
+# tiene, y el modelo presentaba las posiciones de la mesa como un orden por
+# tiempos (fuera del MVP, decidido por Mauricio el 2026-11-02).
+_SURGICAL_TIMES = re.compile(
+    r"\btiempos?\s+(?:quirurgicos?|operatorios?)\b"
+    r"|\b(?:dieresis|hemostasia|sintesis)\b"
+    r"|\b(?:en\s+que\s+orden|orden\s+en\s+(?:el\s+)?que)\s+se\s+"
+    r"(?:usa|usan|utiliza|utilizan|pide|piden|pasa|pasan)\b"
+    r"|\bse\s+(?:usa|usan|utiliza|utilizan|pide|piden|pasa|pasan)\s+"
+    r"(?:primero|despues|antes|al\s+(?:principio|final)|de\s+ultimo)\b"
+    r"|\borden\s+de\s+uso\b"
+)
+NO_SURGICAL_TIMES = (
+    "DataIQ no tiene el instrumental por tiempos quirúrgicos (diéresis, hemostasia, "
+    "síntesis…) ni el orden en que se usa: solo dónde va cada pieza en la mesa de "
+    "Mayo de cada técnica."
+)
 
 
 def before_the_model(
     question: str, catalog: Catalog, open_technique_id: UUID | None
 ) -> Reply | None:
-    """La respuesta, si la pregunta nombra una técnica de otra especialidad, pide
-    el instrumental de una técnica o nombra un instrumento que en esa mesa puede
-    ser varios; si no, None."""
+    """La respuesta, si la pregunta nombra una técnica de otra especialidad, trata
+    de tiempos quirúrgicos, pide el instrumental de una técnica o nombra un
+    instrumento que en esa mesa puede ser varios; si no, None."""
     vocabulary = Vocabulary.from_catalog(catalog)
     named = technique_in(question, vocabulary)
     if named is None:
@@ -53,11 +70,17 @@ def before_the_model(
                 ChatAction.no_answer,
                 f"{other.name} es una técnica de {other.specialty}. {OUT_OF_SCOPE}",
             )
-    if instrument_in(question, vocabulary) is not None:
-        return None
     technique = find_technique(catalog, named) or technique_by_id(
         catalog, open_technique_id
     )
+    if _SURGICAL_TIMES.search(canonical(question)):
+        return Reply(
+            ChatAction.no_answer,
+            NO_SURGICAL_TIMES,
+            options=(f"¿Qué lleva la mesa de {technique.name}?",) if technique else (),
+        )
+    if instrument_in(question, vocabulary) is not None:
+        return None
     # El instrumental de una técnica, completo: el modelo a veces lo resume
     # («bisturíes, tijeras y pinzas…»), y la lista está en DataIQ.
     named_count = sum(

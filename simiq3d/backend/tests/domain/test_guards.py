@@ -1,5 +1,5 @@
 from app.domain.chat import ChatAction
-from app.domain.guards import before_the_model
+from app.domain.guards import NO_SURGICAL_TIMES, before_the_model
 from tests.sample import CATALOG, COLECISTECTOMIA
 
 
@@ -41,3 +41,30 @@ def test_comparing_or_counting_is_not_listing():
         "¿Cuántos instrumentos lleva la colecistectomía?",
     ):
         assert before_the_model(question, CATALOG, None) is None
+
+
+def test_surgical_times_are_not_in_dataiq_and_are_not_left_to_the_model():
+    reply = before_the_model(
+        "Armar la mesa tiroidectomia por tiempo quirurgico, ¿cómo es el orden?",
+        CATALOG,
+        None,
+    )
+
+    assert reply.action == ChatAction.no_answer
+    assert reply.reply == NO_SURGICAL_TIMES
+    assert reply.options == ("¿Qué lleva la mesa de Tiroidectomía?",)
+    for question in (
+        "¿Qué instrumentos son de diéresis?",
+        "¿En qué orden se usan las pinzas?",
+        "Dime las piezas en el orden en que se usan",
+        "¿Qué pieza se usa primero?",
+        "¿Qué pinza es de hemostasia?",
+    ):
+        reply = before_the_model(question, CATALOG, COLECISTECTOMIA.id)
+        assert reply.reply == NO_SURGICAL_TIMES
+        assert reply.options == ("¿Qué lleva la mesa de Colecistectomía?",)
+
+
+def test_the_arrangement_of_the_table_is_not_a_surgical_time():
+    assert before_the_model("¿Cómo es el orden de la mesa?", CATALOG, None) is None
+    assert before_the_model("¿Para qué sirve la Kelly?", CATALOG, None) is None

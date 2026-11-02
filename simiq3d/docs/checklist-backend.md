@@ -43,11 +43,34 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
   sin cuadrícula); si no pasa, responden las plantillas
 - [x] «¿Quizás quisiste decir…?» para nombres mal escritos
 - [x] Pregunta ambigua: pide precisar en qué técnica
+- [x] Sin tiempos quirúrgicos (2026-11-02): una pregunta por tiempos
+  (diéresis, hemostasia, síntesis…) o por el orden en que se usa el
+  instrumental la responde una regla fija, y el prompt le prohíbe al modelo
+  ordenar las piezas por tiempos. Antes, el modelo presentaba las posiciones
+  de la mesa de Tiroidectomía como «el orden por tiempo quirúrgico» y lo
+  justificaba con una frase propia; la verificación no lo detectó, porque
+  compara nombres, números y ubicaciones, no lo que se afirma de ellos.
+  Preguntas 113 a 117 del banco; el banco completo, en local con Qwen3-VL el
+  2026-11-02, dio 115 de 117 (98,3 %): fallan la 50 (pendiente, abajo) y la
+  54, que pasa al repetirla sola
+- [x] Una llamada escrita como texto («reply("…")») después de la respuesta ya
+  no la repite
+- [ ] «¿Y la Kelly Adson?» con Eventrorrafia abierta (pregunta 50 del banco):
+  el modelo dice bien dónde va, pero agrega «SIMIQ3D solo cubre…» y abre la
+  técnica sin resaltar la pinza. Falla igual con el prompt anterior al
+  2026-11-02 (visto en local con Qwen3-VL ese día)
 - [x] `POST /chat` con el contrato acordado con el frontend
 - [x] Probado con Qwen2.5 7B y Qwen3-VL 8B en la RX 6600 XT
 - [x] Modelo del MVP: Qwen3-VL 8B instruct
 - [x] Banco de preguntas con su respuesta correcta, para medir la exactitud
   (`eval/banco.csv` y el comando `chat_bank`)
+- [ ] Con el modelo de lenguaje, la acción solo sale como `show_technique`,
+  `highlight_instrument`, `answer` o `clarify` (`_finish`, en
+  `app/adapters/outbound/language/ollama.py`); `describe_instrument`,
+  `show_clinical_data`, `list_instruments` y `no_answer` solo salen de las
+  plantillas. Visto el 2026-11-02 en local con Qwen3-VL: «¿Qué es la tijera de
+  Mayo?» no abre la ficha en el visor, aunque el texto la describe. El banco
+  califica «describir» y «listar» por el texto, no por la acción
 
 ## Modelos 3D
 

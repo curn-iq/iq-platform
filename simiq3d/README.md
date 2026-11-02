@@ -19,6 +19,14 @@ Decidido por Mauricio el 2026-10-15:
   en DataIQ (la lista está en
   [`sivri/docs/dataset.md`](../sivri/docs/dataset.md)). Cada modelo 3D
   corresponde a un instrumento del catálogo de DataIQ.
+- **Sin tiempos quirúrgicos** (decidido por Mauricio el 2026-11-02): DataIQ
+  guarda dónde va cada objeto en la mesa de cada técnica, no a qué tiempo
+  quirúrgico pertenece (diéresis, hemostasia, síntesis…) ni en qué orden se
+  usa. El chat lo dice con una regla fija, antes del modelo, y el modelo tiene
+  prohibido ordenar las piezas por tiempos
+  ([`backend/README.md`](backend/README.md), «Cómo responde el chat»). Armar
+  la mesa por tiempos queda para después del MVP
+  ([`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md)).
 
 ## Modelos 3D
 
@@ -163,6 +171,12 @@ hacia dónde apunta:
   centro.
 - **Todos los instrumentos apuntan igual.** Hacia dónde apunta cada uno es
   para después del MVP.
+- **Dentro de la mesa y sin taparse** (decidido por Mauricio el
+  2026-11-01): una pieza que se saldría por el borde, o que taparía a otra
+  hasta no distinguir cuál es cuál, se corre lo justo, hacia adentro o a lo
+  ancho, junto a su vecina. En una mesa real ninguna pieza cuelga del borde y,
+  aunque estén juntas, se distinguen. Las demás quedan en el centro de su
+  celda.
 - **Objetos compuestos:** el mango con su hoja va en la celda como un
   mango, con la hoja montada en él: la hoja se cuelga del nodo `blade_mount`
   de su mango ([`models/README.md`](models/README.md), «Mango y hoja»). Dos
@@ -239,8 +253,8 @@ El avance, por actividad de DSRM, está en
 ## Stack
 
 El backend lo desarrolla Mauricio y los modelos 3D, Guebriel (reparto del
-2026-10-20); el frontend, Juan Caraballo, que lleva el frontend de los tres
-módulos. Requisito: **el visor
+2026-10-20); el frontend, también Mauricio (reparto del frontend acordado por
+Mauricio y Juan Caraballo el 2026-11-01: Juan lleva el del shell y DataIQ). Requisito: **el visor
 corre en el navegador, sin instalar nada** (WebGL), como lo fundamenta el
 Formato 115 en su marco teórico.
 
@@ -258,7 +272,12 @@ Formato 115 en su marco teórico.
   sirve desde el mismo origen que el shell. Se descartaron Babylon.js (más
   pesado de lo que pide una mesa estática) y Unity exportado a la web (carga
   su propio motor, varios MB antes de mostrar nada, y queda aislado del
-  shell).
+  shell). También se descartaron (revisado por Mauricio el 2026-11-01)
+  model-viewer de Google, que muestra un modelo por elemento y no deja armar
+  una mesa con varias piezas, señalar una y llevar la cámara hacia ella, y
+  angular-three, que pone una capa de Angular sobre Three.js con menos
+  usuarios y atada al ritmo de cada versión de Angular: el visor usa Three.js
+  directo, sin envoltorios.
 
 Arquitectura, rutas y cómo se corre el frontend:
 [`frontend/README.md`](frontend/README.md).

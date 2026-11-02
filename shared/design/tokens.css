@@ -29,6 +29,8 @@
   --marca-claro-hover: #cfe7e1;
   --niebla-marca: #b8dcd4;
   --pano: #1d7564;
+  /* La funda azul de la mesa de Mayo en la escena 3D de SIMIQ3D */
+  --pano-azul: #2a78c2;
   --niebla-pano: #e6f3f0;
   --brillo-pano: rgba(255, 255, 255, 0.12);
   --sombra-pano: rgba(0, 0, 0, 0.14);
@@ -67,8 +69,6 @@
 
   /* Escena 3D de SIMIQ3D */
   --canto-pano: #0e463c;
-  --rejilla-escena: #4c9a88;
-  --celda-escena: #bfe3d9;
   --lienzo-centro: #f7fafc;
   --lienzo-medio: #e8eff4;
   --lienzo-borde: #dce5ec;
@@ -84,7 +84,6 @@
   --tinta-2-quirofano: #344a57;
   --tinta-3-quirofano: #4e6470;
   --hover-quirofano: #e3ebf1;
-  --celda-quirofano: #d3e6f2;
 
   /* Tipografía */
   --letra: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
@@ -145,6 +144,9 @@
   --color-accent-strong: var(--marca-hondo);
   --color-accent-soft: var(--marca-claro);
   --color-accent-soft-hover: var(--marca-claro-hover);
+  /* La marca de IQ Platform (el logo): verde aunque un módulo cambie su acento */
+  --color-brand: var(--marca);
+  --color-brand-soft: var(--marca-claro);
   /* El foco es siempre el acento: un tema que lo cambie lo arrastra */
   --color-focus: var(--color-accent);
   --color-dark: var(--noche);
@@ -153,6 +155,10 @@
   --color-dark-text-muted: var(--niebla-noche);
   --color-camera-glow: var(--noche-visor);
   --color-window-3d-edge: var(--vista-3d-borde);
+  /* El fondo del lienzo de SIMIQ3D (radial frío, «Lienzo frío» en DESIGN.md) */
+  --color-canvas-center: var(--lienzo-centro);
+  --color-canvas-middle: var(--lienzo-medio);
+  --color-canvas-edge: var(--lienzo-borde);
 
   /* El acero del instrumental y los objetos planos del diagrama de mesa */
   --color-steel-light: var(--acero-luz);
@@ -171,6 +177,7 @@
 
   /* La funda de Mayo, el objeto de la portada y de las ventanas de producto */
   --color-cover: var(--pano);
+  --color-drape: var(--pano-azul);
   --color-cover-edge: var(--canto-pano);
   --color-cover-sheen: var(--brillo-pano);
   --color-cover-shade: var(--sombra-pano);

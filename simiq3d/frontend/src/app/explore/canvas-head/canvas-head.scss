@@ -1,0 +1,112 @@
+:host {
+  display: grid;
+  gap: 4px;
+  max-width: min(520px, 60%);
+}
+
+.name {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.meta {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 0.9375rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.selector {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  select {
+    appearance: none;
+    height: 38px;
+    padding: 0 36px 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow:
+      inset 0 0 0 1px var(--color-border-strong),
+      0 1px 2px rgb(10 27 34 / 0.06);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.90625rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  svg {
+    position: absolute;
+    right: 12px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+}
+
+// La fuente no trae el tamaño de la mesa ni hacia dónde apunta cada instrumento
+.provisional {
+  color: var(--color-text-subtle);
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// En celular el nombre es el selector: una sola línea, con su flecha en un cuadro
+.name-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chevron {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 820px) {
+  :host {
+    max-width: calc(100% - 150px);
+  }
+
+  .meta {
+    font-size: 0.84375rem;
+  }
+}

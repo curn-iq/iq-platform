@@ -43,15 +43,15 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   correos. En el MVP la pantalla de ingreso no lo ofrece.
 - **Ingresar con Google** (cuentas personales e institucionales). Hace falta
   OAuth en el backend de DataIQ y declararlo en el aviso de privacidad.
-- **Limitar los intentos de inicio de sesión** para frenar a quien prueba
-  contraseñas por fuerza bruta.
-- **Registro sin delatar qué correos tienen cuenta.** Hoy `POST /auth/register`
-  responde 409 si el correo ya existe y 201 si es nuevo, y cualquiera puede probar
-  correos así. Hace falta una respuesta uniforme para los dos casos (mismo mensaje, mismo
-  código y mismo tiempo) y limitar los intentos en el registro, además del ingreso. El
-  detalle y por qué está en [`checklist-backend.md`](../dataiq/docs/checklist-backend.md),
-  «Hallazgos de seguridad pendientes». Mientras tanto la pantalla de crear cuenta no
-  repite el texto del 409.
+- **Registro con verificación del correo y una sola respuesta** (requisito
+  6.3.8 de OWASP ASVS 5.0): al registrarse, la respuesta es siempre que se
+  envió un enlace para activar la cuenta a ese correo, tenga cuenta o no, y el
+  correo le avisa a quien ya la tenía. Así el registro deja de delatar qué
+  correos tienen cuenta, y desaparece su 409. Usa el mismo servicio de envío
+  de correos que recuperar la contraseña, así que conviene hacer las dos cosas
+  juntas. Por qué en el MVP el 409 se queda:
+  [`checklist-backend.md`](../dataiq/docs/checklist-backend.md), «Hallazgos de
+  seguridad pendientes».
 - **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalog/full`, si
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.
@@ -97,6 +97,13 @@ fuentes propias.
 
 ## SIMIQ3D
 
+- **Armar la mesa por tiempo quirúrgico** (diéresis, hemostasia, síntesis…).
+  Para los estudiantes de IQ es central, pero DataIQ no guarda a qué tiempo
+  pertenece cada objeto ni en qué orden se usa. Hace falta el dato, con su
+  fuente, en la base y la API de DataIQ; las consultas del chat y sus
+  preguntas en el banco, y el frontend de SIMIQ3D. Queda fuera del MVP
+  (decidido por Mauricio el 2026-11-02, [`simiq3d/README.md`](../simiq3d/README.md),
+  «Alcance del MVP»).
 - **Un modelo de lenguaje más grande** que Qwen3-VL 8B, el del MVP: necesita
   una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
   Se elige con el mismo banco de preguntas, para comparar la exactitud.

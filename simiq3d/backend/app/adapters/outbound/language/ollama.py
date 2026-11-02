@@ -57,6 +57,8 @@ para que el visor lo muestre.
 - Para decir dónde va algo, usa la ubicacion (la zona de la mesa), lo que \
 tiene junto_a y su numero_en_el_diagrama. Nunca hables de filas, columnas ni \
 celdas: la mesa real es un campo sin cuadrícula.
+- No ordenes las piezas por tiempos quirúrgicos ni por el orden en que se \
+usan, y no expliques por qué la mesa está armada así: DataIQ no tiene esos datos.
 - Los datos clínicos (indicaciones, complicaciones, anestesia…) se citan como \
 vienen; no los resumas con palabras tuyas.
 - Si un instrumento va en varias técnicas, di su ubicación en cada una: no \
@@ -379,6 +381,8 @@ _TOOL_NAMES = re.compile(
     r"\b(?:reply|show_in_3d|get_technique|find_instrument|list_techniques|"
     r"compare_techniques)\b"
 )
+# Una llamada escrita en el texto («reply("…")») en vez de hecha.
+_WRITTEN_CALL = re.compile(_TOOL_NAMES.pattern + r"\s*\(")
 
 
 # «Puedo resaltarlo para ti»: lo que se muestra ya lo hizo el visor.
@@ -401,12 +405,26 @@ def _plain_places(text: str) -> str:
     return text.replace('"', "")
 
 
+def _without_written_call(text: str) -> str:
+    """Lo de antes de una llamada escrita como texto: el modelo a veces responde y
+    después repite la respuesta dentro de un «reply("…")», y quedaba dos veces. Si
+    no escribió nada antes, la respuesta es lo que va entre comillas."""
+    match = _WRITTEN_CALL.search(text)
+    if match is None:
+        return text
+    before = text[: match.start()].strip()
+    if before:
+        return before
+    quoted = re.search(r'"(.+)"', text[match.end() :], re.DOTALL)
+    return quoted.group(1) if quoted else ""
+
+
 def _clean(text: str) -> tuple[str, list[str]]:
-    """Quita lo que no es para el estudiante: las «Sugerencias:» que el modelo
-    escribe dentro del texto (pasan a ser opciones), las frases con nombres de
-    herramientas o que ofrecen mostrar lo que ya se muestra, las comillas y el
-    formato Markdown."""
-    text = _plain_places(text.replace("**", "").strip())
+    """Quita lo que no es para el estudiante: una llamada escrita como texto, las
+    «Sugerencias:» que el modelo escribe dentro del texto (pasan a ser opciones),
+    las frases con nombres de herramientas o que ofrecen mostrar lo que ya se
+    muestra, las comillas y el formato Markdown."""
+    text = _plain_places(_without_written_call(text.replace("**", "").strip()))
     suggestions: list[str] = []
     match = re.search(r"(?i)\bsugerencias?\s*:", text)
     if match:

@@ -30,7 +30,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "../../shared/design/tokens.css",
+              "../../shared/design/base.css",
+              "src/styles/theme.scss"
             ],
             "baseHref": "/simiq3d/"
           },
@@ -43,17 +45,33 @@
                   "maximumError": "500kB"
                 },
                 {
+                  "type": "anyScript",
+                  "maximumWarning": "750kB",
+                  "maximumError": "900kB"
+                },
+                {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": true
+              }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

@@ -44,9 +44,10 @@ porqué están en el [README](../README.md).
 - [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
   y plantillas de respaldo), mapeo de modelos y registro de conversaciones, con
   pruebas automatizadas; avance en [`checklist-backend.md`](checklist-backend.md)
-- [ ] Visor 3D: la mesa armada con el arreglo publicado en DataIQ, cada modelo
-  en su celda, y clic en un instrumento para ver su descripción
-- [ ] Chat en el frontend: pregunta, acción y escena
+- [x] Visor 3D: la mesa armada con el arreglo publicado en DataIQ, cada modelo
+  en su celda, y clic en un instrumento para ver su descripción; avance en
+  [`checklist-frontend.md`](checklist-frontend.md)
+- [x] Chat en el frontend: pregunta, acción y escena
 - [ ] Despliegue: el frontend en el mismo origen que el shell (`/simiq3d/*`),
   el backend detrás de `/api/simiq3d/*`, con GitHub Actions
 

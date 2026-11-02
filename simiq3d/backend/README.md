@@ -112,8 +112,10 @@ las plantillas.
 2. **Reglas fijas** (`app/domain/guards.py`), antes del modelo y también en las
    plantillas: si la pregunta nombra una técnica de otra especialidad («la
    cesárea»), dice que SIMIQ3D solo cubre la mesa de Mayo de Cirugía General;
-   si nombra un instrumento por su familia («el bisturí», «la pinza») en una
-   mesa que lleva varios, pregunta cuál, con cada uno como opción.
+   si pregunta por tiempos quirúrgicos o por el orden en que se usa el
+   instrumental, dice que DataIQ no los tiene y ofrece el instrumental de la
+   técnica; si nombra un instrumento por su familia («el bisturí», «la pinza»)
+   en una mesa que lleva varios, pregunta cuál, con cada uno como opción.
 3. Con `LANGUAGE_MODEL=ollama`, el **agente** (`adapters/outbound/language/ollama.py`)
    deja que el modelo use las consultas de `app/domain/tools.py` y redacte la
    respuesta. Antes de enviarla, `app/domain/grounding.py` verifica que cada

@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Bar } from './shell/bar/bar';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [Bar, RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.scss',
   templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
-export class App {
-  protected readonly title = signal('simiq3d');
-}
+export class App {}

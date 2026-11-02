@@ -1,0 +1,10 @@
+<ol>
+  @for (piece of items(); track piece.id) {
+    <li>
+      <button type="button" (click)="choose.emit(piece.id)">
+        <span class="number">{{ piece.legendNumber ?? '–' }}</span>
+        {{ piece.name }}
+      </button>
+    </li>
+  }
+</ol>

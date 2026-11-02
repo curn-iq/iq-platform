@@ -1,0 +1,39 @@
+<div class="veil" (click)="open.set(false)"></div>
+<section
+  class="sheet"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title"
+  [attr.aria-hidden]="!open()"
+  [attr.inert]="open() ? null : ''"
+>
+  <div class="handle" aria-hidden="true"></div>
+  <div class="head">
+    <h2 id="sheet-title">Técnica</h2>
+    <p>Mesa de Mayo en 3D</p>
+  </div>
+  <ul>
+    @for (technique of techniques(); track technique.id) {
+      <li>
+        <button
+          type="button"
+          class="option"
+          [attr.aria-current]="technique.id === currentId()"
+          (click)="pick(technique.id)"
+        >
+          {{ technique.name }}
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path
+              d="M4 9.5l3.2 3L14 5.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </li>
+    }
+  </ul>
+</section>

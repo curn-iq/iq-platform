@@ -1,0 +1,122 @@
+<div
+  class="bench"
+  [class.empty]="welcome()"
+  [class.history]="historyOpen()"
+  [style.--panel.px]="chatWidth()"
+  [style.--field-height.px]="fieldHeight()"
+>
+  <app-chat-history
+    class="chat"
+    [messages]="conversation.messages()"
+    [pending]="conversation.pending()"
+    [notice]="conversation.notice()"
+    [suggestions]="welcome() ? [] : suggestions()"
+    [initials]="initials()"
+    [names]="names()"
+    [openTechnique]="id()"
+    [items]="mayo()?.items ?? []"
+    (ask)="ask($event)"
+    (choose)="selected.set($event)"
+    (close)="historyOpen.set(false)"
+  />
+  @if (mobile() && historyOpen()) {
+    <div class="veil" (click)="historyOpen.set(false)"></div>
+  }
+  <app-chat-field
+    class="field"
+    [empty]="welcome()"
+    [techniques]="covered()"
+    [busy]="conversation.pending()"
+    [last]="lastReply()"
+    [showLast]="!historyOpen() && !cardOpen()"
+    (choose)="open($event)"
+    (ask)="ask($event)"
+    (openHistory)="historyOpen.set(true)"
+  />
+
+  <div
+    class="divider"
+    role="separator"
+    aria-orientation="vertical"
+    aria-label="Ancho del chat"
+    tabindex="0"
+    [attr.aria-valuenow]="chatWidth()"
+    aria-valuemin="300"
+    aria-valuemax="560"
+    (pointerdown)="startResize($event)"
+    (keydown)="resizeWithKeys($event)"
+  ></div>
+
+  <main class="canvas">
+    <app-viewer
+      #viewer
+      class="viewer"
+      [items]="placed()"
+      [(selected)]="selected"
+      [view]="view()"
+      [freeArea]="freeArea()"
+      [techniqueName]="title()"
+      [dataiqUrl]="dataiqUrl()"
+      (tapped)="onTap($event)"
+      (interacted)="hint.set(false)"
+    />
+    <app-canvas-head
+      class="head"
+      [title]="title()"
+      [meta]="meta()"
+      [techniques]="covered()"
+      [currentId]="id()"
+      [mobile]="mobile()"
+      (choose)="open($event)"
+      (openSheet)="sheetOpen.set(true)"
+    />
+    <app-legend
+      [items]="mayo()?.items ?? []"
+      [selected]="selected()"
+      [(open)]="legendOpen"
+      [disabled]="!mayo()"
+      (choose)="pickFromLegend($event)"
+    />
+    @if (cardOpen() && selectedItem(); as item) {
+      <app-instrument-card
+        [item]="item"
+        [instruments]="cardInstruments()"
+        (close)="cardOpen.set(false)"
+      />
+    }
+    <app-view-controls [(view)]="view" (zoom)="viewer.zoom($event)" (center)="viewer.center()" />
+    @if (!mobile() && hint() && state() === 'table') {
+      <p class="hint">Arrastra para girar · rueda o pellizco para acercar</p>
+    }
+
+    @if (state() === 'uncovered' || state() === 'missing') {
+      <div class="scope" role="status">
+        <div class="scope-box">
+          <h2>
+            @if (state() === 'missing') {
+              No se encontró esa técnica
+            } @else {
+              SIMIQ3D muestra por ahora la mesa de Mayo de las técnicas de Cirugía General
+            }
+          </h2>
+          <div class="options">
+            @for (technique of covered(); track technique.id) {
+              <button type="button" class="option" (click)="open(technique.id)">
+                {{ technique.name }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>
+
+@if (mobile()) {
+  <app-technique-sheet
+    [techniques]="covered()"
+    [currentId]="id()"
+    [(open)]="sheetOpen"
+    (choose)="open($event)"
+  />
+}
