@@ -34,13 +34,14 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 
 ### Fase 2 — Visor (técnico, sin la interfaz final)
 
-- [ ] Escena, cámara y `OrbitControls` adaptados al tacto (girar, acercar), con límites para no perder la mesa
-- [ ] Carga de GLB con meshopt; cada modelo se descarga una vez y se reutiliza
-- [ ] La mesa de Mayo, de tamaño provisional, con cada instrumento a escala real y su centro en el de su celda; el mango con su hoja montada en `blade_mount` (README, «Cómo se arma la mesa»)
-- [ ] Dibujar solo cuando algo cambia; `devicePixelRatio` hasta 2; luz sencilla
-- [ ] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
-- [ ] Liberar la memoria al cambiar de técnica
-- [ ] Sin WebGL: aviso y enlace a la mesa en DataIQ
+- [x] Escena, cámara y `OrbitControls` adaptados al tacto (girar, acercar), con límites para no perder la mesa
+- [x] Carga de GLB con meshopt; cada modelo se descarga una vez y se reutiliza (`viewer/model-library.ts`)
+- [x] La mesa de Mayo, de tamaño provisional, con cada instrumento a escala real y su centro en el de su celda; el mango con su hoja montada en `blade_mount` (README, «Cómo se arma la mesa»)
+- [x] Dibujar solo cuando algo cambia; `devicePixelRatio` hasta 2; luz sencilla
+- [x] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
+- [x] Liberar la memoria al cambiar de técnica (la geometría de cada modelo queda en la biblioteca para reutilizarla)
+- [x] Sin WebGL: aviso y enlace a la mesa en DataIQ
+- [x] Página técnica para ver el visor con datos reales (`explore/`): técnicas, visor y leyenda; la pantalla final es la fase 4
 - [ ] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar
 
 ### Fase 3 — Mockups
