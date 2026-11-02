@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy import event
 
 from app.adapters.outbound.persistence.repositories.versions import (
     SQLAlchemyVersionRepository,
@@ -446,3 +447,104 @@ async def test_reviewed_by_me_lists_what_the_reviewer_approved_or_rejected(
     assert {v["technique"] for v in response_.json()} == {"Aprobada", "Rechazada"}
     assert [v["technique"] for v in only_drafts.json()] == ["Rechazada"]
     assert as_contributor.status_code == 403
+
+
+@pytest.mark.anyio
+async def test_include_content_brings_each_version_like_its_detail(
+    session, client, contributor, reviewer, specialty, zone, instrument
+):
+    other = await save_user(session, "Otra", "otra@prueba.com", Role.contributor)
+    returned = await create_technique(client, contributor, specialty, "Devuelta")
+    await edit(client, contributor, returned["id"], content(zone, instrument))
+    await action(client, contributor, returned["id"], "submit")
+    await action(
+        client, reviewer, returned["id"], "reject", json={"reason": "Falta la ropa"}
+    )
+    empty = await create_technique(client, contributor, specialty, "Vacía")
+    foreign = await create_technique(client, other, specialty, "De otra")
+
+    mine = await client.get(
+        "/versions?include=content", headers=auth_headers(contributor)
+    )
+    everything = await client.get(
+        "/versions?include=content", headers=auth_headers(reviewer)
+    )
+
+    assert mine.status_code == 200
+    details = {v["summary"]["id"]: v for v in mine.json()}
+    # Un colaborador sigue viendo solo las suyas
+    assert set(details) == {returned["id"], empty["id"]}
+    for version_id, detail in details.items():
+        alone = await client.get(
+            f"/versions/{version_id}", headers=auth_headers(contributor)
+        )
+        assert detail == alone.json()
+    assert [r["reason"] for r in details[returned["id"]]["rejections"]] == [
+        "Falta la ropa"
+    ]
+    assert {v["summary"]["id"] for v in everything.json()} == {
+        returned["id"],
+        empty["id"],
+        foreign["id"],
+    }
+
+
+@pytest.mark.anyio
+async def test_without_include_the_list_stays_a_summary(client, contributor, specialty):
+    version = await create_technique(client, contributor, specialty)
+
+    response_ = await client.get("/versions", headers=auth_headers(contributor))
+
+    [summary] = response_.json()
+    assert summary["id"] == version["id"]
+    assert "content" not in summary
+
+
+@pytest.mark.anyio
+async def test_include_content_answers_304_when_nothing_changed(
+    client, contributor, specialty
+):
+    await create_technique(client, contributor, specialty)
+    headers = auth_headers(contributor)
+
+    first_ = await client.get("/versions?include=content", headers=headers)
+    second = await client.get(
+        "/versions?include=content",
+        headers=headers | {"If-None-Match": first_.headers["etag"]},
+    )
+
+    assert first_.headers["cache-control"] == "private, max-age=0"
+    assert second.status_code == 304
+
+
+@pytest.mark.anyio
+async def test_include_content_asks_the_same_queries_for_one_version_or_many(
+    session, client, contributor, specialty, zone, instrument
+):
+    """Sin N+1: el contenido de varias versiones no hace una consulta por versión."""
+
+    async def queries_for_the_list() -> int:
+        connection_ = (await session.connection()).sync_connection
+        statements: list[str] = []
+
+        def count(conn, cursor, statement, parameters, context, executemany):
+            statements.append(statement)
+
+        event.listen(connection_, "before_cursor_execute", count)
+        try:
+            response_ = await client.get(
+                "/versions?include=content", headers=auth_headers(contributor)
+            )
+            assert response_.status_code == 200
+        finally:
+            event.remove(connection_, "before_cursor_execute", count)
+        return len(statements)
+
+    first_ = await create_technique(client, contributor, specialty, "Una")
+    await edit(client, contributor, first_["id"], content(zone, instrument))
+    with_one = await queries_for_the_list()
+    for name in ("Dos", "Tres"):
+        version = await create_technique(client, contributor, specialty, name)
+        await edit(client, contributor, version["id"], content(zone, instrument))
+
+    assert await queries_for_the_list() == with_one

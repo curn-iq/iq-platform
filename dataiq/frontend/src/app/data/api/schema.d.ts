@@ -123,7 +123,9 @@ export interface paths {
          * @description Versiones por estado (por defecto, las en curso), de la más reciente a la
          *     más vieja. Un colaborador solo ve las suyas; un revisor ve todas, o solo las
          *     suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
-         *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno.
+         *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
+         *     `include=content`, cada una con su contenido y sus rechazos, en la misma
+         *     respuesta: así Mis borradores no pide cada versión por separado.
          */
         get: operations["list_versions_versions_get"];
         put?: never;
@@ -1315,6 +1317,8 @@ export interface operations {
                 state?: components["schemas"]["VersionState"][] | null;
                 mine?: boolean;
                 reviewed_by_me?: boolean;
+                /** @description Con `content`, cada versión trae su contenido y sus rechazos, como `GET /versions/{id}` */
+                include?: "content" | null;
             };
             header?: never;
             path?: never;
@@ -1328,7 +1332,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VersionSummaryOut"][];
+                    "application/json": components["schemas"]["VersionSummaryOut"][] | components["schemas"]["VersionDetailOut"][];
                 };
             };
             /** @description Validation Error */
