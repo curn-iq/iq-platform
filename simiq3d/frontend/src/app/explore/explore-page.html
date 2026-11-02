@@ -1,41 +1,106 @@
-<nav class="techniques" aria-label="Técnicas">
-  @for (technique of techniques.value() ?? []; track technique.id) {
-    <a
-      [routerLink]="['/tecnicas', technique.id]"
-      [attr.aria-current]="technique.id === id() ? 'page' : null"
-      >{{ technique.name }}</a
-    >
+<div
+  class="bench"
+  [class.empty]="state() === 'empty'"
+  [class.history]="historyOpen()"
+  [style.--panel.px]="chatWidth()"
+  [style.--field-height.px]="fieldHeight()"
+>
+  <app-chat-history class="chat" (close)="historyOpen.set(false)" />
+  @if (mobile() && historyOpen()) {
+    <div class="veil" (click)="historyOpen.set(false)"></div>
   }
-</nav>
-
-@if (id()) {
-  <app-viewer
-    class="viewer"
-    [items]="placed()"
-    [(selected)]="selected"
-    [techniqueName]="technique()?.name ?? ''"
-    [dataiqUrl]="dataiqUrl()"
+  <app-chat-field
+    class="field"
+    [empty]="state() === 'empty'"
+    [techniques]="covered()"
+    (choose)="open($event)"
+    (openHistory)="historyOpen.set(true)"
   />
-  <section class="legend" aria-label="Leyenda">
-    <h2>Mesa de Mayo</h2>
-    @if (mayo() === null) {
-      <p>Esta técnica no tiene mesa de Mayo en DataIQ.</p>
+
+  <div
+    class="divider"
+    role="separator"
+    aria-orientation="vertical"
+    aria-label="Ancho del chat"
+    tabindex="0"
+    [attr.aria-valuenow]="chatWidth()"
+    aria-valuemin="300"
+    aria-valuemax="560"
+    (pointerdown)="startResize($event)"
+    (keydown)="resizeWithKeys($event)"
+  ></div>
+
+  <main class="canvas">
+    <app-viewer
+      #viewer
+      class="viewer"
+      [items]="placed()"
+      [(selected)]="selected"
+      [view]="view()"
+      [freeArea]="freeArea()"
+      [techniqueName]="title()"
+      [dataiqUrl]="dataiqUrl()"
+      (tapped)="onTap($event)"
+      (interacted)="hint.set(false)"
+    />
+    <app-canvas-head
+      class="head"
+      [title]="title()"
+      [meta]="meta()"
+      [techniques]="covered()"
+      [currentId]="id()"
+      [mobile]="mobile()"
+      (choose)="open($event)"
+      (openSheet)="sheetOpen.set(true)"
+    />
+    <app-legend
+      [items]="mayo()?.items ?? []"
+      [selected]="selected()"
+      [(open)]="legendOpen"
+      [disabled]="!mayo()"
+      (choose)="selected.set($event)"
+    />
+    @if (cardOpen() && selectedItem(); as item) {
+      <app-instrument-card
+        [item]="item"
+        [instruments]="cardInstruments()"
+        [dataiqUrl]="dataiqUrl()"
+        (close)="cardOpen.set(false)"
+      />
     }
-    <ol>
-      @for (item of mayo()?.items ?? []; track item.id) {
-        <li>
-          <button
-            type="button"
-            [attr.aria-pressed]="selected() === item.id"
-            (click)="selected.set(selected() === item.id ? null : item.id)"
-          >
-            <span class="number">{{ item.legendNumber ?? '–' }}</span>
-            {{ item.name }}
-          </button>
-        </li>
-      }
-    </ol>
-  </section>
-} @else {
-  <p class="empty">Elegir una técnica para ver su mesa de Mayo en 3D.</p>
+    <app-view-controls [(view)]="view" (zoom)="viewer.zoom($event)" (center)="viewer.center()" />
+    @if (!mobile() && hint() && state() === 'table') {
+      <p class="hint">Arrastra para girar · rueda o pellizco para acercar</p>
+    }
+
+    @if (state() === 'uncovered' || state() === 'missing') {
+      <div class="scope" role="status">
+        <div class="scope-box">
+          <h2>
+            @if (state() === 'missing') {
+              No se encontró esa técnica
+            } @else {
+              SIMIQ3D muestra por ahora la mesa de Mayo de las técnicas de Cirugía General
+            }
+          </h2>
+          <div class="options">
+            @for (technique of covered(); track technique.id) {
+              <button type="button" class="option" (click)="open(technique.id)">
+                {{ technique.name }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>
+
+@if (mobile()) {
+  <app-technique-sheet
+    [techniques]="covered()"
+    [currentId]="id()"
+    [(open)]="sheetOpen"
+    (choose)="open($event)"
+  />
 }
