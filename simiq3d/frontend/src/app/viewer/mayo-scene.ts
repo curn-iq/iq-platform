@@ -48,7 +48,14 @@ export interface SceneOptions {
   reducedMotion: boolean;
   /** Se tocó una pieza (su `itemId`), o la mesa vacía (`null`). */
   onPick: (itemId: string | null) => void;
+  /** Después de cada cuadro: dónde queda en pantalla la pieza señalada, en píxeles del lienzo. */
+  onRender?: (badge: { x: number; y: number } | null) => void;
+  /** Se empezó a girar o acercar con el dedo o el mouse. */
+  onInteract?: () => void;
 }
+
+/** Desde dónde se mira la mesa: en perspectiva, o desde arriba como el diagrama. */
+export type SceneView = '3d' | 'top';
 
 /** Espacio que tapan los paneles de la interfaz, en píxeles: la mesa se encuadra en el resto. */
 export interface FreeArea {
@@ -68,6 +75,7 @@ const DIMMED = 0.38;
 const SIDE_GAP = 0.004;
 const NUMBER_PX = 20;
 const TRAVEL_MS = 900;
+const ZOOM_MS = 350;
 // Un toque que se mueve más que esto es un giro, no un toque
 const TAP_PX = 6;
 
@@ -160,6 +168,7 @@ export class MayoScene {
   private pieces: ScenePiece[] = [];
   private selected: ScenePiece | null = null;
   private free: FreeArea = { top: 0, right: 0, bottom: 0, left: 0 };
+  private view: SceneView = '3d';
   private frameRequested = false;
   private travel: {
     start: number;
@@ -167,6 +176,7 @@ export class MayoScene {
     to: Vector3;
     targetFrom: Vector3;
     targetTo: Vector3;
+    duration: number;
   } | null = null;
   private loading = 0;
   private pointerDown: [number, number] | null = null;
@@ -200,6 +210,7 @@ export class MayoScene {
     // Sin bajar del borde de la mesa
     this.controls.maxPolarAngle = 1.32;
     this.controls.addEventListener('change', this.requestFrame);
+    this.controls.addEventListener('start', this.onControlsStart);
 
     canvas.addEventListener('pointerdown', this.onPointerDown);
     canvas.addEventListener('pointerup', this.onPointerUp);
@@ -269,6 +280,24 @@ export class MayoScene {
     this.frame(true);
   }
 
+  /** Mirar en perspectiva o desde arriba; encuadra la mesa entera. */
+  setView(view: SceneView): void {
+    this.view = view;
+    this.frame(true);
+  }
+
+  /** Acerca (`1`) o aleja (`-1`) la cámara, sin pasar los límites. */
+  zoom(direction: 1 | -1): void {
+    const offset = this.camera.position.clone().sub(this.controls.target);
+    const length = MathUtils.clamp(
+      offset.length() * (direction > 0 ? 0.8 : 1.25),
+      this.controls.minDistance,
+      this.controls.maxDistance,
+    );
+    const target = this.controls.target.clone();
+    this.moveCamera(target.clone().add(offset.setLength(length)), target, ZOOM_MS);
+  }
+
   /** Vuelve a encuadrar la mesa entera. */
   frame(animated = true): void {
     const [position, target] = this.framing();
@@ -287,6 +316,7 @@ export class MayoScene {
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
     this.controls.removeEventListener('change', this.requestFrame);
+    this.controls.removeEventListener('start', this.onControlsStart);
     this.controls.dispose();
     this.clearTable();
     this.numbers.forEach((texture) => texture.dispose());
@@ -340,7 +370,13 @@ export class MayoScene {
       -TABLE_HEIGHT / 2 - 0.06,
       footZ,
     );
-    add(new Mesh(new BoxGeometry(0.5, 0.02, 0.07), steel), footX, -TABLE_HEIGHT + 0.01, footZ);
+    // La base corre bajo la bandeja, desde el poste hacia el centro, como en la mesa real
+    add(
+      new Mesh(new BoxGeometry(0.5, 0.02, 0.07), steel),
+      footX + 0.2,
+      -TABLE_HEIGHT + 0.01,
+      footZ,
+    );
     // Sombra de contacto en el piso
     const shadow = new Mesh(new PlaneGeometry(1.6, 1.2), floor);
     shadow.rotation.x = -Math.PI / 2;
@@ -483,21 +519,27 @@ export class MayoScene {
     const toFitWidth =
       (MAYO_TABLE_SIZE.width + (portrait ? 0.22 : 0.06)) / 2 / (Math.tan(horizontal / 2) * usefulW);
     const toFitDepth = (MAYO_TABLE_SIZE.depth + 0.06) / 2 / (Math.tan(vertical / 2) * usefulH);
-    const distance = Math.max(toFitWidth, toFitDepth) * 1.32;
+    const top = this.view === 'top';
+    const distance = Math.max(toFitWidth, toFitDepth) * (top ? 1.12 : 1.32);
     // Corre la mesa al centro del espacio libre
     const seenW = 2 * distance * Math.tan(horizontal / 2);
     const seenH = 2 * distance * Math.tan(vertical / 2);
     const dx = ((this.free.right - this.free.left) / 2 / width) * seenW;
     const dz = ((this.free.top - this.free.bottom) / 2 / height) * seenH;
-    const target = new Vector3(dx, 0, portrait ? -dz : -dz * 0.6);
-    // En celular mira más desde arriba, para que la mesa llene más alto de pantalla
+    const target = new Vector3(dx, 0, top || portrait ? -dz : -dz * 0.6);
+    // Desde arriba, como el diagrama; en celular, más desde arriba que en escritorio,
+    // para que la mesa llene más alto de pantalla
     const direction = (
-      portrait ? new Vector3(0, 0.9, 0.45) : new Vector3(0, 0.68, 0.73)
+      top
+        ? new Vector3(0, 1, 0.0001)
+        : portrait
+          ? new Vector3(0, 0.9, 0.45)
+          : new Vector3(0, 0.68, 0.73)
     ).normalize();
     return [target.clone().add(direction.multiplyScalar(distance)), target];
   }
 
-  private moveCamera(position: Vector3, target: Vector3): void {
+  private moveCamera(position: Vector3, target: Vector3, duration = TRAVEL_MS): void {
     if (this.options.reducedMotion) {
       this.camera.position.copy(position);
       this.controls.target.copy(target);
@@ -508,6 +550,7 @@ export class MayoScene {
         to: position,
         targetFrom: this.controls.target.clone(),
         targetTo: target,
+        duration,
       };
     }
     this.requestFrame();
@@ -523,7 +566,7 @@ export class MayoScene {
     this.frameRequested = false;
     let moving = false;
     if (this.travel) {
-      const progress = Math.min(1, (time - this.travel.start) / TRAVEL_MS);
+      const progress = Math.min(1, (time - this.travel.start) / this.travel.duration);
       // Curva de salida de cuarta potencia
       const eased = 1 - Math.pow(1 - progress, 4);
       this.camera.position.lerpVectors(this.travel.from, this.travel.to, eased);
@@ -540,8 +583,23 @@ export class MayoScene {
     }
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+    this.options.onRender?.(this.badgePosition());
     if (moving) this.requestFrame();
   };
+
+  /** Dónde va la insignia del número: sobre la pieza señalada, en píxeles del lienzo. */
+  private badgePosition(): { x: number; y: number } | null {
+    if (!this.selected) return null;
+    const point = this.selected.group.getWorldPosition(new Vector3());
+    point.y += 0.03;
+    point.project(this.camera);
+    return {
+      x: (point.x * 0.5 + 0.5) * this.canvas.clientWidth,
+      y: (-point.y * 0.5 + 0.5) * this.canvas.clientHeight,
+    };
+  }
+
+  private readonly onControlsStart = (): void => this.options.onInteract?.();
 
   private resize(): void {
     const width = this.canvas.clientWidth;

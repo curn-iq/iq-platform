@@ -5,13 +5,15 @@ import {
   effect,
   ElementRef,
   inject,
+  computed,
   input,
   model,
+  output,
   signal,
   untracked,
   viewChild,
 } from '@angular/core';
-import type { FreeArea, MayoScene } from './mayo-scene';
+import type { FreeArea, MayoScene, SceneView } from './mayo-scene';
 import type { PlacedItem } from '../domain/placement';
 import { supportsWebGL } from './webgl';
 
@@ -38,8 +40,19 @@ export class Viewer {
   /** Para el aviso sin 3D: la técnica y su mesa en DataIQ. */
   readonly techniqueName = input('');
   readonly dataiqUrl = input.required<string>();
+  /** Desde dónde se mira la mesa. */
+  readonly view = input<SceneView>('3d');
+  /** Se tocó una pieza en la escena (su `itemId`), o la mesa vacía. */
+  readonly tapped = output<string | null>();
+  /** Se empezó a girar o acercar la mesa. */
+  readonly interacted = output<void>();
 
   protected readonly state = signal<ViewerState>('loading');
+  /** Dónde va la insignia con el número de la pieza señalada. */
+  protected readonly badge = signal<{ x: number; y: number } | null>(null);
+  protected readonly badgeNumber = computed(
+    () => this.items()?.find((item) => item.itemId === this.selected())?.legendNumber ?? null,
+  );
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly scene = signal<MayoScene | undefined>(undefined);
 
@@ -57,7 +70,12 @@ export class Viewer {
         this.scene.set(
           new MayoScene(this.canvas().nativeElement, {
             reducedMotion,
-            onPick: (itemId) => this.selected.set(itemId),
+            onPick: (itemId) => {
+              this.selected.set(itemId);
+              this.tapped.emit(itemId);
+            },
+            onRender: (badge) => this.badge.set(badge),
+            onInteract: () => this.interacted.emit(),
           }),
         );
       } catch {
@@ -77,7 +95,18 @@ export class Viewer {
     });
     effect(() => this.scene()?.highlight(this.selected(), true));
     effect(() => this.scene()?.setFreeArea(this.freeArea()));
+    effect(() => this.scene()?.setView(this.view()));
     inject(DestroyRef).onDestroy(() => this.scene()?.dispose());
+  }
+
+  /** Acerca (`1`) o aleja (`-1`) la cámara. */
+  zoom(direction: 1 | -1): void {
+    this.scene()?.zoom(direction);
+  }
+
+  /** Vuelve a encuadrar la mesa entera. */
+  center(): void {
+    this.scene()?.frame(true);
   }
 
   private async show(scene: MayoScene, items: readonly PlacedItem[]): Promise<void> {

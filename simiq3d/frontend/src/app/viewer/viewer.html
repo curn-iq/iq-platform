@@ -1,5 +1,16 @@
 <canvas #canvas aria-label="Mesa de Mayo en 3D"></canvas>
 
+@if (badge(); as position) {
+  @if (badgeNumber() !== null) {
+    <span
+      class="badge"
+      aria-hidden="true"
+      [style.transform]="'translate(' + position.x + 'px, ' + position.y + 'px)'"
+      >{{ badgeNumber() }}</span
+    >
+  }
+}
+
 @switch (state()) {
   @case ('loading') {
     <div class="layer" role="status">
