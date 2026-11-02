@@ -76,7 +76,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Instrumental: el instrumental, las suturas por plano, los equipos biomédicos y el equipo médico-quirúrgico, todo detrás de la puerta de cuenta (Resuelto 27). Las suturas se muestran una fila por plano: `data/` separa el `usage` («Piel; Fascia») en planos
 - [x] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
 - [x] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`) y «Comprobar con la cámara» a `/sivri/` (SIVRI reconoce la técnica sola). Se muestran en todas las técnicas: si el módulo no cubre una (el MVP de los dos es la mesa de Mayo de Cirugía General), su propia pantalla lo dice (Resuelto 17)
-- [ ] Republicar `diseno/mockups/inicio.html` en el [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK), como pide `.claude/rules/diseno.md`. El repo ya tiene las preguntas frecuentes corregidas (Resuelto 38) y el comportamiento del escenario de `DESIGN.md`. A cargo de Mauricio Lugo, dueño del Artifact
+- [x] Republicar `diseno/mockups/inicio.html` en el [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK), como pide `.claude/rules/diseno.md`. El repo ya tiene las preguntas frecuentes corregidas (Resuelto 38) y el comportamiento del escenario de `DESIGN.md`. A cargo de Mauricio Lugo, dueño del Artifact
 
 ### Fase 5 — Cuenta
 
