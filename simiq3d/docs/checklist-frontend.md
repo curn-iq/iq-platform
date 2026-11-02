@@ -17,7 +17,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Servido bajo `/simiq3d/` (`baseHref`), puerto 4300 y `proxy.conf.json` hacia DataIQ (8000) y SIMIQ3D (8001)
 - [x] Presupuesto estricto: código inicial con aviso a los 300 KB y error a los 500 KB
 - [x] `index.html` en español
-- [ ] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo crea el primer frontend que llegue a su fase 0 (este o el de DataIQ)
+- [x] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo creó el frontend de DataIQ
 - [ ] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens
 - [ ] Instalar `three` y sus tipos; presupuesto aparte para el chunk del visor
 - [ ] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build
@@ -35,7 +35,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 
 - [ ] Escena, cámara y `OrbitControls` adaptados al tacto (girar, acercar), con límites para no perder la mesa
 - [ ] Carga de GLB con meshopt; cada modelo se descarga una vez y se reutiliza
-- [ ] La mesa de Mayo a su tamaño real, con cada instrumento en su celda
+- [ ] La mesa de Mayo, de tamaño provisional, con cada instrumento a escala real y su centro en el de su celda; el mango con su hoja montada en `blade_mount` (README, «Cómo se arma la mesa»)
 - [ ] Dibujar solo cuando algo cambia; `devicePixelRatio` hasta 2; luz sencilla
 - [ ] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
 - [ ] Liberar la memoria al cambiar de técnica
@@ -47,9 +47,16 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 Con el método de [`.claude/rules/diseno.md`](../../.claude/rules/diseno.md);
 toda decisión visual nueva va a `DESIGN.md`.
 
-- [ ] Pantalla de exploración en celular (390 px): cómo conviven el chat y la escena
-- [ ] La misma pantalla en escritorio (1310 px)
-- [ ] Ficha del instrumento al tocarlo, leyenda, estados (cargando, chat no disponible, sin respuesta, sin WebGL)
+El mockup es [`diseno/mockups/simiq3d.html`](../../diseno/mockups/simiq3d.html)
+(decidido por Mauricio el 2026-10-20), y su diseño, «SIMIQ3D: explorar en 3D»
+y sus componentes en `DESIGN.md`. El mockup es anterior al backend: donde no
+coinciden, manda `DESIGN.md`, que ya está al día (filas y columnas, acciones
+del chat, descripciones con fuente).
+
+- [x] Pantalla de exploración en celular (390 px): cómo conviven el chat y la escena
+- [x] La misma pantalla en escritorio (1310 px)
+- [x] Ficha del instrumento al tocarlo, leyenda, estados (cargando, chat no disponible, sin respuesta, sin WebGL)
+- [ ] Publicar el mockup como página del [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK)
 
 ### Fase 4 — Pantalla de exploración
 
@@ -60,14 +67,16 @@ toda decisión visual nueva va a `DESIGN.md`.
 
 ### Fase 5 — Chat
 
-Depende del backend de SIMIQ3D (ver «Dependencias del backend»).
+Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 
-- [ ] Pregunta → acción → escena (mostrar técnica, resaltar instrumento, describirlo, sin respuesta)
-- [ ] Chat no disponible cuando el Servidor PC2 está apagado, con el visor funcionando
+- [ ] Pregunta → acción → escena, con las ocho acciones del contrato; las opciones se envían como pregunta
+- [ ] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando
+- [ ] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
 - [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
 
 ### Fase 6 — Despliegue
 
+- [ ] Proyecto de Vercel del frontend de SIMIQ3D, en la cuenta de Mauricio (el plan Hobby es de una sola persona)
 - [ ] Servir la app bajo `/simiq3d/` en el mismo origen que el shell: el proyecto del shell la trae con un rewrite `/simiq3d/:path*` hacia el de SIMIQ3D, con la ruta completa (ver «Resuelto»)
 - [ ] Encabezados de caché largos para `public/models/` y CSP
 - [ ] GitHub Actions: build (con `npm run models`), pruebas y despliegue con el CLI de Vercel
@@ -77,17 +86,18 @@ Depende del backend de SIMIQ3D (ver «Dependencias del backend»).
 Lo que no es del frontend pero lo bloquea. Se acuerda con quien desarrolla el
 backend de SIMIQ3D.
 
-- [ ] Ruta del chat: recibe la pregunta y devuelve la acción (ver «Por confirmar» 2). Bloquea la fase 5
-- [ ] Ruta del mapeo de cada modelo 3D a su instrumento (`instruments.id`). Bloquea la fase 2 con datos reales
-- [ ] Puerto de desarrollo (propuesto: 8001)
+- [x] Ruta del chat: `POST /chat` (Resuelto 2)
+- [x] Ruta del mapeo de cada modelo 3D a su instrumento: `GET /models` (Resuelto 3)
+- [x] Puerto de desarrollo: 8001
 
 ### Dependencias de datos
 
-Del README de SIMIQ3D; bloquean que la mesa se vea como la real.
+Para el MVP, la mesa es de tamaño provisional y todos los instrumentos
+apuntan igual (decidido por Mauricio el 2026-10-30); medir la mesa y orientar
+cada instrumento es para después del MVP
+([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
 
-- [ ] El tamaño real de la mesa de Mayo del laboratorio (el área entre los marcadores ArUco)
-- [ ] Hacia dónde apunta cada instrumento
-- [ ] La descripción de los 23 instrumentos en DataIQ (`instruments.description`, hoy vacía)
+- [x] La descripción de los 23 instrumentos en DataIQ (`instruments.description`, con su fuente en `description_source`)
 - [ ] Los modelos 3D
 
 Mientras falten, la escena funciona con valores provisionales marcados como
@@ -95,14 +105,16 @@ tales en el código, nunca presentados como datos.
 
 ## Por confirmar
 
-| # | Qué falta | Dónde | Propuesta |
-|---|---|---|---|
-| 2 | El contrato del chat no existe: qué recibe y qué devuelve | `simiq3d/README.md`, «Chat» | `POST /chat` con la pregunta; responde la acción (`show_technique`, `highlight_instrument`, `describe_instrument` o `no_answer`), sus ids y un texto corto. Se acuerda con el backend |
-| 3 | Si el mapeo modelo → instrumento cambia poco, podría ser un archivo estático junto a los modelos en vez de una ruta | `simiq3d/README.md`, «Backend y base de datos» (decidido: en la base de SIMIQ3D) | Mantener lo decidido; revisarlo si la ruta resulta ser solo una lista fija |
-| 4 | Conversación con contexto («¿y dónde va la Kelly?» después de abrir una técnica) | `simiq3d/README.md`, «Chat» | El frontend manda la técnica abierta junto con la pregunta |
+Nada por ahora.
 
 ## Resuelto
 
 | # | Qué faltaba | Cómo quedó |
 |---|---|---|
 | 1 | Cómo llega el navegador al proyecto de Vercel de SIMIQ3D por el mismo origen que el shell, para que reciba la cookie | Un rewrite `/simiq3d/:path*` en el proyecto del shell hacia el de SIMIQ3D, como el de `/api/dataiq/*`; la app conserva su `baseHref` `/simiq3d/`. Es el Resuelto 17 de la [checklist de DataIQ](../../dataiq/docs/checklist-frontend.md#resuelto) (decidido por Juan el 2026-10-29) |
+| 2 | El contrato del chat no existía: qué recibe y qué devuelve | `POST /chat` recibe la pregunta y la técnica abierta, y devuelve la acción, sus ids, el texto y las opciones; las ocho acciones y qué hace el visor con cada una, en el README («El chat»). Contrato decidido por Mauricio el 2026-10-20; desde el 2026-10-27 el chat es un agente que redacta el texto con lo que consulta en DataIQ ([`../README.md`](../README.md), «Chat») |
+| 3 | Si el mapeo modelo → instrumento podía ser un archivo estático en vez de una ruta | Una ruta, `GET /models`, sobre la tabla `model_mappings` de la base de SIMIQ3D, que se carga desde `simiq3d/models/modelos.csv` (lo decidido) |
+| 4 | Conversación con contexto («¿y dónde va la Kelly?» después de abrir una técnica) | El frontend manda la técnica abierta (`technique_id`) junto con la pregunta |
+| 5 | El mockup tenía un selector de escala («a la celda», «escala real»), pero lo decidido es que los instrumentos van a escala real | Solo escala real, sin selector (decidido por Mauricio el 2026-11-01); `DESIGN.md` al día |
+| 6 | El mockup dejaba ver la cuadrícula sobre la mesa y pintaba la celda de la pieza señalada, una cuadrícula que la mesa real no tiene | Sin rejilla ni celda pintada: la pieza señalada se levanta y se tiñe, con su número (decidido por Mauricio el 2026-11-01); `DESIGN.md` y `shared/design/tokens.css` sin `rejilla-escena`, `celda-escena` ni `celda-quirofano` |
+| 7 | El estado «Conectado» del chat: `GET /health` del backend no mira el Servidor PC2, así que solo se sabe si el chat responde al preguntar | Sin estado al entrar; «No disponible» después de un 503, hasta la siguiente respuesta (decidido por Mauricio el 2026-11-01) |

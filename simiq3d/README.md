@@ -239,8 +239,8 @@ El avance, por actividad de DSRM, está en
 ## Stack
 
 El backend lo desarrolla Mauricio y los modelos 3D, Guebriel (reparto del
-2026-10-20); el frontend, Juan Caraballo, que lleva el frontend de los tres
-módulos. Requisito: **el visor
+2026-10-20); el frontend, también Mauricio (reparto del frontend acordado por
+Mauricio y Juan Caraballo el 2026-11-01: Juan lleva el del shell y DataIQ). Requisito: **el visor
 corre en el navegador, sin instalar nada** (WebGL), como lo fundamenta el
 Formato 115 en su marco teórico.
 
