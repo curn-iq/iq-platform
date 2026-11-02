@@ -17,11 +17,6 @@ export function withSutureField(
   return { ...row, [field]: value };
 }
 
-/** La lista sin la fila de esa posición. Una posición que no existe la deja igual. */
-export function removeSutureRow(rows: readonly EditorSuture[], index: number): EditorSuture[] {
-  return rows.filter((_, position) => position !== index);
-}
-
 function filled(value: string): boolean {
   return value.trim() !== '';
 }

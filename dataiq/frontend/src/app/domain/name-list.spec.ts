@@ -1,4 +1,4 @@
-import { addName, removeName } from './name-list';
+import { addName } from './name-list';
 
 describe('addName', () => {
   it('suma el nombre al final, sin los espacios de los extremos', () => {
@@ -28,24 +28,5 @@ describe('addName', () => {
     addName(names, 'Aspirador');
 
     expect(names).toEqual(['Electrobisturí']);
-  });
-});
-
-describe('removeName', () => {
-  it('quita el nombre de esa posición', () => {
-    expect(removeName(['A', 'B', 'C'], 1)).toEqual(['A', 'C']);
-  });
-
-  it('una posición que no existe deja la lista igual', () => {
-    expect(removeName(['A', 'B'], 5)).toEqual(['A', 'B']);
-    expect(removeName(['A', 'B'], -1)).toEqual(['A', 'B']);
-  });
-
-  it('no cambia la lista que recibe', () => {
-    const names = ['A', 'B'];
-
-    removeName(names, 0);
-
-    expect(names).toEqual(['A', 'B']);
   });
 });

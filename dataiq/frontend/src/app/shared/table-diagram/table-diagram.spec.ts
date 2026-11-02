@@ -6,13 +6,14 @@ import { TableDiagram } from './table-diagram';
 @Component({
   imports: [TableDiagram],
   template:
-    '<app-table-diagram [table]="table" [variant]="variant" [(highlighted)]="highlighted" [(focused)]="focused" />',
+    '<app-table-diagram [table]="table" [variant]="variant" [(highlighted)]="highlighted" [(focused)]="focused" [highlightedPiece]="highlightedPiece" />',
 })
 class Host {
   table: Table = makeTable();
   variant: 'full' | 'preview' = 'full';
   highlighted: number | null = null;
   focused: number | null = null;
+  highlightedPiece: string | null = null;
 }
 
 function makeTable(overrides: Partial<Table> = {}): Table {
@@ -309,6 +310,25 @@ describe('TableDiagram', () => {
         const root: HTMLElement = fixture.nativeElement;
         expect(piece(root, 2).classList.contains('active')).toBe(true);
         expect(piece(root, 1).classList.contains('active')).toBe(false);
+        expect(root.querySelectorAll('.shape.active').length).toBe(1);
+        expect(root.querySelector('svg')?.classList.contains('marking')).toBe(true);
+      });
+
+      it('señalar una pieza por su id la levanta aunque no tenga número', async () => {
+        const fixture = TestBed.createComponent(Host);
+        fixture.componentInstance.table = makeTable({
+          items: [
+            ...items,
+            makeItem({ id: 'c', legendNumber: null, cells: [{ row: 2, column: 1 }] }),
+          ],
+        });
+        fixture.componentInstance.highlightedPiece = 'c';
+        await fixture.whenStable();
+        const root: HTMLElement = fixture.nativeElement;
+
+        const active = root.querySelectorAll('.piece.active');
+        expect(active.length).toBe(1);
+        expect(active[0].hasAttribute('data-n')).toBe(false);
         expect(root.querySelectorAll('.shape.active').length).toBe(1);
         expect(root.querySelector('svg')?.classList.contains('marking')).toBe(true);
       });

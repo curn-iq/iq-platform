@@ -54,13 +54,17 @@ export class TechniqueEditAction {
       (!this.inProgress.isLoading() && this.inProgress.error() !== undefined),
   );
 
-  /** Lo que ofrece el botón, o `undefined` si no corresponde o aún no se sabe. */
+  /**
+   * Lo que ofrece el botón, o `undefined` si no corresponde o aún no se sabe. Sin la cuenta no se sabe si
+   * la versión en curso es de quien mira: no se muestra, en vez de decir «En curso por» su propio nombre.
+   */
   protected readonly action = computed(() => {
-    if (!this.allowed() || !this.known()) return undefined;
+    const account = this.session.account();
+    if (!this.allowed() || !this.known() || !account) return undefined;
     const id = this.techniqueId();
     const versions = this.inProgress.hasValue() ? (this.inProgress.value() ?? []) : [];
     const version = versions.find((item) => item.technique_id === id);
-    return editAction(version, this.session.account()?.id);
+    return editAction(version, account.id);
   });
 
   // Lo que se hizo con una técnica no vale para otra: el componente se reutiliza al cambiar de técnica

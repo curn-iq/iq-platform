@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import type { VersionDetail } from '../../../../data/api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../../../data/testing';
+import { EditorCatalog } from '../editor-catalog';
 import { EditorState } from '../editor-state';
 import { TableStep, type TableKind } from './table-step';
 
@@ -133,7 +134,9 @@ describe('TableStep', () => {
       answer?: boolean;
     } = {},
   ): Promise<void> {
-    TestBed.configureTestingModule({ providers: [provideRepositoryTesting(), EditorState] });
+    TestBed.configureTestingModule({
+      providers: [provideRepositoryTesting(), EditorState, EditorCatalog],
+    });
     state = TestBed.inject(EditorState);
     http = TestBed.inject(HttpTestingController);
     state.load(version(options.state ?? 'draft', options.zones ?? [], options.items ?? []));
@@ -318,6 +321,17 @@ describe('TableStep', () => {
       expect(text(objectButtons()[0].querySelector('.place'))).toBe('Fila 2 · Columna 3');
     });
 
+    it('un objeto sin número (la fuente no lo deja leer) se nombra por su nombre y su pieza se levanta', async () => {
+      await mount({
+        zones: [zone(MAYO, 4, 6)],
+        items: [{ ...apiItem(1, KELLY, MAYO, [[1, 2]]), legend_number: null }],
+      });
+      expect(cell(1, 2).getAttribute('aria-label')).toBe('Fila 1, columna 2: Pinza Kelly');
+      await click(objectButtons()[0]);
+      expect(text(one('.hint'))).toBe('Tocar la celda donde va Pinza Kelly.');
+      expect(all('app-table-diagram .piece.active')).toHaveLength(1);
+    });
+
     it('tocar de nuevo el objeto elegido, o Escape, lo suelta', async () => {
       await mount(armed());
       await click(objectButtons()[0]);
@@ -485,6 +499,25 @@ describe('TableStep', () => {
       await settle();
       expect(cellsOf(0)).toEqual([{ row: 1, column: 2 }]);
       expect(cellsOf(1)).toEqual([{ row: 1, column: 1 }]);
+    });
+
+    it('un objeto de varias celdas arrastrado por una que no es la primera no se corre', async () => {
+      const wide = {
+        ...apiItem(1, COMPRESA, MAYO),
+        cells: [
+          { row: 1, column: 1 },
+          { row: 1, column: 2 },
+        ],
+      };
+      await mount({ zones: [zone(MAYO, 4, 6)], items: [wide] });
+      layOut();
+      // Agarrado por (1,2) y soltado en (2,2): baja una fila
+      drop(cell(1, 2), 15, 15);
+      await settle();
+      expect(cellsOf(0)).toEqual([
+        { row: 2, column: 1 },
+        { row: 2, column: 2 },
+      ]);
     });
 
     it('mientras se arrastra, la celda bajo el puntero se marca', async () => {

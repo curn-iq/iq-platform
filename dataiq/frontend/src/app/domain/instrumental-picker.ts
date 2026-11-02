@@ -22,8 +22,11 @@ export interface CatalogTechnique {
 
 // ---------- Lo que hay en la técnica ----------
 
-/** Los instrumentos que ya están en la técnica: los que son componente de algún objeto. */
-export function instrumentIdsIn(items: readonly Pick<EditorItem, 'components'>[]): Set<string> {
+/** Los objetos de los que solo importan los instrumentos de sus componentes. */
+type WithInstruments = { readonly components: readonly { instrument_id: string | null }[] };
+
+/** Los instrumentos que están en esos objetos: los que son componente de alguno. */
+export function instrumentIdsIn(items: readonly WithInstruments[]): Set<string> {
   const ids = new Set<string>();
   for (const item of items) {
     for (const component of item.components) {
@@ -56,29 +59,19 @@ export function addInstrument(
   return [...items, newInstrumentItem(instrument)];
 }
 
-/** Los objetos sin el de esa posición. Una posición que no existe los deja igual. */
-export function removeItemAt(items: readonly EditorItem[], index: number): EditorItem[] {
-  return items.filter((_, position) => position !== index);
-}
-
-/** Si hay un objeto que es solo ese instrumento: el que «En la técnica» puede quitar. */
-export function hasOwnItem(
-  items: readonly Pick<EditorItem, 'components'>[],
-  instrumentId: string,
-): boolean {
-  return items.some(
-    (item) => item.components.length === 1 && item.components[0].instrument_id === instrumentId,
-  );
-}
-
 /**
- * Los objetos sin los que son solo ese instrumento. Uno compuesto que lo lleva («compresa con portaagujas»)
- * se queda: se quita desde la lista de lo elegido.
+ * La posición del objeto que «En la técnica» del catálogo puede quitar: el único objeto que es solo ese
+ * instrumento. `-1` si no hay ninguno (solo está dentro de uno compuesto, como «compresa con
+ * portaagujas») o si hay varios (p. ej. uno en cada mesa): tocar la fila no sabría cuál quitar, y se
+ * quitan uno por uno desde la lista de lo elegido.
  */
-export function removeInstrument(items: readonly EditorItem[], instrumentId: string): EditorItem[] {
-  return items.filter(
-    (item) => !(item.components.length === 1 && item.components[0].instrument_id === instrumentId),
+export function soleOwnItem(items: readonly WithInstruments[], instrumentId: string): number {
+  const own = items.flatMap((item, index) =>
+    item.components.length === 1 && item.components[0].instrument_id === instrumentId
+      ? [index]
+      : [],
   );
+  return own.length === 1 ? own[0] : -1;
 }
 
 /** Un grupo de «En esta técnica»: una categoría con sus objetos. */
@@ -168,9 +161,7 @@ export function suggestions(
   const total = others.length;
   const uses = new Map<string, number>();
   for (const technique of others) {
-    for (const id of instrumentIdsIn(
-      technique.items as readonly Pick<EditorItem, 'components'>[],
-    )) {
+    for (const id of instrumentIdsIn(technique.items)) {
       uses.set(id, (uses.get(id) ?? 0) + 1);
     }
   }

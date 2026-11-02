@@ -454,6 +454,18 @@ describe('Editor', () => {
       ).toBe(`/gestion/editor/${ID}/instrumental`);
       http.expectNone(() => true);
     });
+
+    it('el catálogo se pide una vez: ir de instrumental a las mesas y volver no lo pide otra vez', async () => {
+      await open('instrumental');
+
+      for (const step of ['mesa-de-mayo', 'mesa-de-reserva', 'instrumental']) {
+        await harness.navigateByUrl(`/gestion/editor/${ID}/${step}`);
+        await settle();
+        expect(router.url).toBe(`/gestion/editor/${ID}/${step}`);
+        expect(root.querySelector('.notice')).toBeNull();
+      }
+      http.expectNone(`${TEST_API_BASE}/catalog/full`);
+    });
   });
 
   describe('quien publica lo suyo (revisor o admin)', () => {

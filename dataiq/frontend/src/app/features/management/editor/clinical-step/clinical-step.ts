@@ -1,20 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import type { ClinicalTextField } from '../../../../domain/editor-content';
-import { addName, removeName } from '../../../../domain/name-list';
-import {
-  emptySutureRow,
-  hasSutureName,
-  removeSutureRow,
-  withSutureField,
-} from '../../../../domain/suture-rows';
+import { addName } from '../../../../domain/name-list';
+import { removeAt } from '../../../../domain/remove-at';
+import { emptySutureRow, hasSutureName, withSutureField } from '../../../../domain/suture-rows';
 import { ChipList } from '../../../../shared/ui/chip-list/chip-list';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { TextareaField } from '../../../../shared/ui/textarea-field/textarea-field';
 import { EditorState } from '../editor-state';
+import { MISSING_BADGE } from '../missing-badge';
 import { SutureRowChange, SutureRows } from '../suture-rows/suture-rows';
-
-/** Lo que dice la pastilla de un campo obligatorio que aún está vacío. */
-const MISSING = 'Falta';
 
 /**
  * El paso «Datos clínicos» del editor, según «Editor de técnica (página)» de `DESIGN.md`: dos tarjetas
@@ -56,15 +50,19 @@ export class ClinicalStep {
 
   /** La pastilla de un campo obligatorio: «Falta» mientras esté en blanco. */
   protected badge(field: ClinicalTextField): string {
-    return this.text(field).trim() === '' ? MISSING : '';
+    return this.text(field).trim() === '' ? MISSING_BADGE : '';
   }
 
   protected set(field: ClinicalTextField, value: string): void {
     this.state.edit((content) => ({ ...content, [field]: value }));
   }
 
+  /** Un nombre en blanco o repetido no se suma: el contenido queda igual y no hay nada que guardar. */
   protected add(list: 'equipment' | 'devices', name: string): void {
-    this.state.edit((content) => ({ ...content, [list]: addName(content[list], name) }));
+    this.state.edit((content) => {
+      const names = addName(content[list], name);
+      return names.length === content[list].length ? content : { ...content, [list]: names };
+    });
   }
 
   protected editSuture({ index, field, value }: SutureRowChange): void {
@@ -83,11 +81,11 @@ export class ClinicalStep {
   protected removeSuture(index: number): void {
     this.state.edit((content) => ({
       ...content,
-      sutures: removeSutureRow(content.sutures, index),
+      sutures: removeAt(content.sutures, index),
     }));
   }
 
   protected remove(list: 'equipment' | 'devices', index: number): void {
-    this.state.edit((content) => ({ ...content, [list]: removeName(content[list], index) }));
+    this.state.edit((content) => ({ ...content, [list]: removeAt(content[list], index) }));
   }
 }

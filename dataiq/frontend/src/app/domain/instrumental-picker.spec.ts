@@ -4,12 +4,10 @@ import {
   catalogGroups,
   categoryChips,
   chosenGroups,
-  hasOwnItem,
   instrumentIdsIn,
   matchesInstrument,
   newInstrumentItem,
-  removeInstrument,
-  removeItemAt,
+  soleOwnItem,
   suggestions,
   UNCLASSIFIED,
   usageDots,
@@ -84,32 +82,21 @@ describe('newInstrumentItem y addInstrument', () => {
   });
 });
 
-describe('removeItemAt', () => {
-  it('quita el objeto de esa posición, y una posición que no existe deja todo igual', () => {
-    const items = [item('a'), item('b'), item('c')];
+describe('soleOwnItem', () => {
+  it('es la posición del único objeto que es solo ese instrumento', () => {
+    const items = [item('b', 'a'), item('a'), item('c')];
 
-    expect(removeItemAt(items, 1).map((i) => i.components[0].instrument_id)).toEqual(['a', 'c']);
-    expect(removeItemAt(items, 9)).toHaveLength(3);
-  });
-});
-
-describe('hasOwnItem y removeInstrument', () => {
-  const items = [item('a'), item('b', 'a'), item('a'), item('c')];
-
-  it('hay objeto propio si algún objeto es solo ese instrumento', () => {
-    expect(hasOwnItem(items, 'a')).toBe(true);
-    expect(hasOwnItem(items, 'c')).toBe(true);
+    expect(soleOwnItem(items, 'a')).toBe(1);
+    expect(soleOwnItem(items, 'c')).toBe(2);
   });
 
-  it('un instrumento que solo está dentro de un objeto compuesto no tiene objeto propio', () => {
-    expect(hasOwnItem([item('b', 'a')], 'a')).toBe(false);
-    expect(hasOwnItem(items, 'zzz')).toBe(false);
+  it('un instrumento que solo está dentro de un objeto compuesto no tiene objeto que quitar', () => {
+    expect(soleOwnItem([item('b', 'a')], 'a')).toBe(-1);
+    expect(soleOwnItem([item('a')], 'zzz')).toBe(-1);
   });
 
-  it('quitar saca todos los objetos que son solo ese instrumento y deja los compuestos', () => {
-    const next = removeInstrument(items, 'a');
-
-    expect(next.map((i) => i.components.map((c) => c.instrument_id))).toEqual([['b', 'a'], ['c']]);
+  it('con varios objetos que son solo ese instrumento (uno en cada mesa) no se sabe cuál quitar', () => {
+    expect(soleOwnItem([item('a'), item('b'), item('a')], 'a')).toBe(-1);
   });
 });
 

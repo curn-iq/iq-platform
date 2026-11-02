@@ -107,7 +107,7 @@
             <th scope="col">Estado</th>
             <th scope="col" class="edited-col">Editada</th>
             @for (section of sections; track section.key) {
-              <th scope="col" class="section">{{ section.label }}</th>
+              <th scope="col" class="section">{{ section.name }}</th>
             }
             <th scope="col"><span class="sr-only">Acción</span></th>
           </tr>
@@ -146,7 +146,7 @@
               </td>
               <td class="edited">{{ row.edited }}</td>
               @for (section of sections; track section.key; let column = $index) {
-                <td class="section" [attr.data-label]="section.label">
+                <td class="section" [attr.data-label]="section.name">
                   <app-progress-mark
                     [status]="row.progress[section.key].status"
                     [column]="column"

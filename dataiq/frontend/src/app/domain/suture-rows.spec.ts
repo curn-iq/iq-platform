@@ -2,7 +2,6 @@ import {
   emptySutureRow,
   hasSutureName,
   removeSutureLabel,
-  removeSutureRow,
   sutureRowNeedsName,
   withSutureField,
 } from './suture-rows';
@@ -29,19 +28,6 @@ describe('withSutureField', () => {
 
     expect(changed).toEqual(row('Piel', 'Seda', '2/0'));
     expect(original).toEqual(row('Piel', 'Seda'));
-  });
-});
-
-describe('removeSutureRow', () => {
-  const rows = [row('Piel'), row('Fascia'), row('Músculo')];
-
-  it('quita la fila de esa posición', () => {
-    expect(removeSutureRow(rows, 1).map((r) => r.plane)).toEqual(['Piel', 'Músculo']);
-  });
-
-  it('una posición que no existe la deja igual, y no cambia la lista que recibe', () => {
-    expect(removeSutureRow(rows, 9)).toHaveLength(3);
-    expect(rows).toHaveLength(3);
   });
 });
 

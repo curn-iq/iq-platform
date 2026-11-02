@@ -13,8 +13,3 @@ export function addName(names: readonly string[], name: string): string[] {
   }
   return [...names, clean];
 }
-
-/** La lista sin el nombre de esa posición. Una posición que no existe deja la lista igual. */
-export function removeName(names: readonly string[], index: number): string[] {
-  return names.filter((_, position) => position !== index);
-}

@@ -12,9 +12,8 @@ import { SessionService } from '../../../core/session/session.service';
 import { countDrafts, draftsSummary, filterDrafts, toDraftRows } from '../../../domain/drafts';
 import type { DraftFilter } from '../../../domain/drafts';
 import { formatDay, formatEdited } from '../../../domain/edited-date';
-import { FIRST_EDITOR_STEP } from '../../../domain/editor-steps';
-import { hasAtLeast } from '../../../domain/role';
-import type { SectionKey } from '../../../domain/version-progress';
+import { FIRST_EDITOR_STEP, VERSION_SECTIONS } from '../../../domain/editor-steps';
+import { publishesOwn } from '../../../domain/role';
 import { VersionsRepository } from '../../../data/versions.repository';
 import { REDUCED_MOTION_QUERY, mediaQuery } from '../../../shared/media-query';
 import { Button } from '../../../shared/ui/button/button';
@@ -25,14 +24,6 @@ import {
   type SegmentOption,
 } from '../../../shared/ui/segmented-control/segmented-control';
 import { StatusPill } from '../../../shared/ui/status-pill/status-pill';
-
-/** Las secciones de una versión, en el orden de las columnas de la matriz. */
-const SECTIONS: readonly { key: SectionKey; label: string }[] = [
-  { key: 'clinical', label: 'Datos clínicos' },
-  { key: 'instrumental', label: 'Instrumental' },
-  { key: 'mayo', label: 'Mesa de Mayo' },
-  { key: 'reserve', label: 'Mesa de reserva' },
-];
 
 /** Lo que dice cada filtro. */
 const FILTER_LABELS: Readonly<Record<DraftFilter, string>> = {
@@ -77,14 +68,12 @@ export class Drafts {
     this.summaries.hasValue() ? this.summaries.value().map((summary) => summary.id) : undefined,
   );
 
-  protected readonly sections = SECTIONS;
+  /** Las columnas de la matriz: las secciones de una versión. */
+  protected readonly sections = VERSION_SECTIONS;
   protected readonly firstStep = FIRST_EDITOR_STEP;
 
   /** Revisor y admin publican lo suyo sin revisión (`docs/flujos.md`). */
-  protected readonly publishesOwn = computed(() => {
-    const role = this.session.role();
-    return role !== null && hasAtLeast(role, 'reviewer');
-  });
+  protected readonly publishesOwn = computed(() => publishesOwn(this.session.role()));
 
   /** Llegaron la lista y el contenido de cada versión. */
   protected readonly loaded = computed(() => this.details.hasValue());

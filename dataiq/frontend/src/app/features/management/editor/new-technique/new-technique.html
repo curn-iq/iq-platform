@@ -24,6 +24,7 @@
       [badge]="name().trim() ? '' : missing"
       [errors]="nameErrors()"
       [touched]="true"
+      [readonly]="creating()"
       [value]="name()"
       (valueChange)="chooseName($event)"
       (touch)="create()"
@@ -34,6 +35,7 @@
       placeholder="Elegir especialidad"
       [badge]="specialtyId() ? '' : missing"
       [options]="specialties()"
+      [disabled]="creating()"
       [value]="specialtyId()"
       (valueChange)="chooseSpecialty($event)"
     />

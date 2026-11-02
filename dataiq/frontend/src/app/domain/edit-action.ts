@@ -23,10 +23,13 @@ export type EditAction =
 
 export const EDIT_LABEL = 'Editar técnica';
 
-/** Qué ofrece el botón. Una versión en curso que no es un borrador ni está en revisión no cuenta. */
+/**
+ * Qué ofrece el botón. Una versión en curso que no es un borrador ni está en revisión no cuenta. Pide la
+ * cuenta de quien pregunta: sin saberla no se puede decir si la versión es suya, así que no se decide.
+ */
 export function editAction(
   inProgress: InProgressVersion | undefined,
-  accountId: string | undefined,
+  accountId: string,
 ): EditAction {
   if (!inProgress) return { kind: 'edit', label: EDIT_LABEL, icon: 'pencil' };
   if (inProgress.created_by !== accountId) {

@@ -53,6 +53,12 @@ select {
     box-shadow: inset 0 0 0 2px var(--color-accent);
   }
 
+  // No se puede cambiar: sobre `fondo`, como el campo de solo lectura
+  &:disabled {
+    background: var(--color-bg);
+    cursor: default;
+  }
+
   // Las opciones de la lista no heredan el color atenuado
   option {
     color: var(--color-text);

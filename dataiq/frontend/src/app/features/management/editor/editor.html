@@ -3,7 +3,12 @@
 } @else if (notFound()) {
   <app-not-found />
 } @else {
-  <section class="page" aria-labelledby="editor-title" [attr.aria-busy]="version() ? null : 'true'">
+  <section
+    #page
+    class="page"
+    aria-labelledby="editor-title"
+    [attr.aria-busy]="version() ? null : 'true'"
+  >
     <a class="route" routerLink="/gestion/borradores">
       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
         <path
@@ -131,7 +136,7 @@
 
   @if (version(); as loaded) {
     @if (step()) {
-      <div class="footer">
+      <div #footer class="footer">
         <p class="count">Paso {{ stepNumber() + 1 }} de 5 · {{ stepName() }}</p>
         <div class="buttons">
           @if (previous(); as before) {

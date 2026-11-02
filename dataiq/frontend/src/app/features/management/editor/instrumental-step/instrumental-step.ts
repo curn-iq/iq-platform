@@ -9,23 +9,22 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { CatalogRepository } from '../../../../data/catalog.repository';
 import type { EditorItem } from '../../../../domain/editor-content';
 import {
   addInstrument,
   catalogGroups,
   categoryChips,
   chosenGroups,
-  hasOwnItem,
   instrumentIdsIn,
-  removeInstrument,
-  removeItemAt,
+  soleOwnItem,
   suggestions,
   type CatalogInstrument,
 } from '../../../../domain/instrumental-picker';
+import { removeAt } from '../../../../domain/remove-at';
 import { highlight } from '../../../../domain/technique-search';
 import { Button } from '../../../../shared/ui/button/button';
 import { SearchField } from '../../../../shared/ui/search-field/search-field';
+import { EditorCatalog } from '../editor-catalog';
 import { EditorState } from '../editor-state';
 
 /** Cuántos sugeridos se ven antes de «Ver n más». */
@@ -41,8 +40,9 @@ const VISIBLE_SUGGESTIONS = 8;
  *
  * «Agregar» crea un objeto con ese instrumento como único componente, sin mesa ni lugar (las mesas lo
  * ubican después); quitar saca el objeto, y con él su lugar en la mesa. Todo pasa por
- * `EditorState.edit()`, que lo guarda. El catálogo se pide al entrar al paso (`GET /catalog/full`, que el
- * detalle comparte por la caché HTTP). Con la versión en solo lectura se ve todo y nada se cambia.
+ * `EditorState.edit()`, que lo guarda. El catálogo (`GET /catalog/full`) es el de `EditorCatalog`: se pide
+ * la primera vez que se abre este paso o uno de las mesas y lo comparten. Con la versión en solo lectura
+ * se ve todo y nada se cambia.
  */
 @Component({
   selector: 'app-instrumental-step',
@@ -59,7 +59,7 @@ export class InstrumentalStep {
   private readonly state = inject(EditorState);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly catalogResource = inject(CatalogRepository).full();
+  private readonly catalogResource = inject(EditorCatalog).use();
 
   protected readonly readonly = computed(() => !this.state.editable());
   protected readonly items = computed(() => this.state.content()?.items ?? []);
@@ -99,7 +99,7 @@ export class InstrumentalStep {
   protected readonly fresh = signal<EditorItem | null>(null);
 
   protected remove(index: number): void {
-    this.state.edit((content) => ({ ...content, items: removeItemAt(content.items, index) }));
+    this.state.edit((content) => ({ ...content, items: removeAt(content.items, index) }));
   }
 
   // ---------- Sugeridos ----------
@@ -147,7 +147,7 @@ export class InstrumentalStep {
           instrument,
           segments: highlight(instrument.name, query),
           inTechnique: present.has(instrument.id),
-          removable: hasOwnItem(this.items(), instrument.id),
+          removable: soleOwnItem(this.items(), instrument.id) !== -1,
         })),
       }),
     );
@@ -170,7 +170,10 @@ export class InstrumentalStep {
     afterNextRender(() => this.revealFresh(), { injector: this.injector });
   }
 
-  /** En el catálogo, tocar lo que ya está lo quita, si es un objeto suyo; si no, no hace nada. */
+  /**
+   * En el catálogo, tocar lo que ya está lo quita si es un único objeto suyo; si solo está dentro de un
+   * objeto compuesto, o hay varios objetos suyos (p. ej. uno en cada mesa), no hace nada.
+   */
   protected toggle(row: {
     instrument: CatalogInstrument;
     inTechnique: boolean;
@@ -180,10 +183,10 @@ export class InstrumentalStep {
     if (!row.inTechnique) {
       this.add(row.instrument);
     } else if (row.removable) {
-      this.state.edit((content) => ({
-        ...content,
-        items: removeInstrument(content.items, row.instrument.id),
-      }));
+      this.state.edit((content) => {
+        const index = soleOwnItem(content.items, row.instrument.id);
+        return index === -1 ? content : { ...content, items: removeAt(content.items, index) };
+      });
     }
   }
 

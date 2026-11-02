@@ -1,6 +1,6 @@
 import type { EditorItem, EditorZone } from './editor-content';
 import { itemName } from './item-name';
-import type { CatalogInstrument } from './instrumental-picker';
+import { instrumentIdsIn, type CatalogInstrument } from './instrumental-picker';
 import { readingOrder, type Table, type TableCell } from './table';
 
 /** Una mesa del catálogo: lo que `zones` de la versión necesita para nombrarla y crearla. */
@@ -76,13 +76,7 @@ export function nextLegendNumber(items: readonly EditorItem[], zoneId: string): 
 
 /** Los instrumentos que ya están en la mesa: los que son componente de alguno de sus objetos. */
 export function instrumentIdsInZone(items: readonly EditorItem[], zoneId: string): Set<string> {
-  const ids = new Set<string>();
-  for (const { item } of itemsOfZone(items, zoneId)) {
-    for (const component of item.components) {
-      if (component.instrument_id !== null) ids.add(component.instrument_id);
-    }
-  }
-  return ids;
+  return instrumentIdsIn(items.filter((item) => item.zone_id === zoneId));
 }
 
 /**
@@ -146,8 +140,10 @@ function sameCells(cells: readonly TableCell[]): TableCell[] {
 /**
  * Pone un objeto en una celda. Un objeto de una celda va a ella; si estaba ocupada, el que estaba pasa al
  * lugar que dejó (o a «sin ubicar» si el objeto no tenía lugar). Un objeto de varias celdas se traslada
- * entero, con su primera celda (en orden de lectura) en la elegida, y solo si cabe y las celdas de destino
- * están libres. Una celda fuera de la mesa, o un objeto que no es de esa mesa, no cambia nada.
+ * entero, y solo si cabe y las celdas de destino están libres: la celda por la que se agarró (`grabbed`,
+ * al arrastrarlo desde la mesa) cae en la elegida y las demás conservan su posición respecto de ella; sin
+ * `grabbed` (o con una celda que no es suya), la que cae en la elegida es su primera celda en orden de
+ * lectura. Una celda fuera de la mesa, o un objeto que no es de esa mesa, no cambia nada.
  */
 export function placeObject(
   data: TableData,
@@ -155,6 +151,7 @@ export function placeObject(
   index: number,
   row: number,
   column: number,
+  grabbed?: TableCell,
 ): TableData {
   const zone = data.zones.find((candidate) => candidate.zone_id === zoneId);
   const item = data.items[index];
@@ -179,7 +176,10 @@ export function placeObject(
     };
   }
 
-  const [anchor] = readingOrder(item.cells);
+  const held = grabbed
+    ? item.cells.find((cell) => cell.row === grabbed.row && cell.column === grabbed.column)
+    : undefined;
+  const anchor = held ?? readingOrder(item.cells)[0];
   const moved = item.cells.map((cell) => ({
     row: cell.row + (row - anchor.row),
     column: cell.column + (column - anchor.column),
@@ -320,13 +320,7 @@ export function mostUsedInZone(
 ): CatalogInstrument[] {
   const uses = new Map<string, number>();
   for (const technique of techniques) {
-    const ids = new Set<string>();
-    for (const item of technique.items) {
-      if (item.zone !== zoneName) continue;
-      for (const component of item.components) {
-        if (component.instrument_id !== null) ids.add(component.instrument_id);
-      }
-    }
+    const ids = instrumentIdsIn(technique.items.filter((item) => item.zone === zoneName));
     for (const id of ids) uses.set(id, (uses.get(id) ?? 0) + 1);
   }
   return instruments

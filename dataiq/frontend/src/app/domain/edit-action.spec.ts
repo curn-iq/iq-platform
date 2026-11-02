@@ -46,10 +46,6 @@ describe('editAction', () => {
     }
   });
 
-  it('sin saber quién pregunta, la versión se trata como ajena', () => {
-    expect(editAction(version('draft'), undefined).kind).toBe('busy');
-  });
-
   it('una versión que no está en curso no impide editar', () => {
     expect(editAction(version('published'), 'u-1').kind).toBe('edit');
   });

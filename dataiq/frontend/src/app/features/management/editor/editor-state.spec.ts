@@ -124,6 +124,15 @@ describe('EditorState', () => {
   describe('guardar', () => {
     beforeEach(() => state.load(version()));
 
+    it('un cambio que devuelve el mismo contenido no guarda ni cambia el estado', () => {
+      state.edit((content) => content);
+
+      expect(state.saveStatus()).toBe('unchanged');
+      expect(state.hasUnsaved()).toBe(false);
+      vi.advanceTimersByTime(AUTOSAVE_DELAY_MS * 5);
+      http.expectNone(() => true);
+    });
+
     it('cada cambio pasa por «guardando» y se guarda tras la espera, con todo el contenido', () => {
       edit('Extirpar la vesícula.');
 

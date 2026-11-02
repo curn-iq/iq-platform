@@ -12,10 +12,4 @@ describe('inProgressText', () => {
       'En curso por Daniela Ortiz',
     );
   });
-
-  it('sin saber quién pregunta, no la toma por propia', () => {
-    expect(inProgressText({ created_by: 'u-2', author: 'Daniela Ortiz' }, undefined)).toBe(
-      'En curso por Daniela Ortiz',
-    );
-  });
 });

@@ -62,11 +62,17 @@ export class EditorState implements OnDestroy {
     this.statusState.set('unchanged');
   }
 
-  /** Cambia el contenido y programa el guardado. En una versión que no es un borrador no hace nada. */
+  /**
+   * Cambia el contenido y programa el guardado. En una versión que no es un borrador no hace nada, y
+   * tampoco si el cambio devuelve el mismo contenido (`change` lo devuelve tal cual cuando no cambia nada:
+   * un objeto que ya está, una celda donde no cabe): no hay nada que guardar.
+   */
   edit(change: (content: EditorContent) => EditorContent): void {
     const content = this.contentState();
     if (!content || !this.editableState() || this.abandoned) return;
-    this.contentState.set(change(content));
+    const next = change(content);
+    if (next === content) return;
+    this.contentState.set(next);
     this.dirty = true;
     this.statusState.set('saving');
     clearTimeout(this.timer);

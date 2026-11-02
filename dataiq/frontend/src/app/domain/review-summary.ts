@@ -1,13 +1,6 @@
+import { VERSION_SECTIONS } from './editor-steps';
 import { stepSummaries, type StepMark } from './step-summary';
 import type { ClinicalField, SectionKey, VersionProgress } from './version-progress';
-
-/** Cómo se llama cada sección y en qué paso del editor se completa. */
-const SECTIONS: readonly { key: SectionKey; slug: string; name: string }[] = [
-  { key: 'clinical', slug: 'datos-clinicos', name: 'Datos clínicos' },
-  { key: 'instrumental', slug: 'instrumental', name: 'Instrumental' },
-  { key: 'mayo', slug: 'mesa-de-mayo', name: 'Mesa de Mayo' },
-  { key: 'reserve', slug: 'mesa-de-reserva', name: 'Mesa de reserva' },
-];
 
 /** Los campos de los datos clínicos, con el nombre que lleva su etiqueta en el paso. */
 export const CLINICAL_FIELD_LABELS: Readonly<Record<ClinicalField, string>> = {
@@ -49,7 +42,7 @@ function tableMissing(total: number, placed: number): string[] {
  */
 export function reviewSections(progress: VersionProgress): ReviewSection[] {
   const hints = new Map(stepSummaries(progress, false).map((step) => [step.slug, step.hint]));
-  return SECTIONS.map(({ key, slug, name }) => {
+  return VERSION_SECTIONS.map(({ key, slug, name }) => {
     const blocking = progress.blocking.includes(key);
     let missing: string[] = [];
     if (blocking) {

@@ -10,9 +10,7 @@ import {
 } from '../../../../domain/new-technique';
 import { SelectField, type SelectOption } from '../../../../shared/ui/select-field/select-field';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
-
-/** Lo que dice la pastilla de un campo obligatorio que aún está vacío. */
-const MISSING = 'Falta';
+import { MISSING_BADGE } from '../missing-badge';
 
 /**
  * «Técnica nueva», lo primero del editor (`/gestion/editor/nueva`, `editor.html`): pide el nombre
@@ -21,6 +19,9 @@ const MISSING = 'Falta';
  * `dataiq/docs/checklist-frontend.md`), así que no se crea mientras se escribe: el nombre se
  * confirma al salir del campo o con Enter, y la especialidad, al elegirla. Al crearla, lleva a la
  * versión 1.
+ *
+ * Mientras se crea, los dos campos quedan de solo lectura: lo que se cambiara entonces no llegaría a la
+ * técnica, que se crea con lo que ya se mandó.
  *
  * Un 409 es que ya hay una técnica con ese nombre en la especialidad: se dice bajo el nombre y no
  * se vuelve a pedir lo mismo hasta que cambie el nombre o la especialidad. El resto de errores los
@@ -45,7 +46,7 @@ export class NewTechnique {
   /** La API dijo que ya hay una técnica con este nombre en esta especialidad. */
   private readonly rejected = signal<string | undefined>(undefined);
 
-  protected readonly missing = MISSING;
+  protected readonly missing = MISSING_BADGE;
   protected readonly title = computed(() => newTechniqueTitle(this.name()));
   protected readonly specialties = computed<SelectOption[]>(() =>
     this.specialtiesResource.hasValue()
@@ -61,10 +62,12 @@ export class NewTechnique {
   );
 
   protected chooseName(name: string): void {
+    if (this.creating()) return;
     this.name.set(name);
   }
 
   protected chooseSpecialty(id: string): void {
+    if (this.creating()) return;
     this.specialtyId.set(id);
     this.create();
   }

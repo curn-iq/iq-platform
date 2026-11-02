@@ -221,6 +221,23 @@ describe('placeObject', () => {
       ]);
     });
 
+    it('arrastrado por otra de sus celdas, esa es la que cae en la elegida', () => {
+      // Agarrado por (1,3) y soltado en (2,3): baja una fila, sin correrse de columna
+      const result = placeObject(data([wide]), 'z-mayo', 0, 2, 3, { row: 1, column: 3 });
+      expect(result.items[0].cells).toEqual([
+        { row: 2, column: 2 },
+        { row: 2, column: 3 },
+      ]);
+    });
+
+    it('una celda agarrada que no es suya cuenta como su primera celda', () => {
+      const result = placeObject(data([wide]), 'z-mayo', 0, 3, 1, { row: 4, column: 4 });
+      expect(result.items[0].cells).toEqual([
+        { row: 3, column: 1 },
+        { row: 3, column: 2 },
+      ]);
+    });
+
     it('no se mueve si no cabe', () => {
       const before = data([wide]);
       expect(placeObject(before, 'z-mayo', 0, 1, 6)).toBe(before);

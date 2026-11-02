@@ -10,6 +10,7 @@
     #select
     [id]="id"
     [class.empty]="value() === ''"
+    [disabled]="disabled()"
     [attr.aria-invalid]="error() ? 'true' : null"
     [attr.aria-describedby]="error() ? id + '-error' : null"
     (change)="value.set(select.value)"

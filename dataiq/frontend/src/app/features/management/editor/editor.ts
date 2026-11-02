@@ -1,12 +1,21 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  forwardRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/session/session.service';
 import { VersionsRepository } from '../../../data/versions.repository';
 import { draftStatus } from '../../../domain/drafts';
 import { findEditorStep, nextStep, previousStep, stepLabel } from '../../../domain/editor-steps';
-import { hasAtLeast } from '../../../domain/role';
+import { publishesOwn } from '../../../domain/role';
 import { stepSummaries } from '../../../domain/step-summary';
 import { isUuid } from '../../../domain/uuid';
 import { versionProgress } from '../../../domain/version-progress';
@@ -14,6 +23,8 @@ import { Button } from '../../../shared/ui/button/button';
 import { NotFound } from '../../../shared/ui/not-found/not-found';
 import { StatusPill } from '../../../shared/ui/status-pill/status-pill';
 import { ClinicalStep } from './clinical-step/clinical-step';
+import { EditorCatalog } from './editor-catalog';
+import { EDITOR_LAYOUT, type EditorLayout } from './editor-layout';
 import { EditorState } from './editor-state';
 import { EditorStepItem, EditorSteps } from './editor-steps/editor-steps';
 import { InstrumentalStep } from './instrumental-step/instrumental-step';
@@ -56,11 +67,15 @@ import { TableStep } from './table-step/table-step';
   ],
   templateUrl: './editor.html',
   styleUrl: './editor.scss',
-  providers: [EditorState],
+  providers: [
+    EditorState,
+    EditorCatalog,
+    { provide: EDITOR_LAYOUT, useExisting: forwardRef(() => Editor) },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(window:beforeunload)': 'warnBeforeLeaving($event)' },
 })
-export class Editor {
+export class Editor implements EditorLayout {
   private readonly params = toSignal(inject(ActivatedRoute).paramMap, { requireSync: true });
   protected readonly session = inject(SessionService);
   protected readonly state = inject(EditorState);
@@ -97,10 +112,7 @@ export class Editor {
   });
 
   /** Revisor y admin publican lo suyo sin revisión: el último paso lo dice. */
-  protected readonly publishesOwn = computed(() => {
-    const role = this.session.role();
-    return role !== null && hasAtLeast(role, 'reviewer');
-  });
+  protected readonly publishesOwn = computed(() => publishesOwn(this.session.role()));
 
   /** Los cinco pasos con su marca y lo que falta, a partir de lo que hay en pantalla. */
   protected readonly steps = computed<EditorStepItem[]>(() => {
@@ -133,6 +145,15 @@ export class Editor {
       const version = this.version();
       if (version) this.state.load(version);
     });
+  }
+
+  private readonly page = viewChild<ElementRef<HTMLElement>>('page');
+  private readonly footer = viewChild<ElementRef<HTMLElement>>('footer');
+
+  bottomBar(): { bar: HTMLElement; content: HTMLElement } | undefined {
+    const bar = this.footer()?.nativeElement;
+    const content = this.page()?.nativeElement;
+    return bar && content ? { bar, content } : undefined;
   }
 
   /** Con algo sin guardar, el navegador pide confirmar antes de cerrar la pestaña. */

@@ -14,6 +14,7 @@ const OPTIONS: SelectOption[] = [
     label="Especialidad"
     placeholder="Elegir especialidad"
     [badge]="badge()"
+    [disabled]="disabled()"
     [options]="options"
     [value]="value()"
     (valueChange)="value.set($event)"
@@ -24,6 +25,7 @@ class Host {
   options = OPTIONS;
   value = signal('');
   badge = signal('Falta');
+  disabled = signal(false);
   touched = 0;
 }
 
@@ -115,6 +117,16 @@ describe('SelectField', () => {
     await fixture.whenStable();
 
     expect(root.querySelector('.badge')).toBeNull();
+  });
+
+  it('deshabilitado se ve lo elegido y no se puede cambiar', async () => {
+    const { fixture, select } = await mount();
+    fixture.componentInstance.value.set('s-2');
+    fixture.componentInstance.disabled.set(true);
+    await fixture.whenStable();
+
+    expect(select().disabled).toBe(true);
+    expect(select().value).toBe('s-2');
   });
 
   it('la flecha es decorativa', async () => {

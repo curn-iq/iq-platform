@@ -16,7 +16,6 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { CatalogRepository } from '../../../../data/catalog.repository';
 import type { CatalogInstrument } from '../../../../domain/instrumental-picker';
 import { ZONE_NAMES } from '../../../../domain/table';
 import {
@@ -44,6 +43,8 @@ import {
 import { TableDiagram } from '../../../../shared/table-diagram/table-diagram';
 import { Button } from '../../../../shared/ui/button/button';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
+import { EditorCatalog } from '../editor-catalog';
+import { EDITOR_LAYOUT } from '../editor-layout';
 import { EditorState } from '../editor-state';
 import { ObjectPicker } from './object-picker/object-picker';
 
@@ -67,6 +68,11 @@ interface Cell {
   /** Su número y nombre, para el objeto que se arrastra desde ella. */
   object: { number: number | null; name: string } | null;
   label: string;
+}
+
+/** Cómo se nombra un objeto en las celdas y en la ayuda: con su número si lo tiene («3, Pinza Kelly»). */
+function objectLabel(object: { number: number | null; name: string }): string {
+  return object.number === null ? object.name : `${object.number}, ${object.name}`;
 }
 
 /** El selector «Qué va aquí» abierto sobre una celda, con dónde dibujarlo. */
@@ -116,7 +122,8 @@ export class TableStep {
   private readonly state = inject(EditorState);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly catalogResource = inject(CatalogRepository).full();
+  private readonly layout = inject(EDITOR_LAYOUT, { optional: true });
+  private readonly catalogResource = inject(EditorCatalog).use();
 
   protected readonly readonly = computed(() => !this.state.editable());
   protected readonly isReserve = computed(() => this.kind() === 'reserve');
@@ -215,7 +222,7 @@ export class TableStep {
           column,
           occupant,
           object: object ? { number: object.number, name: object.name } : null,
-          label: `Fila ${row}, columna ${column}: ${object ? `${object.number}, ${object.name}` : 'vacía'}`,
+          label: `Fila ${row}, columna ${column}: ${object ? objectLabel(object) : 'vacía'}`,
         });
       }
     }
@@ -298,18 +305,22 @@ export class TableStep {
   private readonly hovered = signal<number | null>(null);
   protected readonly choice = signal<Choice | null>(null);
 
+  /** La pieza que se levanta en la mesa, por su id en el diagrama (su posición): tenga número o no. */
   protected readonly highlighted = computed(() => {
     const index = this.hovered() ?? this.selected();
-    return index === null ? null : (this.data().items[index]?.legend_number ?? null);
+    return index === null ? null : String(index);
   });
-  protected readonly selectedNumber = computed(() => {
-    const index = this.selected();
-    return index === null ? null : (this.data().items[index]?.legend_number ?? null);
-  });
-  /** Lo que dice la línea de ayuda: con un objeto elegido, dónde tocar. */
+  /**
+   * Lo que dice la línea de ayuda: con un objeto elegido, dónde tocar («Tocar la celda donde va el 3.»; uno
+   * sin número, por su nombre: «Tocar la celda donde va Pinza Kelly.»).
+   */
   protected readonly helpText = computed(() => {
-    const number = this.selectedNumber();
-    return number === null ? this.hint() : `Tocar la celda donde va el ${number}.`;
+    const index = this.selected();
+    const object = index === null ? undefined : this.objects().find((o) => o.index === index);
+    if (!object) return this.hint();
+    return object.number === null
+      ? `Tocar la celda donde va ${object.name}.`
+      : `Tocar la celda donde va el ${object.number}.`;
   });
 
   protected hover(index: number | null): void {
@@ -334,10 +345,16 @@ export class TableStep {
     this.openChoice(cell, button);
   }
 
-  private place(index: number, row: number, column: number): void {
+  /** Ubica el objeto; `grabbed` es la celda suya por la que se arrastró desde la mesa, si fue así. */
+  private place(
+    index: number,
+    row: number,
+    column: number,
+    grabbed?: { row: number; column: number },
+  ): void {
     this.selected.set(null);
     this.closeChoice();
-    this.change((data, ref) => placeObject(data, ref.id, index, row, column));
+    this.change((data, ref) => placeObject(data, ref.id, index, row, column, grabbed));
   }
 
   /**
@@ -385,13 +402,14 @@ export class TableStep {
   /**
    * Lo que se ve de la ventana, en píxeles: `top` es bajo el menú de arriba; `bottom`, sobre la barra del
    * editor pegada al borde de abajo; `flowBottom`, donde empieza esa barra en su sitio natural, justo tras
-   * el contenido (al final de la página se queda ahí y no sube más).
+   * el contenido (al final de la página se queda ahí y no sube más). La barra la da `EDITOR_LAYOUT`.
    */
   private visibleBand(): { top: number; bottom: number; flowBottom: number } {
     const token = window.innerWidth <= MOBILE_WIDTH ? '--size-navbar-mobile' : '--size-navbar';
     const navbar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(token));
-    const bar = document.querySelector<HTMLElement>('.footer');
-    const flow = bar?.previousElementSibling?.getBoundingClientRect().bottom;
+    const layout = this.layout?.bottomBar();
+    const bar = layout?.bar;
+    const flow = layout?.content.getBoundingClientRect().bottom;
     const stuck = window.innerHeight - (bar?.offsetHeight ?? 0);
     return {
       top: (Number.isFinite(navbar) ? navbar : 0) + VIEW_MARGIN,
@@ -468,13 +486,21 @@ export class TableStep {
     this.over.set(this.cellAt(event.pointerPosition.x, event.pointerPosition.y));
   }
 
-  /** Suelta un objeto (de la lista o de una celda): si cae en una celda, se ubica ahí; si no, vuelve a su sitio. */
-  protected dragEnded(event: CdkDragEnd, index: number): void {
+  /**
+   * Suelta un objeto (de la lista o de una celda): si cae en una celda, se ubica ahí; si no, vuelve a su
+   * sitio. Arrastrado desde la mesa, `grabbed` es la celda por la que se agarró: un objeto de varias celdas
+   * la deja en la de destino y no se corre.
+   */
+  protected dragEnded(
+    event: CdkDragEnd,
+    index: number,
+    grabbed?: { row: number; column: number },
+  ): void {
     const target = this.cellAt(event.dropPoint.x, event.dropPoint.y);
     event.source.reset();
     this.over.set(null);
     this.dragging.set(false);
-    if (target) this.place(index, target.row, target.column);
+    if (target) this.place(index, target.row, target.column, grabbed);
   }
 
   /** La celda que está bajo ese punto de la pantalla, medida con las celdas mismas (el objeto arrastrado tapa lo de abajo). */

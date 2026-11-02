@@ -177,7 +177,7 @@
 
         <div class="stage">
           <div inert>
-            <app-table-diagram [table]="table()" [highlighted]="highlighted()" />
+            <app-table-diagram [table]="table()" [highlightedPiece]="highlighted()" />
           </div>
           <div
             class="cells"
@@ -205,7 +205,7 @@
                 (click)="tapCell(cell, button, $event)"
                 (cdkDragStarted)="dragStarted()"
                 (cdkDragMoved)="dragMoved($event)"
-                (cdkDragEnded)="dragEnded($event, cell.occupant)"
+                (cdkDragEnded)="dragEnded($event, cell.occupant, cell)"
               >
                 @if (cell.object; as object) {
                   <span *cdkDragPreview class="ghost">

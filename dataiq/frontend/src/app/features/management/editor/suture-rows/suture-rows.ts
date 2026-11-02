@@ -16,6 +16,7 @@ import {
   sutureRowNeedsName,
   type SutureRowField,
 } from '../../../../domain/suture-rows';
+import { MISSING_BADGE } from '../missing-badge';
 
 /** Para que cada lista enlace su propio título: dos en una página no comparten id. */
 let nextId = 0;
@@ -26,9 +27,6 @@ export interface SutureRowChange {
   field: SutureRowField;
   value: string;
 }
-
-/** Lo que dice la pastilla del título mientras no hay ninguna sutura. */
-const MISSING = 'Falta';
 
 /**
  * «Suturas por plano» del paso de datos clínicos, según «Editor de técnica (página)» de `DESIGN.md` y
@@ -55,7 +53,8 @@ export class SutureRows {
   readonly removed = output<number>();
 
   protected readonly id = `suture-rows-${nextId++}`;
-  protected readonly missingText = MISSING;
+  /** Lo que dice la pastilla del título mientras no hay ninguna sutura. */
+  protected readonly missingText = MISSING_BADGE;
 
   private readonly injector = inject(Injector);
   private readonly planes = viewChildren<ElementRef<HTMLInputElement>>('plane');

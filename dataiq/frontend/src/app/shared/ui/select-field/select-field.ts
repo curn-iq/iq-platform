@@ -26,7 +26,9 @@ export interface SelectOption {
  * en `tinta-2`. Es un control de Signal Forms (`<app-select-field label="Especialidad"
  * [options]="…" [formField]="form.specialty" />`) y también se usa con `[value]` y
  * `(valueChange)`. `placeholder` es la primera opción, con valor vacío: elegirla deja el selector
- * sin elegir. `badge` suma la pastilla junto a la etiqueta, como en el campo de texto.
+ * sin elegir. `badge` suma la pastilla junto a la etiqueta, como en el campo de texto. `disabled` deja
+ * ver lo elegido sin cambiarlo (p. ej. mientras se crea la técnica con esa especialidad), sobre `fondo`
+ * como el campo de solo lectura.
  */
 @Component({
   selector: 'app-select-field',
@@ -43,6 +45,8 @@ export class SelectField implements FormValueControl<string> {
   readonly placeholder = input('');
   /** El texto de la pastilla junto a la etiqueta; sin texto, no hay pastilla. */
   readonly badge = input('');
+  /** No se puede cambiar: se ve lo elegido. */
+  readonly disabled = input(false);
   /** Los errores de validación y si se tocó: los enlaza `[formField]`. */
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
   readonly touched = input(false);

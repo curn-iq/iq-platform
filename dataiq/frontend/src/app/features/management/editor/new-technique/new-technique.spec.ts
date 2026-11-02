@@ -223,6 +223,26 @@ describe('NewTechnique', () => {
       expect(root.querySelector('.card')!.getAttribute('aria-busy')).toBe('true');
       await created();
     });
+
+    it('mientras se crea, el nombre y la especialidad no se pueden cambiar', async () => {
+      await open();
+      await choose('s-1');
+      await type('Apendicectomia');
+      await leaveName();
+
+      expect(root.querySelector<HTMLInputElement>('app-text-field input')!.readOnly).toBe(true);
+      expect(root.querySelector<HTMLSelectElement>('app-select-field select')!.disabled).toBe(true);
+      const request = http.expectOne(`${TEST_API_BASE}/techniques`);
+      expect(request.request.body.name).toBe('Apendicectomia');
+      request.flush({}, { status: 500, statusText: 'Error' });
+      await settle();
+
+      // Si falla, se pueden corregir otra vez
+      expect(root.querySelector<HTMLInputElement>('app-text-field input')!.readOnly).toBe(false);
+      expect(root.querySelector<HTMLSelectElement>('app-select-field select')!.disabled).toBe(
+        false,
+      );
+    });
   });
 
   describe('si la API rechaza', () => {

@@ -2,6 +2,7 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { VersionDetail } from '../../../../data/api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../../../data/testing';
+import { EditorCatalog } from '../editor-catalog';
 import { EditorState } from '../editor-state';
 import { InstrumentalStep } from './instrumental-step';
 
@@ -115,7 +116,9 @@ describe('InstrumentalStep', () => {
       answer?: boolean;
     } = {},
   ): Promise<void> {
-    TestBed.configureTestingModule({ providers: [provideRepositoryTesting(), EditorState] });
+    TestBed.configureTestingModule({
+      providers: [provideRepositoryTesting(), EditorState, EditorCatalog],
+    });
     state = TestBed.inject(EditorState);
     http = TestBed.inject(HttpTestingController);
     state.load(version(options.state ?? 'draft', options.items ?? []));
@@ -447,6 +450,24 @@ describe('InstrumentalStep', () => {
 
       expect(state.content()?.items.map((i) => i.source_text)).toEqual(['Gasa']);
       expect(text(rowNamed('Pinza Kelly'))).toBe('Pinza Kelly Agregar');
+    });
+
+    it('con varios objetos que son solo ese instrumento (uno en cada mesa) no se quita ninguno desde aquí', async () => {
+      await mount({
+        items: [
+          { ...apiItem(1, KELLY), zone_id: 'z-mayo', zone: 'Mesa de Mayo', legend_number: 3 },
+          { ...apiItem(2, KELLY), zone_id: 'z-reserva', zone: 'Mesa de reserva', legend_number: 5 },
+        ],
+      });
+      const row = rowNamed('Pinza Kelly');
+
+      expect(text(row)).toBe('Pinza Kelly En la técnica');
+      expect(row.getAttribute('aria-disabled')).toBe('true');
+      row.click();
+      await settle();
+
+      expect(state.content()?.items).toHaveLength(2);
+      expect(state.saveStatus()).toBe('unchanged');
     });
 
     it('un instrumento que solo está dentro de un objeto compuesto dice «En la técnica» y no se quita desde aquí', async () => {

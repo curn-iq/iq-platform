@@ -61,7 +61,8 @@ export class PublishedPanel {
     () =>
       this.publishedResource.hasValue() &&
       this.specialtiesResource.hasValue() &&
-      this.inProgressResource.hasValue(),
+      this.inProgressResource.hasValue() &&
+      this.session.account() !== null,
   );
   /** Algo no llegó por un error (el interceptor ya avisó): no se sabe qué técnicas hay. */
   protected readonly failed = computed(
@@ -79,6 +80,8 @@ export class PublishedPanel {
   private readonly busyTexts = computed(() => {
     const accountId = this.session.account()?.id;
     const texts = new Map<string, string>();
+    // Sin la cuenta no se sabe cuáles son de quien mira (`loaded` la espera)
+    if (accountId === undefined) return texts;
     for (const version of this.inProgressResource.value() ?? []) {
       texts.set(version.technique_id, inProgressText(version, accountId));
     }
