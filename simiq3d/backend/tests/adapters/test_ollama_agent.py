@@ -363,6 +363,22 @@ async def test_only_the_sentence_that_names_a_tool_is_removed():
 
 
 @pytest.mark.anyio
+async def test_a_reply_written_as_text_is_not_repeated():
+    answer = "La Kelly va al centro."
+    for content in (f'{answer}\n\nreply("{answer}")', f'reply("{answer}")'):
+        server = ScriptedOllama(
+            tool_calls(call("get_technique", technique="Colecistectomía")),
+            {"role": "assistant", "content": content},
+        )
+
+        reply = await server.agent().reply(
+            "¿Dónde va la Kelly?", CATALOG, COLECISTECTOMIA.id
+        )
+
+        assert reply.reply == answer
+
+
+@pytest.mark.anyio
 async def test_the_model_is_told_which_technique_the_question_describes():
     server = ScriptedOllama(
         tool_calls(call("get_technique", technique="Colecistectomía")),

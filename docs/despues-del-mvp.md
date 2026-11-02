@@ -97,6 +97,13 @@ fuentes propias.
 
 ## SIMIQ3D
 
+- **Armar la mesa por tiempo quirúrgico** (diéresis, hemostasia, síntesis…).
+  Para los estudiantes de IQ es central, pero DataIQ no guarda a qué tiempo
+  pertenece cada objeto ni en qué orden se usa. Hace falta el dato, con su
+  fuente, en la base y la API de DataIQ; las consultas del chat y sus
+  preguntas en el banco, y el frontend de SIMIQ3D. Queda fuera del MVP
+  (decidido por Mauricio el 2026-11-02, [`simiq3d/README.md`](../simiq3d/README.md),
+  «Alcance del MVP»).
 - **Un modelo de lenguaje más grande** que Qwen3-VL 8B, el del MVP: necesita
   una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
   Se elige con el mismo banco de preguntas, para comparar la exactitud.

@@ -19,6 +19,14 @@ Decidido por Mauricio el 2026-10-15:
   en DataIQ (la lista está en
   [`sivri/docs/dataset.md`](../sivri/docs/dataset.md)). Cada modelo 3D
   corresponde a un instrumento del catálogo de DataIQ.
+- **Sin tiempos quirúrgicos** (decidido por Mauricio el 2026-11-02): DataIQ
+  guarda dónde va cada objeto en la mesa de cada técnica, no a qué tiempo
+  quirúrgico pertenece (diéresis, hemostasia, síntesis…) ni en qué orden se
+  usa. El chat lo dice con una regla fija, antes del modelo, y el modelo tiene
+  prohibido ordenar las piezas por tiempos
+  ([`backend/README.md`](backend/README.md), «Cómo responde el chat»). Armar
+  la mesa por tiempos queda para después del MVP
+  ([`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md)).
 
 ## Modelos 3D
 
