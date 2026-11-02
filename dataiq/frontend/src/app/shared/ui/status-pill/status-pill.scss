@@ -1,0 +1,33 @@
+// Pastilla de estado: ver «Mis borradores (página)» en DESIGN.md.
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+svg {
+  flex: none;
+}
+
+:host([data-kind='draft']) {
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+:host([data-kind='returned']) {
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+:host([data-kind='in_review']) {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}

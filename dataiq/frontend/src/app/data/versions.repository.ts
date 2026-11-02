@@ -1,6 +1,7 @@
 import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { inject, Injectable, ResourceRef } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, Observable, of } from 'rxjs';
 import type { VersionState } from '../domain/version-state';
 import { API_BASE_URL } from './api-base-url';
 import type { VersionContent, VersionDetail, VersionSummary } from './api/models';
@@ -43,6 +44,22 @@ export class VersionsRepository {
     return httpResource<VersionDetail>(() => {
       const versionId = id();
       return versionId === undefined ? undefined : this.versionUrl(versionId);
+    });
+  }
+
+  /**
+   * Varias versiones con su contenido y sus rechazos, en el orden de los ids (una petición por
+   * versión: la API no trae el contenido en la lista). Es todo o nada: si una falla, falla el
+   * recurso, y `reload()` las pide otra vez. Sin ids entrega una lista vacía; con ids
+   * indefinidos no pide nada.
+   */
+  getMany(ids: () => readonly string[] | undefined): ResourceRef<VersionDetail[] | undefined> {
+    return rxResource<VersionDetail[], readonly string[] | undefined>({
+      params: ids,
+      stream: ({ params }) =>
+        params.length === 0
+          ? of([])
+          : forkJoin(params.map((id) => this.http.get<VersionDetail>(this.versionUrl(id)))),
     });
   }
 

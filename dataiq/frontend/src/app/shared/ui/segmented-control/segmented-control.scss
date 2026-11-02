@@ -1,0 +1,111 @@
+// Control segmentado: ver «Mis borradores (página)» en DESIGN.md.
+
+:host {
+  display: inline-block;
+}
+
+.group {
+  position: relative;
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+button {
+  position: relative;
+  z-index: 1;
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-control-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-fade);
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--color-accent-strong);
+  }
+}
+
+.count {
+  margin-left: 6px;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+
+button[aria-pressed='true'] .count {
+  color: var(--color-accent-strong);
+}
+
+.plate {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: 36px;
+  border-radius: var(--radius-control-sm);
+  background: var(--color-accent-soft);
+
+  &.ready {
+    transition:
+      transform 0.45s var(--ease-enter),
+      width 0.45s var(--ease-enter);
+  }
+}
+
+// En celular: chips de 40 px que se desplazan, el elegido lleno en `marca`
+@media (max-width: 760px) {
+  :host {
+    display: block;
+    min-width: 0;
+  }
+
+  .group {
+    display: flex;
+    gap: 8px;
+    padding: 0 var(--space-gutter);
+    margin-inline: calc(-1 * var(--space-gutter));
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--space-gutter);
+    scrollbar-width: none;
+  }
+
+  .plate {
+    display: none;
+  }
+
+  button {
+    flex: none;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
+    scroll-snap-align: start;
+
+    &[aria-pressed='true'] {
+      background: var(--color-accent);
+      color: var(--color-surface);
+      box-shadow: none;
+    }
+  }
+
+  button[aria-pressed='true'] .count {
+    color: var(--color-surface);
+  }
+}

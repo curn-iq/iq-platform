@@ -1,0 +1,484 @@
+// Mis borradores: ver «Mis borradores (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.page {
+  padding: 48px var(--space-gutter) 104px;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.summary {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: 17px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+// ---------- Cargando, error y nada en curso ----------
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 36px 0 0;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+.last {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 28px 24px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 16.5px;
+
+  svg {
+    flex: none;
+    color: var(--color-accent);
+  }
+}
+
+// ---------- Filtros y leyenda ----------
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin: 36px 0 14px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// ---------- La matriz ----------
+
+.table-box {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  scrollbar-width: thin;
+}
+
+.matrix {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.3;
+    text-align: left;
+    vertical-align: bottom;
+  }
+
+  td {
+    padding: 18px 16px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .section {
+    width: 104px;
+    border-left: 1px solid var(--color-border);
+    text-align: center;
+  }
+}
+
+.row td {
+  transition: background-color 0.2s var(--ease-fade);
+}
+
+.row:hover td {
+  background: color-mix(in oklab, var(--color-bg) 55%, var(--color-surface));
+}
+
+// La fila devuelta no se separa de su nota
+.row.with-note td {
+  border-bottom: 0;
+}
+
+.technique {
+  min-width: 240px;
+}
+
+.name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.meta {
+  margin: 2px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+}
+
+.state-date {
+  display: none;
+  margin-top: 6px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.edited {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.action {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  color: var(--color-accent);
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 0.2s var(--ease-fade);
+
+  &:hover {
+    background: var(--color-accent-soft);
+  }
+
+  svg {
+    transition: transform 0.35s var(--ease-enter);
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+
+  &.view {
+    color: var(--color-text-muted);
+
+    &:hover {
+      background: var(--color-hover);
+    }
+  }
+}
+
+.only-mobile {
+  display: none;
+}
+
+// ---------- Motivo de la devolución ----------
+
+.note-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  svg {
+    transition: transform 0.3s var(--ease-enter);
+  }
+
+  &[aria-expanded='false'] svg {
+    transform: rotate(-90deg);
+  }
+}
+
+.note-row td {
+  padding: 0 16px;
+}
+
+// Se despliega bajo su fila cuando las marcas terminan de trazarse
+.note-box {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.45s var(--ease-enter);
+
+  &.closed {
+    grid-template-rows: 0fr;
+  }
+
+  > div {
+    overflow: hidden;
+  }
+}
+
+.note {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+
+  svg {
+    margin-top: 2px;
+    color: var(--color-text-muted);
+  }
+}
+
+.note-head {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+// El motivo trae un comentario por línea (Resuelto 18): se respetan sus saltos de línea
+.note-text {
+  max-width: 72ch;
+  margin: 4px 0 0;
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.empty-filter td {
+  padding: 48px 16px;
+  color: var(--color-text-subtle);
+  text-align: center;
+}
+
+// ---------- Pantallas angostas ----------
+
+@media (max-width: 1180px) {
+  .matrix {
+    min-width: 780px;
+
+    th,
+    td {
+      padding-inline: 12px;
+    }
+
+    .section {
+      width: 88px;
+    }
+  }
+
+  .edited-col,
+  .edited {
+    display: none;
+  }
+
+  .state-date {
+    display: block;
+  }
+}
+
+// En celular cada técnica es una tarjeta
+@media (max-width: 760px) {
+  .page {
+    padding-top: 32px;
+  }
+
+  .head h1 {
+    font-size: 30px;
+  }
+
+  .filters {
+    margin-top: 28px;
+  }
+
+  .legend {
+    flex: 1 1 100%;
+  }
+
+  .table-box {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .matrix {
+    min-width: 0;
+
+    &,
+    tbody {
+      display: block;
+    }
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px 8px;
+    margin-bottom: 12px;
+    padding: 18px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-window);
+    background: var(--color-surface);
+
+    &.with-note {
+      margin-bottom: 0;
+      border-bottom: 0;
+      border-radius: var(--radius-window) var(--radius-window) 0 0;
+    }
+
+    td,
+    td.section {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: none !important;
+    }
+
+    .technique {
+      grid-column: 1 / -1;
+    }
+
+    .state {
+      grid-column: 1 / 3;
+    }
+
+    .edited {
+      display: block;
+      grid-column: 3 / 5;
+      align-self: center;
+      text-align: right;
+    }
+
+    .section {
+      width: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .section::before {
+      content: attr(data-label);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 2.4em;
+      margin-bottom: 8px;
+      color: var(--color-text-subtle);
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .action {
+      grid-column: 1 / -1;
+      width: auto;
+      text-align: left;
+    }
+
+    &.with-note .action {
+      display: none;
+    }
+  }
+
+  .state-date {
+    display: none;
+  }
+
+  .continue {
+    width: 100%;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px var(--color-border);
+  }
+
+  .note-row {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid var(--color-border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-window) var(--radius-window);
+    background: var(--color-surface);
+
+    td {
+      display: block;
+      padding: 0 18px;
+    }
+
+    .only-mobile {
+      display: flex;
+      margin-bottom: 18px;
+    }
+  }
+
+  .empty-filter {
+    display: block;
+
+    td {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+@if (status() === 'no_table') {
+  <span class="dash" aria-hidden="true"></span>
+} @else {
+  <svg viewBox="0 0 22 22" aria-hidden="true">
+    <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
+    @if (status() === 'complete') {
+      <g class="fill">
+        <circle cx="11" cy="11" r="9" />
+        <path d="M7 11.4l2.7 2.6L15 8.6" />
+      </g>
+    } @else if (status() === 'in_progress') {
+      <path class="fill half" d="M11 2a9 9 0 0 0 0 18Z" />
+    }
+  </svg>
+}
+<span class="sr-only">{{ labels[status()] }}</span>

@@ -59,7 +59,8 @@ src/
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown
+    │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown,
+    │                       filas de Mis borradores, fechas de edición, pasos del editor
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
@@ -97,6 +98,7 @@ navegador.
   filtro como función (`() => id()`, normalmente una señal): si devuelve
   `undefined`, el recurso no pide nada. `VersionsFilter` traduce `reviewedByMe`
   a `reviewed_by_me` y manda cada estado como un parámetro repetido.
+- `VersionsRepository.getMany(ids)` es la excepción: pide varias versiones con su contenido (una petición por versión, con `forkJoin`) y devuelve un `rxResource`, porque la lista de `GET /versions` no trae el contenido. Es todo o nada y `reload()` las vuelve a pedir.
 - Las **escrituras** y `AuthRepository` (que no se muestra en una pantalla)
   devuelven `Observable`.
 - `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
@@ -278,6 +280,7 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 ### Gestión del colaborador (`features/management/`)
 
 - **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.
+- **Mis borradores** (`features/management/drafts/`, `/gestion/borradores`, Resuelto 47 de la [checklist](../docs/checklist-frontend.md)): la matriz de avance de las versiones en curso propias (`GET /versions?mine=true`, y cada una con `GET /versions/{id}` para su contenido). `domain/drafts.ts` arma las filas (`toDraftRows()`), filtra, cuenta y escribe la línea de resumen; la pantalla solo pinta. Un borrador con `rejections` es «Devuelta» y su nota es la primera (la API las entrega de la más reciente a la más vieja), con sus saltos de línea (`white-space: pre-line`, nunca `innerHTML`). La nota se abre cuando las marcas terminan de trazarse (950 ms) y se pliega con su botón. Revisor y admin publican lo suyo: sin filtros ni leyenda. Sin nada en curso, la línea «Nada en curso.» y la versión publicada más reciente (`GET /versions?mine=true&state=published`, que solo se pide entonces). «Continuar» y «Ver» llevan al primer paso del editor (`domain/editor-steps.ts`). Si falla la lista o el contenido de una versión no se sabe cuántas hay: lo dice y ofrece «Reintentar». Las fechas de «Editada» salen de `domain/edited-date.ts`, en hora local y sin `Intl`. En `shared/ui/`: `status-pill`, `progress-mark` y `segmented-control`, que la fase 6 reutiliza en el editor.
 
 ### Glosario (interfaz → código y API)
 
@@ -306,8 +309,8 @@ relativas a `/api/dataiq`.
 | `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
 | `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
 | `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
-| `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
-| `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
+| `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `GET /versions/{id}`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
+| `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` (`datos-clinicos`, `instrumental`, `mesa-de-mayo`, `mesa-de-reserva`, `revisar`) | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
 | `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
 | `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
