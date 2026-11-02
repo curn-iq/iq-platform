@@ -27,7 +27,8 @@ svg {
   color: var(--color-surface);
 }
 
-:host([data-kind='in_review']) {
+:host([data-kind='in_review']),
+:host([data-kind='approved']) {
   background: var(--color-accent-soft);
   color: var(--color-accent-strong);
 }

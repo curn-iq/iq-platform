@@ -1,19 +1,21 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Los estados que tiene la pastilla hasta ahora; cada casilla que use otro lo suma. */
-export type StatusPillKind = 'draft' | 'returned' | 'in_review';
+export type StatusPillKind = 'draft' | 'returned' | 'in_review' | 'approved';
 
 /** Lo que dice cada pastilla. */
 export const STATUS_PILL_LABELS: Readonly<Record<StatusPillKind, string>> = {
   draft: 'Borrador',
   returned: 'Devuelta',
   in_review: 'En revisión',
+  approved: 'Aprobada',
 };
 
 /**
  * Pastilla de estado de una versión, con su ícono, según «Mis borradores (página)» de
  * `DESIGN.md`: Borrador con anillo `filete-2`, En revisión en `marca-claro` y Devuelta en
- * `tinta` con texto blanco (nunca rojo).
+ * `tinta` con texto blanco (nunca rojo). Aprobada, la de «Revisadas por mí», va en `marca-claro`
+ * con un visto (Resuelto 58 de `dataiq/docs/checklist-frontend.md`).
  */
 @Component({
   selector: 'app-status-pill',

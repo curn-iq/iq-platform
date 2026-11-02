@@ -13,6 +13,7 @@ describe('StatusPill', () => {
     expect(create('draft').textContent!.trim()).toBe('Borrador');
     expect(create('returned').textContent!.trim()).toBe('Devuelta');
     expect(create('in_review').textContent!.trim()).toBe('En revisión');
+    expect(create('approved').textContent!.trim()).toBe('Aprobada');
   });
 
   it('cada estado tiene su ícono, decorativo, y no se repiten', () => {
@@ -22,7 +23,7 @@ describe('StatusPill', () => {
       return svg.innerHTML;
     });
 
-    expect(new Set(icons).size).toBe(3);
+    expect(new Set(icons).size).toBe(4);
   });
 
   it('el estado queda en un atributo del host, que es lo que lo pinta', () => {
