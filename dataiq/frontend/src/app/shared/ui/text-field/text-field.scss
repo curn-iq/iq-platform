@@ -6,9 +6,24 @@
 }
 
 label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   color: var(--color-text-muted);
   font-size: 14px;
   font-weight: 600;
+}
+
+// «Falta» y «Opcional»: ver «Editor de técnica (página)» en DESIGN.md
+.badge {
+  padding: 1px 9px;
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 20px;
 }
 
 .control {

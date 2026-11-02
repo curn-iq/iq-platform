@@ -1,9 +1,26 @@
 <section class="page" aria-labelledby="drafts-title">
   <header class="head">
-    <h1 id="drafts-title">Mis borradores</h1>
-    @if (loaded()) {
-      <p class="summary" aria-live="polite">{{ summary() }}</p>
-    }
+    <div>
+      <h1 id="drafts-title">Mis borradores</h1>
+      @if (loaded()) {
+        <p class="summary" aria-live="polite">{{ summary() }}</p>
+      }
+    </div>
+    <div class="actions">
+      <app-edit-published />
+      <a app-button class="new" routerLink="/gestion/editor/nueva">
+        <svg class="plus" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M8 3v10M3 8h10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        Nueva técnica
+      </a>
+    </div>
   </header>
 
   @if (failed()) {

@@ -18,6 +18,7 @@ import type { SectionKey } from '../../../domain/version-progress';
 import { VersionsRepository } from '../../../data/versions.repository';
 import { REDUCED_MOTION_QUERY, mediaQuery } from '../../../shared/media-query';
 import { Button } from '../../../shared/ui/button/button';
+import { EditPublished } from './edit-published/edit-published';
 import { ProgressMark } from '../../../shared/ui/progress-mark/progress-mark';
 import {
   SegmentedControl,
@@ -58,7 +59,7 @@ const REVEAL_NOTES_AFTER_MS = 950;
  */
 @Component({
   selector: 'app-drafts',
-  imports: [Button, ProgressMark, RouterLink, SegmentedControl, StatusPill],
+  imports: [Button, EditPublished, ProgressMark, RouterLink, SegmentedControl, StatusPill],
   templateUrl: './drafts.html',
   styleUrl: './drafts.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

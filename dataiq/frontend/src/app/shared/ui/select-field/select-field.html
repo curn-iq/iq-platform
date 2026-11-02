@@ -1,0 +1,38 @@
+<label [for]="id">
+  <span>{{ label() }}</span>
+  {{ ' ' }}
+  @if (badge()) {
+    <span class="badge">{{ badge() }}</span>
+  }
+</label>
+<div class="control">
+  <select
+    #select
+    [id]="id"
+    [class.empty]="value() === ''"
+    [attr.aria-invalid]="error() ? 'true' : null"
+    [attr.aria-describedby]="error() ? id + '-error' : null"
+    (change)="value.set(select.value)"
+    (blur)="touch.emit()"
+  >
+    <option value="" [selected]="value() === ''">{{ placeholder() }}</option>
+    @for (option of options(); track option.value) {
+      <option [value]="option.value" [selected]="option.value === value()">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+  <svg class="arrow" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+    <path
+      d="M2.5 4.5L6 8l3.5-3.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</div>
+@if (error(); as message) {
+  <app-field-error [id]="id + '-error'" [message]="message" />
+}

@@ -31,6 +31,30 @@ class Host {
   });
 }
 
+@Component({
+  imports: [TextField],
+  template: `<app-text-field label="Nombre de la técnica" [badge]="badge()" />`,
+})
+class BadgeHost {
+  readonly badge = signal('Falta');
+}
+
+describe('TextField, con pastilla', () => {
+  it('la pastilla va junto a la etiqueta, y sin texto no hay pastilla', async () => {
+    const fixture = TestBed.createComponent(BadgeHost);
+    await fixture.whenStable();
+    const label = () => (fixture.nativeElement as HTMLElement).querySelector('label')!;
+
+    expect(label().textContent!.replace(/\s+/g, ' ').trim()).toBe('Nombre de la técnica Falta');
+    expect(label().querySelector('.badge')!.textContent).toBe('Falta');
+
+    fixture.componentInstance.badge.set('');
+    await fixture.whenStable();
+    expect(label().querySelector('.badge')).toBeNull();
+    expect(label().textContent!.trim()).toBe('Nombre de la técnica');
+  });
+});
+
 describe('TextField', () => {
   let fixture: ComponentFixture<Host>;
   let host: Host;

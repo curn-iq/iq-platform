@@ -1,0 +1,41 @@
+<section class="page" aria-labelledby="new-title">
+  <a class="route" routerLink="/gestion/borradores">
+    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="M10 3.5L5.5 8l4.5 4.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    Mis borradores
+  </a>
+  <header class="head">
+    <h1 id="new-title">{{ title() }}</h1>
+    <p class="version">Versión 1</p>
+  </header>
+
+  <div class="card" [attr.aria-busy]="creating()">
+    <app-text-field
+      label="Nombre de la técnica"
+      placeholder="Como la nombra su documento"
+      [badge]="name().trim() ? '' : missing"
+      [errors]="nameErrors()"
+      [touched]="true"
+      [value]="name()"
+      (valueChange)="chooseName($event)"
+      (touch)="create()"
+      (keydown.enter)="create()"
+    />
+    <app-select-field
+      label="Especialidad"
+      placeholder="Elegir especialidad"
+      [badge]="specialtyId() ? '' : missing"
+      [options]="specialties()"
+      [value]="specialtyId()"
+      (valueChange)="chooseSpecialty($event)"
+    />
+  </div>
+</section>

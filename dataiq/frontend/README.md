@@ -67,7 +67,7 @@ src/
     │                       auth, users)
     ├── shared/
     │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
-    │   │                   status pill, progress mark (22 px), search field, text field, checkbox field, field error,
+    │   │                   status pill, progress mark (22 px), search field, text field, select field, checkbox field, field error,
     │   │                   demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
@@ -281,6 +281,8 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 
 - **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.
 - **Mis borradores** (`features/management/drafts/`, `/gestion/borradores`, Resuelto 47 de la [checklist](../docs/checklist-frontend.md)): la matriz de avance de las versiones en curso propias (`GET /versions?mine=true`, y cada una con `GET /versions/{id}` para su contenido). `domain/drafts.ts` arma las filas (`toDraftRows()`), filtra, cuenta y escribe la línea de resumen; la pantalla solo pinta. Un borrador con `rejections` es «Devuelta» y su nota es la primera (la API las entrega de la más reciente a la más vieja), con sus saltos de línea (`white-space: pre-line`, nunca `innerHTML`). La nota se abre cuando las marcas terminan de trazarse (950 ms) y se pliega con su botón. Revisor y admin publican lo suyo: sin filtros ni leyenda. Sin nada en curso, la línea «Nada en curso.» y la versión publicada más reciente (`GET /versions?mine=true&state=published`, que solo se pide entonces). «Continuar» y «Ver» llevan al primer paso del editor (`domain/editor-steps.ts`). Si falla la lista o el contenido de una versión no se sabe cuántas hay: lo dice y ofrece «Reintentar». Las fechas de «Editada» salen de `domain/edited-date.ts`, en hora local y sin `Intl`. En `shared/ui/`: `status-pill`, `progress-mark` y `segmented-control`, que la fase 6 reutiliza en el editor.
+- **«Nueva técnica»** (`features/management/editor/new-technique/`, `/gestion/editor/nueva`, Resuelto 48): la primera pantalla del editor pide el nombre y la especialidad (`GET /specialties`) y crea la técnica con su versión 1 (`POST /techniques`). Desde que se crea, el nombre y la especialidad son de solo lectura (Resuelto 28), así que no se crea mientras se escribe: el nombre se confirma al salir del campo o con Enter, y la especialidad al elegirla (`domain/new-technique.ts`: `isReadyToCreate()`). Son dos signals, no un formulario, porque se confirman al salir del campo y no con un envío. Un 409 dice bajo el nombre que ya hay una técnica así en la especialidad y no se vuelve a pedir lo mismo hasta que cambie algo. Al crearla lleva a `/gestion/editor/:versionId/datos-clinicos`. `Editor` (`editor.ts`) muestra esta pantalla cuando la ruta no trae versión; los cinco pasos llegan en las casillas siguientes. En `shared/ui/`: `select-field` y la pastilla `badge` («Falta», «Opcional») de `text-field`.
+- **«Editar una publicada»** (`drafts/edit-published/`): el botón de Mis borradores abre `PublishedPanel`, que se crea al abrirse y pide solo entonces `GET /techniques`, `GET /specialties` y `GET /versions` (la API filtra: a un colaborador le entrega las suyas y a un revisor o admin todas, así que «En curso por …» solo lo ve quien puede). Se cierra con Escape (el foco vuelve al botón) y con un clic fuera. Elegir una técnica pide `POST /techniques/{id}/versions` y lleva a la versión nueva; un 409 se dice bajo la fila con el texto de la API y la deja atenuada.
 
 ### Glosario (interfaz → código y API)
 
@@ -432,6 +434,7 @@ respaldo con la misma voz impersonal. Sin respuesta (estado 0) dice que no hay
 conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
 servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
 manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
+Una petición que lleva `HANDLED_STATUSES` (`data/http-context.ts`) no avisa de esos códigos, porque la pantalla los dice por su cuenta (el 409 de `create` y `createVersion`, que se leen bajo el campo o la fila); los demás códigos de la misma petición, entre ellos el 401, siguen su camino.
 
 - Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
   cuenta; lo trata la pantalla:

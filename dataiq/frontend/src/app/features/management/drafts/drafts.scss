@@ -8,6 +8,28 @@
   padding: 48px var(--space-gutter) 104px;
 }
 
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+// El + gira al pasar el puntero
+.plus {
+  transition: transform 0.35s var(--ease-enter);
+}
+
+.new:hover .plus {
+  transform: rotate(90deg);
+}
+
 .head h1 {
   margin: 0;
   font-size: 40px;
@@ -342,6 +364,15 @@
 
   .head h1 {
     font-size: 30px;
+  }
+
+  .actions {
+    width: 100%;
+
+    app-edit-published,
+    .new {
+      flex: 1;
+    }
   }
 
   .filters {

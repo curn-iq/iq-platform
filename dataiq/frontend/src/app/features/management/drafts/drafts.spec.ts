@@ -170,6 +170,34 @@ describe('Drafts', () => {
     });
   });
 
+  describe('el encabezado', () => {
+    const newLink = () => root.querySelector<HTMLAnchorElement>('a.new')!;
+    const editButton = () => root.querySelector<HTMLButtonElement>('app-edit-published button')!;
+
+    it('«Nueva técnica» lleva al editor de una técnica nueva, y «Editar una publicada» abre su panel', async () => {
+      await open([detail('v-1', 'Colecistectomía', 'draft', COMPLETE)]);
+
+      expect(text(newLink())).toBe('Nueva técnica');
+      expect(newLink().getAttribute('href')).toBe('/gestion/editor/nueva');
+      expect(text(editButton())).toBe('Editar una publicada');
+    });
+
+    it('están desde el principio: mientras carga, si falla y sin nada en curso', async () => {
+      await open();
+      expect(newLink()).not.toBeNull();
+      expect(editButton()).not.toBeNull();
+
+      http.expectOne(SUMMARIES_URL).flush([]);
+      await settle();
+      http.expectOne((r) => r.params.getAll('state')?.join() === 'published').flush([]);
+      await settle();
+
+      expect(text(root.querySelector('.summary'))).toBe('Nada en curso.');
+      expect(newLink()).not.toBeNull();
+      expect(editButton()).not.toBeNull();
+    });
+  });
+
   describe('la matriz', () => {
     it('una fila por técnica, con su especialidad, su versión y su estado', async () => {
       await open(FOUR());

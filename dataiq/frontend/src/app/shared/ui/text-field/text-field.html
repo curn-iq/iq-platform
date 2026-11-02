@@ -1,4 +1,10 @@
-<label [for]="id">{{ label() }}</label>
+<label [for]="id">
+  <span>{{ label() }}</span>
+  {{ ' ' }}
+  @if (badge()) {
+    <span class="badge">{{ badge() }}</span>
+  }
+</label>
 <div class="control">
   <input
     #field

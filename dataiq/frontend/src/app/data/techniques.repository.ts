@@ -1,7 +1,8 @@
-import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
+import { HttpClient, HttpContext, httpResource, HttpResourceRef } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from './api-base-url';
+import { HANDLED_STATUSES } from './http-context';
 import type {
   Specialty,
   TechniqueCreate,
@@ -49,14 +50,24 @@ export class TechniquesRepository {
     });
   }
 
-  /** Crea la técnica con su versión 1 vacía, en borrador. Desde colaborador. */
+  /**
+   * Crea la técnica con su versión 1 vacía, en borrador. Desde colaborador. Responde 409 si ya hay
+   * una con ese nombre en la especialidad: lo dice la pantalla, no el aviso global.
+   */
   create(technique: TechniqueCreate): Observable<VersionDetail> {
-    return this.http.post<VersionDetail>(`${this.base}/techniques`, technique);
+    return this.http.post<VersionDetail>(`${this.base}/techniques`, technique, {
+      context: new HttpContext().set(HANDLED_STATUSES, [409]),
+    });
   }
 
-  /** Copia la versión publicada en una versión nueva en borrador. Desde colaborador. */
+  /**
+   * Copia la versión publicada en una versión nueva en borrador. Desde colaborador. Responde 409
+   * si la técnica ya tiene una versión en curso: lo dice la pantalla, no el aviso global.
+   */
   createVersion(id: string): Observable<VersionDetail> {
-    return this.http.post<VersionDetail>(`${this.techniqueUrl(id)}/versions`, null);
+    return this.http.post<VersionDetail>(`${this.techniqueUrl(id)}/versions`, null, {
+      context: new HttpContext().set(HANDLED_STATUSES, [409]),
+    });
   }
 
   /** Retira la técnica: su versión publicada pasa a archivada. Desde revisor. */

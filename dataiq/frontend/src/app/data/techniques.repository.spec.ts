@@ -1,6 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { HANDLED_STATUSES } from './http-context';
 import { provideRepositoryTesting, TEST_API_BASE } from './testing';
 import { TechniquesRepository } from './techniques.repository';
 
@@ -79,6 +80,22 @@ describe('TechniquesRepository', () => {
     expect(request.request.body).toEqual({ name: 'Tiroidectomía', specialty_id: 's-1' });
     request.flush({ id: 'v-1' });
     expect(result).toEqual({ id: 'v-1' });
+  });
+
+  it('create deja el 409 a la pantalla: el aviso global no lo repite', () => {
+    repository.create({ name: 'Tiroidectomía', specialty_id: 's-1' }).subscribe({ error: () => 0 });
+
+    const request = http.expectOne(`${TEST_API_BASE}/techniques`);
+    expect(request.request.context.get(HANDLED_STATUSES)).toEqual([409]);
+    request.flush(null, { status: 409, statusText: 'Conflict' });
+  });
+
+  it('createVersion deja el 409 a la pantalla: el aviso global no lo repite', () => {
+    repository.createVersion('t-1').subscribe({ error: () => 0 });
+
+    const request = http.expectOne(`${TEST_API_BASE}/techniques/t-1/versions`);
+    expect(request.request.context.get(HANDLED_STATUSES)).toEqual([409]);
+    request.flush(null, { status: 409, statusText: 'Conflict' });
   });
 
   it('createVersion hace POST sin cuerpo a las versiones de la técnica', () => {

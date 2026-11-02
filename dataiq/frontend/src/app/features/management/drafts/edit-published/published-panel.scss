@@ -1,0 +1,131 @@
+// Panel de «Editar una publicada»: ver «Mis borradores (página)» en DESIGN.md. Es el mismo panel
+// de «Mi cuenta»: `superficie`, radio 16, anillo de 1 px `filete` y sombra suave.
+
+:host {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  display: block;
+  width: min(380px, calc(100vw - 2 * var(--space-gutter)));
+  padding: 8px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-soft);
+  animation: drop 0.35s var(--ease-enter);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.list {
+  max-height: 340px;
+  margin-top: 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.group {
+  margin: 0;
+  padding: 10px 10px 4px;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.choice,
+.busy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 15.5px;
+  text-align: left;
+}
+
+.choice {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-hover);
+  }
+
+  svg {
+    flex: none;
+    color: var(--color-accent);
+  }
+}
+
+mark {
+  border-radius: var(--radius-hairline);
+  background: var(--color-accent-soft);
+  color: inherit;
+}
+
+// Una técnica con una versión en curso no se abre dos veces
+.busy {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--color-text-subtle);
+
+  small {
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+.notice,
+.empty {
+  margin: 8px 0 0;
+  padding: 16px 10px;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+}
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.empty {
+  margin: 0;
+}
+
+// En celular el panel nace en el borde izquierdo del botón, que es el de la página
+@media (max-width: 760px) {
+  :host {
+    right: auto;
+    left: 0;
+  }
+}
