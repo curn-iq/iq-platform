@@ -150,6 +150,10 @@
   --color-dark-text-muted: var(--niebla-noche);
   --color-camera-glow: var(--noche-visor);
   --color-window-3d-edge: var(--vista-3d-borde);
+  /* El fondo del lienzo de SIMIQ3D (radial frío, «Lienzo frío» en DESIGN.md) */
+  --color-canvas-center: var(--lienzo-centro);
+  --color-canvas-middle: var(--lienzo-medio);
+  --color-canvas-edge: var(--lienzo-borde);
 
   /* El acero del instrumental y los objetos planos del diagrama de mesa */
   --color-steel-light: var(--acero-luz);

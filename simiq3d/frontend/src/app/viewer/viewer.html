@@ -1,0 +1,40 @@
+<canvas #canvas aria-label="Mesa de Mayo en 3D"></canvas>
+
+@switch (state()) {
+  @case ('loading') {
+    <div class="layer" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p class="title">Cargando la mesa de Mayo</p>
+      <p>Los modelos se descargan una vez y quedan guardados para la próxima.</p>
+    </div>
+  }
+  @case ('unsupported') {
+    <div class="layer solid" role="status">
+      <svg class="icon" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          d="M24 6 40 15v18L24 42 8 33V15Z M8 15l16 9 16-9 M24 24v18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+        <path d="M8 40 40 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+      <p class="title">Este navegador no puede mostrar la escena 3D</p>
+      <p>
+        La mesa de Mayo de {{ techniqueName() }} se puede ver en DataIQ. La leyenda sigue
+        disponible.
+      </p>
+      <a class="button" [href]="dataiqUrl()">Ver la mesa en DataIQ</a>
+    </div>
+  }
+  @case ('failed') {
+    <div class="layer solid" role="status">
+      <p class="title">No se pudo mostrar la mesa</p>
+      <p>
+        Los modelos 3D no llegaron. La mesa de Mayo de {{ techniqueName() }} se puede ver en DataIQ.
+      </p>
+      <a class="button" [href]="dataiqUrl()">Ver la mesa en DataIQ</a>
+    </div>
+  }
+}
