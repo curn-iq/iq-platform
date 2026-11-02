@@ -142,6 +142,9 @@
   --color-accent-strong: var(--marca-hondo);
   --color-accent-soft: var(--marca-claro);
   --color-accent-soft-hover: var(--marca-claro-hover);
+  /* La marca de IQ Platform (el logo): verde aunque un módulo cambie su acento */
+  --color-brand: var(--marca);
+  --color-brand-soft: var(--marca-claro);
   /* El foco es siempre el acento: un tema que lo cambie lo arrastra */
   --color-focus: var(--color-accent);
   --color-dark: var(--noche);
