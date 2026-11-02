@@ -14,7 +14,7 @@ from app.adapters.inbound.cli.chat_bank import (
     who,
 )
 from app.adapters.outbound.language.fake import TemplateChat
-from app.domain.chat import ChatAction, Reply
+from app.domain.chat import ChatAction, ClinicalField, Reply
 from tests.sample import (
     ALLIS,
     CATALOG,
@@ -124,27 +124,84 @@ def test_out_of_scope_is_saying_so_without_opening_anything():
     assert score(q, opened, CATALOG) == (False, "abre algo en el visor")
 
 
+def clinical(text: str, field=ClinicalField.indications) -> Reply:
+    return Reply(
+        ChatAction.show_clinical_data,
+        text,
+        technique_id=COLECISTECTOMIA.id,
+        field=field,
+    )
+
+
 def test_a_clinical_datum_must_come_from_dataiq():
     q = question("dato", tecnica="Colecistectomía", dato="indications")
-    cited = Reply(ChatAction.answer, "Se indica en la colelitiasis sintomática.")
-    other = Reply(ChatAction.answer, "Se indica en el dolor abdominal.")
+    cited = clinical("Se indica en la colelitiasis sintomática.")
+    other = clinical("Se indica en el dolor abdominal.")
     assert score(q, cited, CATALOG)[0] is True
     assert score(q, other, CATALOG)[0] is False
 
 
+def test_a_clinical_datum_is_also_shown_as_that_datum():
+    q = question("dato", tecnica="Colecistectomía", dato="indications")
+    as_technique = Reply(
+        ChatAction.show_technique,
+        "Se indica en la colelitiasis sintomática.",
+        technique_id=COLECISTECTOMIA.id,
+    )
+    other_field = clinical(
+        "Se indica en la colelitiasis sintomática.", ClinicalField.complications
+    )
+    assert score(q, as_technique, CATALOG) == (
+        False,
+        "la acción no es ese dato clínico de la técnica",
+    )
+    assert score(q, other_field, CATALOG)[0] is False
+
+
+def describing(text: str) -> Reply:
+    return Reply(ChatAction.describe_instrument, text, instrument_id=MAYO_SCISSORS.id)
+
+
 def test_a_description_must_come_from_dataiq():
     q = question("describir", instrumento="Tijera de Mayo")
-    cited = Reply(ChatAction.answer, "Es una tijera recta para cortar tejidos.")
+    cited = describing("Es una tijera recta para cortar tejidos.")
     assert score(q, cited, CATALOG)[0] is True
-    assert score(q, Reply(ChatAction.answer, "Es una tijera."), CATALOG)[0] is False
+    assert score(q, describing("Es una tijera."), CATALOG)[0] is False
+
+
+def test_describing_opens_the_card_of_that_instrument():
+    q = question("describir", instrumento="Tijera de Mayo")
+    highlighted = Reply(
+        ChatAction.highlight_instrument,
+        "Es una tijera recta para cortar tejidos.",
+        instrument_id=MAYO_SCISSORS.id,
+    )
+    assert score(q, highlighted, CATALOG) == (
+        False,
+        "el visor no abre la ficha del instrumento",
+    )
+
+
+def listing(text: str, action=ChatAction.list_instruments) -> Reply:
+    return Reply(action, text, technique_id=MASTECTOMIA.id)
 
 
 def test_listing_names_every_object_of_the_table():
     q = question("listar", tecnica="Mastectomía")
-    full = Reply(ChatAction.answer, "Lleva la Pinza de Allis y la Pinza Kelly.")
-    partial = Reply(ChatAction.answer, "Lleva la Allis.")
+    full = listing("Lleva la Pinza de Allis y la Pinza Kelly.")
     assert score(q, full, CATALOG)[0] is True
-    assert score(q, partial, CATALOG) == (False, "falta Pinza Kelly")
+    assert score(q, listing("Lleva la Allis."), CATALOG) == (False, "falta Pinza Kelly")
+
+
+def test_listing_shows_the_list_of_that_technique():
+    q = question("listar", tecnica="Mastectomía")
+    shown = listing(
+        "Lleva la Pinza de Allis y la Pinza Kelly.", ChatAction.show_technique
+    )
+    assert score(q, shown, CATALOG) == (
+        False,
+        "el visor no muestra la lista de la técnica",
+    )
 
 
 def test_counts_are_read_in_digits_or_words():
@@ -235,7 +292,9 @@ async def test_the_bank_runs_like_the_chat_route():
 
 def test_a_question_for_the_position_does_not_need_the_anesthesia():
     q = question("dato", tecnica="Colecistectomía", dato="patient_position")
-    position = Reply(ChatAction.answer, "El paciente va en decúbito supino.")
+    position = clinical(
+        "El paciente va en decúbito supino.", ClinicalField.anesthesia_position
+    )
     assert score(q, position, CATALOG)[0] is True
     q = question("dato", tecnica="Colecistectomía", dato="anesthesia")
     assert score(q, position, CATALOG)[0] is False
@@ -243,7 +302,7 @@ def test_a_question_for_the_position_does_not_need_the_anesthesia():
 
 def test_one_sentence_of_the_description_answers_what_it_is_for():
     q = question("describir", instrumento="Tijera de Mayo")
-    sentence = Reply(ChatAction.answer, "Es una tijera recta para cortar tejidos.")
+    sentence = describing("Es una tijera recta para cortar tejidos.")
     assert score(q, sentence, CATALOG)[0] is True
 
 
