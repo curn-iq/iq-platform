@@ -44,8 +44,8 @@ const REVEAL_NOTES_AFTER_MS = 950;
  * en revisión: la página no lleva filtros y lo dice en su línea de resumen. Sin nada en curso
  * queda la línea «Nada en curso.» y, si hay, lo último que se publicó.
  *
- * La lista no trae el contenido, así que cada versión se pide aparte para saber cómo va cada
- * sección (`VersionsRepository.getMany`). La regla del avance está en
+ * La lista llega con el contenido de cada versión, en una sola petición
+ * (`VersionsRepository.listWithContent`), para saber cómo va cada sección. La regla del avance está en
  * `domain/version-progress.ts` (Resuelto 22 de `dataiq/docs/checklist-frontend.md`).
  */
 @Component({
@@ -60,13 +60,11 @@ export class Drafts {
   private readonly repository = inject(VersionsRepository);
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
 
-  private readonly summaries = this.repository.list(() => ({
+  /** Las versiones en curso propias, cada una con su contenido y sus rechazos, en una sola petición. */
+  private readonly details = this.repository.listWithContent(() => ({
     mine: true,
     state: ['draft', 'in_review'],
   }));
-  private readonly details = this.repository.getMany(() =>
-    this.summaries.hasValue() ? this.summaries.value().map((summary) => summary.id) : undefined,
-  );
 
   /** Las columnas de la matriz: las secciones de una versión. */
   protected readonly sections = VERSION_SECTIONS;
@@ -75,15 +73,11 @@ export class Drafts {
   /** Revisor y admin publican lo suyo sin revisión (`docs/flujos.md`). */
   protected readonly publishesOwn = computed(() => publishesOwn(this.session.role()));
 
-  /** Llegaron la lista y el contenido de cada versión. */
+  /** Llegó la lista con el contenido de cada versión. */
   protected readonly loaded = computed(() => this.details.hasValue());
-  /** Algo no llegó por un error (el interceptor ya avisó): no se sabe cuántas hay. */
+  /** No llegó por un error (el interceptor ya avisó): no se sabe cuántas hay. */
   protected readonly failed = computed(
-    () =>
-      !this.loaded() &&
-      !this.summaries.isLoading() &&
-      !this.details.isLoading() &&
-      (this.summaries.error() !== undefined || this.details.error() !== undefined),
+    () => !this.loaded() && !this.details.isLoading() && this.details.error() !== undefined,
   );
 
   private readonly now = new Date();
@@ -155,7 +149,6 @@ export class Drafts {
   }
 
   protected retry(): void {
-    if (this.summaries.error() !== undefined) this.summaries.reload();
     if (this.details.error() !== undefined) this.details.reload();
   }
 

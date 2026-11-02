@@ -147,9 +147,9 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       la lista sigue como estaba. El avance se sigue calculando en el
       frontend (`versionProgress`, Resuelto 22 de
       [`checklist-frontend.md`](checklist-frontend.md)).
-    - **Después:** Mis borradores la usa en lugar de `getMany` (pendiente en
-      la fase 6 de [`checklist-frontend.md`](checklist-frontend.md)). Los tipos
-      del frontend ya se regeneraron con la ruta (`npm run api:types`)
+    - **Después:** Mis borradores la usa en lugar de `getMany` (fase 6 de
+      [`checklist-frontend.md`](checklist-frontend.md)). Los tipos del
+      frontend ya se regeneraron con la ruta (`npm run api:types`)
 
 ## Hallazgos de seguridad pendientes
 

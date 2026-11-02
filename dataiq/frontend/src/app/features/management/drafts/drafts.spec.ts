@@ -1,3 +1,4 @@
+import type { HttpParams } from '@angular/common/http';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -65,6 +66,9 @@ function detail(
 }
 
 const SUMMARIES_URL = (r: { url: string }) => r.url === `${TEST_API_BASE}/versions`;
+/** La lista de las versiones en curso, con el contenido de cada una (`include=content`). */
+const IN_PROGRESS_URL = (r: { url: string; params: HttpParams }) =>
+  SUMMARIES_URL(r) && r.params.get('include') === 'content';
 
 describe('Drafts', () => {
   let http: HttpTestingController;
@@ -79,7 +83,7 @@ describe('Drafts', () => {
     fixture.detectChanges();
   }
 
-  /** Abre la pantalla; si hay `details`, responde la lista y cada versión. */
+  /** Abre la pantalla; si hay `details`, responde la lista con el contenido de cada versión. */
   async function open(
     details?: ReturnType<typeof detail>[],
     role: Role = 'contributor',
@@ -99,11 +103,7 @@ describe('Drafts', () => {
   }
 
   async function answer(details: ReturnType<typeof detail>[]): Promise<void> {
-    http.expectOne(SUMMARIES_URL).flush(details.map((d) => d.summary));
-    await settle();
-    for (const d of details) {
-      http.expectOne(`${TEST_API_BASE}/versions/${d.summary.id}`).flush(d);
-    }
+    http.expectOne(IN_PROGRESS_URL).flush(details);
     await settle();
   }
 
@@ -142,20 +142,21 @@ describe('Drafts', () => {
   afterEach(() => http.verify());
 
   describe('al cargar', () => {
-    it('pide las versiones propias en curso y, de cada una, su contenido', async () => {
+    it('pide las versiones propias en curso con su contenido, en una sola petición', async () => {
       await open();
 
-      const request = http.expectOne(SUMMARIES_URL);
+      const request = http.expectOne(IN_PROGRESS_URL);
       expect(request.request.params.get('mine')).toBe('true');
       expect(request.request.params.getAll('state')).toEqual(['draft', 'in_review']);
-      request.flush([detail('v-1', 'Colecistectomía', 'draft', COMPLETE).summary]);
+      request.flush([
+        detail('v-1', 'Colecistectomía', 'draft', COMPLETE),
+        detail('v-2', 'Mastectomía', 'draft', COMPLETE),
+      ]);
       await settle();
 
-      http
-        .expectOne(`${TEST_API_BASE}/versions/v-1`)
-        .flush(detail('v-1', 'Colecistectomía', 'draft', COMPLETE));
-      await settle();
-      expect(names()).toEqual(['Colecistectomía']);
+      // Ninguna versión se pide por separado
+      http.expectNone((r) => r.url.startsWith(`${TEST_API_BASE}/versions/`));
+      expect(names()).toEqual(['Colecistectomía', 'Mastectomía']);
     });
 
     it('dice «Cargando…» y no cuenta nada hasta que llega todo', async () => {
@@ -187,7 +188,7 @@ describe('Drafts', () => {
       expect(newLink()).not.toBeNull();
       expect(editButton()).not.toBeNull();
 
-      http.expectOne(SUMMARIES_URL).flush([]);
+      http.expectOne(IN_PROGRESS_URL).flush([]);
       await settle();
       http.expectOne((r) => r.params.getAll('state')?.join() === 'published').flush([]);
       await settle();
@@ -434,7 +435,7 @@ describe('Drafts', () => {
   describe('sin nada en curso', () => {
     it('dice «Nada en curso.» y lo último que se publicó', async () => {
       await open();
-      http.expectOne(SUMMARIES_URL).flush([]);
+      http.expectOne(IN_PROGRESS_URL).flush([]);
       await settle();
 
       const published = http.expectOne(
@@ -457,7 +458,7 @@ describe('Drafts', () => {
 
     it('si nunca publicó nada, queda solo la línea', async () => {
       await open();
-      http.expectOne(SUMMARIES_URL).flush([]);
+      http.expectOne(IN_PROGRESS_URL).flush([]);
       await settle();
       http.expectOne((r) => r.params.getAll('state')?.join() === 'published').flush([]);
       await settle();
@@ -478,7 +479,7 @@ describe('Drafts', () => {
 
     it('la lista: lo dice, no cuenta nada y «Reintentar» la pide otra vez', async () => {
       await open();
-      http.expectOne(SUMMARIES_URL).flush(null, SERVER_ERROR);
+      http.expectOne(IN_PROGRESS_URL).flush(null, SERVER_ERROR);
       await settle();
 
       expect(text(root.querySelector('.notice'))).toContain('No se pudo cargar Mis borradores.');
@@ -491,31 +492,6 @@ describe('Drafts', () => {
 
       expect(names()).toEqual(['Colecistectomía']);
       expect(root.querySelector('.notice')).toBeNull();
-    });
-
-    it('el contenido de una versión: lo dice y «Reintentar» pide otra vez las versiones', async () => {
-      await open();
-      http
-        .expectOne(SUMMARIES_URL)
-        .flush([
-          detail('v-1', 'A', 'draft', COMPLETE).summary,
-          detail('v-2', 'B', 'draft', COMPLETE).summary,
-        ]);
-      await settle();
-      http.expectOne(`${TEST_API_BASE}/versions/v-1`).flush(null, SERVER_ERROR);
-      http.match(`${TEST_API_BASE}/versions/v-2`);
-      await settle();
-
-      expect(text(root.querySelector('.notice'))).toContain('No se pudo cargar Mis borradores.');
-      expect(root.querySelector('table')).toBeNull();
-
-      root.querySelector<HTMLButtonElement>('.notice button')!.click();
-      await settle();
-      http.expectOne(`${TEST_API_BASE}/versions/v-1`).flush(detail('v-1', 'A', 'draft', COMPLETE));
-      http.expectOne(`${TEST_API_BASE}/versions/v-2`).flush(detail('v-2', 'B', 'draft', COMPLETE));
-      await settle();
-
-      expect(names()).toEqual(['A', 'B']);
     });
   });
 });
