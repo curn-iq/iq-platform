@@ -129,9 +129,9 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
 ## Hallazgos de seguridad pendientes
 
 Cosas que se vieron al construir el frontend y que el backend aún no resuelve. Se anotan
-aquí para que quien opere el backend las decida; no están en el alcance del MVP.
+aquí para que quien opere el backend las decida.
 
-- [ ] **Enumeración de usuarios en `POST /auth/register`** (hallazgo de la fase 5 del frontend,
+- [x] **Enumeración de usuarios en `POST /auth/register`** (hallazgo de la fase 5 del frontend,
   decidido por Juan el 2026-11-01). Un correo que ya tiene cuenta responde `409 «Ya hay una
   cuenta con ese correo»` (`UserRepository.create`), y uno nuevo responde `201`: cualquiera
   puede probar correos con una petición directa y saber cuáles tienen cuenta. El ingreso ya
@@ -141,11 +141,37 @@ aquí para que quien opere el backend las decida; no están en el alcance del MV
     diferencias observables en el mensaje, el código HTTP ni el tiempo de respuesta; sin un
     servicio de correo, quien ya tiene cuenta lo sabría al fallar su ingreso. Y **limitar los
     intentos** (rate limiting) en el registro y en el ingreso, para frenar a quien prueba
-    correos de forma automática (ver también `docs/despues-del-mvp.md`).
+    correos de forma automática (ítem siguiente).
+  - **Decidido por Mauricio Lugo el 2026-11-01: en el MVP el 409 se queda, como riesgo
+    aceptado**, con [OWASP ASVS 5.0](https://github.com/OWASP/ASVS/blob/master/5.0/en/0x15-V6-Authentication.md).
+    Que no se pueda deducir qué cuentas existen, también en el registro, es el requisito
+    6.3.8, de nivel 3, y aquí solo revela que una persona usa una plataforma de estudio; la
+    [guía de autenticación de OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+    deja el mensaje genérico a criterio, según lo crítica que sea la aplicación. Lo que sí pide
+    el nivel 1 es limitar los intentos (ítem siguiente), que además impide probar correos a
+    gran escala. Responder igual sin verificar el correo no lo cerraría: quien se registra y
+    luego ingresa con esa misma contraseña sabe, por el resultado, si el correo ya tenía
+    cuenta. La respuesta única, con verificación del correo, queda para después del MVP
+    ([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
   - **Mientras tanto:** el frontend no repite el texto del 409 ni marca el campo del correo
     (Resuelto 43 de [`checklist-frontend.md`](checklist-frontend.md)); es una mitigación
     visual temporal que no impide la consulta directa a la API. El backend y sus contratos no
     se tocan en la fase 5.
+- [ ] **Límite de intentos en la autenticación** (decidido por Mauricio Lugo el 2026-11-01, con
+  los requisitos 6.1.1 y 6.3.1 de OWASP ASVS 5.0, de nivel 1): una regla del firewall de
+  Vercel en `dataiq-backend`, con su configuración y su porqué en
+  [`docs/arquitectura.md`](../../docs/arquitectura.md), «Límite de intentos de autenticación».
+  - [x] Crear y publicar la regla con el comando de `docs/arquitectura.md`
+  - [x] Comprobar el 429 desde la petición 101 de una misma IP, con peticiones que no llegan a
+    la base ni a Argon2 (sin `X-IQ-Client` responden 403). Probado el 2026-11-01: 100 × 403 y
+    luego 429, también en `/auth/register`, con el cuerpo
+    `{"error": {"code": "429", "message": "Too Many Requests", …}}`, sin `detail`
+  - [ ] Con el shell desplegado (fase 9 del frontend), confirmar qué IP ve el firewall del
+    backend en una petición que pasa por el rewrite (`vercel firewall traffic list`); si es la
+    de Vercel, pasar la regla al proyecto del shell
+  - [x] Avisar al frontend, en la descripción del PR que agrega este ítem, que hoy no tiene
+    texto para un 429 (`describeApiError`, en `core/http/error-message.ts`, solo lee
+    `detail`): el registro diría «No se pudo completar el registro»
 
 ## Datos de la fuente que no cuadraban
 
