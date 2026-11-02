@@ -15,7 +15,7 @@ const COMPLETE: ProgressSource = {
   source: 'a',
   zones: [MAYO, RESERVE],
   items: [placed('z-mayo'), placed('z-reserva')],
-  sutures: [{}],
+  sutures: [{ name: 'Seda' }],
 };
 
 const summaries = (source: ProgressSource, publishesOwn = false) =>

@@ -46,12 +46,19 @@ export interface EditorZone {
   columns: number | null;
 }
 
-/** Una sutura de la versión, como la entrega la API (una por sutura, con sus planos en `usage`). */
+/**
+ * Una fila de «Suturas por plano»: un plano con su sutura, calibre y aguja (Resuelto 29 de
+ * `dataiq/docs/checklist-frontend.md`). Todo es texto, y vacío es «sin dato»: una fila recién agregada
+ * está vacía. La API no las guarda así: `data/sutures.ts` junta en una sola sutura los planos que
+ * comparten sutura, calibre y aguja.
+ */
 export interface EditorSuture {
+  /** «Piel», «Fascia»…; vacío si no se dice en qué plano se usa. */
+  plane: string;
+  /** La sutura. Sin nombre la fila no se guarda: la API lo exige. */
   name: string;
-  gauge: string | null;
-  needle_type: string | null;
-  usage: string | null;
+  gauge: string;
+  needle_type: string;
 }
 
 /**

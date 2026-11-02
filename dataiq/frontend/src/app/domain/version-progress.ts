@@ -1,3 +1,4 @@
+import { hasSutureName } from './suture-rows';
 import { ZONE_NAMES } from './table';
 
 /** Los campos obligatorios de los datos clínicos (con los nombres de la API), en el orden del editor. */
@@ -77,8 +78,8 @@ export interface ProgressSource {
     columns?: number | null;
   }[];
   items: readonly { zone_id: string | null; cells: readonly unknown[] }[];
-  /** Una por plano. Basta con que haya una. */
-  sutures: readonly unknown[];
+  /** Una fila por plano. Basta con que haya una con su nombre: una recién agregada y vacía no cuenta. */
+  sutures: readonly { name: string }[];
 }
 
 /**
@@ -109,7 +110,7 @@ function clinicalProgress(version: ProgressSource): ClinicalProgress {
   const missing: ClinicalField[] = REQUIRED_CLINICAL_FIELDS.filter(
     (field) => (version[field] ?? '').trim() === '',
   );
-  if (version.sutures.length === 0) missing.push('sutures');
+  if (!version.sutures.some(hasSutureName)) missing.push('sutures');
 
   const total = REQUIRED_CLINICAL_FIELDS.length + 1;
   const status =

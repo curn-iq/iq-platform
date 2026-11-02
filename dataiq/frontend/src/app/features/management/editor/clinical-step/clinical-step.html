@@ -99,27 +99,14 @@
       (removed)="remove('equipment', $event)"
     />
 
-    <!-- Se ven, pero se editan en la casilla de suturas -->
-    <section class="sutures" aria-labelledby="sutures-title">
-      <p class="label" id="sutures-title">
-        Suturas por plano
-        @if (sutures().length === 0) {
-          <span class="badge">{{ missing }}</span>
-        }
-      </p>
-      @if (sutures().length > 0) {
-        <dl>
-          @for (row of sutures(); track $index) {
-            <div [class.no-plane]="row.plane === null">
-              @if (row.plane !== null) {
-                <dt>{{ row.plane }}</dt>
-              }
-              <dd>{{ row.text }}</dd>
-            </div>
-          }
-        </dl>
-      }
-    </section>
+    <app-suture-rows
+      [rows]="content()?.sutures ?? []"
+      [missing]="suturesMissing()"
+      [readonly]="readonly()"
+      (changed)="editSuture($event)"
+      (added)="addSuture()"
+      (removed)="removeSuture($event)"
+    />
 
     <app-chip-list
       label="Equipo médico-quirúrgico"

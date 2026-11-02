@@ -1,0 +1,90 @@
+<section [attr.aria-labelledby]="id + '-title'">
+  <p class="title" [id]="id + '-title'">
+    Suturas por plano
+    @if (missing()) {
+      <span class="badge">{{ missingText }}</span>
+    }
+  </p>
+
+  @if (rows().length > 0) {
+    <div class="rows">
+      @for (row of rows(); track $index; let index = $index) {
+        <div class="row">
+          <input
+            #plane
+            class="plane"
+            aria-label="Plano"
+            placeholder="Plano"
+            autocomplete="off"
+            [readOnly]="readonly()"
+            [value]="row.plane"
+            (input)="edit(index, 'plane', $event)"
+          />
+          <input
+            class="name"
+            aria-label="Sutura"
+            placeholder="Sutura"
+            autocomplete="off"
+            [readOnly]="readonly()"
+            [value]="row.name"
+            (input)="edit(index, 'name', $event)"
+          />
+          <input
+            class="gauge"
+            aria-label="Calibre"
+            placeholder="Calibre"
+            autocomplete="off"
+            [readOnly]="readonly()"
+            [value]="row.gauge"
+            (input)="edit(index, 'gauge', $event)"
+          />
+          <input
+            class="needle"
+            aria-label="Aguja"
+            placeholder="Aguja"
+            autocomplete="off"
+            [readOnly]="readonly()"
+            [value]="row.needle_type"
+            (input)="edit(index, 'needle_type', $event)"
+          />
+          @if (!readonly()) {
+            <button
+              type="button"
+              class="remove"
+              [attr.aria-label]="removeLabel(row)"
+              (click)="removed.emit(index)"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path
+                  d="M3 3l6 6M9 3l-6 6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          }
+          @if (needsName(row)) {
+            <p class="hint">Falta la sutura.</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (!readonly()) {
+    <button type="button" class="add" (click)="add()">
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d="M8 3v10M3 8h10"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      Agregar plano
+    </button>
+  }
+</section>

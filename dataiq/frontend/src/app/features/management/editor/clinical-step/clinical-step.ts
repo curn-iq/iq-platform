@@ -1,12 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { toPlaneSutures } from '../../../../data/sutures';
 import type { ClinicalTextField } from '../../../../domain/editor-content';
-import { sutureRow } from '../../../../domain/instrumental-sheet';
 import { addName, removeName } from '../../../../domain/name-list';
+import {
+  emptySutureRow,
+  hasSutureName,
+  removeSutureRow,
+  withSutureField,
+} from '../../../../domain/suture-rows';
 import { ChipList } from '../../../../shared/ui/chip-list/chip-list';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { TextareaField } from '../../../../shared/ui/textarea-field/textarea-field';
 import { EditorState } from '../editor-state';
+import { SutureRowChange, SutureRows } from '../suture-rows/suture-rows';
 
 /** Lo que dice la pastilla de un campo obligatorio que aún está vacío. */
 const MISSING = 'Falta';
@@ -20,11 +25,11 @@ const MISSING = 'Falta';
  * van arriba, de solo lectura (Resuelto 28): se eligen al crear la técnica y desde ahí no cambian.
  *
  * Lo que se escribe pasa por `EditorState.edit()`, que lo guarda. Con la versión en solo lectura (en
- * revisión) todo se ve y nada se cambia. Las suturas se ven pero aún no se editan: llegan en su casilla.
+ * revisión) todo se ve y nada se cambia. Las suturas son una fila por plano (`SutureRows`, Resuelto 29).
  */
 @Component({
   selector: 'app-clinical-step',
-  imports: [ChipList, TextField, TextareaField],
+  imports: [ChipList, SutureRows, TextField, TextareaField],
   templateUrl: './clinical-step.html',
   styleUrl: './clinical-step.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,11 +43,10 @@ export class ClinicalStep {
 
   protected readonly content = this.state.content;
   protected readonly readonly = computed(() => !this.state.editable());
-  protected readonly missing = MISSING;
 
-  /** Las suturas, una fila por plano, para verlas. */
-  protected readonly sutures = computed(() =>
-    toPlaneSutures(this.content()?.sutures ?? []).map(sutureRow),
+  /** Todavía no hay ninguna sutura con nombre. */
+  protected readonly suturesMissing = computed(
+    () => !(this.content()?.sutures ?? []).some(hasSutureName),
   );
 
   /** El texto de un campo, vacío si la versión no lo trae. */
@@ -61,6 +65,26 @@ export class ClinicalStep {
 
   protected add(list: 'equipment' | 'devices', name: string): void {
     this.state.edit((content) => ({ ...content, [list]: addName(content[list], name) }));
+  }
+
+  protected editSuture({ index, field, value }: SutureRowChange): void {
+    this.state.edit((content) => ({
+      ...content,
+      sutures: content.sutures.map((row, position) =>
+        position === index ? withSutureField(row, field, value) : row,
+      ),
+    }));
+  }
+
+  protected addSuture(): void {
+    this.state.edit((content) => ({ ...content, sutures: [...content.sutures, emptySutureRow()] }));
+  }
+
+  protected removeSuture(index: number): void {
+    this.state.edit((content) => ({
+      ...content,
+      sutures: removeSutureRow(content.sutures, index),
+    }));
   }
 
   protected remove(list: 'equipment' | 'devices', index: number): void {

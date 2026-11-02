@@ -1,5 +1,6 @@
 import type { EditorContent } from '../domain/editor-content';
 import type { VersionContent, VersionDetail } from './api/models';
+import { joinPlaneSutures, toSutureRows } from './sutures';
 
 /** El contenido de una versión, como lo entrega `GET /versions/{id}`. */
 type ApiContent = VersionDetail['content'];
@@ -16,8 +17,8 @@ function text(value: string | null): string | null {
 
 /**
  * Lo que el editor tiene en pantalla a partir de una versión de la API: sin los ids de los objetos
- * ni las descripciones de los equipos, que el editor no usa, y con los equipos y dispositivos por
- * nombre. Es lo contrario de `toContentIn()`.
+ * ni las descripciones de los equipos, que el editor no usa, con los equipos y dispositivos por
+ * nombre y con las suturas en una fila por plano (`toSutureRows`). Es lo contrario de `toContentIn()`.
  */
 export function toEditorContent(content: ApiContent): EditorContent {
   return {
@@ -48,12 +49,7 @@ export function toEditorContent(content: ApiContent): EditorContent {
       })),
       cells: item.cells.map(({ row, column }) => ({ row, column })),
     })),
-    sutures: content.sutures.map(({ name, gauge, needle_type, usage }) => ({
-      name,
-      gauge,
-      needle_type,
-      usage,
-    })),
+    sutures: toSutureRows(content.sutures),
     equipment: content.equipment.map((element) => element.name),
     devices: content.devices.map((element) => element.name),
   };
@@ -63,7 +59,8 @@ export function toEditorContent(content: ApiContent): EditorContent {
  * Lo que `PUT /versions/{id}` recibe: todo el contenido, que reemplaza el que había. Un texto en
  * blanco va como `null`, y lo que la API rechaza por vacío (un equipo, un dispositivo o una sutura
  * sin nombre) no se manda: una fila recién agregada y aún sin escribir no debe tumbar el guardado
- * de todo lo demás.
+ * de todo lo demás. Las filas de suturas por plano se juntan en una sola sutura por cada sutura,
+ * calibre y aguja (`joinPlaneSutures`).
  */
 export function toContentIn(content: EditorContent): VersionContent {
   return {
@@ -92,9 +89,7 @@ export function toContentIn(content: EditorContent): VersionContent {
       })),
       cells: item.cells.map(({ row, column }) => ({ row, column })),
     })),
-    sutures: content.sutures
-      .filter((suture) => suture.name.trim() !== '')
-      .map(({ name, gauge, needle_type, usage }) => ({ name, gauge, needle_type, usage })),
+    sutures: joinPlaneSutures(content.sutures),
     equipment: names(content.equipment),
     devices: names(content.devices),
   };

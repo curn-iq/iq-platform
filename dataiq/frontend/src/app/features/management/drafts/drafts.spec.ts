@@ -23,7 +23,7 @@ const COMPLETE = {
     { zone_id: 'z-mayo', cells: [{ row: 1, column: 1 }] },
     { zone_id: 'z-reserva', cells: [{ row: 1, column: 1 }] },
   ],
-  sutures: [{}],
+  sutures: [{ name: 'Seda' }],
 };
 
 /** Una técnica nueva: nada lleno, solo la mesa de Mayo en su tamaño inicial. */

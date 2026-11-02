@@ -185,7 +185,7 @@ describe('ClinicalStep', () => {
         'Ropa',
         'Posición del paciente',
       ]);
-      expect(text(root.querySelector('.sutures .label'))).toBe('Suturas por plano Falta');
+      expect(text(root.querySelector('app-suture-rows .title'))).toBe('Suturas por plano Falta');
       expect(pills()).toHaveLength(7);
     });
 
@@ -317,37 +317,109 @@ describe('ClinicalStep', () => {
     });
   });
 
-  describe('suturas', () => {
-    it('se ven una por plano, con el plano y la sutura con su calibre y su aguja', async () => {
-      await mount(version('draft', FILLED));
+  describe('suturas por plano', () => {
+    const rows = () => Array.from(root.querySelectorAll<HTMLElement>('app-suture-rows .row'));
+    const values = (row: HTMLElement) =>
+      Array.from(row.querySelectorAll<HTMLInputElement>('input')).map((input) => input.value);
+    const addButton = () => root.querySelector<HTMLButtonElement>('app-suture-rows .add')!;
 
-      const rows = Array.from(root.querySelectorAll('.sutures dl > div'));
-      expect(
-        rows.map((row) => [text(row.querySelector('dt')), text(row.querySelector('dd'))]),
-      ).toEqual([
-        ['Piel', 'Seda 2/0, aguja cortante'],
-        ['Fascia', 'Seda 2/0, aguja cortante'],
-      ]);
-      expect(root.querySelector('.sutures .badge')).toBeNull();
+    async function typeInRow(index: number, field: number, value: string): Promise<void> {
+      const input = rows()[index].querySelectorAll<HTMLInputElement>('input')[field];
+      input.value = value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await fixture.whenStable();
+    }
+
+    describe('con las de la versión', () => {
+      beforeEach(() => mount(version('draft', FILLED)));
+
+      it('una fila por plano: plano, sutura, calibre y aguja', () => {
+        expect(rows().map(values)).toEqual([
+          ['Piel', 'Seda', '2/0', 'aguja cortante'],
+          ['Fascia', 'Seda', '2/0', 'aguja cortante'],
+        ]);
+        expect(root.querySelector('app-suture-rows .badge')).toBeNull();
+      });
+
+      it('escribir en una fila cambia esa fila y programa el guardado', async () => {
+        await typeInRow(1, 0, 'Músculo');
+
+        expect(state.content()?.sutures).toEqual([
+          { plane: 'Piel', name: 'Seda', gauge: '2/0', needle_type: 'aguja cortante' },
+          { plane: 'Músculo', name: 'Seda', gauge: '2/0', needle_type: 'aguja cortante' },
+        ]);
+        expect(state.saveStatus()).toBe('saving');
+      });
+
+      it('quitar una fila la saca de la lista', async () => {
+        rows()[0].querySelector<HTMLButtonElement>('.remove')!.click();
+        await fixture.whenStable();
+
+        expect(rows().map(values)).toEqual([['Fascia', 'Seda', '2/0', 'aguja cortante']]);
+        expect(state.content()?.sutures).toHaveLength(1);
+      });
+
+      it('agregar suma una fila vacía al final y la deja lista para escribir', async () => {
+        addButton().click();
+        await fixture.whenStable();
+        await new Promise((resolve) => setTimeout(resolve));
+
+        expect(rows()).toHaveLength(3);
+        expect(values(rows()[2])).toEqual(['', '', '', '']);
+        expect(document.activeElement).toBe(rows()[2].querySelector('input'));
+      });
+
+      it('lo que se manda a la API junta los planos de la misma sutura en una sola', async () => {
+        await typeInRow(0, 3, 'aguja cortante');
+        state.flush();
+
+        const request = http.expectOne((r) => r.method === 'PUT');
+        expect(request.request.body.sutures).toEqual([
+          { name: 'Seda', gauge: '2/0', needle_type: 'aguja cortante', usage: 'Piel; Fascia' },
+        ]);
+        request.flush(version('draft', FILLED));
+      });
     });
 
-    it('una sutura sin plano es solo su texto', async () => {
+    describe('sin ninguna', () => {
+      beforeEach(() => mount());
+
+      it('no hay filas, y el título dice «Falta»', () => {
+        expect(rows()).toHaveLength(0);
+        expect(text(root.querySelector('app-suture-rows .title'))).toBe('Suturas por plano Falta');
+      });
+
+      it('una fila recién agregada no cuenta: sigue faltando hasta que tenga el nombre de la sutura', async () => {
+        addButton().click();
+        await fixture.whenStable();
+        expect(root.querySelector('app-suture-rows .badge')).not.toBeNull();
+
+        await typeInRow(0, 1, 'Seda');
+
+        expect(root.querySelector('app-suture-rows .badge')).toBeNull();
+      });
+
+      it('una fila con un plano y sin sutura avisa que falta la sutura, y no se manda', async () => {
+        addButton().click();
+        await fixture.whenStable();
+        await typeInRow(0, 0, 'Piel');
+
+        expect(text(root.querySelector('app-suture-rows .hint'))).toBe('Falta la sutura.');
+        state.flush();
+        const request = http.expectOne((r) => r.method === 'PUT');
+        expect(request.request.body.sutures).toEqual([]);
+        request.flush(version());
+      });
+    });
+
+    it('una sutura sin plano es una fila con el plano vacío', async () => {
       await mount(
         version('draft', {
           sutures: [{ id: 's-1', name: 'Seda', gauge: '3/0', needle_type: null, usage: null }],
         }),
       );
 
-      const row = root.querySelector('.sutures dl > div')!;
-      expect(text(row)).toBe('Seda 3/0');
-      expect(row.querySelector('dt')).toBeNull();
-    });
-
-    it('no hay botones para editarlas: eso llega en su casilla', async () => {
-      await mount(version('draft', FILLED));
-
-      expect(root.querySelector('.sutures button')).toBeNull();
-      expect(root.querySelector('.sutures input')).toBeNull();
+      expect(rows().map(values)).toEqual([['', 'Seda', '3/0', '']]);
     });
   });
 
@@ -369,6 +441,17 @@ describe('ClinicalStep', () => {
         expect(field(label).readOnly, label).toBe(true);
       }
       expect(field('Anestesia').value).toBe('General.');
+    });
+
+    it('las suturas se ven, sin quitar ni agregar, y sus cajas no se escriben', () => {
+      expect(root.querySelector('app-suture-rows .add')).toBeNull();
+      expect(root.querySelector('app-suture-rows .remove')).toBeNull();
+      expect(
+        Array.from(root.querySelectorAll<HTMLInputElement>('app-suture-rows input')).every(
+          (input) => input.readOnly,
+        ),
+      ).toBe(true);
+      expect(root.querySelectorAll('app-suture-rows .row')).toHaveLength(2);
     });
 
     it('las listas no se pueden quitar ni agregar', () => {

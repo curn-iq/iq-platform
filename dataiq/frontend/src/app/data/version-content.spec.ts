@@ -97,9 +97,10 @@ describe('toEditorContent', () => {
     expect(content.items[1]?.zone_id).toBeNull();
   });
 
-  it('las suturas pasan como llegan, con sus planos en `usage`', () => {
+  it('las suturas pasan a una fila por plano, con el texto vacío donde no hay dato', () => {
     expect(content.sutures).toEqual([
-      { name: 'Seda', gauge: '2/0', needle_type: 'Cortante', usage: 'Piel; Fascia' },
+      { plane: 'Piel', name: 'Seda', gauge: '2/0', needle_type: 'Cortante' },
+      { plane: 'Fascia', name: 'Seda', gauge: '2/0', needle_type: 'Cortante' },
     ]);
   });
 
@@ -181,17 +182,20 @@ describe('toContentIn', () => {
       expect(body.devices).toEqual([]);
     });
 
-    it('una sutura sin nombre se descarta', () => {
+    it('una fila de sutura sin nombre se descarta, y las demás se juntan por sutura', () => {
       const body = toContentIn(
         edited({
           sutures: [
-            { name: '', gauge: '2/0', needle_type: null, usage: 'Piel' },
-            { name: 'Seda', gauge: null, needle_type: null, usage: null },
+            { plane: 'Piel', name: '', gauge: '2/0', needle_type: '' },
+            { plane: 'Piel', name: 'Seda', gauge: '', needle_type: '' },
+            { plane: 'Fascia', name: 'Seda', gauge: '', needle_type: '' },
           ],
         }),
       );
 
-      expect(body.sutures).toEqual([{ name: 'Seda', gauge: null, needle_type: null, usage: null }]);
+      expect(body.sutures).toEqual([
+        { name: 'Seda', gauge: null, needle_type: null, usage: 'Piel; Fascia' },
+      ]);
     });
   });
 });

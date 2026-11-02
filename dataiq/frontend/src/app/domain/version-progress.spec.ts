@@ -19,7 +19,7 @@ const COMPLETE: ProgressSource = {
   source: 'Documento de IQ, 2026.',
   zones: [MAYO, RESERVE],
   items: [placed('z-mayo'), placed('z-reserva')],
-  sutures: [{}],
+  sutures: [{ name: 'Seda' }],
 };
 
 const without = (...fields: (keyof ProgressSource)[]): ProgressSource => {
@@ -46,6 +46,25 @@ describe('versionProgress', () => {
 
       expect(clinical.status).toBe('in_progress');
       expect(clinical.missing).toEqual(['sutures']);
+    });
+
+    it('una fila de sutura sin nombre (recién agregada) no cuenta como sutura', () => {
+      const clinical = versionProgress({
+        ...COMPLETE,
+        sutures: [{ name: '' }, { name: '   ' }],
+      }).clinical;
+
+      expect(clinical.status).toBe('in_progress');
+      expect(clinical.missing).toEqual(['sutures']);
+    });
+
+    it('basta una fila con nombre, aunque haya otras vacías', () => {
+      const clinical = versionProgress({
+        ...COMPLETE,
+        sutures: [{ name: '' }, { name: 'Seda' }],
+      }).clinical;
+
+      expect(clinical.status).toBe('complete');
     });
 
     it('pendientes si no hay nada de lo obligatorio', () => {
