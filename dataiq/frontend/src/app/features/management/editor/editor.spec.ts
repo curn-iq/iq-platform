@@ -91,8 +91,8 @@ describe('Editor', () => {
     await harness.navigateByUrl(`/gestion/editor/${ID}/${path}`);
     root = harness.routeNativeElement as HTMLElement;
     http.expectOne(VERSION_URL).flush(body);
-    if (path === 'instrumental') {
-      // El paso de instrumental pide el catálogo al abrirse: sin responderlo no hay estabilidad
+    if (['instrumental', 'mesa-de-mayo', 'mesa-de-reserva'].includes(path)) {
+      // Estos pasos piden el catálogo al abrirse: sin responderlo no hay estabilidad
       for (let i = 0; i < 3; i++) {
         await Promise.resolve();
         harness.detectChanges();
@@ -106,7 +106,10 @@ describe('Editor', () => {
   async function answerCatalog(): Promise<void> {
     http.expectOne(`${TEST_API_BASE}/catalog/full`).flush({
       specialties: [],
-      zones: [],
+      zones: [
+        { id: 'z-mayo', name: 'Mesa de Mayo' },
+        { id: 'z-res', name: 'Mesa de reserva' },
+      ],
       categories: [{ id: 'c-1', name: 'Pinza' }],
       instruments: [],
       sutures: [],
@@ -317,12 +320,48 @@ describe('Editor', () => {
       expect(text('.sheet #suggested-title')).toBe('Sugeridos para Cirugía general');
     });
 
-    it('las demás hojas siguen vacías hasta su casilla', async () => {
+    it('cada mesa tiene su hoja, con su nombre, y piden el catálogo', async () => {
       await open('mesa-de-mayo');
 
-      expect(root.querySelector('.sheet app-clinical-step')).toBeNull();
+      expect(root.querySelector('.sheet app-table-step')).not.toBeNull();
       expect(root.querySelector('.sheet app-instrumental-step')).toBeNull();
+      expect(text('.sheet .title h2')).toBe('Mesa de Mayo');
+      expect(root.querySelector('.sheet .not-carried')).toBeNull();
+    });
+
+    it('la hoja de la mesa de reserva es la de reserva, con su casilla «no lleva»', async () => {
+      await open('mesa-de-reserva');
+
+      expect(text('.sheet .title h2')).toBe('Mesa de reserva');
+      expect(root.querySelector('.sheet .not-carried')).not.toBeNull();
+    });
+
+    it('la hoja de revisar sigue vacía hasta su casilla', async () => {
+      await open('revisar');
+
+      expect(root.querySelector('.sheet app-table-step')).toBeNull();
       expect(root.querySelector('.sheet')!.children).toHaveLength(0);
+    });
+
+    it('lo armado en la mesa se refleja en lo que dice el paso y se guarda', async () => {
+      await open('mesa-de-mayo');
+      state().edit((content) => ({
+        ...content,
+        zones: [{ zone_id: 'z-mayo', zone: 'Mesa de Mayo', used: true, rows: 4, columns: 6 }],
+        items: [
+          {
+            zone_id: 'z-mayo',
+            legend_number: 1,
+            source_text: 'Gasa',
+            components: [{ instrument_id: 'i-gasa', suture_id: null, name: 'Gasa' }],
+            cells: [{ row: 1, column: 1 }],
+          },
+        ],
+      }));
+      harness.detectChanges();
+
+      expect(hint('mesa-de-mayo')).toBe('1 de 1 ubicados');
+      await saveNow();
     });
 
     it('lo agregado en el instrumental se refleja en lo que dice el paso y se guarda', async () => {

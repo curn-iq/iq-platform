@@ -35,6 +35,8 @@ export class CheckboxField implements FormCheckboxControl {
   /** Los errores de validación y si se tocó: los enlaza `[formField]`. */
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
   readonly touched = input(false);
+  /** Si no se puede cambiar (la versión está en solo lectura): la enlaza `[formField]`. */
+  readonly disabled = input(false);
   /** Avisa que la casilla perdió el foco, para que el formulario la marque como tocada. */
   readonly touch = output<void>();
 

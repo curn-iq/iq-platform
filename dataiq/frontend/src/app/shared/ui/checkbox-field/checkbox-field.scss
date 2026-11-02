@@ -23,6 +23,11 @@ input {
   accent-color: var(--color-accent);
   cursor: pointer;
 
+  &:disabled,
+  &:disabled + .text {
+    cursor: default;
+  }
+
   // Con un error se rodea de `tinta`, no de rojo
   &[aria-invalid='true'] {
     outline: 2px solid var(--color-text);

@@ -1,0 +1,81 @@
+<div class="head">
+  <p class="title">Agregar a la mesa</p>
+  <button type="button" class="done" (click)="closed.emit()">Listo</button>
+</div>
+
+@if (quick().length > 0) {
+  <p class="sub">{{ quickLabel() }}</p>
+  <div class="quick" role="group" [attr.aria-label]="quickLabel()">
+    @for (instrument of quick(); track instrument.id) {
+      <button
+        type="button"
+        class="chip"
+        [attr.aria-pressed]="present().has(instrument.id)"
+        [disabled]="present().has(instrument.id)"
+        (click)="pick(instrument)"
+      >
+        {{ instrument.name }}
+      </button>
+    }
+  </div>
+}
+
+<app-search-field
+  size="compact"
+  label="Buscar en el catálogo de instrumental"
+  placeholder="Buscar por nombre"
+  [(value)]="query"
+/>
+
+<div class="list" role="group" aria-label="Catálogo de instrumental">
+  @for (group of groups(); track group.category) {
+    <p class="group">{{ group.category }}</p>
+    @for (row of group.rows; track row.instrument.id) {
+      <button
+        type="button"
+        class="row"
+        [attr.aria-pressed]="row.inTable"
+        [attr.aria-disabled]="row.inTable ? 'true' : null"
+        (click)="pick(row.instrument)"
+      >
+        <span>
+          @for (segment of row.segments; track $index) {
+            @if (segment.match) {
+              <mark>{{ segment.text }}</mark>
+            } @else {
+              {{ segment.text }}
+            }
+          }
+        </span>
+        <span class="action">
+          @if (row.inTable) {
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M3.5 8.5l3 3 6-6.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            En la mesa
+          } @else {
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M8 3v10M3 8h10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Agregar
+          }
+        </span>
+      </button>
+    }
+  } @empty {
+    <p class="empty">Ningún instrumento coincide. Un revisor puede agregarlo al catálogo.</p>
+  }
+</div>
