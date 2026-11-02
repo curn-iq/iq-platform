@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Query, Request, Response, status
@@ -26,6 +26,7 @@ from app.domain.users import Account, Role, has_at_least, require_role
 router = APIRouter(prefix="/versions", tags=["Versiones"])
 
 version_list = TypeAdapter(list[VersionSummaryOut])
+version_details = TypeAdapter(list[VersionDetailOut])
 
 
 async def _get_version(versions: VersionRepo, version_id: UUID) -> VersionSummary:
@@ -41,7 +42,7 @@ def _require_author(version: VersionSummary, account: Account) -> None:
         raise Forbidden("Solo quien creó la versión puede hacer esto")
 
 
-@router.get("", response_model=list[VersionSummaryOut])
+@router.get("", response_model=list[VersionSummaryOut] | list[VersionDetailOut])
 async def list_versions(
     request: Request,
     versions: VersionRepo,
@@ -49,23 +50,42 @@ async def list_versions(
     state: Annotated[list[VersionState] | None, Query()] = None,
     mine: bool = False,
     reviewed_by_me: bool = False,
+    include: Annotated[
+        Literal["content"] | None,
+        Query(
+            description="Con `content`, cada versión trae su contenido y sus "
+            "rechazos, como `GET /versions/{id}`"
+        ),
+    ] = None,
 ) -> Response:
     """Versiones por estado (por defecto, las en curso), de la más reciente a la
     más vieja. Un colaborador solo ve las suyas; un revisor ve todas, o solo las
     suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
-    otros que aprobó o rechazó, en cualquier estado salvo que se pida uno."""
+    otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
+    `include=content`, cada una con su contenido y sus rechazos, en la misma
+    respuesta: así Mis borradores no pide cada versión por separado."""
     require_role(account.role, Role.contributor)
     if reviewed_by_me:
         require_role(account.role, Role.reviewer)
-        found = await versions.list_all(
-            state or list(VersionState), reviewed_by=account.id
-        )
+        states, created_by, reviewed_by = state or list(VersionState), None, account.id
     else:
         only_mine = mine or not has_at_least(account.role, Role.reviewer)
-        found = await versions.list_all(
-            state or IN_PROGRESS, created_by=account.id if only_mine else None
+        states, created_by = state or IN_PROGRESS, account.id if only_mine else None
+        reviewed_by = None
+    if include == "content":
+        details = await versions.list_details(
+            states, created_by=created_by, reviewed_by=reviewed_by
         )
-    body = version_list.dump_json([VersionSummaryOut.model_validate(v) for v in found])
+        body = version_details.dump_json(
+            [VersionDetailOut.model_validate(v) for v in details]
+        )
+    else:
+        found = await versions.list_all(
+            states, created_by=created_by, reviewed_by=reviewed_by
+        )
+        body = version_list.dump_json(
+            [VersionSummaryOut.model_validate(v) for v in found]
+        )
     return respond_with_cache(request, body, max_age=0, private=True)
 
 

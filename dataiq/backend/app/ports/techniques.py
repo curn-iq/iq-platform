@@ -28,6 +28,13 @@ class VersionRepository(Protocol):
         reviewed_by: UUID | None = None,
     ) -> list[VersionSummary]: ...
 
+    async def list_details(
+        self,
+        states: Iterable[VersionState],
+        created_by: UUID | None = None,
+        reviewed_by: UUID | None = None,
+    ) -> list[VersionDetail]: ...
+
     async def get_summary(self, version_id: UUID) -> VersionSummary | None: ...
 
     async def get(self, version_id: UUID) -> VersionDetail | None: ...
