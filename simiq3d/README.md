@@ -258,7 +258,12 @@ Formato 115 en su marco teórico.
   sirve desde el mismo origen que el shell. Se descartaron Babylon.js (más
   pesado de lo que pide una mesa estática) y Unity exportado a la web (carga
   su propio motor, varios MB antes de mostrar nada, y queda aislado del
-  shell).
+  shell). También se descartaron (revisado por Mauricio el 2026-11-01)
+  model-viewer de Google, que muestra un modelo por elemento y no deja armar
+  una mesa con varias piezas, señalar una y llevar la cámara hacia ella, y
+  angular-three, que pone una capa de Angular sobre Three.js con menos
+  usuarios y atada al ritmo de cada versión de Angular: el visor usa Three.js
+  directo, sin envoltorios.
 
 Arquitectura, rutas y cómo se corre el frontend:
 [`frontend/README.md`](frontend/README.md).
