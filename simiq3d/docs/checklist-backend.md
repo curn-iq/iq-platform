@@ -55,22 +55,24 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
   54, que pasa al repetirla sola
 - [x] Una llamada escrita como texto («reply("…")») después de la respuesta ya
   no la repite
-- [ ] «¿Y la Kelly Adson?» con Eventrorrafia abierta (pregunta 50 del banco):
-  el modelo dice bien dónde va, pero agrega «SIMIQ3D solo cubre…» y abre la
-  técnica sin resaltar la pinza. Falla igual con el prompt anterior al
-  2026-11-02 (visto en local con Qwen3-VL ese día)
+- [x] «¿Y la Kelly Adson?» con Eventrorrafia abierta (pregunta 50 del banco):
+  el modelo abría la técnica con `show_in_3d` sin el instrumento, y la pinza
+  no se señalaba. Desde el 2026-11-02, si el modelo abre la técnica sin el
+  instrumento por el que se preguntó y ese instrumento va en su mesa, se
+  señala igual
 - [x] `POST /chat` con el contrato acordado con el frontend
 - [x] Probado con Qwen2.5 7B y Qwen3-VL 8B en la RX 6600 XT
 - [x] Modelo del MVP: Qwen3-VL 8B instruct
 - [x] Banco de preguntas con su respuesta correcta, para medir la exactitud
   (`eval/banco.csv` y el comando `chat_bank`)
-- [ ] Con el modelo de lenguaje, la acción solo sale como `show_technique`,
-  `highlight_instrument`, `answer` o `clarify` (`_finish`, en
-  `app/adapters/outbound/language/ollama.py`); `describe_instrument`,
-  `show_clinical_data`, `list_instruments` y `no_answer` solo salen de las
-  plantillas. Visto el 2026-11-02 en local con Qwen3-VL: «¿Qué es la tijera de
-  Mayo?» no abre la ficha en el visor, aunque el texto la describe. El banco
-  califica «describir» y «listar» por el texto, no por la acción
+- [x] La acción sale de la pregunta también con el modelo de lenguaje
+  (2026-11-02). Antes solo salía como `show_technique` o
+  `highlight_instrument` (más `answer` y `clarify`): «¿Qué es la tijera de
+  Mayo?» no abría la ficha, aunque el texto la describía, y un dato clínico
+  salía como «Mostrar técnica». Ahora el modelo escribe el texto y la acción
+  sale de la misma regla de las plantillas (`asked_action`): describir, dato
+  clínico con su campo, lista o técnica. El banco califica también la acción
+  en «describir», «dato» y «listar»
 
 ## Modelos 3D
 
