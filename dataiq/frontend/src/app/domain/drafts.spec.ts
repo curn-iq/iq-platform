@@ -1,5 +1,6 @@
 import {
   countDrafts,
+  draftStatus,
   draftsSummary,
   filterDrafts,
   toDraftRows,
@@ -170,5 +171,28 @@ describe('draftsSummary', () => {
     it('sin nada en curso', () => {
       expect(draftsSummary([], true)).toBe('Nada en curso.');
     });
+  });
+});
+
+describe('draftStatus', () => {
+  const rejected = [{ reason: 'Falta la fuente.' }];
+
+  it('un borrador sin devoluciones es «Borrador»', () => {
+    expect(draftStatus('draft', [])).toBe('draft');
+  });
+
+  it('un borrador con devoluciones es «Devuelta»', () => {
+    expect(draftStatus('draft', rejected)).toBe('returned');
+  });
+
+  it('en revisión es «En revisión», aunque antes se haya devuelto', () => {
+    expect(draftStatus('in_review', [])).toBe('in_review');
+    expect(draftStatus('in_review', rejected)).toBe('in_review');
+  });
+
+  it('lo que no está en curso no tiene estado de borrador', () => {
+    for (const state of ['published', 'superseded', 'archived'] as const) {
+      expect(draftStatus(state, rejected)).toBeNull();
+    }
   });
 });

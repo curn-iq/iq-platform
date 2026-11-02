@@ -1,0 +1,37 @@
+@if (isNew()) {
+  <app-new-technique />
+} @else if (notFound()) {
+  <app-not-found />
+} @else {
+  <section class="page" aria-labelledby="editor-title" [attr.aria-busy]="version() ? null : 'true'">
+    <a class="route" routerLink="/gestion/borradores">
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d="M10 3.5L5.5 8l4.5 4.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Mis borradores
+    </a>
+    @if (version(); as version) {
+      <header class="head">
+        <div>
+          <h1 id="editor-title">{{ version.summary.technique }}</h1>
+          <p class="meta">
+            {{ version.summary.specialty }} · Versión {{ version.summary.number }}
+            @if (status(); as kind) {
+              <app-status-pill [kind]="kind" />
+            }
+          </p>
+        </div>
+        <div class="actions">
+          <app-more-actions [version]="version.summary" />
+        </div>
+      </header>
+    }
+  </section>
+}

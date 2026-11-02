@@ -1,35 +1,20 @@
 // Técnica nueva: ver «Editor de técnica (página)» en DESIGN.md.
+@use '../editor-head';
 
 :host {
   display: block;
 }
 
 .page {
-  padding: 48px var(--space-gutter) 104px;
+  @include editor-head.page;
 }
 
 .route {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
-  color: var(--color-text-subtle);
-  font-size: 15px;
-  font-weight: 550;
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent);
-  }
+  @include editor-head.route;
 }
 
 .head h1 {
-  margin: 0;
-  font-size: 40px;
-  font-weight: 650;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  overflow-wrap: anywhere;
+  @include editor-head.title;
 }
 
 .version {

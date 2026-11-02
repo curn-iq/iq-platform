@@ -1,0 +1,52 @@
+// Cabecera del editor: ver «Editor de técnica (página)» en DESIGN.md.
+@use 'editor-head';
+
+:host {
+  display: block;
+}
+
+.page {
+  @include editor-head.page;
+}
+
+.route {
+  @include editor-head.route;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+
+  h1 {
+    @include editor-head.title;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 17px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding-top: 32px;
+  }
+
+  .head h1 {
+    font-size: 30px;
+  }
+}

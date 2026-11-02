@@ -49,21 +49,36 @@ export interface DraftRow {
 }
 
 /**
+ * El estado de una versión en curso: un borrador con devoluciones es «Devuelta», uno sin ellas es
+ * «Borrador» y una versión en revisión es «En revisión», aunque antes se haya devuelto. Una versión
+ * que no está en curso no tiene estado de borrador (`null`).
+ */
+export function draftStatus(
+  state: VersionState,
+  rejections: readonly unknown[],
+): DraftStatus | null {
+  if (state === 'in_review') return 'in_review';
+  if (state !== 'draft') return null;
+  return rejections.length > 0 ? 'returned' : 'draft';
+}
+
+/**
  * Las filas de Mis borradores, en el orden en que llegan. Solo lo que está en curso
  * (borrador o en revisión) tiene fila. Un borrador con devoluciones es «Devuelta»; una
  * versión en revisión que antes se devolvió ya es «En revisión», sin nota.
  */
 export function toDraftRows(sources: readonly DraftSource[]): DraftRow[] {
   return sources.flatMap(({ summary, content, rejections }): DraftRow[] => {
-    if (summary.state !== 'draft' && summary.state !== 'in_review') return [];
-    const latest = summary.state === 'draft' ? rejections[0] : undefined;
+    const status = draftStatus(summary.state, rejections);
+    if (status === null) return [];
+    const latest = status === 'returned' ? rejections[0] : undefined;
     return [
       {
         id: summary.id,
         technique: summary.technique,
         specialty: summary.specialty,
         number: summary.number,
-        status: summary.state === 'in_review' ? 'in_review' : latest ? 'returned' : 'draft',
+        status,
         updatedAt: new Date(summary.updated_at),
         progress: versionProgress(content),
         note: latest
