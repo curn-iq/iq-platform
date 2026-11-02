@@ -60,9 +60,11 @@ describe('rutas', () => {
   });
 
   afterEach(() => {
-    // El inicio, el detalle y Mis borradores piden sus listas al abrirse; a estas pruebas no les
-    // importa su respuesta
-    http.match(({ url }) => /\/(techniques(\/[^/]+)?|specialties|versions(\/[^/]+)?)$/.test(url));
+    // El inicio, el detalle, Mis borradores y el catálogo de instrumental piden sus listas al abrirse;
+    // a estas pruebas no les importa su respuesta
+    http.match(({ url }) =>
+      /\/(techniques(\/[^/]+)?|specialties|versions(\/[^/]+)?|catalog\/full)$/.test(url),
+    );
     http.verify();
   });
 

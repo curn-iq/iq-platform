@@ -13,9 +13,13 @@ export class CatalogRepository {
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL);
 
-  /** Todo el catálogo y todas las técnicas publicadas con su detalle, de una vez. */
-  full(): HttpResourceRef<FullCatalog | undefined> {
-    return httpResource<FullCatalog>(() => `${this.base}/catalog/full`);
+  /**
+   * Todo el catálogo y todas las técnicas publicadas con su detalle, de una vez. La API lo deja 5
+   * minutos en la caché del navegador; `cache` dice cómo usarla (`'reload'` la salta, que es lo que
+   * hace falta después de crear o editar un instrumento).
+   */
+  full(cache: () => RequestCache = () => 'default'): HttpResourceRef<FullCatalog | undefined> {
+    return httpResource<FullCatalog>(() => ({ url: `${this.base}/catalog/full`, cache: cache() }));
   }
 
   /** Instrumental con su categoría y sus alias. */

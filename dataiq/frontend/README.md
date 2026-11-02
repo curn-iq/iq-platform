@@ -63,7 +63,8 @@ src/
     │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown,
     │                       filas de Mis borradores, fechas de edición, pasos del editor,
     │                       filas de Por revisar y de Revisadas por mí,
-    │                       diferencia entre la publicada y la propuesta
+    │                       diferencia entre la publicada y la propuesta,
+    │                       índice, «Dónde va» y borrador del catálogo de instrumental
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
@@ -309,6 +310,17 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 
   - **Comentar y decidir** (Resuelto 60): `ReviewComments` (`review/review-comments.ts`) guarda en pantalla los comentarios y la nota general; lo provee `Review`, así que cada revisión empieza sin nada y los comentarios se olvidan al revisar otra versión. Un comentario es de una sección, de un campo clínico o de un objeto de la mesa (`CommentTarget`, en `domain/review-comments.ts`). Los botones «Comentar» están junto a cada cambio de la mesa (`ReviewTable`) y a cada campo cambiado (`ReviewClinical`), que avisan con `(commentRequested)`; tocar una pieza de la mesa propuesta, o Intro con el foco en ella, comenta ese objeto; y «Comentar la sección» está al pie de cada hoja. `SectionComments` dibuja al pie los comentarios de la sección, su redactor (`app-textarea-field`, con el cursor ya en el texto y Escape que lo cierra) y ese botón; los objetos comentados se contornean en la mesa propuesta (`TableMarks`, `commented`).
   - **Devolver y aprobar** (`review-decision/`): `ReviewDecision` lleva «Devolver con comentarios» y «Aprobar y publicar», cada uno con su panel de confirmación (uno a la vez). Su host es `display: contents`, para que los botones y los paneles se acomoden en la cuadrícula de la cabecera de `Review`. Devolver manda `POST /versions/{id}/reject` con el motivo que arma `buildReason()` (`domain/review-comments.ts`, puro y con pruebas): la nota general primero y una línea por comentario, en el orden de las secciones, con los saltos de línea de cada uno pasados a espacios. Queda apagado sin comentarios ni nota. Aprobar manda `POST /versions/{id}/approve`. Al terminar, `NoticeService` avisa y se vuelve a Por revisar, que vuelve a pedir su lista. Un 409 (otro revisor ya decidió) lo avisa el interceptor y `(conflict)` hace que `Review` vuelva a pedir la versión, que ya no está en revisión.
+
+### Catálogo de instrumental (`features/management/instruments/`)
+
+`/gestion/instrumental/:id?` (Resuelto 62 de la [checklist](../docs/checklist-frontend.md)), para revisor o más. La ruta es una sola con `id` opcional (`instrumentsMatch`, en `app.routes.ts`), así que pasar de un instrumento a otro no recrea la pantalla ni repite la petición.
+
+- **`Instruments`** (la pantalla) pide `GET /catalog/full` una vez (`CatalogRepository.full(cache)`) y de ahí saca los instrumentos, las categorías, las especialidades y las técnicas. Conserva el último catálogo que llegó: tras guardar vuelve a pedirlo con `cache: 'reload'` (`/catalog/full` es privado y dura 300 s en el navegador) y mientras llega sigue mostrando ese y lo que respondió la API. El modo (`read`, `edit`, `description`, `new`) es un signal y no va en la URL; cambiar de instrumento lo reinicia.
+- **`InstrumentIndex`** (`instrument-index/`): la búsqueda por nombre o alias, el botón «Nuevo instrumento» y las categorías con sus instrumentos y la cifra de técnicas en que va cada uno. En celular es un selector.
+- **`InstrumentEntry`** (`instrument-entry/`): la entrada en lectura y en edición. Solo escribe en su borrador (`linkedSignal`); guardar lo hace la pantalla (`saved`). Un nombre o un alias que ya es de otro instrumento bloquea «Guardar»; una descripción pide su fuente (`description_source`), porque la API responde 422 sin ella.
+- **`WhereItGoes`** (`where-it-goes/`): las técnicas publicadas en que va el instrumento, por especialidad, con su mesa en miniatura (`app-table-miniature`) y un enlace a esa mesa. **`InstrumentDrawing`** (`instrument-drawing/`) dibuja el instrumento en acero si tiene dibujo propio.
+- **Guardar:** `PATCH /instruments/{id}` con solo lo que cambió. Crear es `POST /instruments` y, si trae alias, un `PATCH` aparte, porque el `POST` no los recibe.
+- **La lógica es pura** (`domain/instrument-catalog.ts`, con pruebas): `placementIndex()`, `indexGroups()`, `ownerOf()`, `canSave()`, `toCreate()`, `toUpdate()` y los textos de la barra y de los avisos.
 
 ### Glosario (interfaz → código y API)
 
