@@ -3,51 +3,54 @@
   bottom: 84px;
   left: 28px;
   z-index: 4;
-  width: min(360px, calc(100% - 56px));
+  width: min(320px, calc(100% - 56px));
 }
 
+// Una nota sobre la escena, no un panel: la mesa se sigue viendo a través. El
+// tono es el claro del acento, como la fila señalada de la leyenda, y el número
+// es el de la insignia: así se lee como de esa pieza
 .card {
-  padding: 18px 18px 16px;
-  border-radius: 16px;
-  background: var(--color-surface);
-  box-shadow:
-    inset 0 0 0 1px var(--color-border),
-    0 28px 48px -30px rgb(10 27 34 / 0.55);
+  padding: 12px 8px 12px 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-accent-soft) 90%, transparent);
+  box-shadow: 0 12px 28px -18px rgb(10 27 34 / 0.45);
+  backdrop-filter: blur(12px);
   animation: rise 0.4s var(--ease-enter);
 }
 
 .head {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 32px;
-  gap: 12px;
+  grid-template-columns: 26px minmax(0, 1fr) 28px;
+  gap: 10px;
   align-items: start;
 
   h2 {
-    margin: 0;
-    font-size: 1.1875rem;
+    margin: 3px 0 0;
+    color: var(--color-accent-strong);
+    font-size: 0.96875rem;
     font-weight: 650;
-    line-height: 1.25;
-    letter-spacing: -0.015em;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 }
 
 .number {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--color-accent);
   color: var(--color-surface);
-  font-size: 0.8125rem;
+  font-size: 0.78125rem;
   font-weight: 700;
 }
 
 .close {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -55,29 +58,34 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--color-hover);
-    color: var(--color-text);
+    background: var(--color-accent-soft-hover);
+    color: var(--color-accent-strong);
   }
+}
+
+// Bajo el nombre, alineado con él
+.text,
+.more {
+  margin-left: 36px;
 }
 
 .text {
   display: grid;
-  gap: 8px;
-  max-height: 32svh;
-  margin-top: 12px;
-  padding-top: 12px;
+  gap: 6px;
+  max-height: 30svh;
+  margin-top: 2px;
+  padding-right: 8px;
   overflow-y: auto;
-  border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
-  font-size: 0.90625rem;
-  line-height: 1.55;
+  font-size: 0.875rem;
+  line-height: 1.5;
 
   p {
     margin: 0;
   }
 
   strong {
-    color: var(--color-text);
+    color: var(--color-accent-strong);
     font-weight: 650;
   }
 }
@@ -86,22 +94,30 @@
   color: var(--color-text-subtle);
 }
 
-.link {
+.more {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 14px;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--color-accent);
-  font-size: 0.90625rem;
+  font: inherit;
+  font-size: 0.8125rem;
   font-weight: 650;
-  text-decoration: none;
+  cursor: pointer;
 
   svg {
     transition: transform 0.35s var(--ease-enter);
   }
 
-  &:hover svg {
-    transform: translateX(3px);
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  &:hover {
+    color: var(--color-accent-strong);
   }
 }
 

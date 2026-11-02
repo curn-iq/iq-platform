@@ -3,39 +3,46 @@
     <span class="number" aria-hidden="true">{{ item().legendNumber ?? '–' }}</span>
     <h2>{{ item().name }}</h2>
     <button type="button" class="close" aria-label="Cerrar ficha" (click)="close.emit()">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
         <path
           d="M4 4l8 8M12 4l-8 8"
           stroke="currentColor"
-          stroke-width="1.7"
+          stroke-width="1.8"
           stroke-linecap="round"
         />
       </svg>
     </button>
   </div>
   <div class="text">
-    @for (instrument of instruments(); track instrument.id) {
+    @for (text of texts(); track text.id) {
       <p>
-        @if (instruments().length > 1) {
-          <strong>{{ instrument.name }}.</strong>
+        @if (texts().length > 1) {
+          <strong>{{ text.name }}.</strong>
         }
-        {{ instrument.description ?? 'Sin descripción en DataIQ.' }}
+        {{ text.text || 'Sin descripción en DataIQ.' }}
       </p>
     } @empty {
       <p class="missing">Sin descripción en DataIQ.</p>
     }
   </div>
-  <a class="link" [href]="dataiqUrl()">
-    Ver la técnica en DataIQ
-    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-      <path
-        d="M2 7h9M7.5 3.5L11 7l-3.5 3.5"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-  </a>
+  @if (hasMore()) {
+    <button
+      type="button"
+      class="more"
+      [attr.aria-expanded]="expanded()"
+      (click)="expanded.set(!expanded())"
+    >
+      {{ expanded() ? 'Ver menos' : 'Ver más' }}
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+        <path
+          d="M2.5 4.5L6 8l3.5-3.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+  }
 </section>
