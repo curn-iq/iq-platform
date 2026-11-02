@@ -25,6 +25,7 @@
         </div>
         @if (actions(); as actions) {
           <div class="actions">
+            <app-technique-edit-action [techniqueId]="techniqueId()!" />
             @for (action of actions.items; track action.module) {
               @if (actions.external) {
                 <a app-button [variant]="action.variant" [href]="action.href"

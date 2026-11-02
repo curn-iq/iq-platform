@@ -1,0 +1,55 @@
+<ng-template #pencil>
+  <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
+    <path
+      d="M10.5 2.5l3 3-8 8H2.5v-3z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linejoin="round"
+    />
+  </svg>
+</ng-template>
+<ng-template #clock>
+  <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+    <path
+      d="M8 4.8V8l2.2 1.6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linecap="round"
+    />
+  </svg>
+</ng-template>
+
+@if (action(); as current) {
+  @if (current.kind === 'edit') {
+    <button
+      type="button"
+      class="edit"
+      [class.inert]="conflict() !== null"
+      [attr.aria-disabled]="conflict() !== null || creating() ? 'true' : null"
+      [attr.aria-busy]="creating() ? 'true' : null"
+      (click)="create()"
+    >
+      <ng-container *ngTemplateOutlet="conflict() !== null ? clock : pencil" />
+      <span>{{ conflict() ?? current.label }}</span>
+    </button>
+    <span class="sr-only" role="status">{{ conflict() }}</span>
+  } @else if (current.kind === 'continue') {
+    <a class="edit" [routerLink]="editorLink(current.versionId)">
+      <ng-container *ngTemplateOutlet="pencil" />
+      <span>{{ current.label }}</span>
+    </a>
+  } @else if (current.kind === 'view') {
+    <a class="edit" [routerLink]="editorLink(current.versionId)">
+      <ng-container *ngTemplateOutlet="clock" />
+      <span>{{ current.label }}</span>
+    </a>
+  } @else {
+    <button type="button" class="edit inert" aria-disabled="true">
+      <ng-container *ngTemplateOutlet="clock" />
+      <span>{{ current.label }}</span>
+    </button>
+  }
+}
