@@ -110,6 +110,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .chat-titulo { font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
 .conexion { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; color: var(--tinta-3); font-size: 13px; font-weight: 550; }
+.conexion[hidden] { display: none; }
 .conexion::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 0 3px var(--marca-claro); }
 [data-chat="caido"] .conexion::before { background: var(--tinta-3); box-shadow: 0 0 0 3px var(--hover-neutro); }
 .cerrar-chat { display: none; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; place-items: center; }
@@ -231,7 +232,10 @@ h1, h2, h3, p { margin: 0; }
 .lienzo-cabeza { position: absolute; top: 24px; left: 28px; z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; max-width: min(520px, 60%); }
 .tec-nombre { font-size: 40px; line-height: 1; font-weight: 650; letter-spacing: -.04em; }
 .tec-meta { color: var(--tinta-3); font-size: 15px; }
-.tec-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.tec-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 10px; }
+/* La fuente no trae el tamaño de la mesa ni hacia dónde apunta cada instrumento */
+.provisional { color: var(--tinta-3); font-family: var(--datos); font-size: 12px; white-space: nowrap; }
+.solo-movil { display: none; }
 .selector { position: relative; display: inline-flex; align-items: center; }
 .selector select {
   appearance: none; -webkit-appearance: none; height: 38px; padding: 0 36px 0 14px; border: 0; border-radius: 10px;
@@ -240,12 +244,6 @@ h1, h2, h3, p { margin: 0; }
 }
 .selector svg { position: absolute; right: 12px; pointer-events: none; color: var(--tinta-2); }
 .provisional { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
-.escala {
-  display: inline-flex; padding: 3px; border-radius: 9px; background: rgba(255, 255, 255, .7);
-  box-shadow: inset 0 0 0 1px var(--filete);
-}
-.escala button { white-space: nowrap; height: 26px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--tinta-3); font-size: 13px; font-weight: 600; cursor: pointer; }
-.escala button[aria-pressed="true"] { background: var(--superficie); color: var(--tinta); box-shadow: 0 1px 2px rgba(10, 27, 34, .12); }
 
 /* Controles de vista */
 .vista { position: absolute; right: 24px; bottom: 24px; z-index: 3; display: flex; gap: 8px; }
@@ -254,17 +252,6 @@ h1, h2, h3, p { margin: 0; }
 .grupo button:hover { background: var(--hover-neutro); color: var(--tinta); }
 .grupo button[aria-pressed="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
 .grupo.iconos button { padding: 0; width: 36px; }
-.opciones-vista {
-  position: absolute; right: 24px; bottom: 76px; z-index: 6;
-  width: 300px; padding: 14px 16px 12px; border-radius: 14px; background: var(--superficie);
-  box-shadow: inset 0 0 0 1px var(--filete), 0 24px 48px -32px rgba(10, 27, 34, .45);
-  animation: subir .3s var(--expo);
-}
-.opciones-vista[hidden] { display: none; }
-.op-titulo { margin-bottom: 6px; font-size: 14.5px; font-weight: 650; }
-.op-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--filete); font-size: 14px; color: var(--tinta-2); cursor: pointer; }
-.op-fila input { width: 18px; height: 18px; accent-color: var(--marca); cursor: pointer; }
-.opciones-vista .demo { margin-top: 6px; }
 .grupo button[aria-expanded="true"] { background: var(--marca-claro); color: var(--marca-hondo); }
 .pie-lienzo { position: absolute; left: 28px; bottom: 24px; z-index: 3; display: grid; gap: 6px; }
 .pista { justify-self: start; padding: 4px 10px; border-radius: 8px; background: rgba(255, 255, 255, .82); color: var(--tinta-2); font-size: 13px; transition: opacity .4s var(--cuarta); }
@@ -317,25 +304,32 @@ h1, h2, h3, p { margin: 0; }
 .pieza[aria-current="true"] .num { background: var(--marca); color: #fff; box-shadow: none; }
 .pieza[aria-current="true"] strong { color: var(--marca-hondo); }
 
-/* Ficha del instrumento */
+/* Ficha del instrumento: una nota sobre la escena, en el tono claro del acento y
+   con el número de la insignia. Nombre, primera oración de la descripción de DataIQ
+   y «Ver más» (DESIGN.md, «Ficha del instrumento», revisión del 2026-11-02) */
 .ficha {
   position: absolute; left: 28px; bottom: 84px; z-index: 4;
-  width: min(360px, calc(100% - 56px));
-  padding: 18px 18px 16px; border-radius: 16px; background: var(--superficie);
-  box-shadow: inset 0 0 0 1px var(--filete), 0 28px 48px -30px rgba(10, 27, 34, .55);
+  width: min(320px, calc(100% - 56px));
+  padding: 12px 8px 12px 12px; border-radius: 14px;
+  background: color-mix(in srgb, var(--marca-claro) 90%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: 0 12px 28px -18px rgba(10, 27, 34, .45);
   animation: subir .4s var(--expo);
 }
 .ficha[hidden] { display: none; }
 @keyframes subir { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.ficha-cabeza { display: grid; grid-template-columns: 28px minmax(0, 1fr) 32px; gap: 12px; align-items: start; }
-.ficha-cabeza .num { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--marca); color: #fff; font-size: 13px; font-weight: 700; }
-.ficha h2 { font-size: 19px; line-height: 1.25; font-weight: 650; letter-spacing: -.015em; }
-.ficha .lugar { margin-top: 3px; color: var(--tinta-3); font-family: var(--datos); font-size: 12px; }
-.ficha-cerrar { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--tinta-3); cursor: pointer; }
-.ficha-cerrar:hover { background: var(--hover-neutro); color: var(--tinta); }
-.ficha-texto { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--filete); color: var(--tinta-2); font-size: 14.5px; line-height: 1.55; }
-.ficha-texto .demo { display: block; margin-bottom: 4px; }
-.ficha-pie { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.ficha-cabeza { display: grid; grid-template-columns: 26px minmax(0, 1fr) 28px; gap: 10px; align-items: start; }
+.ficha-cabeza .num { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--marca); color: #fff; font-size: 12.5px; font-weight: 700; }
+.ficha h2 { margin-top: 3px; color: var(--marca-hondo); font-size: 15.5px; line-height: 1.3; font-weight: 650; letter-spacing: -.01em; }
+.ficha-cerrar { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--tinta-3); cursor: pointer; }
+.ficha-cerrar:hover { background: var(--marca-claro-hover); color: var(--marca-hondo); }
+.ficha-texto { display: grid; gap: 6px; max-height: 30svh; margin: 2px 0 0 36px; padding-right: 8px; overflow-y: auto; color: var(--tinta-2); font-size: 14px; line-height: 1.5; }
+.ficha-texto strong { color: var(--marca-hondo); font-weight: 650; }
+.ficha-mas { display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 0 36px; padding: 0; border: 0; background: none; color: var(--marca); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.ficha-mas[hidden] { display: none; }
+.ficha-mas svg { transition: transform .35s var(--expo); }
+.ficha-mas[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ficha-mas:hover { color: var(--marca-hondo); }
 .enlace { display: inline-flex; align-items: center; gap: 8px; color: var(--marca); font-size: 14.5px; font-weight: 650; }
 .enlace svg { transition: transform .35s var(--expo); }
 .enlace:hover svg { transform: translateX(3px); }
@@ -435,6 +429,8 @@ h1, h2, h3, p { margin: 0; }
   .tec-acciones .selector { position: absolute; inset: 0; }
   .tec-acciones .selector select { width: 100%; height: 100%; opacity: 0; }
   .tec-acciones .selector svg { display: none; }
+  .solo-escritorio { display: none; }
+  .solo-movil { display: inline; }
   .tec-nombre { display: flex; align-items: center; gap: 8px; }
   .tec-nombre::after {
     content: ""; flex: none; width: 22px; height: 22px; border-radius: 8px;
@@ -449,7 +445,6 @@ h1, h2, h3, p { margin: 0; }
   .leyenda-boton { top: 16px; right: 16px; }
   .leyenda { top: 64px; right: 12px; left: 12px; bottom: auto; max-height: 52svh; width: auto; }
   .vista { right: 12px; bottom: calc(var(--alto-campo, 150px) + 4px); }
-  .opciones-vista { right: 12px; left: 12px; width: auto; bottom: calc(var(--alto-campo, 150px) + 56px); }
   .grupo.vistas button { padding: 0 8px; font-size: 12.5px; }
   .pie-lienzo { left: 12px; right: auto; top: 190px; bottom: auto; }
   .prototipo > .demo { display: none; }
@@ -512,7 +507,7 @@ h1, h2, h3, p { margin: 0; }
   <aside class="chat" id="chat" aria-label="Chat de SIMIQ3D">
     <div class="chat-cabeza">
       <span class="chat-titulo">Preguntar</span>
-      <span class="conexion" id="conexion">Conectado</span>
+      <span class="conexion" id="conexion" hidden>No disponible</span>
       <button type="button" class="cerrar-chat" id="cerrar-chat" aria-label="Cerrar historial">
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
@@ -549,7 +544,7 @@ h1, h2, h3, p { margin: 0; }
       </button>
     </label>
     <div class="campo-pie">
-      <span class="leyenda-campo">Las respuestas solo muestran lo que está en DataIQ.</span>
+      <span class="leyenda-campo">Tus preguntas se guardan sin tu nombre para medir el chat. No escribas datos de pacientes.</span>
     </div>
     <div class="bienvenida-opciones" id="tecnicas-inicio"></div>
   </form>
@@ -575,13 +570,14 @@ h1, h2, h3, p { margin: 0; }
 
     <div class="lienzo-cabeza">
       <h1 class="tec-nombre" id="tec-nombre">Mastectomía</h1>
-      <p class="tec-meta" id="tec-meta">Mesa de Mayo · Cirugía general</p>
+      <p class="tec-meta"><span id="tec-meta">Mesa de Mayo · Cirugía General</span><span class="solo-movil"> · <span class="provisional">provisional</span></span></p>
       <div class="tec-acciones">
         <span class="selector">
           <label class="sr-only" for="tecnica">Técnica</label>
           <select id="tecnica"></select>
           <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
+        <span class="provisional solo-escritorio">mesa y orientación provisionales</span>
       </div>
     </div>
 
@@ -601,16 +597,14 @@ h1, h2, h3, p { margin: 0; }
 
     <section class="ficha" id="ficha" aria-live="polite" hidden>
       <div class="ficha-cabeza">
-        <span class="num" id="ficha-num">9</span>
-        <div><h2 id="ficha-nombre">Pinza Kelly</h2><p class="lugar" id="ficha-lugar">Fila 3 · Columna 4</p></div>
+        <span class="num" id="ficha-num" aria-hidden="true">9</span>
+        <h2 id="ficha-nombre">Pinza Kelly</h2>
         <button type="button" class="ficha-cerrar" id="ficha-cerrar" aria-label="Cerrar ficha">
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <p class="ficha-texto"><span class="demo">demostración · no viene de DataIQ</span><span id="ficha-texto">Aquí va la descripción breve del instrumento, con su fuente, tal como está en DataIQ.</span></p>
-      <div class="ficha-pie">
-        <a class="enlace" id="ficha-enlace" href="tecnica.html#mastectomia">Ver la técnica en DataIQ <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3.5L11 7l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      </div>
+      <div class="ficha-texto" id="ficha-texto"></div>
+      <button type="button" class="ficha-mas" id="ficha-mas" aria-expanded="false" hidden><span>Ver más</span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </section>
 
     <div class="vista" role="toolbar" aria-label="Vista de la escena">
@@ -621,21 +615,8 @@ h1, h2, h3, p { margin: 0; }
       <span class="grupo iconos">
         <button type="button" data-zoom="1" aria-label="Acercar"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
         <button type="button" data-zoom="-1" aria-label="Alejar"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-        <button type="button" id="opciones-boton" aria-label="Opciones de vista" aria-expanded="false" aria-controls="opciones-vista"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h6M11.5 4.5h2M2.5 11.5h2M7.5 11.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="4.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="11.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
         <button type="button" data-centrar aria-label="Centrar la mesa"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
       </span>
-    </div>
-    <div class="opciones-vista" id="opciones-vista" role="group" aria-label="Opciones de vista" hidden>
-      <p class="op-titulo">Opciones de vista</p>
-      <div class="op-fila"><span>Escala de los instrumentos</span>
-        <span class="escala" role="group" aria-label="Escala de los instrumentos">
-          <button type="button" data-escala="celda" aria-pressed="true">a la celda</button>
-          <button type="button" data-escala="real" aria-pressed="false">real</button>
-        </span>
-      </div>
-      <label class="op-fila"><span>Números en las celdas</span><input type="checkbox" id="op-numeros" checked></label>
-      <label class="op-fila"><span>Cuadrícula</span><input type="checkbox" id="op-rejilla" checked></label>
-      <p class="demo">Mesa, escala y orientación provisionales.</p>
     </div>
     <div class="pie-lienzo"><p class="pista" id="pista">Arrastra para girar · rueda o pellizco para acercar</p><span id="hueco-prototipo"></span></div>
 
@@ -662,7 +643,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
-/* ---------- Datos reales: mesas de Mayo de Cirugía general (DataIQ) ----------
+/* ---------- Datos reales: mesas de Mayo de Cirugía General (DataIQ) ----------
    [número, fila, columna, nombre, piezas]. Las piezas dicen qué se dibuja. */
 const TECNICAS = {
   mastectomia: { nombre: "Mastectomía", filas: 6, cols: 4, items: [
@@ -763,26 +744,47 @@ const CLINICOS = {
  }
 };
 
-/* Descripciones de muestra para el mockup; en producción salen de DataIQ */
+/* Las descripciones de los instrumentos, tal cual están en DataIQ
+   (instruments.description, cada una con su fuente en description_source); copiadas el 2026-11-02 */
 const DESCRIPCION = {
-  kelly: "Pinza hemostática de anillos y cremallera, con la mordida estriada; sirve para pinzar vasos y tejidos.",
-  adson: "Pinza hemostática de anillos y cremallera.",
-  mosquito: "Pinza hemostática pequeña, fina y curva; sirve para pinzar vasos de calibre pequeño.",
-  allis: "Pinza de tejido con dientes finos en la punta; sujeta el tejido sin que se deslice.",
-  babcock: "Pinza de tejido con la punta en anillo y sin dientes; sujeta estructuras delicadas sin lesionarlas.",
-  rochester: "Pinza hemostática larga, de anillos y cremallera.",
-  kocher: "Pinza de anillos y cremallera con dientes en la punta; sujeta tejidos firmes.",
-  lahey: "Pinza de anillos y cremallera.",
-  moynihan: "Pinza de anillos y cremallera.",
-  portaagujas: "Sostiene la aguja de sutura con firmeza mientras se sutura; tiene mordida corta y cremallera.",
-  mayo: "Tijera fuerte, de hojas gruesas; corta tejidos firmes y suturas.",
-  metzenbaum: "Tijera larga, de hojas finas; corta y diseca tejidos delicados.",
-  diseccion: "Pinzas de disección: la sin garra, para tejidos delicados; la con garra, con dientes en la punta para tejidos firmes como la piel.",
-  bisturi: "Mango de bisturí con su hoja montada; la hoja hace la incisión y el número del mango dice qué hojas recibe.",
-  farabeuf: "Separador manual de doble extremo; separa los bordes de la herida en los planos superficiales.",
-  senn: "Separador pequeño de doble extremo, con un lado en rastrillo y el otro en hoja; separa tejidos superficiales."
+  "Hoja de bisturí #10": "Hoja de bisturí pequeña, de filo curvo, que se monta en los mangos N.° 3 y N.° 7. Es una de las formas clásicas: sirve para incisiones de distinto tamaño en piel y músculo.",
+  "Hoja de bisturí #10-11": "Hojas pequeñas N.° 10 y N.° 11, que se montan en el mango N.° 3. La N.° 10 tiene el filo curvo y sirve para incisiones en piel y músculo. La N.° 11 es triangular y alargada, con la punta aguda y el filo en su lado más largo: sirve para incisiones punzantes, como abrir un absceso o el sitio de un dren.",
+  "Hoja de bisturí #15": "Hoja de bisturí pequeña, con el filo curvo y corto, que se monta en los mangos N.° 3 y N.° 7. Es la forma más usada para incisiones cortas y precisas, como quitar una lesión de la piel.",
+  "Hoja de bisturí #20": "Hoja de bisturí grande, que se monta en el mango N.° 4. Es como una N.° 10 de mayor tamaño: filo curvo y lomo plano sin filo. Sirve para las incisiones grandes.",
+  "Mango de bisturí N.° 3": "Mango de acero inoxidable, de un solo cuerpo, en el que se monta la hoja de bisturí. El número indica la forma del extremo donde encaja la hoja: el N.° 3 recibe las hojas pequeñas (N.° 10, 11, 12 y 15). Es instrumental de diéresis: con la hoja montada, sirve para hacer las incisiones.",
+  "Mango de bisturí N.° 4": "Mango de acero inoxidable, de un solo cuerpo, en el que se monta la hoja de bisturí. Recibe las hojas grandes (N.° 20, 21 y 22), que no encajan en el N.° 3. Con la hoja montada, sirve para las incisiones grandes.",
+  "Mango de bisturí N.° 7": "Mango de bisturí largo y delgado. Recibe las mismas hojas pequeñas que el N.° 3 (N.° 10, 11, 12 y 15). Sirve para trabajos finos en planos profundos; su uso más común es con la hoja N.° 11, para hacer una punción. Mide de 15 a 16 cm.",
+  "Pinza de Allis": "Pinza de aprehensión con anillos y cremallera, que se queda cerrada sobre el tejido. Sus mandíbulas terminan en una hilera de dientes cortos y finos que encajan entre sí (4 × 5 en el modelo estándar). Sirve para tomar y mantener sujetos tejidos y estructuras durante la operación; aprieta menos que la pinza Kocher. Mide de 14 a 20 cm.",
+  "Pinza de Babcock": "Pinza de aprehensión atraumática, con anillos y cremallera suave. Su punta es ancha, curva y abierta en el centro (fenestrada), sin dientes: rodea y toma estructuras tubulares delicadas, como el intestino, sin aplastarlas. Mide de 16 a 21 cm.",
+  "Pinza de disección con garra": "Pinza de un solo cuerpo, de resorte y sin cremallera, como la de disección sin garra, pero con dientes en la punta que encajan entre sí: uno en una rama entre dos de la otra («1 × 2»). Los dientes agarran el tejido con firmeza y poca presión; se usa en tejidos como la piel. Mide de 14 a 20 cm.",
+  "Pinza de disección sin garra": "Pinza de un solo cuerpo, de resorte y sin cremallera: se cierra al presionar sus ramas y se abre al soltarlas. Sus puntas son estriadas y no tienen dientes, así que toma tejido delicado, gasas y suturas sin dañarlos. También sirve para tomar tejidos durante la disección y para coagular vasos. Mide de 14,5 a 20 cm.",
+  "Pinza de Moynihan": "Pinza larga y curva, de unos 22 a 23 cm, con anillos y mandíbulas estriadas. En los catálogos aparece como pinza para el conducto biliar.",
+  "Pinza Kelly": "Pinza hemostática con anillos y cremallera, recta o curva, de unos 14 cm. Sus mandíbulas no tienen dientes y sus estrías transversales llegan solo a la mitad, desde la punta; eso la distingue de la pinza Crile, estriada en toda la mandíbula. Sirve para pinzar vasos o tejidos y así evitar la hemorragia.",
+  "Pinza Kelly Adson": "Pinza hemostática de Adson, recta o curva, de unos 18 a 19 cm, con anillos y cremallera como las demás pinzas de hemostasia. Sus mandíbulas, de unos 30 mm, son estriadas en sus dos tercios. No es la pinza de disección Adson, que es de aprehensión.",
+  "Pinza Kocher": "Pinza hemostática con anillos y cremallera, recta o curva, de 14 a 22 cm. Sus mandíbulas tienen estrías marcadas y terminan en dientes que encajan entre sí (1 × 2: uno en una rama entre dos de la otra). Los dientes dan un agarre que no se resbala, para tejidos resistentes como la aponeurosis; por eso no se usa en tejido delicado. Sirve para hemostasia, para sujetar tejidos y para sostener gasas.",
+  "Pinza Lahey": "Pinza de Lahey para bocio, con anillos y cremallera, de unos 15 cm. Sujeta y tracciona el tejido firme de la glándula tiroides durante la tiroidectomía. Se fabrica en dos versiones: con tres dientes en cada rama (3 × 3) o con mandíbulas curvas de estrías transversales.",
+  "Pinza Mosquito curva": "Pinza hemostática pequeña y delgada (de Halsted), de unos 12,5 cm, con anillos y cremallera. Es la más pequeña y fina de las pinzas hemostáticas, de mandíbulas finas y curvas. Sirve para pinzar vasos pequeños, para disecciones finas y para tomar tejidos delicados.",
+  "Pinza Rochester": "Pinza hemostática grande y fuerte (Rochester-Péan), con anillos y cremallera, recta o curva, de 16 a 26 cm. Sus mandíbulas no tienen dientes y tienen estrías transversales en todo su largo. Sirve para pinzar tejidos y vasos grandes, y para tomar y disecar estructuras profundas.",
+  "Portaagujas largo": "Portaagujas con anillos y cremallera: sostiene la aguja mientras se sutura. En el modelo Mayo-Hegar, para agujas estándar, sus mandíbulas tienen estrías marcadas y una ranura a lo largo que evita dañar la aguja; la cremallera deja ajustar la presión. Se fabrica de 15 a 23 cm.",
+  "Separador de Farabeuf": "Separador manual, de un solo cuerpo y doble extremo: en cada punta tiene una lámina doblada en ángulo, de distinto tamaño (24 × 16 y 28 × 16 mm). Mide unos 15 cm y viene en pares. Retrae la piel, el tejido subcutáneo y el músculo para que el cirujano vea el campo operatorio.",
+  "Separador de Senn Miller": "Separador manual pequeño, de doble extremo: en un extremo tiene tres puntas romas y curvas, y en el otro, una lámina delgada doblada en ángulo. Mide unos 16 cm. Retrae la piel, el tejido subcutáneo o el músculo.",
+  "Tijera de Mayo": "Tijera de hojas fuertes y relativamente cortas, con puntas romas, recta o curva, de 15 a 23 cm. Corta por cizalla. La recta se usa para cortar suturas y apósitos; la curva, para cortar tejido resistente, como la aponeurosis.",
+  "Tijera de Metzenbaum": "Tijera delgada, de puntas romas, curva o recta, de 14 a 23 cm: ramas largas y hojas cortas y finas. Es la tijera para la disección fina de los tejidos. No se usa para cortar suturas, porque eso la desafila; el material se corta con la tijera de Mayo."
 };
-const descripcion = (tipos) => DESCRIPCION[tipos[0].replace(/-garra$/, "").replace(/^bisturi\d$/, "bisturi")];
+/* Los instrumentos de cada objeto con su nombre de DataIQ: el mango con su hoja, las dos pinzas de disección */
+function componentes(item) {
+  const [, , , nombre, tipos] = item;
+  const bisturi = nombre.match(/^Mango de bisturí N\.° (\d+) y hoja (#[\d-]+)$/);
+  if (bisturi) return [`Mango de bisturí N.° ${bisturi[1]}`, `Hoja de bisturí ${bisturi[2]}`];
+  if (tipos[0] === "diseccion-garra") return ["Pinza de disección con garra", "Pinza de disección sin garra"];
+  return [nombre];
+}
+const descripcion = (item) => componentes(item).map((n) => DESCRIPCION[n]).join(" ");
+/* La primera oración y el resto: se corta donde termina una oración (punto, espacio y mayúscula), como la app */
+function primeraOracion(texto) {
+  const fin = /\.\s+(?=[«¿¡(]?[A-ZÁÉÍÓÚÜÑ])/u.exec(texto);
+  return fin ? { inicio: texto.slice(0, fin.index + 1), resto: texto.slice(fin.index + fin[0].length) } : { inicio: texto, resto: "" };
+}
 
 /* Palabras con las que el chat de este prototipo reconoce cada cosa (las respuestas son plantillas) */
 const NOMBRES_TECNICA = { mastectomia: ["mastectom"], tiroidectomia: ["tiroid"], colecistectomia: ["colecist", "vesicula"], hemicolectomia: ["hemicolect", "colectom"], eventrorrafia: ["eventro", "hernia incisional"] };
@@ -799,7 +801,6 @@ const $ = (s) => document.querySelector(s);
 const ide = $("#ide"), lienzo = $("#lienzo"), canvas = $("#escena");
 let tecnicaActual = "mastectomia";
 let seleccion = null;
-let escala = "celda";
 let chatCaido = false;
 const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -815,23 +816,50 @@ let controles;
 const MESA = { ancho: 0.56, fondo: 0.40, alto: 0.92 };   // provisional: falta medir la mesa del laboratorio
 const raiz = new THREE.Group(); scene.add(raiz);
 const piezasGrupo = new THREE.Group(); raiz.add(piezasGrupo);
-let celdaHalo, rejilla;
 const objetos = [];   // { item, grupo, base, materiales }
 
-function texturaTela() {
-  const c = document.createElement("canvas"); c.width = c.height = 256;
+/* Los dobleces del empaque de la funda: líneas claras y oscuras, por posición sobre la bandeja */
+function texturaDobleces() {
+  const c = document.createElement("canvas"); c.width = c.height = 512;
   const g = c.getContext("2d");
-  g.fillStyle = "#1d7564"; g.fillRect(0, 0, 256, 256);
-  const img = g.getImageData(0, 0, 256, 256);
-  for (let i = 0; i < img.data.length; i += 4) {
-    const n = (Math.random() - .5) * 22;
-    img.data[i] += n; img.data[i + 1] += n; img.data[i + 2] += n;
-  }
-  g.putImageData(img, 0, 0);
-  const t = new THREE.CanvasTexture(c);
-  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 2);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
+  g.fillStyle = "#ececec"; g.fillRect(0, 0, 512, 512);
+  const doblez = (x, y, w, h) => {
+    g.fillStyle = "rgba(0,0,0,.07)"; g.fillRect(x, y, w, h);
+    g.fillStyle = "rgba(255,255,255,.9)"; g.fillRect(x + (w > h ? 0 : w), y + (w > h ? h : 0), w, h);
+  };
+  doblez(171, 0, 2, 512); doblez(341, 0, 2, 512); doblez(0, 255, 512, 2);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+/* La funda, como en la app (viewer/drape.ts): una sola tela tensa sobre la bandeja que pasa
+   redondeada por los bordes, baja unos centímetros por tres lados y cae por el extremo libre
+   con pliegues que crecen hacia abajo */
+function perfil(mitad, borde, alto, bajaInicio, bajaFin, pasosInicio, pasosFin) {
+  const pts = [], lado = mitad + borde, ARCO = 8, PLANO = 24;
+  for (let i = 0; i < pasosInicio; i++) { const b = bajaInicio - ((bajaInicio - borde) * i) / pasosInicio; pts.push({ en: -lado, alto: alto - b, baja: b }); }
+  for (let i = 0; i <= ARCO; i++) { const a = Math.PI - (Math.PI / 2) * (i / ARCO); pts.push({ en: -mitad + borde * Math.cos(a), alto: alto - borde + borde * Math.sin(a), baja: 0 }); }
+  for (let i = 1; i < PLANO; i++) pts.push({ en: -mitad + (2 * mitad * i) / PLANO, alto, baja: 0 });
+  for (let i = 0; i <= ARCO; i++) { const a = (Math.PI / 2) * (1 - i / ARCO); pts.push({ en: mitad + borde * Math.cos(a), alto: alto - borde + borde * Math.sin(a), baja: 0 }); }
+  for (let i = 1; i <= pasosFin; i++) { const b = borde + ((bajaFin - borde) * i) / pasosFin; pts.push({ en: lado, alto: alto - b, baja: b }); }
+  return pts;
+}
+function geometriaFunda(ancho, fondo, alto, borde, rodea, cae) {
+  const enX = perfil(ancho / 2, borde, alto, rodea, cae, 4, 40), enZ = perfil(fondo / 2, borde, alto, rodea, rodea, 4, 4);
+  const pos = [], uv = [], idx = [];
+  enX.forEach((x) => enZ.forEach((z) => {
+    const cuelga = x.en > 0 && x.baja > borde ? (x.baja - borde) / (cae - borde) : 0;
+    const pliegue = .012 * Math.pow(cuelga, .7) * Math.sin((2 * Math.PI * z.en) / .085 + .6);
+    const vuelo = .025 * cuelga * cuelga;
+    const onda = z.baja > 0 ? .0015 * Math.sin((2 * Math.PI * x.en) / .11) : 0;
+    pos.push(x.en + pliegue + vuelo, x.alto + z.alto - alto, z.en + Math.sign(z.en) * onda);
+    uv.push((x.en + ancho / 2) / ancho, (z.en + fondo / 2) / fondo);
+  }));
+  const cols = enZ.length;
+  for (let i = 0; i < enX.length - 1; i++) for (let j = 0; j < cols - 1; j++) { const a = i * cols + j, b = a + cols; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
 }
 function texturaSombra() {
   const c = document.createElement("canvas"); c.width = c.height = 128;
@@ -846,43 +874,32 @@ const acero = () => new THREE.MeshStandardMaterial({ color: 0xb4bec3, metalness:
 const aceroOscuro = () => new THREE.MeshStandardMaterial({ color: 0x7d8a90, metalness: 1, roughness: 0.32, envMapIntensity: 1.2, transparent: true, opacity: 1 });
 const sombraTex = texturaSombra();
 
+// La bandeja de acero (fondo, grosor y reborde) y la funda tensa sobre el reborde, como en la app
+const BANDEJA = { fondo: .006, pared: .005, reborde: .009 };
+const FUNDA_ARRIBA = BANDEJA.reborde + .001, SUPERFICIE = FUNDA_ARRIBA + .0006;
 function construirMesa() {
-  const inox = new THREE.MeshStandardMaterial({ color: 0xb9c3c7, metalness: 0.85, roughness: 0.35 });
-  const tela = new THREE.MeshStandardMaterial({ map: texturaTela(), roughness: 0.95, metalness: 0, envMapIntensity: .35 });
-  // Bandeja y funda
-  const bandeja = new THREE.Mesh(new THREE.BoxGeometry(MESA.ancho + .02, .012, MESA.fondo + .02), inox);
-  bandeja.position.y = -0.008; raiz.add(bandeja);
-  const funda = new THREE.Mesh(new THREE.BoxGeometry(MESA.ancho + .03, .004, MESA.fondo + .03), tela);
-  raiz.add(funda);
-  // La funda cae por los costados
-  const canto = new THREE.MeshStandardMaterial({ color: 0x0e463c, roughness: .95, metalness: 0, envMapIntensity: .3 });
-  const caida = (w, h, x, z, ry) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, .003), canto); m.position.set(x, -h / 2, z); m.rotation.y = ry; raiz.add(m); };
-  caida(MESA.ancho + .03, .06, 0, (MESA.fondo + .03) / 2, 0);
-  caida(MESA.ancho + .03, .06, 0, -(MESA.fondo + .03) / 2, 0);
-  caida(MESA.fondo + .03, .06, (MESA.ancho + .03) / 2, 0, Math.PI / 2);
-  caida(MESA.fondo + .03, .06, -(MESA.ancho + .03) / 2, 0, Math.PI / 2);
-  // Pie de la mesa de Mayo
-  const poste = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, MESA.alto - .1, 24), inox);
-  poste.position.set(-MESA.ancho / 2 + .06, -(MESA.alto) / 2 - .06, -MESA.fondo / 2 + .08); raiz.add(poste);
-  const base = new THREE.Mesh(new THREE.BoxGeometry(.5, .02, .07), inox);
-  base.position.set(-MESA.ancho / 2 + .06, -MESA.alto + .01, -MESA.fondo / 2 + .08); raiz.add(base);
+  const inox = new THREE.MeshStandardMaterial({ color: 0xc3ccd0, metalness: .9, roughness: .28 });
+  // Tela de polipropileno: mate, con el brillo suave de la tela en los pliegues
+  const tela = new THREE.MeshPhysicalMaterial({ color: 0x2a78c2, map: texturaDobleces(), roughness: .7, metalness: 0, sheen: .35, sheenRoughness: .5, sheenColor: 0x9fd0ff, envMapIntensity: .5, side: THREE.DoubleSide });
+  const poner = (m, x, y, z) => { m.position.set(x, y, z); raiz.add(m); };
+  const W = MESA.ancho + 2 * BANDEJA.pared, D = MESA.fondo + 2 * BANDEJA.pared;
+  poner(new THREE.Mesh(new THREE.BoxGeometry(W, BANDEJA.fondo, D), inox), 0, -BANDEJA.fondo / 2, 0);
+  const reborde = (w, d, x, z) => poner(new THREE.Mesh(new THREE.BoxGeometry(w, BANDEJA.reborde, d), inox), x, BANDEJA.reborde / 2, z);
+  reborde(W, BANDEJA.pared, 0, (MESA.fondo + BANDEJA.pared) / 2);
+  reborde(W, BANDEJA.pared, 0, -(MESA.fondo + BANDEJA.pared) / 2);
+  reborde(BANDEJA.pared, MESA.fondo, (MESA.ancho + BANDEJA.pared) / 2, 0);
+  reborde(BANDEJA.pared, MESA.fondo, -(MESA.ancho + BANDEJA.pared) / 2, 0);
+  // El pie, en una esquina: la barra que sostiene la bandeja, el poste y la base
+  const pieX = -MESA.ancho / 2 + .06, pieZ = -MESA.fondo / 2 + .08, barraY = -BANDEJA.fondo - .006;
+  poner(new THREE.Mesh(new THREE.BoxGeometry(MESA.ancho * .85, .012, .03), inox), 0, barraY, pieZ);
+  const posteArriba = barraY - .006, posteAbajo = -MESA.alto + .02;
+  poner(new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, posteArriba - posteAbajo, 24), inox), pieX, (posteArriba + posteAbajo) / 2, pieZ);
+  poner(new THREE.Mesh(new THREE.BoxGeometry(.5, .02, .07), inox), pieX + .2, -MESA.alto + .01, pieZ);
   // Sombra de contacto en el piso
   const piso = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.2), new THREE.MeshBasicMaterial({ map: sombraTex, transparent: true, depthWrite: false }));
-  piso.rotation.x = -Math.PI / 2; piso.position.y = -MESA.alto; raiz.add(piso);
-  // Celda señalada
-  celdaHalo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xd3e6f2, transparent: true, opacity: 0, depthWrite: false }));
-  celdaHalo.rotation.x = -Math.PI / 2; celdaHalo.position.y = .0026; raiz.add(celdaHalo);
-}
-
-function construirRejilla(filas, cols) {
-  if (rejilla) { raiz.remove(rejilla); rejilla.geometry.dispose(); }
-  const p = [], w = MESA.ancho, d = MESA.fondo, y = .0024;
-  for (let c = 0; c <= cols; c++) { const x = -w / 2 + c * w / cols; p.push(x, y, -d / 2, x, y, d / 2); }
-  for (let f = 0; f <= filas; f++) { const z = -d / 2 + f * d / filas; p.push(-w / 2, y, z, w / 2, y, z); }
-  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
-  rejilla = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x4c9a88, transparent: true, opacity: .55 }));
-  rejilla.visible = $("#op-rejilla") ? $("#op-rejilla").checked : true;
-  raiz.add(rejilla);
+  piso.rotation.x = -Math.PI / 2; poner(piso, 0, -MESA.alto, 0);
+  // La funda: tensa encima, baja 3,5 cm por tres lados y cae 60 cm por el extremo libre
+  poner(new THREE.Mesh(geometriaFunda(W, D, FUNDA_ARRIBA, .006, .035, .6), tela), 0, 0, 0);
 }
 
 /* ---------- Instrumentos armados con formas simples (los GLB reales los modela Guebriel) ----------
@@ -996,7 +1013,31 @@ function texturaNumero(n) {
 }
 function celda(t, fila, col) {
   const w = MESA.ancho / t.cols, d = MESA.fondo / t.filas;
-  return { x: -MESA.ancho / 2 + (col - .5) * w, z: -MESA.fondo / 2 + (fila - .5) * d, w, d };
+  return { x: -MESA.ancho / 2 + (col - .5) * w, z: -MESA.fondo / 2 + (fila - .5) * d };
+}
+/* Cada pieza, a tamaño real, parte del centro de su celda y se corre lo justo para quedar
+   dentro de la mesa y no tapar a otra, como en la app (domain/arrangement.ts) */
+const SEPARACION = .003, MARGEN = .01;
+function dentro(p, q) {
+  const lim = (v, l) => (l <= 0 ? 0 : Math.min(l, Math.max(-l, v)));
+  return { x: lim(q.x, MESA.ancho / 2 - MARGEN - p.mx), z: lim(q.z, MESA.fondo / 2 - MARGEN - p.mz) };
+}
+function acomodar(piezas) {
+  const pts = piezas.map((p) => dentro(p, p));
+  for (let vuelta = 0; vuelta < 100; vuelta++) {
+    let movio = false;
+    for (let i = 0; i < piezas.length; i++) for (let j = i + 1; j < piezas.length; j++) {
+      const a = pts[i], b = pts[j];
+      const sx = piezas[i].mx + piezas[j].mx + SEPARACION - Math.abs(a.x - b.x);
+      const sz = piezas[i].mz + piezas[j].mz + SEPARACION - Math.abs(a.z - b.z);
+      if (sx <= 1e-9 || sz <= 1e-9) continue;
+      if (sz <= sx) { const k = Math.sign(b.z - a.z) || 1; a.z -= k * sz / 2; b.z += k * sz / 2; }
+      else { const k = Math.sign(b.x - a.x) || 1; a.x -= k * sx / 2; b.x += k * sx / 2; }
+      pts[i] = dentro(piezas[i], a); pts[j] = dentro(piezas[j], b); movio = true;
+    }
+    if (!movio) break;
+  }
+  return pts;
 }
 
 function armarMesa(clave) {
@@ -1004,37 +1045,39 @@ function armarMesa(clave) {
   for (const o of objetos) { o.grupo.traverse((n) => { if (n.geometry) n.geometry.dispose(); }); o.materiales.forEach((mm) => mm.dispose()); }
   piezasGrupo.children.forEach((ch) => { if (ch.isSprite) ch.material.dispose(); });
   piezasGrupo.clear(); objetos.length = 0;
-  construirRejilla(t.filas, t.cols);
-  for (const item of t.items) {
-    const [num, fila, col, nombre, tipos] = item;
-    const c = celda(t, fila, col);
+  // Cada objeto armado en el origen; los de varios instrumentos, uno junto a otro
+  const armados = t.items.map((item) => {
     const grupo = new THREE.Group(), materiales = [];
-    tipos.forEach((tipo, i) => {
+    let z = 0;
+    item[4].forEach((tipo) => {
       const { g, mats } = crearPieza(tipo);
-      const L = LARGO[tipo];
-      const s = escala === "celda" ? Math.min(1, (c.w * .9) / L) : 1;
-      g.scale.setScalar(s);
-      if (tipos.length > 1) g.position.z = (i - (tipos.length - 1) / 2) * Math.min(.012, c.d * .32);
-      g.position.y = .0026;
+      const caja = new THREE.Box3().setFromObject(g), tam = caja.getSize(new THREE.Vector3());
+      g.position.set(0, SUPERFICIE, z - caja.min.z); z += tam.z + .004;
       grupo.add(g); materiales.push(...mats);
     });
+    const caja = new THREE.Box3().setFromObject(grupo);
+    return { item, grupo, materiales, centro: caja.getCenter(new THREE.Vector3()), tam: caja.getSize(new THREE.Vector3()) };
+  });
+  const puntos = acomodar(armados.map((a) => {
+    const c = celda(t, a.item[1], a.item[2]);
+    return { x: c.x + a.centro.x, z: c.z + a.centro.z, mx: a.tam.x / 2, mz: a.tam.z / 2 };
+  }));
+  armados.forEach(({ item, grupo, materiales, centro, tam }, i) => {
     const sombra = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: sombraTex, transparent: true, opacity: .55, depthWrite: false }));
-    const lmax = Math.max(...tipos.map((tp) => LARGO[tp] * (escala === "celda" ? Math.min(1, (c.w * .9) / LARGO[tp]) : 1)));
-    sombra.scale.set(lmax * 1.15, Math.max(.03, c.d * .6), 1); sombra.rotation.x = -Math.PI / 2; sombra.position.y = .0025;
+    sombra.scale.set(tam.x * 1.15, Math.max(.03, tam.z * 1.6), 1); sombra.rotation.x = -Math.PI / 2;
+    sombra.position.set(centro.x, SUPERFICIE - .0001, centro.z);
     grupo.add(sombra); materiales.push(sombra.material);
-    grupo.position.set(c.x, 0, c.z);
+    grupo.position.set(puntos[i].x - centro.x, 0, puntos[i].z - centro.z);
     grupo.userData.item = item;
     piezasGrupo.add(grupo);
-    // Número en la esquina libre de la celda, como en el diagrama de DataIQ
-    const num3d = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaNumero(num), transparent: true, depthWrite: false, depthTest: false, sizeAttenuation: false }));
+    // El número va junto a la pieza, del lado de los anillos (−X), como en la app
+    const num3d = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaNumero(item[0]), transparent: true, depthWrite: false, depthTest: false, sizeAttenuation: false }));
     num3d.renderOrder = 5;
-    const esquina = Math.min(.012, c.w * .16, c.d * .26);
-    num3d.position.set(c.x - c.w / 2 + esquina, .006, c.z - c.d / 2 + esquina);
+    num3d.position.set(puntos[i].x - tam.x / 2 - .012, SUPERFICIE + .004, puntos[i].z);
     num3d.userData.numero = true;
-    num3d.visible = $("#op-numeros").checked;
     piezasGrupo.add(num3d);
-    objetos.push({ item, grupo, base: c, materiales, sombra });
-  }
+    objetos.push({ item, grupo, base: { x: puntos[i].x, z: puntos[i].z }, materiales, sombra });
+  });
   $("#cifra").textContent = t.items.length;
   escalarNumeros();
   pintarLeyenda(t);
@@ -1095,7 +1138,7 @@ const escritorio = () => innerWidth > 820;
 function ubicarInsignia() {
   const ins = $("#insignia");
   if (!seleccion) { ins.classList.remove("visible"); return; }
-  const p = new THREE.Vector3(); seleccion.grupo.getWorldPosition(p); p.y += .03;
+  const p = new THREE.Vector3(seleccion.base.x, seleccion.grupo.position.y + SUPERFICIE + .02, seleccion.base.z);
   p.project(camara);
   const r = canvas.getBoundingClientRect(), lr = lienzo.getBoundingClientRect();
   ins.style.transform = `translate(${(p.x * .5 + .5) * r.width + (r.left - lr.left)}px, ${(-p.y * .5 + .5) * r.height + (r.top - lr.top)}px)`;
@@ -1110,11 +1153,6 @@ function marcar(obj, mover = true, ficha = false) {
     const tenue = obj && o !== obj;
     o.materiales.forEach((mm) => { if (mm.map === sombraTex) return; mm.opacity = tenue ? .38 : 1; mm.emissive && mm.emissive.setHex(o === obj ? 0x1b5f86 : 0x000000); mm.emissiveIntensity = o === obj ? .22 : 0; });
   }
-  if (obj) {
-    celdaHalo.position.x = obj.base.x; celdaHalo.position.z = obj.base.z;
-    celdaHalo.scale.set(obj.base.w * .96, obj.base.d * .96, 1);
-    celdaHalo.material.opacity = .55;
-  } else celdaHalo.material.opacity = 0;
   document.querySelectorAll(".pieza").forEach((b) => b.setAttribute("aria-current", obj && +b.dataset.num === obj.item[0] ? "true" : "false"));
   const fila = document.querySelector('.pieza[aria-current="true"]');
   if (fila && !$("#leyenda").hidden) fila.scrollIntoView({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
@@ -1131,35 +1169,55 @@ function marcar(obj, mover = true, ficha = false) {
 /* ---------- Leyenda, cabeza y ficha ---------- */
 function pintarLeyenda(t) {
   const ol = $("#lista"); ol.innerHTML = "";
-  for (const [num, fila, col, nombre] of t.items) {
+  for (const [num, , , nombre] of t.items) {
     const li = document.createElement("li");
     const b = document.createElement("button");
     b.type = "button"; b.className = "pieza"; b.dataset.num = num; b.setAttribute("aria-current", "false");
-    b.innerHTML = `<span class="num">${num}</span><span><strong></strong><span>Fila ${fila} · Columna ${col}</span></span>`;
+    b.innerHTML = `<span class="num">${num}</span><span><strong></strong></span>`;
     b.querySelector("strong").textContent = nombre;
-    b.addEventListener("click", () => marcar(objetos.find((o) => o.item[0] === num), true, true));
+    b.addEventListener("click", () => {
+      marcar(objetos.find((o) => o.item[0] === num), true, true);
+      if (!escritorio()) { $("#leyenda").hidden = true; $("#leyenda-boton").setAttribute("aria-expanded", "false"); }
+    });
     li.appendChild(b); ol.appendChild(li);
   }
 }
 function pintarCabeza(clave) {
   const t = TECNICAS[clave];
   $("#tec-nombre").textContent = t.nombre;
-  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía general";
+  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía General";
   $("#tecnica").value = clave;
-  $("#leyenda-linea").textContent = `${t.items.length} objetos. Toca uno para ubicarlo.`;
-  $("#ficha-enlace").href = `tecnica.html#${clave}`;
+  $("#leyenda-linea").textContent = "Toca un número para ubicarlo.";
   $("#sin3d-enlace").href = `tecnica.html#${clave}`;
   $("#sin3d-texto").textContent = `La mesa de Mayo de ${t.nombre} se puede ver en DataIQ, con cada instrumento en su celda. La leyenda sigue disponible.`;
   canvas.setAttribute("aria-label", `Mesa de Mayo de ${t.nombre} en 3D`);
 }
+let fichaObjeto = null, fichaCompleta = false;
+function pintarFicha() {
+  const nombres = componentes(fichaObjeto.item), caja = $("#ficha-texto");
+  caja.textContent = "";
+  let hayMas = false;
+  for (const nombre of nombres) {
+    const { inicio, resto } = primeraOracion(DESCRIPCION[nombre] ?? "");
+    if (resto) hayMas = true;
+    const p = document.createElement("p");
+    if (nombres.length > 1) { const b = document.createElement("strong"); b.textContent = `${nombre}. `; p.appendChild(b); }
+    p.appendChild(document.createTextNode(inicio ? (fichaCompleta && resto ? `${inicio} ${resto}` : inicio) : "Sin descripción en DataIQ."));
+    caja.appendChild(p);
+  }
+  const mas = $("#ficha-mas");
+  mas.hidden = !hayMas;
+  mas.setAttribute("aria-expanded", String(fichaCompleta));
+  mas.firstElementChild.textContent = fichaCompleta ? "Ver menos" : "Ver más";
+}
 function abrirFicha(obj) {
-  const [num, fila, col, nombre] = obj.item;
-  $("#ficha-num").textContent = num;
-  $("#ficha-nombre").textContent = nombre;
-  $("#ficha-lugar").textContent = `Fila ${fila} · Columna ${col}`;
-  $("#ficha-texto").textContent = descripcion(obj.item[4]);
+  fichaObjeto = obj; fichaCompleta = false;
+  $("#ficha-num").textContent = obj.item[0];
+  $("#ficha-nombre").textContent = obj.item[3];
+  pintarFicha();
   $("#ficha").hidden = false; ide.classList.add("con-ficha");
 }
+$("#ficha-mas").addEventListener("click", () => { fichaCompleta = !fichaCompleta; pintarFicha(); });
 function cerrarFicha() { $("#ficha").hidden = true; ide.classList.remove("con-ficha"); }
 $("#ficha-cerrar").addEventListener("click", () => marcar(null, false));
 
@@ -1198,7 +1256,7 @@ function responder(texto) {
     const enClave = tecnica || abierta;
     if (!enClave) {
       const donde = Object.keys(TECNICAS).filter((k) => buscarPieza(k, pieza));
-      const cuantas = donde.length === Object.keys(TECNICAS).length ? "las cinco mesas de Mayo de Cirugía general" : `${donde.length} de las mesas de Mayo de Cirugía general`;
+      const cuantas = donde.length === Object.keys(TECNICAS).length ? "las cinco mesas de Mayo de Cirugía General" : `${donde.length} de las mesas de Mayo de Cirugía General`;
       return { texto: `Ese instrumento está en ${cuantas}. ¿En cuál de estas técnicas?`, accion: "Aclarar · falta la técnica", opciones: donde.map((k) => [TECNICAS[k].nombre, () => { abrirTecnica(k); responderCon(responder(texto)); }]) };
     }
     const item = buscarPieza(enClave, pieza);
@@ -1211,8 +1269,8 @@ function responder(texto) {
     const obj = objetos.find((o) => o.item === item);
     setTimeout(() => marcar(obj, true, describe), 60);
     return describe
-      ? { titulo: item[3], texto: `${descripcion(item[4])} En la mesa de Mayo de ${TECNICAS[enClave].nombre} es el número ${item[0]}: fila ${item[1]}, columna ${item[2]}.`, accion: `Describir · ${item[3]} · descripción de muestra` }
-      : { texto: `La ${item[3]} es el número ${item[0]} de la mesa de Mayo de ${TECNICAS[enClave].nombre}: fila ${item[1]}, columna ${item[2]}.`, accion: `Resaltar · ${item[3]}`, opciones: [["¿Qué es?", () => enviar(`¿Qué es la ${item[3].toLowerCase()}?`)]] };
+      ? { titulo: item[3], texto: `${descripcion(item)} En la mesa de Mayo de ${TECNICAS[enClave].nombre} es el número ${item[0]}.`, accion: `Describir · ${item[3]}` }
+      : { texto: `La ${item[3]} es el número ${item[0]} de la mesa de Mayo de ${TECNICAS[enClave].nombre}.`, accion: `Resaltar · ${item[3]}`, opciones: [["¿Qué es?", () => enviar(`¿Qué es la ${item[3].toLowerCase()}?`)]] };
   }
   if (tecnica && !mostrar) {
     return { texto: `Esa información no está en DataIQ. De ${TECNICAS[tecnica].nombre} se puede consultar para qué sirve, sus indicaciones, complicaciones, anestesia y posición del paciente, y el instrumental de su mesa de Mayo.`, accion: "Sin respuesta", opciones: opcionesTecnica(tecnica) };
@@ -1308,22 +1366,6 @@ document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("clic
   viajar(controles.target.clone().add(dir.setLength(largo)), controles.target.clone(), 350);
 }));
 $("[data-centrar]").addEventListener("click", () => { marcar(null, false); const [p, o] = encuadre(vistaActual); viajar(p, o); });
-document.querySelectorAll("[data-escala]").forEach((b) => b.addEventListener("click", () => {
-  escala = b.dataset.escala;
-  document.querySelectorAll("[data-escala]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-  const num = seleccion && seleccion.item[0];
-  armarMesa(tecnicaActual);
-  if (num) marcar(objetos.find((o) => o.item[0] === num), false, !$("#ficha").hidden);
-}));
-
-/* Opciones de vista */
-$("#opciones-boton").addEventListener("click", () => {
-  const abrir = $("#opciones-vista").hidden;
-  $("#opciones-vista").hidden = !abrir; $("#opciones-boton").setAttribute("aria-expanded", String(abrir));
-});
-$("#op-numeros").addEventListener("change", () => { piezasGrupo.children.forEach((ch) => { if (ch.userData.numero) ch.visible = $("#op-numeros").checked; }); pedirCuadro(); });
-$("#op-rejilla").addEventListener("change", () => { if (rejilla) rejilla.visible = $("#op-rejilla").checked; pedirCuadro(); });
-
 /* Leyenda plegable */
 $("#leyenda-boton").addEventListener("click", () => {
   const abierta = $("#leyenda").hidden;
@@ -1391,7 +1433,7 @@ function reiniciarChat() { $("#mensajes").innerHTML = ""; $("#ultima").hidden = 
 function aplicarEstado(estado) {
   chatCaido = estado === "sin-chat";
   ide.dataset.chat = chatCaido ? "caido" : "ok";
-  $("#conexion").textContent = chatCaido ? "No disponible" : "Conectado";
+  $("#conexion").hidden = !chatCaido;
   $("#aviso-chat").hidden = !chatCaido;
   $("#pregunta").disabled = chatCaido; $("#enviar").disabled = chatCaido;
   $("#pregunta").placeholder = chatCaido ? "El chat no está disponible" : escritorio() ? "Pregunta por una técnica o un instrumento" : "Pregunta por una técnica";
@@ -1430,9 +1472,9 @@ function aplicarEstado(estado) {
 function armarVacia() {
   for (const o of objetos) o.grupo.traverse((n) => { if (n.geometry) n.geometry.dispose(); });
   piezasGrupo.clear(); objetos.length = 0; seleccion = null;
-  construirRejilla(1, 1); celdaHalo.material.opacity = 0; cerrarFicha();
+  cerrarFicha();
   $("#tec-nombre").textContent = "Explorar en 3D";
-  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía general";
+  $("#tec-meta").textContent = "Mesa de Mayo · Cirugía General";
   $("#tecnica").value = ""; $("#cifra").textContent = "0";
   $("#lista").innerHTML = ""; $("#leyenda-linea").textContent = "Abre una técnica para ver su leyenda.";
   $("#leyenda").hidden = true; $("#leyenda-boton").setAttribute("aria-expanded", "false"); $("#leyenda-boton").disabled = true;
@@ -1451,14 +1493,14 @@ if (renderer) {
   const sol = new THREE.DirectionalLight(0xffffff, .95); sol.position.set(.4, 1.2, .6); scene.add(sol);
   controles = new OrbitControls(camara, canvas);
   controles.enableDamping = false; controles.enablePan = false;
-  controles.minDistance = .22; controles.maxDistance = 2.2; controles.maxPolarAngle = 1.32;
+  controles.minDistance = .15; controles.maxDistance = 2.2; controles.maxPolarAngle = 1.32;
+  controles.zoomToCursor = true; controles.screenSpacePanning = false; controles.maxTargetRadius = .45;
   controles.addEventListener("change", () => { pedirCuadro(); $("#pista").classList.add("oculta"); });
   construirMesa();
   ajustarTamano();
   const [p, o] = encuadre("3d"); camara.position.copy(p); controles.target.copy(o);
 } else {
   controles = { target: new THREE.Vector3(), update() {}, minDistance: 0, maxDistance: 1 };
-  celdaHalo = { material: { opacity: 0 }, position: {}, scale: { set() {} } };
 }
 $("#hueco-prototipo").replaceWith($("#tpl-prototipo").content.cloneNode(true));
 if (!escritorio()) { const caja = document.createElement("div"); caja.className = "proto-movil"; caja.appendChild($(".prototipo")); $("#chat").appendChild(caja); }
@@ -1488,7 +1530,7 @@ function cerrarHoja() {
 $("#hoja-velo").addEventListener("click", cerrarHoja);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarHoja(); });
 for (const [select, titulo, sub, etiqueta] of [
-  [$("#tecnica"), "Técnica", "Mesa de Mayo · Cirugía general", "Cambiar técnica"],
+  [$("#tecnica"), "Técnica", "Mesa de Mayo · Cirugía General", "Cambiar técnica"],
   [$("#estado"), "Estado del prototipo", "Solo para el mockup", "Cambiar estado del prototipo"],
 ]) {
   const b = document.createElement("button");
