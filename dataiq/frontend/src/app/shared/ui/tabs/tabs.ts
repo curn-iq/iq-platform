@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
   afterRenderEffect,
@@ -8,6 +9,7 @@ import {
   inject,
   input,
   Injector,
+  output,
   signal,
   viewChild,
   viewChildren,
@@ -16,17 +18,30 @@ import { Router, RouterLink } from '@angular/router';
 import { REDUCED_MOTION_QUERY, mediaQuery } from '../../media-query';
 import { tabIndexAfterEvent } from './tab-keys';
 
-/** Una pestaña: cada una es un enlace, así que la URL dice cuál está abierta. */
+/** La cifra de una pestaña, en un círculo `marca`: `label` es lo que dice para quien no la ve. */
+export interface TabCount {
+  readonly value: number;
+  readonly label: string;
+}
+
+/**
+ * Una pestaña. Con `link` es un enlace, así que la URL dice cuál está abierta; sin `link` es un
+ * botón y quien use las pestañas decide cuál está abierta con `(chosen)`.
+ */
 export interface TabItem {
   /** Identifica la pestaña; da el `id` del enlace (`tab-<key>`) y el de su hoja (`panel-<key>`). */
   readonly key: string;
   readonly label: string;
-  /** A dónde lleva, como los comandos de `routerLink`. */
-  readonly link: readonly unknown[];
+  /** A dónde lleva, como los comandos de `routerLink`. Sin él, la pestaña es un botón. */
+  readonly link?: readonly unknown[];
   /** Lleva un candado: sin cuenta solo se ve una vista previa. */
   readonly locked?: boolean;
   /** `'preserve'` conserva la consulta de la URL al pasar a la pestaña (p. ej. `?volver=`). */
   readonly queryParamsHandling?: 'preserve' | 'merge';
+  /** Una cifra junto al nombre, en un círculo. */
+  readonly count?: TabCount;
+  /** Una nota junto al nombre, en texto atenuado («sin cambios»). Si hay `count`, no se muestra. */
+  readonly note?: string;
 }
 
 /**
@@ -38,7 +53,7 @@ export interface TabItem {
  */
 @Component({
   selector: 'app-tabs',
-  imports: [RouterLink],
+  imports: [NgTemplateOutlet, RouterLink],
   templateUrl: './tabs.html',
   styleUrl: './tabs.scss',
   host: { '(window:resize)': 'measure()' },
@@ -50,6 +65,8 @@ export class Tabs {
   readonly tabs = input.required<readonly TabItem[]>();
   /** El `key` de la pestaña abierta. */
   readonly current = input.required<string>();
+  /** Se eligió una pestaña sin enlace (con un clic o con el teclado): su `key`. */
+  readonly chosen = output<string>();
 
   protected readonly currentIndex = computed(() =>
     this.tabs().findIndex((tab) => tab.key === this.current()),
@@ -59,7 +76,7 @@ export class Tabs {
   private readonly injector = inject(Injector);
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
   private readonly list = viewChild.required<ElementRef<HTMLElement>>('list');
-  private readonly links = viewChildren<ElementRef<HTMLAnchorElement>>('tab');
+  private readonly links = viewChildren<ElementRef<HTMLElement>>('tabElement');
 
   protected readonly lineLeft = signal(0);
   protected readonly lineWidth = signal(0);
@@ -91,7 +108,11 @@ export class Tabs {
     event.preventDefault();
     // El enlace es el mismo elemento antes y después de navegar: el foco puede pasar ya
     this.links()[target].nativeElement.focus();
-    const { link, queryParamsHandling } = this.tabs()[target];
+    const { key, link, queryParamsHandling } = this.tabs()[target];
+    if (!link) {
+      this.chosen.emit(key);
+      return;
+    }
     void (queryParamsHandling
       ? this.router.navigate([...link], { queryParamsHandling })
       : this.router.navigate([...link]));

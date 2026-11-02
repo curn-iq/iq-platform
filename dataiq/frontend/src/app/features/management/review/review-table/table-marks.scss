@@ -1,0 +1,62 @@
+// Marcas de la comparación de mesas: ver «Versiones por revisar (página)» en DESIGN.md.
+// Van sobre el diagrama con su misma geometría: 4,5 % de margen y 91 % del ancho.
+
+:host {
+  position: absolute;
+  inset: 4.5%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+rect,
+path {
+  fill: none;
+}
+
+.origin {
+  stroke: var(--color-border-strong);
+  stroke-width: 3;
+  stroke-dasharray: 10 8;
+}
+
+.destination {
+  fill: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  stroke: var(--color-accent);
+  stroke-width: 3.5;
+}
+
+// El trayecto reposa tenue y se traza al señalar el cambio
+.path {
+  stroke: var(--color-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0.3;
+  transition: opacity 0.3s var(--ease-fade);
+
+  &.active {
+    opacity: 1;
+    animation: trace 0.45s var(--ease-enter) backwards;
+  }
+}
+
+@keyframes trace {
+  from {
+    stroke-dashoffset: var(--length);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path.active {
+    animation: none;
+  }
+}

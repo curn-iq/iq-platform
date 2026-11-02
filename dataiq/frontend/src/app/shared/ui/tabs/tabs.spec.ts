@@ -225,3 +225,78 @@ describe('tabIndexAfterEvent', () => {
     expect(tabIndexAfterEvent(1, press('Home', { shiftKey: true }), 4)).toBeNull();
   });
 });
+
+describe('Tabs sin enlace', () => {
+  const ITEMS: TabItem[] = [
+    { key: 'clinical', label: 'Datos clínicos', count: { value: 2, label: '2 cambios' } },
+    { key: 'instrumental', label: 'Instrumental', note: 'sin cambios' },
+    { key: 'mayo', label: 'Mesa de Mayo', count: { value: 1, label: '1 cambio' } },
+  ];
+
+  let fixture: ReturnType<typeof TestBed.createComponent<Tabs>>;
+  let root: HTMLElement;
+  let chosen: string[];
+
+  const tabs = () => Array.from(root.querySelectorAll<HTMLElement>('[role=tab]'));
+
+  async function mount(current = 'mayo') {
+    TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', children: [] }])] });
+    fixture = TestBed.createComponent(Tabs);
+    fixture.componentRef.setInput('label', 'Secciones de la versión');
+    fixture.componentRef.setInput('tabs', ITEMS);
+    fixture.componentRef.setInput('current', current);
+    chosen = [];
+    fixture.componentInstance.chosen.subscribe((key) => chosen.push(key));
+    root = fixture.nativeElement;
+    document.body.appendChild(root);
+    await fixture.whenStable();
+  }
+
+  afterEach(() => root?.remove());
+
+  it('cada una es un botón, no un enlace', async () => {
+    await mount();
+
+    expect(tabs().map((tab) => tab.tagName)).toEqual(['BUTTON', 'BUTTON', 'BUTTON']);
+    expect(tabs().every((tab) => tab.getAttribute('href') === null)).toBe(true);
+    expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual([
+      'false',
+      'false',
+      'true',
+    ]);
+  });
+
+  it('un clic avisa cuál se eligió con `chosen`', async () => {
+    await mount();
+
+    tabs()[0].click();
+
+    expect(chosen).toEqual(['clinical']);
+  });
+
+  it('las flechas pasan a la vecina y avisan, con foco', async () => {
+    await mount('clinical');
+
+    tabs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true }));
+
+    expect(chosen).toEqual(['instrumental']);
+    expect(document.activeElement).toBe(tabs()[1]);
+  });
+
+  it('la cifra va en un círculo y se lee con su texto; la nota, atenuada', async () => {
+    await mount();
+
+    const [clinical, instrumental] = tabs();
+    expect(clinical.querySelector('.count')!.textContent!.trim()).toBe('2');
+    expect(clinical.querySelector('.count')!.getAttribute('aria-hidden')).toBe('true');
+    expect(clinical.querySelector('.sr-only')!.textContent!.trim()).toBe('2 cambios');
+    expect(instrumental.querySelector('.count')).toBeNull();
+    expect(instrumental.querySelector('.note')!.textContent!.trim()).toBe('sin cambios');
+  });
+
+  it('la raya se coloca bajo la elegida', async () => {
+    await mount();
+
+    expect(root.querySelector('.line')).not.toBeNull();
+  });
+});

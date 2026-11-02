@@ -62,13 +62,14 @@ src/
     │                       y transiciones, avance por sección, técnicas agrupadas
     │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown,
     │                       filas de Mis borradores, fechas de edición, pasos del editor,
-    │                       filas de Por revisar y de Revisadas por mí
+    │                       filas de Por revisar y de Revisadas por mí,
+    │                       diferencia entre la publicada y la propuesta
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
-    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
+    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya (enlaces o botones), segmented control,
     │   │                   status pill, progress mark (22 px), search field, text field, textarea field, select field, chip list, checkbox field, field error,
     │   │                   demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
@@ -301,6 +302,10 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **Revisadas por mí** (la otra vista de `review-list/`, Resuelto 58): el control «Por revisar» / «Revisadas por mí» (`shared/ui/segmented-control`) cambia de vista sin tocar la URL. Pide `GET /versions?reviewed_by_me=true&include=content` (`VersionsRepository.listWithContent`) la primera vez que se abre y la vuelve a pedir cada vez que se reabre, sin quitar lo que se ve hasta que llegue; su cifra aparece cuando llega. `domain/reviewed.ts` (`toReviewedRows()`, `formatReviewed()`) deduce el resultado del estado de la versión, porque la API no lo guarda: un borrador con devoluciones es «Devuelta» (con el día y el motivo de la más reciente, con sus saltos de línea, `white-space: pre-line`) y una publicada, reemplazada o archivada es «Aprobada» (`status-pill` con `approved`), sin fecha: la API no guarda cuándo se aprobó. Si el revisor devolvió una versión y otro la aprobó después, sale «Aprobada». Las que volvieron a revisión están en «Por revisar» y no se repiten aquí. Sin botón «Revisar».
 - **La lista se comparte** (`core/pending-reviews/`, `PendingReviews`): una sola petición que usan Por revisar y la cifra del acceso «Por revisar» en «Mi cuenta» y en el menú de celular. No pide nada hasta que la pantalla o un menú llaman a `refresh()` (se crean al abrirse, así que cada apertura la vuelve a pedir y mientras llega se sigue mostrando la anterior), y solo con rol de revisor o superior: un visitante o un colaborador nunca la piden. Al cambiar de cuenta se olvida lo pedido. `count()` es `null` mientras no se sabe (sin cifra, nunca un 0 inventado); si la API falla, `failed()` es `true`.
 
+- **Revisión de una versión** (`review/review.ts`, `/gestion/revision/:versionId`, Resuelto 59): la publicada y la propuesta lado a lado, por sección. Pide la propuesta (`GET /versions/{id}`) y, si es una edición, el resumen de las publicadas (`GET /versions?state=published`) de donde toma la de esa técnica, y esa versión (`GET /versions/{id}`); la API no entrega una diferencia, así que se piden las dos completas y se comparan en el cliente. Una versión que ya no está en revisión, o que es propia, dice «Esta versión ya no está en revisión.» y no pide la publicada. La sección abierta es un signal (abre en la mesa de Mayo), no va en la URL. En `shared/ui/tabs`, las pestañas de la revisión son botones (sin `link`; avisan con `(chosen)`) y llevan una cifra o una nota.
+  - **La diferencia es pura** (`domain/version-diff.ts`, con pruebas): `reviewDiff()` arma `clinicalDiff()` (los doce campos, cada uno «agregado», «modificado», «quitado» o sin cambio), `instrumentalDiff()` (objetos por el nombre de su leyenda que están en una versión y no en la otra) y `zoneDiff()` por mesa (objetos emparejados por mesa y número de leyenda, o por nombre si no tienen número: movido, modificado, agregado o quitado, y el cambio de la mesa entera). `sectionNotes()` dice lo que lleva cada pestaña. Sin versión publicada (`isNew`) nada es un cambio y las pestañas cuentan lo que hay.
+  - **Hojas:** `review-clinical/` (tabla de campos con lo cambiado marcado), `review-instrumental/` (qué se agregó y qué se quitó, y la lista de la propuesta) y `review-table/` (la publicada y la propuesta con `app-table-diagram`, y la lista de cambios). Señalar un cambio, con el puntero o el teclado, levanta su pieza en las dos mesas (`[(highlighted)]` compartido, que también funciona al revés). `table-marks.ts` dibuja encima de cada diagrama, con su misma cuadrícula, de dónde salió cada pieza (contorno punteado) y adónde llegó (anillo `marca`, con el fantasma de su origen y el trayecto con punta). Sin cambios, o en una técnica nueva, solo se dibuja la propuesta. Una mesa que no se dibuja dice «Sin mesa de Mayo.» o «Mesa de Mayo sin arreglo disponible.» (Resuelto 37).
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |
@@ -330,7 +335,7 @@ relativas a `/api/dataiq`.
 | `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true&include=content`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
 | `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` (`datos-clinicos`, `instrumental`, `mesa-de-mayo`, `mesa-de-reserva`, `revisar`) | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
-| `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
+| `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions?state=published`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
 | `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
 | `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
 

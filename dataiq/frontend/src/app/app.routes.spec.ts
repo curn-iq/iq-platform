@@ -35,7 +35,7 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
   ['/gestion/editor/abc/1', Editor, 'Editar técnica · IQ Platform'],
   ['/gestion/revision', ReviewList, 'Por revisar · IQ Platform'],
-  ['/gestion/revision/abc', Review, 'Revisar versión · IQ Platform'],
+  [`/gestion/revision/${TECHNIQUE_ID}`, Review, 'Revisar versión · IQ Platform'],
   ['/gestion/instrumental', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/instrumental/abc', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/usuarios', Users, 'Usuarios y roles · IQ Platform'],
