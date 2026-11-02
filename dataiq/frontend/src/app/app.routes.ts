@@ -68,7 +68,8 @@ export const routes: Routes = [
     path: 'gestion/revision',
     title: 'Por revisar',
     canActivate: [reviewer],
-    loadComponent: () => import('./features/management/review/review').then((m) => m.Review),
+    loadComponent: () =>
+      import('./features/management/review/review-list/review-list').then((m) => m.ReviewList),
   },
   {
     path: 'gestion/revision/:versionId',

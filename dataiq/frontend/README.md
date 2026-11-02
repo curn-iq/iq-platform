@@ -55,12 +55,14 @@ src/
     │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
     │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
+    │   ├── pending-reviews/ PendingReviews: las versiones de otros que esperan revisión (Por revisar y la cifra de los menús)
     │   ├── session/        SessionService (la cuenta y su estado), sessionGuard, roleGuard(min), guestGuard
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
     │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown,
-    │                       filas de Mis borradores, fechas de edición, pasos del editor
+    │                       filas de Mis borradores, fechas de edición, pasos del editor,
+    │                       filas de Por revisar
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
@@ -293,6 +295,11 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **Pasos «Mesa de Mayo» y «Mesa de reserva»** (`editor/table-step/`, Resuelto 54): a la izquierda, los objetos de la mesa con su número y su lugar y «Agregar objeto» (`object-picker/`, el catálogo compacto); a la derecha, el tamaño (filas y columnas, de 2 a 10, en `zones`) y la mesa del detalle (`app-table-diagram`) con una cuadrícula de celdas encima. Un objeto se ubica arrastrándolo (CDK `cdkDrag`; con el dedo, tras una pulsación larga) o tocando (un objeto y luego su celda, o una celda y «Qué va aquí»). La mesa de reserva lleva la casilla «Esta técnica no lleva mesa de reserva» (`used: false`) y los atajos «Más usados», que salen del catálogo. Toda la lógica es pura, en `domain/table-editor.ts`: `addObjectToZone()`, `placeObject()` (mueve, intercambia o traslada un objeto de varias celdas), `clearCell()`, `resizeZone()`, `markNotCarried()`, `editorTable()` (la mesa para el diagrama) y `mostUsedInZone()`. Todo cambio pasa por `EditorState.edit()`. En solo lectura se ve todo y nada se cambia.
 - **Paso «Revisar y enviar» / «Revisar y publicar»** (`editor/review-step/`, Resuelto 55): a la izquierda, el resumen de las cuatro secciones con su marca, lo que dice cada una y «Completar» en las que bloquean; a la derecha, la tarjeta de envío. Un colaborador manda la versión a revisión (`POST /versions/{id}/submit`); un revisor o un admin publica lo suyo (`POST /versions/{id}/publish`) tras una confirmación en la misma tarjeta. El botón se apaga, con el motivo, mientras alguna sección bloquee (Resuelto 22). Las reglas del resumen son puras, en `domain/review-summary.ts` (`reviewSections()`, `blockReason()`); antes de mandar se espera a que termine el guardado (`EditorState.whenSaved()`). En solo lectura se ve el resumen, sin botón.
 
+### Gestión del revisor (`features/management/review/`)
+
+- **Por revisar** (`review/review-list/`, `/gestion/revision`, Resuelto 57 de la [checklist](../docs/checklist-frontend.md)): las versiones en revisión de otras personas (`GET /versions?state=in_review`), la que lleva más esperando primero, como el mockup. Cada fila dice la técnica con su especialidad y versión, el autor, cuándo se envió con su espera («1 oct · hace 5 días», con «hoy» y «ayer»), el tipo («Técnica nueva» si es la versión 1, «Edición de la publicada» si no) y «Revisar», que lleva a `/gestion/revision/:versionId`. La línea de resumen y los textos de las columnas salen de `domain/review-queue.ts` (`toQueueRows()`, `formatSent()`, `queueSummary()`), puro y con pruebas. La API no guarda la fecha del envío: una versión en revisión no se edita, así que su última modificación (`updated_at`) es el envío. Las versiones propias no aparecen, aunque la API se las entregue a un revisor: un revisor o un admin publica lo suyo desde el editor. Sin los chips de las secciones que cambian ni la nota del autor del mockup: los cambios se calculan en la pantalla de revisión y la API no guarda la nota (Resuelto 18). Estados: «Cargando…», «No se pudo cargar Por revisar.» con «Reintentar» y «Nada por revisar.». Cada visita vuelve a pedir la lista, para no mostrar lo que ya decidió otro revisor.
+- **La lista se comparte** (`core/pending-reviews/`, `PendingReviews`): una sola petición que usan Por revisar y la cifra del acceso «Por revisar» en «Mi cuenta» y en el menú de celular. No pide nada hasta que la pantalla o un menú llaman a `refresh()` (se crean al abrirse, así que cada apertura la vuelve a pedir y mientras llega se sigue mostrando la anterior), y solo con rol de revisor o superior: un visitante o un colaborador nunca la piden. Al cambiar de cuenta se olvida lo pedido. `count()` es `null` mientras no se sabe (sin cifra, nunca un 0 inventado); si la API falla, `failed()` es `true`.
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |
@@ -392,8 +399,9 @@ las toma por una ruta desconocida y abre «No encontrada».
   (`provideSession`). El panel se cierra si la sesión
   cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
   alto: al abrirlo de nuevo se ancla a la altura nueva. Al final lleva «Cerrar sesión»
-  (ver «Salir», abajo). Todavía falta la cifra junto a cada acceso, que llega con su pantalla
-  (borradores, por revisar, instrumental).
+  (ver «Salir», abajo). «Por revisar» lleva junto a su nombre la cifra de las versiones de
+  otras personas que esperan revisión, en el panel y en el menú de celular (`PendingReviews`, ver
+  «Gestión del revisor»; Resuelto 57). Mis borradores e Instrumental no llevan cifra todavía.
 - **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
   menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape

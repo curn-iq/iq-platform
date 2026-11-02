@@ -17,6 +17,7 @@ import { Drafts } from './features/management/drafts/drafts';
 import { Editor } from './features/management/editor/editor';
 import { Instruments } from './features/management/instruments/instruments';
 import { Review } from './features/management/review/review';
+import { ReviewList } from './features/management/review/review-list/review-list';
 import { Users } from './features/management/users/users';
 import { NotFoundPage } from './features/not-found/not-found';
 import { Privacy } from './features/privacy/privacy';
@@ -33,7 +34,7 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
   ['/gestion/editor/abc/1', Editor, 'Editar técnica · IQ Platform'],
-  ['/gestion/revision', Review, 'Por revisar · IQ Platform'],
+  ['/gestion/revision', ReviewList, 'Por revisar · IQ Platform'],
   ['/gestion/revision/abc', Review, 'Revisar versión · IQ Platform'],
   ['/gestion/instrumental', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/instrumental/abc', Instruments, 'Instrumental · IQ Platform'],

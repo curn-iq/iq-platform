@@ -537,6 +537,8 @@ describe('Navbar', () => {
       await loadSession('admin');
       mouseClick(account()!);
       await vi.waitFor(() => expect(accountMenu()).not.toBeNull());
+      // El panel pide la cifra de «Por revisar»; mientras siga pendiente la aplicación no queda estable
+      http.expectOne(({ url }) => url === `${TEST_API_BASE}/versions`).flush([]);
 
       TestBed.inject(SessionService).clear();
       await fixture.whenStable();

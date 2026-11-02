@@ -102,8 +102,20 @@ p {
     &[aria-current='page'] {
       background: var(--color-accent-soft);
       color: var(--color-accent-strong);
+
+      .count {
+        color: inherit;
+      }
     }
   }
+}
+
+// La cifra de un acceso (hoy, las versiones que esperan revisión)
+.count {
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
 }
 
 // Cerrar sesión: al final, separado por un filete de lo que haya encima (los accesos de gestión, o

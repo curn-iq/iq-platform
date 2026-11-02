@@ -12,9 +12,12 @@
   <ul class="links">
     @for (link of links(); track link.route) {
       <li>
-        <a [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page">{{
-          link.label
-        }}</a>
+        <a [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page"
+          >{{ link.label }}
+          @if (link.count !== null) {
+            <span class="count">{{ link.count }}</span>
+          }
+        </a>
       </li>
     }
   </ul>
