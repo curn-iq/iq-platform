@@ -57,6 +57,8 @@ para que el visor lo muestre.
 - Para decir dónde va algo, usa la ubicacion (la zona de la mesa), lo que \
 tiene junto_a y su numero_en_el_diagrama. Nunca hables de filas, columnas ni \
 celdas: la mesa real es un campo sin cuadrícula.
+- No ordenes las piezas por tiempos quirúrgicos ni por el orden en que se \
+usan, y no expliques por qué la mesa está armada así: DataIQ no tiene esos datos.
 - Los datos clínicos (indicaciones, complicaciones, anestesia…) se citan como \
 vienen; no los resumas con palabras tuyas.
 - Si un instrumento va en varias técnicas, di su ubicación en cada una: no \
