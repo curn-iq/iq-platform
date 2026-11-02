@@ -6,18 +6,19 @@ import {
   Color,
   CylinderGeometry,
   DirectionalLight,
+  DoubleSide,
   Group,
   HemisphereLight,
   MathUtils,
   Mesh,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
   Raycaster,
-  RepeatWrapping,
   Scene,
   Sprite,
   SpriteMaterial,
@@ -32,6 +33,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { arrange } from '../domain/arrangement';
 import { MAYO_TABLE_SIZE } from '../domain/mayo-table';
 import type { PlacedItem } from '../domain/placement';
+import { drapeGeometry } from './drape';
 import { ModelLibrary } from './model-library';
 
 /**
@@ -66,8 +68,13 @@ export interface FreeArea {
 }
 
 const TABLE_HEIGHT = 0.92;
-// La cara de arriba de la funda: ahí se apoyan los instrumentos
-const SURFACE_Y = 0.0026;
+// La bandeja de acero: el fondo, el grosor y el alto del reborde
+const TRAY_BED = 0.006;
+const TRAY_WALL = 0.005;
+const TRAY_RIM = 0.009;
+// La funda va tensa sobre el reborde; los instrumentos se apoyan en ella
+const DRAPE_TOP = TRAY_RIM + 0.001;
+const SURFACE_Y = DRAPE_TOP + 0.0006;
 // Cuánto sube la pieza señalada y cuánto se apagan las demás
 const LIFT = 0.014;
 const DIMMED = 0.38;
@@ -85,24 +92,26 @@ function token(name: string, fallback: string): Color {
   return new Color(value || fallback);
 }
 
-/** La tela de la funda: su color con un grano de ±11 de luminancia por píxel. */
-function clothTexture(color: Color): Texture {
+/**
+ * Los dobleces del empaque de la funda: dos a lo ancho y uno a lo largo, como en
+ * las fundas reales recién abiertas. Muy suaves: una raya oscura y otra clara.
+ */
+function creaseTexture(): Texture {
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 256;
+  canvas.width = canvas.height = 512;
   const context = canvas.getContext('2d')!;
-  context.fillStyle = `#${color.getHexString()}`;
-  context.fillRect(0, 0, 256, 256);
-  const image = context.getImageData(0, 0, 256, 256);
-  for (let i = 0; i < image.data.length; i += 4) {
-    const noise = (Math.random() - 0.5) * 22;
-    image.data[i] += noise;
-    image.data[i + 1] += noise;
-    image.data[i + 2] += noise;
-  }
-  context.putImageData(image, 0, 0);
+  context.fillStyle = '#ececec';
+  context.fillRect(0, 0, 512, 512);
+  const crease = (x: number, y: number, w: number, h: number) => {
+    context.fillStyle = 'rgba(0,0,0,.07)';
+    context.fillRect(x, y, w, h);
+    context.fillStyle = 'rgba(255,255,255,.9)';
+    context.fillRect(x + (w > h ? 0 : w), y + (w > h ? h : 0), w, h);
+  };
+  crease(171, 0, 2, 512);
+  crease(341, 0, 2, 512);
+  crease(0, 255, 512, 2);
   const texture = new CanvasTexture(canvas);
-  texture.wrapS = texture.wrapT = RepeatWrapping;
-  texture.repeat.set(3, 2);
   texture.colorSpace = SRGBColorSpace;
   return texture;
 }
@@ -327,50 +336,58 @@ export class MayoScene {
 
   // ---------- La mesa ----------
 
+  /**
+   * La mesa de Mayo como la real (decidido por Mauricio el 2026-11-02): una
+   * bandeja de acero inoxidable cubierta por la funda azul, que cae por el
+   * extremo libre (`drape.ts`). Debajo, la barra de apoyo, el poste y la base.
+   */
   private buildTable(): void {
     const { width, depth } = MAYO_TABLE_SIZE;
-    const steel = new MeshStandardMaterial({ color: 0xb9c3c7, metalness: 0.85, roughness: 0.35 });
-    const cloth = new MeshStandardMaterial({
-      map: clothTexture(token('--color-cover', '#1d7564')),
-      roughness: 0.95,
+    const steel = new MeshStandardMaterial({ color: 0xc3ccd0, metalness: 0.9, roughness: 0.28 });
+    // Tela de polipropileno: mate, con el brillo suave de la tela en los pliegues
+    const drape = new MeshPhysicalMaterial({
+      color: token('--color-drape', '#2a78c2'),
+      map: creaseTexture(),
+      roughness: 0.7,
       metalness: 0,
-      envMapIntensity: 0.35,
-    });
-    const edge = new MeshStandardMaterial({
-      color: token('--color-cover-edge', '#0e463c'),
-      roughness: 0.95,
-      metalness: 0,
-      envMapIntensity: 0.3,
+      sheen: 0.35,
+      sheenRoughness: 0.5,
+      sheenColor: 0x9fd0ff,
+      envMapIntensity: 0.5,
+      side: DoubleSide,
     });
     const floor = new MeshBasicMaterial({ map: this.shadow, transparent: true, depthWrite: false });
-    const add = (mesh: Mesh, x: number, y: number, z: number, rotationY = 0) => {
+    const add = (mesh: Mesh, x: number, y: number, z: number) => {
       mesh.position.set(x, y, z);
-      mesh.rotation.y = rotationY;
       this.scene.add(mesh);
       this.disposables.push(mesh.geometry);
     };
 
-    // La bandeja y la funda encima
-    add(new Mesh(new BoxGeometry(width + 0.02, 0.012, depth + 0.02), steel), 0, -0.008, 0);
-    add(new Mesh(new BoxGeometry(width + 0.03, 0.004, depth + 0.03), cloth), 0, 0, 0);
-    // La funda cae 6 cm por los cuatro costados
-    const fall = 0.06;
-    const side = (length: number, x: number, z: number, rotationY: number) =>
-      add(new Mesh(new BoxGeometry(length, fall, 0.003), edge), x, -fall / 2, z, rotationY);
-    side(width + 0.03, 0, (depth + 0.03) / 2, 0);
-    side(width + 0.03, 0, -(depth + 0.03) / 2, 0);
-    side(depth + 0.03, (width + 0.03) / 2, 0, Math.PI / 2);
-    side(depth + 0.03, -(width + 0.03) / 2, 0, Math.PI / 2);
-    // El pie de la mesa de Mayo: poste y base, en una esquina
+    // La bandeja: el fondo y el reborde alrededor
+    const outerW = width + 2 * TRAY_WALL;
+    const outerD = depth + 2 * TRAY_WALL;
+    add(new Mesh(new BoxGeometry(outerW, TRAY_BED, outerD), steel), 0, -TRAY_BED / 2, 0);
+    const rim = (w: number, d: number, x: number, z: number) =>
+      add(new Mesh(new BoxGeometry(w, TRAY_RIM, d), steel), x, TRAY_RIM / 2, z);
+    rim(outerW, TRAY_WALL, 0, (depth + TRAY_WALL) / 2);
+    rim(outerW, TRAY_WALL, 0, -(depth + TRAY_WALL) / 2);
+    rim(TRAY_WALL, depth, (width + TRAY_WALL) / 2, 0);
+    rim(TRAY_WALL, depth, -(width + TRAY_WALL) / 2, 0);
+
+    // El pie, en una esquina: la barra que sostiene la bandeja, el poste y la base
     const footX = -width / 2 + 0.06;
     const footZ = -depth / 2 + 0.08;
+    const barY = -TRAY_BED - 0.006;
+    add(new Mesh(new BoxGeometry(width * 0.85, 0.012, 0.03), steel), 0, barY, footZ);
+    const postTop = barY - 0.006;
+    const postBottom = -TABLE_HEIGHT + 0.02;
     add(
-      new Mesh(new CylinderGeometry(0.013, 0.013, TABLE_HEIGHT - 0.1, 24), steel),
+      new Mesh(new CylinderGeometry(0.013, 0.013, postTop - postBottom, 24), steel),
       footX,
-      -TABLE_HEIGHT / 2 - 0.06,
+      (postTop + postBottom) / 2,
       footZ,
     );
-    // La base corre bajo la bandeja, desde el poste hacia el centro, como en la mesa real
+    // La base corre bajo la bandeja, desde el poste hacia el centro
     add(
       new Mesh(new BoxGeometry(0.5, 0.02, 0.07), steel),
       footX + 0.2,
@@ -382,7 +399,26 @@ export class MayoScene {
     shadow.rotation.x = -Math.PI / 2;
     add(shadow, 0, -TABLE_HEIGHT, 0);
 
-    this.disposables.push(steel, cloth, cloth.map!, edge, floor);
+    // La funda, sobre todo: tensa encima, baja 3,5 cm por tres lados y cae 60 cm por
+    // el extremo libre
+    add(
+      new Mesh(
+        drapeGeometry({
+          width: outerW,
+          depth: outerD,
+          top: DRAPE_TOP,
+          edge: 0.006,
+          wrap: 0.035,
+          fall: 0.6,
+        }),
+        drape,
+      ),
+      0,
+      0,
+      0,
+    );
+
+    this.disposables.push(steel, drape, drape.map!, floor);
   }
 
   // ---------- Las piezas ----------

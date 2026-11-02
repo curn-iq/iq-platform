@@ -29,6 +29,8 @@
   --marca-claro-hover: #cfe7e1;
   --niebla-marca: #b8dcd4;
   --pano: #1d7564;
+  /* La funda azul de la mesa de Mayo en la escena 3D de SIMIQ3D */
+  --pano-azul: #2a78c2;
   --niebla-pano: #e6f3f0;
   --brillo-pano: rgba(255, 255, 255, 0.12);
   --sombra-pano: rgba(0, 0, 0, 0.14);
@@ -175,6 +177,7 @@
 
   /* La funda de Mayo, el objeto de la portada y de las ventanas de producto */
   --color-cover: var(--pano);
+  --color-drape: var(--pano-azul);
   --color-cover-edge: var(--canto-pano);
   --color-cover-sheen: var(--brillo-pano);
   --color-cover-shade: var(--sombra-pano);
