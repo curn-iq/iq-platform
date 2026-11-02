@@ -23,7 +23,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Instalar `three` y sus tipos (0.187.0, versión fija); presupuesto aparte para el chunk del visor: cada archivo de código, aviso a los 750 KB y error a los 900 KB (Three.js con lo que usa el visor mide 675 KB, 169 KB comprimido; medido el 2026-11-01)
 - [x] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build y de `npm start`. Conserva los nodos con nombre (`blade_mount`); los 23 modelos pasan de 698 KB a 172 KB
 - [x] `npm run api:types`: genera los tipos de las APIs de DataIQ y de SIMIQ3D (`src/app/data/api/`) desde el OpenAPI de cada backend, como el frontend de DataIQ
-- [ ] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen)
+- [x] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen): `src/environments/`
 
 ### Fase 1 — Núcleo
 
