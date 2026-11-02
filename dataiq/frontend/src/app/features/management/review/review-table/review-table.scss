@@ -98,7 +98,7 @@ ul {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 14px;
-  align-items: center;
+  align-items: start;
   padding: 14px 6px;
   border-bottom: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -150,6 +150,11 @@ ul {
   margin-top: 12px;
   color: var(--color-text-subtle);
   font-size: 14px;
+}
+
+// «Comentar» va bajo el detalle, a la izquierda: a su derecha apretaría el texto de la columna
+.change button {
+  margin-top: 10px;
 }
 
 // ---------- Pantallas angostas ----------

@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { SessionService } from '../../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../../data/testing';
@@ -315,6 +315,172 @@ describe('Review', () => {
 
       http.expectNone(LIST_URL);
       expect(text('.notice p')).toBe('Esta versión ya no está en revisión.');
+    });
+  });
+
+  describe('comentar y decidir', () => {
+    const MOVED = () => content({ items: [item('z-mayo', 6, 'Separador de Senn Miller', 4, 3)] });
+    const REJECT_URL = `${PROPOSAL_URL}/reject`;
+    const APPROVE_URL = `${PROPOSAL_URL}/approve`;
+    const NO_CONTENT = { status: 204, statusText: 'No Content' };
+
+    const press = async (label: string) => {
+      Array.from(root.querySelectorAll<HTMLButtonElement>('button'))
+        .find((b) => text2(b) === label)!
+        .click();
+      await settle();
+    };
+    const text2 = (el: Element) => el.textContent?.replace(/\s+/g, ' ').trim();
+    const write = async (value: string) => {
+      const area = root.querySelector<HTMLTextAreaElement>('textarea')!;
+      area.value = value;
+      area.dispatchEvent(new Event('input'));
+      await settle();
+    };
+    /** Comenta el cambio de la mesa de Mayo, desde su «Comentar». */
+    const commentOnChange = async (value: string) => {
+      root.querySelector<HTMLButtonElement>('.change button')!.click();
+      await settle();
+      await write(value);
+      await press('Guardar comentario');
+    };
+
+    it('comentar un cambio abre el redactor al pie de la sección y lo guarda ahí', async () => {
+      await configure();
+      await openEdition(MOVED());
+
+      root.querySelector<HTMLButtonElement>('.change button')!.click();
+      await settle();
+      expect(text('app-section-comments label')).toBe('Comentario sobre Separador de Senn Miller');
+      await write('Va en la columna 4.');
+      await press('Guardar comentario');
+
+      expect(text('app-section-comments .comment .head')).toBe(
+        'Comentario · sobre Separador de Senn Miller',
+      );
+      expect(text('app-section-comments .comment .text')).toBe('Va en la columna 4.');
+      expect(text('.actions button')).toBe('Devolver con 1 comentario');
+      // La pieza comentada queda marcada en la mesa propuesta
+      expect(root.querySelectorAll('app-table-marks .commented')).toHaveLength(1);
+    });
+
+    it('un campo clínico se comenta en Datos clínicos, no en la mesa', async () => {
+      await configure();
+      await openEdition(content({ anesthesia: 'Regional' }));
+      root.querySelector<HTMLButtonElement>('#tab-clinical')!.click();
+      await settle();
+
+      root.querySelector<HTMLButtonElement>('.field.changed button')!.click();
+      await settle();
+      await write('Falta la dosis.');
+      await press('Guardar comentario');
+
+      expect(text('app-section-comments .comment .head')).toBe('Comentario · sobre Anestesia');
+      expect(text('.actions button')).toBe('Devolver con 1 comentario');
+    });
+
+    it('«Comentar la sección» comenta la sección abierta', async () => {
+      await configure();
+      await openEdition();
+      root.querySelector<HTMLButtonElement>('#tab-reserve')!.click();
+      await settle();
+
+      await press('Comentar la sección');
+      await write('Revisar la reserva.');
+      await press('Guardar comentario');
+      await press('Devolver con 1 comentario');
+      await press('Devolver');
+
+      const request = http.expectOne(REJECT_URL);
+      expect(request.request.body).toEqual({ reason: 'Mesa de reserva: Revisar la reserva.' });
+      request.flush(null, NO_CONTENT);
+      await settle();
+    });
+
+    it('devolver manda la nota general y una línea por comentario, en el orden de las secciones', async () => {
+      await configure();
+      await openEdition(content({ anesthesia: 'Regional', items: MOVED().items }));
+      await commentOnChange('Va en la columna 4.');
+      root.querySelector<HTMLButtonElement>('#tab-clinical')!.click();
+      await settle();
+      root.querySelector<HTMLButtonElement>('.field.changed button')!.click();
+      await settle();
+      await write('Falta la dosis.\nY el tipo.');
+      await press('Guardar comentario');
+
+      await press('Devolver con 2 comentarios');
+      await write('Revisar con la fuente.');
+      await press('Devolver');
+
+      const request = http.expectOne(REJECT_URL);
+      expect(request.request.method).toBe('POST');
+      expect(request.request.body).toEqual({
+        reason: [
+          'Nota general: Revisar con la fuente.',
+          'Datos clínicos · Anestesia: Falta la dosis. Y el tipo.',
+          'Mesa de Mayo · 6 Separador de Senn Miller: Va en la columna 4.',
+        ].join('\n'),
+      });
+      request.flush(null, NO_CONTENT);
+      await settle();
+
+      await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/gestion/revision'));
+    });
+
+    it('aprobar publica la versión y vuelve a Por revisar', async () => {
+      await configure();
+      await openEdition(MOVED());
+
+      await press('Aprobar y publicar');
+      expect(text('.panel h2')).toBe('Aprobar y publicar la versión 2');
+      root.querySelector<HTMLButtonElement>('.panel .buttons button')!.click();
+      await settle();
+
+      const request = http.expectOne(APPROVE_URL);
+      expect(request.request.method).toBe('POST');
+      request.flush(null, NO_CONTENT);
+      await settle();
+
+      await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/gestion/revision'));
+    });
+
+    it('si otro revisor ya decidió (409), la pantalla vuelve a mirar y dice que ya no está en revisión', async () => {
+      await configure();
+      await openEdition(MOVED());
+      await press('Aprobar y publicar');
+      root.querySelector<HTMLButtonElement>('.panel .buttons button')!.click();
+      await settle();
+
+      http
+        .expectOne(APPROVE_URL)
+        .flush(
+          { detail: 'Solo se aprueba una versión en revisión' },
+          { status: 409, statusText: 'Conflict' },
+        );
+      await settle();
+      http.expectOne(PROPOSAL_URL).flush(detail(PROPOSAL_ID, 2, 'published', MOVED(), 'u-autor'));
+      await settle();
+
+      expect(text('.notice p')).toBe('Esta versión ya no está en revisión.');
+      expect(root.querySelector('app-review-decision')).toBeNull();
+      expect(TestBed.inject(Router).url).not.toBe('/gestion/revision');
+    });
+
+    it('los comentarios son de una versión: al revisar otra empiezan de nuevo', async () => {
+      await configure();
+      await openEdition(MOVED());
+      await commentOnChange('Va en la columna 4.');
+      expect(text('.actions button')).toBe('Devolver con 1 comentario');
+
+      const other = '019a0c1e-7b3d-7c2a-9e4f-0a1b2c3d4e99';
+      await harness.navigateByUrl(`/gestion/revision/${other}`);
+      http
+        .expectOne(`${TEST_API_BASE}/versions/${other}`)
+        .flush(detail(other, 1, 'in_review', content()));
+      await settle();
+
+      expect(text('.actions button')).toBe('Devolver con comentarios');
+      expect(root.querySelector('app-section-comments .comment')).toBeNull();
     });
   });
 

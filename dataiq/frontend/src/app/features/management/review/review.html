@@ -35,12 +35,15 @@
     } @else if (diff(); as diff) {
       @if (proposal(); as proposal) {
         <header class="head">
-          <h1 id="review-title">{{ proposal.summary.technique }}</h1>
-          <p class="meta">
-            <b>Versión {{ proposal.summary.number }}</b>
-            · {{ proposal.summary.number > 1 ? 'edición de la publicada' : 'técnica nueva' }} ·
-            enviada por <b>{{ proposal.summary.author }}</b> el {{ sentOn() }}
-          </p>
+          <div>
+            <h1 id="review-title">{{ proposal.summary.technique }}</h1>
+            <p class="meta">
+              <b>Versión {{ proposal.summary.number }}</b>
+              · {{ proposal.summary.number > 1 ? 'edición de la publicada' : 'técnica nueva' }} ·
+              enviada por <b>{{ proposal.summary.author }}</b> el {{ sentOn() }}
+            </p>
+          </div>
+          <app-review-decision [version]="proposal.summary" (conflict)="recheck()" />
         </header>
 
         <app-tabs
@@ -62,6 +65,7 @@
                 [rows]="diff.clinical"
                 [publishedLabel]="publishedLabel()"
                 [proposedLabel]="proposedLabel()"
+                (commentRequested)="comments.compose($event)"
               />
             }
             @case ('instrumental') {
@@ -74,6 +78,9 @@
                 [publishedLabel]="publishedLabel() ?? ''"
                 [proposedLabel]="proposedLabel()"
                 [isNew]="diff.isNew"
+                section="mayo"
+                [commented]="comments.commentedMayo()"
+                (commentRequested)="comments.compose($event)"
               />
             }
             @case ('reserve') {
@@ -83,9 +90,13 @@
                 [publishedLabel]="publishedLabel() ?? ''"
                 [proposedLabel]="proposedLabel()"
                 [isNew]="diff.isNew"
+                section="reserve"
+                [commented]="comments.commentedReserve()"
+                (commentRequested)="comments.compose($event)"
               />
             }
           }
+          <app-section-comments [section]="section()" />
         </div>
       }
     } @else {

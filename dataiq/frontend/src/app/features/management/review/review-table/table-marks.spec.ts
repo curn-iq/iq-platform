@@ -18,8 +18,14 @@ function change(overrides: Partial<TableChange>): TableChange {
 describe('TableMarks', () => {
   let root: HTMLElement;
 
-  function mount(side: MarksSide, changes: TableChange[], active: number | null = null) {
+  function mount(
+    side: MarksSide,
+    changes: TableChange[],
+    active: number | null = null,
+    commented: { row: number; column: number }[] = [],
+  ) {
     const fixture = TestBed.createComponent(TableMarks);
+    fixture.componentRef.setInput('commented', commented);
     fixture.componentRef.setInput('side', side);
     fixture.componentRef.setInput('columns', 6);
     fixture.componentRef.setInput('rows', 4);
@@ -134,5 +140,19 @@ describe('TableMarks', () => {
     const paths = Array.from(root.querySelectorAll('.path'));
     expect(paths.map((p) => p.classList.contains('active'))).toEqual([true, false]);
     expect(root.querySelectorAll('.destination.active')).toHaveLength(1);
+  });
+
+  it('las celdas de un objeto comentado se contornean solo en la propuesta', () => {
+    const cells = [
+      { row: 1, column: 1 },
+      { row: 1, column: 2 },
+    ];
+
+    mount('proposed', [], null, cells);
+    expect(root.querySelectorAll('.commented')).toHaveLength(2);
+    expect(origin('.commented')).toEqual(['6', '6']);
+
+    mount('published', [], null, cells);
+    expect(root.querySelectorAll('.commented')).toHaveLength(0);
   });
 });

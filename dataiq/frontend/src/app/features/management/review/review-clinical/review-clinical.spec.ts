@@ -47,11 +47,11 @@ describe('ReviewClinical', () => {
   it('encabeza las columnas con la publicada y la propuesta', () => {
     mount();
 
-    expect(Array.from(root.querySelectorAll('.head span')).map((s) => text(s))).toEqual([
-      'Campo',
-      'Publicada · versión 1',
-      'Propuesta · versión 2',
-    ]);
+    expect(
+      Array.from(root.querySelectorAll('.head span'))
+        .map((s) => text(s))
+        .filter(Boolean),
+    ).toEqual(['Campo', 'Publicada · versión 1', 'Propuesta · versión 2']);
   });
 
   it('muestra todos los campos, también los que no cambiaron', () => {
@@ -98,13 +98,44 @@ describe('ReviewClinical', () => {
     expect(text(proposed.querySelector('.sr-only'))).toBe('Propuesta:');
   });
 
+  describe('comentarios', () => {
+    it('solo los campos cambiados tienen «Comentar»', () => {
+      mount();
+
+      expect(
+        Array.from(root.querySelectorAll('button')).map((b) => b.getAttribute('aria-label')),
+      ).toEqual([
+        'Comentar Para qué sirve',
+        'Comentar Anestesia',
+        'Comentar Ropa',
+        'Comentar Suturas',
+      ]);
+      expect(field('Fuente').querySelector('button')).toBeNull();
+    });
+
+    it('comentar un campo dice cuál es', () => {
+      const fixture = TestBed.createComponent(ReviewClinical);
+      fixture.componentRef.setInput('rows', rows);
+      fixture.componentRef.setInput('proposedLabel', 'Propuesta · versión 2');
+      const requested: unknown[] = [];
+      fixture.componentInstance.commentRequested.subscribe((target) => requested.push(target));
+      fixture.detectChanges();
+      root = fixture.nativeElement;
+
+      field('Anestesia').querySelector<HTMLButtonElement>('button')!.click();
+
+      expect(requested).toEqual([{ kind: 'field', key: 'anesthesia', label: 'Anestesia' }]);
+    });
+  });
+
   it('sin versión publicada solo está la propuesta', () => {
     mount(null);
 
-    expect(Array.from(root.querySelectorAll('.head span')).map((s) => text(s))).toEqual([
-      'Campo',
-      'Propuesta · versión 2',
-    ]);
+    expect(
+      Array.from(root.querySelectorAll('.head span'))
+        .map((s) => text(s))
+        .filter(Boolean),
+    ).toEqual(['Campo', 'Propuesta · versión 2']);
     expect(field('Anestesia').querySelectorAll('dd')).toHaveLength(1);
     expect(root.querySelector('.fields')!.classList.contains('single')).toBe(true);
   });

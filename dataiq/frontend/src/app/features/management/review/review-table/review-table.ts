@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import type { ZoneDiff, ZoneState } from '../../../../domain/version-diff';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import type { EditorCell } from '../../../../domain/editor-content';
+import type { CommentTarget } from '../../../../domain/review-comments';
+import type { TableChange, ZoneDiff, ZoneState } from '../../../../domain/version-diff';
 import { TableDiagram } from '../../../../shared/table-diagram/table-diagram';
+import { CommentButton } from '../comment-button/comment-button';
 import { TableMarks } from './table-marks';
 
 /**
@@ -13,7 +16,7 @@ import { TableMarks } from './table-marks';
  */
 @Component({
   selector: 'app-review-table',
-  imports: [TableDiagram, TableMarks],
+  imports: [CommentButton, TableDiagram, TableMarks],
   templateUrl: './review-table.html',
   styleUrl: './review-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +31,12 @@ export class ReviewTable {
   readonly proposedLabel = input.required<string>();
   /** No hay versión publicada con la que comparar. */
   readonly isNew = input(false);
+  /** Cuál de las dos mesas es: de ella son los comentarios. */
+  readonly section = input.required<'mayo' | 'reserve'>();
+  /** Los números de los objetos que ya tienen un comentario: sus celdas se marcan en la propuesta. */
+  readonly commented = input<readonly number[]>([]);
+  /** Se quiere comentar un objeto de la mesa, o la mesa entera. */
+  readonly commentRequested = output<CommentTarget>();
 
   /** El número señalado en cualquiera de las dos mesas o de la lista. */
   protected readonly active = signal<number | null>(null);
@@ -46,7 +55,42 @@ export class ReviewTable {
     return state === 'not_carried' ? `Sin m${name.slice(1)}.` : `${name} sin arreglo disponible.`;
   }
 
+  /** Las celdas de los objetos de la propuesta que ya tienen un comentario. */
+  protected readonly commentedCells = computed<EditorCell[]>(() => {
+    const numbers = new Set(this.commented());
+    return (this.diff().proposed.table?.items ?? [])
+      .filter((item) => item.legendNumber !== null && numbers.has(item.legendNumber))
+      .flatMap((item) => item.cells.map(({ row, column }) => ({ row, column })));
+  });
+
   protected point(number: number | null): void {
     this.active.set(number);
+  }
+
+  /** Comentar un cambio: el objeto, o la mesa entera si el cambio es de la mesa (tamaño o si se lleva). */
+  protected commentChange(change: TableChange): void {
+    this.commentRequested.emit(
+      change.kind === 'resized'
+        ? { kind: 'section', section: this.section() }
+        : { kind: 'object', section: this.section(), number: change.number, name: change.name },
+    );
+  }
+
+  /** Tocar una pieza de la propuesta (o Intro con el foco en ella) comenta ese objeto. */
+  protected commentPiece(event: Event): void {
+    const piece = (event.target as Element).closest('.piece[data-n]');
+    if (!piece) return;
+    const number = Number(piece.getAttribute('data-n'));
+    const item = this.diff().proposed.table?.items.find(
+      (candidate) => candidate.legendNumber === number,
+    );
+    if (item) {
+      this.commentRequested.emit({
+        kind: 'object',
+        section: this.section(),
+        number,
+        name: item.name,
+      });
+    }
   }
 }

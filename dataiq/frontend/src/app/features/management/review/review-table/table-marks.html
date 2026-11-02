@@ -12,6 +12,16 @@
           rx="10"
         />
       }
+      @case ('commented') {
+        <rect
+          class="commented"
+          [attr.x]="mark.x"
+          [attr.y]="mark.y"
+          [attr.width]="size"
+          [attr.height]="size"
+          rx="10"
+        />
+      }
       @case ('destination') {
         <rect
           class="destination"

@@ -56,17 +56,22 @@
       </div>
     }
     @if (diff().proposed.table; as table) {
-      <div class="stage" [style.--aspect]="table.columns / table.rows">
+      <!-- Tocar una pieza de la propuesta (o Intro con el foco en ella) comenta ese objeto -->
+      <div
+        class="stage"
+        [style.--aspect]="table.columns / table.rows"
+        (click)="commentPiece($event)"
+        (keydown.enter)="commentPiece($event)"
+      >
         <app-table-diagram [table]="table" [(highlighted)]="active" />
-        @if (!single()) {
-          <app-table-marks
-            side="proposed"
-            [columns]="table.columns"
-            [rows]="table.rows"
-            [changes]="changes()"
-            [active]="active()"
-          />
-        }
+        <app-table-marks
+          side="proposed"
+          [columns]="table.columns"
+          [rows]="table.rows"
+          [changes]="single() ? [] : changes()"
+          [commented]="commentedCells()"
+          [active]="active()"
+        />
       </div>
     } @else {
       <p class="blank">{{ blank(diff().proposed.state) }}</p>
@@ -85,8 +90,8 @@
             [attr.tabindex]="change.number !== null ? 0 : null"
             (mouseenter)="point(change.number)"
             (mouseleave)="point(null)"
-            (focus)="point(change.number)"
-            (blur)="point(null)"
+            (focusin)="point(change.number)"
+            (focusout)="point(null)"
           >
             @if (change.number !== null) {
               <b class="number">{{ change.number }}</b>
@@ -96,6 +101,14 @@
                 <strong>{{ change.name }}</strong>
               }
               <span class="detail">{{ change.detail }}</span>
+              <button
+                app-comment-button
+                type="button"
+                [attr.aria-label]="'Comentar ' + (change.name || 'el cambio de la mesa')"
+                (click)="commentChange(change)"
+              >
+                Comentar
+              </button>
             </div>
           </li>
         }

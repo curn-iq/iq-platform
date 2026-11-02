@@ -14,7 +14,7 @@
 .head,
 .field {
   display: grid;
-  grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) minmax(0, 2fr);
+  grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) minmax(0, 2fr) 104px;
   gap: 20px;
   align-items: start;
   padding: 14px 20px;
@@ -23,7 +23,7 @@
 // Sin versión publicada, solo la propuesta
 .single .head,
 .single .field {
-  grid-template-columns: minmax(140px, 1fr) minmax(0, 4fr);
+  grid-template-columns: minmax(140px, 1fr) minmax(0, 4fr) 104px;
 }
 
 .head {
@@ -105,6 +105,10 @@ dd {
   // El rótulo de cada valor lo dice ::before; el texto para lectores sería repetirlo
   .sr-only {
     display: none;
+  }
+
+  button {
+    justify-self: start;
   }
 
   dd::before {

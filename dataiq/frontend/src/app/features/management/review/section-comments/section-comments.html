@@ -1,0 +1,48 @@
+<section class="comments" [attr.aria-label]="'Comentarios de ' + sectionName()">
+  @if (list().length > 0) {
+    <ul class="list">
+      @for (comment of list(); track comment.id) {
+        <li class="comment">
+          <div>
+            <p class="head">Comentario · sobre {{ comment.subject }}</p>
+            <p class="text">{{ comment.text }}</p>
+          </div>
+          <button
+            type="button"
+            class="remove"
+            aria-label="Quitar comentario"
+            (click)="comments.remove(comment.id)"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+              <path
+                d="M3 3l6 6M9 3l-6 6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (composing()) {
+    <div class="composer" (keydown.escape)="comments.cancel()">
+      <app-textarea-field
+        [label]="'Comentario sobre ' + subject()"
+        placeholder="Qué hay que corregir y por qué."
+        [(value)]="draft"
+      />
+      <div class="buttons">
+        <button app-button type="button" (click)="save()">Guardar comentario</button>
+        <button app-button variant="soft" type="button" (click)="comments.cancel()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  } @else {
+    <button app-comment-button type="button" (click)="compose()">Comentar la sección</button>
+  }
+</section>

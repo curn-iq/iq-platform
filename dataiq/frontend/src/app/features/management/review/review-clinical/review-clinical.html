@@ -5,6 +5,7 @@
       <span>{{ label }}</span>
     }
     <span>{{ proposedLabel() }}</span>
+    <span></span>
   </div>
   @for (row of rows(); track row.key) {
     <div class="field" [class.changed]="row.change !== null">
@@ -20,6 +21,16 @@
         }
         <span class="sr-only">Propuesta: </span>{{ row.proposed || 'Sin dato' }}
       </dd>
+      @if (row.change !== null) {
+        <button
+          app-comment-button
+          type="button"
+          [attr.aria-label]="'Comentar ' + row.label"
+          (click)="comment(row)"
+        >
+          Comentar
+        </button>
+      }
     </div>
   }
 </dl>

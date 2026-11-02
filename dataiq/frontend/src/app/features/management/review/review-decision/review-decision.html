@@ -1,0 +1,89 @@
+<div class="actions">
+  <button
+    #returnTrigger
+    app-button
+    variant="soft"
+    type="button"
+    aria-controls="panel-return"
+    [attr.aria-expanded]="panel() === 'return'"
+    [disabled]="busy()"
+    (click)="toggle('return')"
+  >
+    {{ returnLabel() }}
+  </button>
+  <button
+    #approveTrigger
+    app-button
+    type="button"
+    aria-controls="panel-approve"
+    [attr.aria-expanded]="panel() === 'approve'"
+    [disabled]="busy()"
+    (click)="toggle('approve')"
+  >
+    Aprobar y publicar
+  </button>
+</div>
+
+@switch (panel()) {
+  @case ('return') {
+    <section
+      class="panel"
+      id="panel-return"
+      aria-labelledby="title-return"
+      (keydown.escape)="close()"
+    >
+      <h2 id="title-return">Devolver a {{ version().author }}</h2>
+      <p>La versión vuelve a sus borradores con estos comentarios, cada uno en su sección.</p>
+      <ul class="summary" aria-label="Comentarios que se envían">
+        @for (line of lines(); track $index) {
+          <li>{{ line }}</li>
+        } @empty {
+          <li class="none">
+            Todavía no hay comentarios. Se agregan en cada sección o tocando una pieza de la mesa
+            propuesta.
+          </li>
+        }
+      </ul>
+      <app-textarea-field label="Nota general (opcional)" [(value)]="comments.note" />
+      <div class="buttons">
+        <button
+          app-button
+          type="button"
+          [disabled]="!comments.canReturn() || busy()"
+          (click)="reject()"
+        >
+          {{ busy() ? 'Devolviendo…' : 'Devolver' }}
+        </button>
+        <button app-button variant="soft" type="button" [disabled]="busy()" (click)="close()">
+          Cancelar
+        </button>
+      </div>
+    </section>
+  }
+  @case ('approve') {
+    <section
+      class="panel"
+      id="panel-approve"
+      aria-labelledby="title-approve"
+      (keydown.escape)="close()"
+    >
+      <h2 id="title-approve">Aprobar y publicar la versión {{ version().number }}</h2>
+      <p>
+        @if (isFirst()) {
+          La técnica entra al catálogo y la ven estudiantes, SIVRI y SIMIQ3D.
+        } @else {
+          Pasa a ser la versión que ven estudiantes, SIVRI y SIMIQ3D; la versión
+          {{ previous() }} queda como reemplazada.
+        }
+      </p>
+      <div class="buttons">
+        <button #confirmApprove app-button type="button" [disabled]="busy()" (click)="approve()">
+          {{ busy() ? 'Aprobando…' : 'Aprobar y publicar' }}
+        </button>
+        <button app-button variant="soft" type="button" [disabled]="busy()" (click)="close()">
+          Cancelar
+        </button>
+      </div>
+    </section>
+  }
+}

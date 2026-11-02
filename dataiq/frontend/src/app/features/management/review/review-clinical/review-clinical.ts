@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import type { CommentTarget } from '../../../../domain/review-comments';
 import type { ClinicalRow, FieldChange } from '../../../../domain/version-diff';
+import { CommentButton } from '../comment-button/comment-button';
 
 /** Lo que dice la marca de un campo cambiado. */
 const CHANGE_TAGS: Readonly<Record<FieldChange, string>> = {
@@ -16,6 +18,7 @@ const CHANGE_TAGS: Readonly<Record<FieldChange, string>> = {
  */
 @Component({
   selector: 'app-review-clinical',
+  imports: [CommentButton],
   templateUrl: './review-clinical.html',
   styleUrl: './review-clinical.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,5 +30,12 @@ export class ReviewClinical {
   /** «Propuesta · versión 2». */
   readonly proposedLabel = input.required<string>();
 
+  /** Se quiere comentar un campo cambiado. */
+  readonly commentRequested = output<CommentTarget>();
+
   protected readonly tags = CHANGE_TAGS;
+
+  protected comment(row: ClinicalRow): void {
+    this.commentRequested.emit({ kind: 'field', key: row.key, label: row.label });
+  }
 }

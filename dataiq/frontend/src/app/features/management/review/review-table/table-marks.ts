@@ -9,7 +9,7 @@ export type MarksSide = 'published' | 'proposed';
 /** Una forma de la capa: un recuadro de celda o el trayecto de una pieza. */
 interface Mark {
   key: string;
-  kind: 'origin' | 'destination' | 'path';
+  kind: 'origin' | 'destination' | 'commented' | 'path';
   /** El número del objeto: la marca se enciende cuando es el señalado. */
   number: number | null;
   /** Recuadro de una celda, en unidades del dibujo. */
@@ -69,12 +69,29 @@ export class TableMarks {
   readonly changes = input.required<readonly TableChange[]>();
   /** El número señalado, o `null`. */
   readonly active = input<number | null>(null);
+  /** Las celdas de los objetos que ya tienen un comentario (solo se marcan en la propuesta). */
+  readonly commented = input<readonly EditorCell[]>([]);
 
   protected readonly width = computed(() => this.columns() * CELL);
   protected readonly height = computed(() => this.rows() * CELL);
   protected readonly size = SIZE;
 
-  protected readonly marks = computed<Mark[]>(() =>
+  protected readonly marks = computed<Mark[]>(() => [
+    ...this.changeMarks(),
+    ...(this.side() === 'proposed' ? this.commentedMarks() : []),
+  ]);
+
+  private readonly commentedMarks = computed<Mark[]>(() =>
+    this.commented().map((cell, index): Mark => ({
+      key: `commented-${index}`,
+      kind: 'commented',
+      number: null,
+      x: (cell.column - 1) * CELL + INSET,
+      y: (cell.row - 1) * CELL + INSET,
+    })),
+  );
+
+  private readonly changeMarks = computed<Mark[]>(() =>
     this.changes().flatMap((change): Mark[] => {
       const origin = change.fromCells.map((cell, index): Mark => ({
         key: `${change.key}-origin-${index}`,

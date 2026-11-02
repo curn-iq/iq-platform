@@ -24,8 +24,11 @@ import { Button } from '../../../shared/ui/button/button';
 import { NotFound } from '../../../shared/ui/not-found/not-found';
 import { Tabs, type TabItem } from '../../../shared/ui/tabs/tabs';
 import { ReviewClinical } from './review-clinical/review-clinical';
+import { ReviewComments } from './review-comments';
+import { ReviewDecision } from './review-decision/review-decision';
 import { ReviewInstrumental } from './review-instrumental/review-instrumental';
 import { ReviewTable } from './review-table/review-table';
+import { SectionComments } from './section-comments/section-comments';
 
 /** La petición terminó con un error y no hay un valor anterior que mostrar. */
 function hasFailed(resource: {
@@ -45,12 +48,23 @@ function hasFailed(resource: {
  * abre en la mesa de Mayo, como el mockup.
  *
  * Una versión que ya no está en revisión (la decidió otro revisor) o que es propia no se revisa: lo
- * dice. Los comentarios, «Devolver» y «Aprobar y publicar» llegan en la casilla siguiente. Ver
- * «Versiones por revisar (página)» en `DESIGN.md`.
+ * dice. El revisor comenta (`SectionComments`, `ReviewComments`) y decide (`ReviewDecision`, Resuelto
+ * 60 de `dataiq/docs/checklist-frontend.md`). Ver «Versiones por revisar (página)» en `DESIGN.md`.
  */
 @Component({
   selector: 'app-review',
-  imports: [Button, NotFound, ReviewClinical, ReviewInstrumental, ReviewTable, RouterLink, Tabs],
+  imports: [
+    Button,
+    NotFound,
+    ReviewClinical,
+    ReviewDecision,
+    ReviewInstrumental,
+    ReviewTable,
+    RouterLink,
+    SectionComments,
+    Tabs,
+  ],
+  providers: [ReviewComments],
   templateUrl: './review.html',
   styleUrl: './review.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +76,7 @@ export class Review {
   private readonly title = inject(Title);
   private readonly now = new Date();
 
+  protected readonly comments = inject(ReviewComments);
   protected readonly zones = ZONE_NAMES;
 
   /** El `id` de la URL; un texto que no puede ser un id no se pide a la API. */
@@ -192,6 +207,11 @@ export class Review {
     }
   }
 
+  /** Otro revisor decidió primero: se vuelve a mirar la versión, que ya no está en revisión. */
+  protected recheck(): void {
+    this.proposalResource.reload();
+  }
+
   protected retry(): void {
     if (hasFailed(this.proposalResource)) this.proposalResource.reload();
     if (hasFailed(this.publishedList)) this.publishedList.reload();
@@ -199,6 +219,11 @@ export class Review {
   }
 
   constructor() {
+    // Los comentarios son de una versión: al revisar otra, empiezan de nuevo
+    effect(() => {
+      this.versionId();
+      this.comments.clear();
+    });
     effect(() => {
       const name = this.notFound() ? 'No encontrada' : this.proposal()?.summary.technique;
       if (name) this.title.setTitle(`${this.notFound() ? name : `Revisar ${name}`} · ${APP_NAME}`);
