@@ -213,7 +213,12 @@ npm start          # http://localhost:4300/simiq3d/
 npm test           # Vitest
 npm run build      # producción, con los presupuestos de angular.json
 npm run models     # comprime los modelos 3D (corre solo antes de start y build)
+npm run api:types  # tipos de las APIs, tras cambiar una ruta o un esquema de un backend
 ```
+
+`npm run api:types` necesita `uv` (el de los backends), pero no que los
+backends estén corriendo. Los tipos generados se versionan y se suben en el
+mismo PR que cambia el backend.
 
 `proxy.conf.json` manda `/api/dataiq` a `http://127.0.0.1:8000` y
 `/api/simiq3d` a `http://127.0.0.1:8001`.
