@@ -45,8 +45,9 @@
 }
 
 @media (max-width: 760px) {
+  // Ocupa la fila; si «Más acciones» va a su lado (un revisor o un admin), le deja su sitio
   .edit {
-    flex: 1 1 100%;
+    flex: 1 1 calc(100% - 53px);
     justify-content: center;
   }
 }

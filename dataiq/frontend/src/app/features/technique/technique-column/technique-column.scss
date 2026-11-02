@@ -63,6 +63,24 @@ a {
   }
 }
 
+// La técnica que se acaba de archivar: atenuada y con su pastilla
+.is-archived {
+  color: var(--color-text-subtle);
+}
+
+.archived {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
+  vertical-align: 1px;
+}
+
 .empty,
 .loading {
   margin: 18px 10px 0;
