@@ -94,7 +94,8 @@ qué posición) y la dibuja. Para que corra bien en un celular modesto:
 La regla está en [`../README.md`, «Cómo se arma la mesa en 3D»](../README.md#cómo-se-arma-la-mesa-en-3d).
 En código: la cuadrícula de la técnica (`zones`: `rows` × `columns`, de
 `GET /techniques/{id}/instruments`) se reparte en partes iguales sobre la
-mesa, de tamaño provisional y el mismo para todas las técnicas; cada objeto
+mesa, de tamaño provisional y el mismo para todas las técnicas (56 × 40 cm,
+el del mockup; `MAYO_TABLE_SIZE` en `domain/mayo-table.ts`); cada objeto
 va con su centro en el centro de sus celdas (si ocupa varias, el centro de
 todas). Unidades en metros, el eje Y hacia arriba, las columnas sobre X y las
 filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
@@ -181,7 +182,11 @@ Relativas a `/simiq3d/`. Las rutas de las APIs son relativas a `/api/dataiq` y
 
 Las dos piden cuenta. Sin sesión, se va al ingreso del shell:
 `/cuenta/ingresar?volver=/simiq3d/…` (navegación completa, porque el shell es
-otra app). La barra para volver al shell también son enlaces normales.
+otra app). Si DataIQ no responde, no se sabe si hay sesión: la ruta espera y
+vuelve a preguntar sola, sin mandar a ingresar a quien quizá la tiene. Una
+sesión que vence mientras se usa la app (un 401 de cualquiera de las dos APIs)
+lleva al ingreso para volver a donde se estaba. La barra para volver al shell
+también son enlaces normales.
 
 ### Errores de las APIs
 
@@ -227,7 +232,9 @@ Para el chat hace falta también el backend de SIMIQ3D en el puerto 8001 (ver
 [`../backend/README.md`](../backend/README.md)).
 
 Para entrar con una cuenta: la cookie de sesión no distingue puertos, así que
-sirve la que deja el ingreso del shell en `localhost:4200`. Sin el shell
+sirve la que deja el ingreso del shell en `localhost:4200`. En desarrollo, el
+shell no vuelve solo a `localhost:4300` después de ingresar (solo vuelve a
+rutas de su mismo origen): hay que volver a mano. Sin el shell
 corriendo, se puede pedir desde la consola del navegador, en
 `localhost:4300/simiq3d/`:
 

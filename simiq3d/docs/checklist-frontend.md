@@ -27,10 +27,10 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 
 ### Fase 1 — Núcleo
 
-- [ ] `domain/`: las acciones del chat y la geometría de la mesa (celda → posición en metros, centro de varias celdas), con pruebas
-- [ ] `data/`: repositorio de DataIQ (técnicas, mesa de una técnica, instrumentos) y de SIMIQ3D (chat y mapeo de modelos)
-- [ ] `core/http`: `provideHttpClient(withFetch())`, interceptor de `X-IQ-Client: web` e interceptor de errores
-- [ ] `core/session`: cuenta de `GET /api/dataiq/auth/me` y `sessionGuard`, que lleva al ingreso del shell con `?volver=`
+- [x] `domain/`: las acciones del chat (`sceneFor`: qué cambia en el visor con cada una) y la geometría de la mesa (celda → posición en metros, centro de varias celdas), con pruebas; el nombre de cada objeto de la leyenda, con la misma regla de DataIQ (`itemName`)
+- [x] `data/`: repositorio de DataIQ (cuenta, técnicas, mesa de una técnica, instrumentos) y de SIMIQ3D (chat y mapeo de modelos); `toMayoTable` saca la mesa de Mayo de la respuesta de DataIQ
+- [x] `core/http`: `provideHttpClient(withFetch())`, interceptor de `X-IQ-Client: web` e interceptor del 401 (sesión vencida → ingreso del shell); los demás errores los dice cada pantalla en su sitio
+- [x] `core/session`: cuenta de `GET /api/dataiq/auth/me` y `sessionGuard`, que lleva al ingreso del shell con `?volver=`. Si DataIQ no responde, la ruta espera y vuelve a preguntar (5, 10, 20 y 30 s, al volver la conexión y con «Reintentar»), sin mandar a ingresar a quien quizá tiene sesión
 
 ### Fase 2 — Visor (técnico, sin la interfaz final)
 
