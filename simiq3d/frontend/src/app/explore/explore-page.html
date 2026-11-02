@@ -1,0 +1,41 @@
+<nav class="techniques" aria-label="Técnicas">
+  @for (technique of techniques.value() ?? []; track technique.id) {
+    <a
+      [routerLink]="['/tecnicas', technique.id]"
+      [attr.aria-current]="technique.id === id() ? 'page' : null"
+      >{{ technique.name }}</a
+    >
+  }
+</nav>
+
+@if (id()) {
+  <app-viewer
+    class="viewer"
+    [items]="placed()"
+    [(selected)]="selected"
+    [techniqueName]="technique()?.name ?? ''"
+    [dataiqUrl]="dataiqUrl()"
+  />
+  <section class="legend" aria-label="Leyenda">
+    <h2>Mesa de Mayo</h2>
+    @if (mayo() === null) {
+      <p>Esta técnica no tiene mesa de Mayo en DataIQ.</p>
+    }
+    <ol>
+      @for (item of mayo()?.items ?? []; track item.id) {
+        <li>
+          <button
+            type="button"
+            [attr.aria-pressed]="selected() === item.id"
+            (click)="selected.set(selected() === item.id ? null : item.id)"
+          >
+            <span class="number">{{ item.legendNumber ?? '–' }}</span>
+            {{ item.name }}
+          </button>
+        </li>
+      }
+    </ol>
+  </section>
+} @else {
+  <p class="empty">Elegir una técnica para ver su mesa de Mayo en 3D.</p>
+}
