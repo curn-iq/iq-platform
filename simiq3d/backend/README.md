@@ -122,7 +122,13 @@ las plantillas.
    nombre, número y ubicación esté en lo consultado, que los conteos («7
    objetos») sean un total de los resultados y que no hable de la cuadrícula.
    Si no pasa, si no consultó nada o si no termina en 30 segundos
-   (`LLM_DEADLINE`), responden las plantillas.
+   (`LLM_DEADLINE`), responden las plantillas. Lo que hace el visor no lo
+   decide el modelo: la técnica y el instrumento salen de lo que consultó (o
+   de la pregunta, si abrió la técnica sin el instrumento por el que se
+   preguntó), y la acción, de la pregunta, con la misma regla de las
+   plantillas (`asked_action`, en `app/domain/names.py`): describir si
+   pregunta qué es un instrumento, el dato clínico que nombra, la lista si
+   pide el instrumental.
    Las consultas aceptan los nombres como se dicen («el mango número 7»), y
    una técnica descrita sin nombrarla («la cirugía para quitar la vesícula»),
    por las palabras de su descripción en DataIQ que solo están en ella; de una
@@ -218,9 +224,9 @@ catálogo de DataIQ al correr, y si un nombre ya no está en DataIQ, no corre.
 | `ubicar` | el visor abre esa técnica y resalta ese instrumento |
 | `no_va` | no resalta el instrumento en esa técnica (no va en su mesa) |
 | `varias_mesas` | pide precisar en qué técnica, o nombra todas las técnicas donde va |
-| `describir` | el texto trae al menos el 40 % de las palabras de cinco letras o más de la descripción de DataIQ, o casi toda una de sus frases (el 60 %): «¿Para qué sirve…?» se responde con una frase |
-| `dato` | el texto trae al menos el 40 % de las palabras de cinco letras o más del dato clínico de DataIQ (`dato`: `description`, `indications`, `complications`, `anesthesia_position`, o `anesthesia` y `patient_position` por separado) |
-| `listar` | nombra todos los instrumentos de la mesa de Mayo |
+| `describir` | el texto trae al menos el 40 % de las palabras de cinco letras o más de la descripción de DataIQ, o casi toda una de sus frases (el 60 %): «¿Para qué sirve…?» se responde con una frase; y el visor abre la ficha de ese instrumento (`describe_instrument`) |
+| `dato` | el texto trae al menos el 40 % de las palabras de cinco letras o más del dato clínico de DataIQ (`dato`: `description`, `indications`, `complications`, `anesthesia_position`, o `anesthesia` y `patient_position` por separado) y la acción es ese dato de esa técnica (`show_clinical_data`; anestesia y posición van juntas) |
+| `listar` | nombra todos los instrumentos de la mesa de Mayo y el visor muestra la lista de esa técnica (`list_instruments`) |
 | `contar_objetos`, `contar_tecnicas` | dice el número correcto, en cifras o en letras |
 | `mas_objetos` | nombra la técnica con más objetos en la mesa de Mayo |
 | `solo_en`, `comparten`, `diferencias` | nombra los instrumentos que corresponden y ninguno de los que no |

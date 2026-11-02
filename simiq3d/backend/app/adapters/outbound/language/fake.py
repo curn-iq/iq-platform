@@ -5,8 +5,8 @@ from app.domain.catalog import Catalog, technique_by_id
 from app.domain.chat import ChatAction, Choice, Reply, Vocabulary, answer
 from app.domain.guards import before_the_model
 from app.domain.names import (
+    asked_action,
     asks_for_list,
-    asks_to_describe,
     field_in,
     instrument_in,
     technique_in,
@@ -34,19 +34,13 @@ class FakeModel:
         field = field_in(question)
 
         if instrument:
-            action = (
-                ChatAction.describe_instrument
-                if asks_to_describe(question)
-                else ChatAction.highlight_instrument
-            )
+            action, _ = asked_action(question, with_instrument=True)
             return Choice(action, technique=technique, instrument=instrument)
         if technique or open_technique:
-            if field:
-                return Choice(ChatAction.show_clinical_data, technique, field=field)
-            if asks_for_list(question):
-                return Choice(ChatAction.list_instruments, technique)
-            if technique:
-                return Choice(ChatAction.show_technique, technique)
+            action, field = asked_action(question, with_instrument=False)
+            # Sin nombrar la técnica, «muéstrala» no dice cuál: no hay respuesta
+            if action != ChatAction.show_technique or technique:
+                return Choice(action, technique, field=field)
         elif field or asks_for_list(question):
             # Pidió un dato de una técnica sin decir cuál: el dominio pregunta.
             action = (

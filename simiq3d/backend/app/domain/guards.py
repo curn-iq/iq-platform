@@ -31,9 +31,6 @@ from app.domain.names import (
     technique_in,
 )
 
-# Comparar o contar no es listar («¿qué lleva la tiroidectomía que no lleve la
-# colecistectomía?», «¿cuántos instrumentos…?»).
-_NOT_A_LIST = re.compile(r"\b(?:no lleve|no tenga|comun|comparten|diferen|cuant)")
 # «el bisturí», «la pinza»: un instrumento nombrado por su familia, sin decir cuál.
 _FAMILY = re.compile(r"\b(?:el|la)\s+(bisturi|mango|hoja|pinza|tijera|separador)\b")
 # Los tiempos quirúrgicos y el orden en que se usa el instrumental: DataIQ no los
@@ -87,12 +84,7 @@ def before_the_model(
         contains(normalize(question), normalize(t.name).split()[0])
         for t in in_scope(catalog)
     )
-    if (
-        technique
-        and named_count <= 1
-        and asks_for_list(question)
-        and not _NOT_A_LIST.search(canonical(question))
-    ):
+    if technique and named_count <= 1 and asks_for_list(question):
         return answer(
             Choice(ChatAction.list_instruments, technique.name),
             catalog,

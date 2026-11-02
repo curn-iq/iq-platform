@@ -4,15 +4,17 @@ import httpx
 import pytest
 
 from app.adapters.outbound.language.ollama import OllamaAgent
-from app.domain.chat import ChatAction
+from app.domain.chat import ChatAction, ClinicalField
 from app.ports.chat import ModelUnavailable
 from tests.sample import (
     ALLIS,
     CATALOG,
     COLECISTECTOMIA,
     KELLY,
+    KELLY_ADSON,
     LAHEY,
     MASTECTOMIA,
+    MAYO_SCISSORS,
     TIROIDECTOMIA,
 )
 
@@ -221,6 +223,96 @@ async def test_the_open_technique_instrument_is_highlighted_without_show_in_3d()
     assert (reply.technique_id, reply.instrument_id) == (COLECISTECTOMIA.id, KELLY.id)
     assert reply.reply == "La Kelly va en el centro de la mesa."
     assert reply.options[0] == "¿Qué es la Pinza Kelly?"
+
+
+@pytest.mark.anyio
+async def test_asking_what_it_is_opens_its_card_not_only_highlights_it():
+    server = ScriptedOllama(
+        tool_calls(call("find_instrument", instrument="tijera de Mayo")),
+        tool_calls(call("reply", text="Es una tijera recta para cortar tejidos.")),
+    )
+
+    reply = await server.agent().reply(
+        "¿Qué es la tijera de Mayo?", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert reply.action == ChatAction.describe_instrument
+    assert (reply.technique_id, reply.instrument_id) == (
+        COLECISTECTOMIA.id,
+        MAYO_SCISSORS.id,
+    )
+
+
+@pytest.mark.anyio
+async def test_asking_what_it_is_without_a_technique_still_describes_it():
+    server = ScriptedOllama(
+        tool_calls(call("find_instrument", instrument="tijera de Mayo")),
+        tool_calls(call("reply", text="Es una tijera recta para cortar tejidos.")),
+    )
+
+    reply = await server.agent().reply("¿Qué es la tijera de Mayo?", CATALOG, None)
+
+    assert reply.action == ChatAction.describe_instrument
+    assert (reply.technique_id, reply.instrument_id) == (None, MAYO_SCISSORS.id)
+
+
+@pytest.mark.anyio
+async def test_a_clinical_datum_is_shown_as_that_datum():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Colecistectomía")),
+        tool_calls(call("reply", text="Se indica en la colelitiasis sintomática.")),
+    )
+
+    reply = await server.agent().reply(
+        "Indicaciones de la colecistectomía", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.show_clinical_data
+    assert (reply.technique_id, reply.field) == (
+        COLECISTECTOMIA.id,
+        ClinicalField.indications,
+    )
+
+
+@pytest.mark.anyio
+async def test_asking_for_the_list_does_not_highlight_a_piece_of_the_answer():
+    server = ScriptedOllama(
+        tool_calls(call("get_technique", technique="Mastectomía")),
+        tool_calls(
+            call(
+                "reply",
+                text="La mesa de Mastectomía lleva la Pinza de Allis y la Kelly.",
+            )
+        ),
+    )
+
+    reply = await server.agent().reply(
+        "¿Qué necesito en la mesa de Mayo para una mastectomía?", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.list_instruments
+    assert (reply.technique_id, reply.instrument_id) == (MASTECTOMIA.id, None)
+
+
+@pytest.mark.anyio
+async def test_opening_the_technique_keeps_the_instrument_that_was_asked():
+    """Con la técnica abierta, «¿Y la Kelly Adson?»: el modelo abrió la técnica
+    sin el instrumento, y la pinza igual se señala (pregunta 50 del banco)."""
+    server = ScriptedOllama(
+        tool_calls(call("show_in_3d", technique="Tiroidectomía")),
+        tool_calls(call("find_instrument", instrument="Kelly Adson")),
+        tool_calls(
+            call("reply", text="La Pinza Kelly Adson va en la mesa de Tiroidectomía.")
+        ),
+    )
+
+    reply = await server.agent().reply("¿Y la Kelly Adson?", CATALOG, TIROIDECTOMIA.id)
+
+    assert reply.action == ChatAction.highlight_instrument
+    assert (reply.technique_id, reply.instrument_id) == (
+        TIROIDECTOMIA.id,
+        KELLY_ADSON.id,
+    )
 
 
 @pytest.mark.anyio

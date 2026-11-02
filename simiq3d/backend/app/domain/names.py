@@ -6,7 +6,7 @@ import re
 from difflib import SequenceMatcher
 
 from app.domain.catalog import normalize
-from app.domain.chat import ClinicalField, Vocabulary
+from app.domain.chat import ChatAction, ClinicalField, Vocabulary
 
 DESCRIBE = (
     "que es",
@@ -15,13 +15,35 @@ DESCRIBE = (
     "describe",
     "como es",
     "que hace",
+    "hablame de",
+    "cuentame de",
+    "cuentame sobre",
 )
-LIST = ("instrumental", "instrumentos", "que lleva", "que va en la mesa", "lista")
+LIST = (
+    "instrumental",
+    "instrumentos",
+    "que lleva",
+    "que va en la mesa",
+    "lista",
+    "que necesito",
+    "que se necesita",
+)
+# Comparar o contar no es listar («¿qué lleva la tiroidectomía que no lleve la
+# colecistectomía?», «¿cuántos instrumentos…?»).
+NOT_A_LIST = re.compile(r"\b(?:no lleve|no tenga|comun|comparten|diferen|cuant)")
 FIELDS = (
-    (("indicacion", "por que se hace", "cuando se hace"), ClinicalField.indications),
+    (
+        ("indicacion", "se indica", "por que se hace", "cuando se hace"),
+        ClinicalField.indications,
+    ),
     (("complicacion", "riesgo"), ClinicalField.complications),
     (("anestesia", "posicion"), ClinicalField.anesthesia_position),
-    (("para que sirve", "en que consiste"), ClinicalField.description),
+    # Al final: «¿qué es la hemicolectomía?» es su descripción, si no pidió otro
+    # dato («¿qué es lo que va arriba?» no lo es)
+    (
+        ("para que sirve", "en que consiste", "que es la ", "que es el ", "que es un"),
+        ClinicalField.description,
+    ),
 )
 # Primeras palabras que no distinguen un instrumento de otro («pinza de»).
 GENERIC = re.compile(r"^(pinzas?|tijeras?|separador|portaagujas)( de)? ")
@@ -107,7 +129,28 @@ def asks_to_describe(text: str) -> bool:
 
 
 def asks_for_list(text: str) -> bool:
-    return any(k in normalize(text) for k in LIST)
+    said = normalize(text)
+    return any(k in said for k in LIST) and not NOT_A_LIST.search(said)
+
+
+def asked_action(
+    question: str, with_instrument: bool
+) -> tuple[ChatAction, ClinicalField | None]:
+    """Qué hace el visor con la respuesta, según lo que pide la pregunta. Es la
+    misma regla para las plantillas y para el modelo: el modelo redacta el texto,
+    pero la acción no sale de lo que él decida. Con un instrumento, describirlo si
+    pregunta qué es (abre su ficha) o, si no, señalarlo; sin él, el dato clínico
+    que nombra, el instrumental si lo pide o, si no, la técnica."""
+    if with_instrument:
+        if asks_to_describe(question):
+            return ChatAction.describe_instrument, None
+        return ChatAction.highlight_instrument, None
+    field = field_in(question)
+    if field:
+        return ChatAction.show_clinical_data, field
+    if asks_for_list(question):
+        return ChatAction.list_instruments, None
+    return ChatAction.show_technique, None
 
 
 # --- Errores de escritura ---------------------------------------------------
