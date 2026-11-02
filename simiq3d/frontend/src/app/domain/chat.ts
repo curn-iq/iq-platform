@@ -13,6 +13,24 @@ export type ChatAction =
   | 'clarify'
   | 'no_answer';
 
+/** El dato clínico de una técnica que trae la respuesta (`ClinicalField` del backend). */
+export type ClinicalField = 'description' | 'indications' | 'complications' | 'anesthesia_position';
+
+/** La respuesta de `POST /chat` (`ChatOut`): la acción, sus ids, el texto y las opciones. */
+export interface ChatReply {
+  action: ChatAction;
+  technique_id: string | null;
+  instrument_id: string | null;
+  field: ClinicalField | null;
+  reply: string;
+  /** Preguntas que se pueden volver a enviar tal cual. */
+  options: string[];
+}
+
+/** Un mensaje de la conversación: la pregunta de la persona o la respuesta de SIMIQ3D. */
+export type ChatMessage =
+  { id: number; from: 'person'; text: string } | { id: number; from: 'simiq3d'; reply: ChatReply };
+
 /** Lo que hace el visor con una respuesta del chat. `null` es «no cambia». */
 export interface SceneChange {
   /** La técnica cuya mesa se abre. */
@@ -53,5 +71,53 @@ export function sceneFor(reply: {
     case 'clarify':
     case 'no_answer':
       return NOTHING;
+  }
+}
+
+/** Cómo se nombra cada dato clínico, como en las respuestas del backend (`FIELD_LABELS`). */
+export const CLINICAL_LABELS: Record<ClinicalField, string> = {
+  description: 'Para qué sirve',
+  indications: 'Indicaciones',
+  complications: 'Complicaciones',
+  anesthesia_position: 'Anestesia y posición',
+};
+
+/** El chip bajo una respuesta: qué hizo el chat, y si cambió el visor. */
+export interface ActionChip {
+  label: string;
+  /** `true` si cambió el visor (visto); `false` si pide precisar o no hubo respuesta (la «i»). */
+  changed: boolean;
+}
+
+/**
+ * El chip de una respuesta («Chip de acción» en `DESIGN.md`), con los nombres
+ * de DataIQ de su técnica y su instrumento. Una respuesta solo en texto
+ * (`answer`) no lleva chip.
+ */
+export function actionChip(
+  reply: Pick<ChatReply, 'action' | 'field'>,
+  names: { technique?: string; instrument?: string },
+): ActionChip | null {
+  const named = (verb: string, name: string | undefined) => (name ? `${verb} · ${name}` : verb);
+  switch (reply.action) {
+    case 'show_technique':
+      return { label: named('Mostrar técnica', names.technique), changed: true };
+    case 'highlight_instrument':
+      return { label: named('Resaltar', names.instrument), changed: true };
+    case 'describe_instrument':
+      return { label: named('Describir', names.instrument), changed: true };
+    case 'show_clinical_data':
+      return {
+        label: named('Datos clínicos', reply.field ? CLINICAL_LABELS[reply.field] : undefined),
+        changed: true,
+      };
+    case 'list_instruments':
+      return { label: named('Instrumental', names.technique), changed: true };
+    case 'clarify':
+      return { label: 'Aclarar', changed: false };
+    case 'no_answer':
+      return { label: 'Sin respuesta', changed: false };
+    case 'answer':
+      return null;
   }
 }

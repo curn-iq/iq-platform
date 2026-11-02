@@ -1,4 +1,4 @@
-import { ChatAction, sceneFor } from './chat';
+import { actionChip, ChatAction, ClinicalField, sceneFor } from './chat';
 
 describe('sceneFor', () => {
   const reply = (action: ChatAction) => ({ action, technique_id: 't-1', instrument_id: 'i-1' });
@@ -51,5 +51,31 @@ describe('sceneFor', () => {
         list: false,
       });
     }
+  });
+});
+
+describe('actionChip', () => {
+  const chip = (action: ChatAction, field: ClinicalField | null = null) =>
+    actionChip({ action, field }, { technique: 'Mastectomía', instrument: 'Pinza Kelly' });
+
+  it('dice qué hizo el chat en el visor, con los nombres de DataIQ', () => {
+    expect(chip('show_technique')).toEqual({
+      label: 'Mostrar técnica · Mastectomía',
+      changed: true,
+    });
+    expect(chip('highlight_instrument')?.label).toBe('Resaltar · Pinza Kelly');
+    expect(chip('describe_instrument')?.label).toBe('Describir · Pinza Kelly');
+    expect(chip('show_clinical_data', 'indications')?.label).toBe('Datos clínicos · Indicaciones');
+    expect(chip('list_instruments')?.label).toBe('Instrumental · Mastectomía');
+  });
+
+  it('pedir precisar o no responder lleva la «i», y una respuesta en texto no lleva chip', () => {
+    expect(chip('clarify')).toEqual({ label: 'Aclarar', changed: false });
+    expect(chip('no_answer')).toEqual({ label: 'Sin respuesta', changed: false });
+    expect(chip('answer')).toBeNull();
+  });
+
+  it('sin el nombre, solo la acción', () => {
+    expect(actionChip({ action: 'highlight_instrument', field: null }, {})?.label).toBe('Resaltar');
   });
 });
