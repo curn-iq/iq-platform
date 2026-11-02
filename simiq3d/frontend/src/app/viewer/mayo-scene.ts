@@ -83,6 +83,8 @@ const SIDE_GAP = 0.004;
 const NUMBER_PX = 20;
 const TRAVEL_MS = 900;
 const ZOOM_MS = 350;
+// Cuánto se aleja el punto de giro del centro de la mesa al acercar con el puntero
+const TARGET_RADIUS = 0.45;
 // Un toque que se mueve más que esto es un giro, no un toque
 const TAP_PX = 6;
 
@@ -214,7 +216,13 @@ export class MayoScene {
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enablePan = false;
-    this.controls.minDistance = 0.22;
+    // La rueda y el pellizco acercan hacia donde apunta el puntero (o el centro
+    // de los dedos), no al centro de la vista; el punto de giro queda a la
+    // altura de la mesa y no se sale de ella
+    this.controls.zoomToCursor = true;
+    this.controls.screenSpacePanning = false;
+    this.controls.maxTargetRadius = TARGET_RADIUS;
+    this.controls.minDistance = 0.15;
     this.controls.maxDistance = 2.2;
     // Sin bajar del borde de la mesa
     this.controls.maxPolarAngle = 1.32;
