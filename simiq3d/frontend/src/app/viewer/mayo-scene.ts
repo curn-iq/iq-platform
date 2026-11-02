@@ -29,6 +29,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { arrange } from '../domain/arrangement';
 import { MAYO_TABLE_SIZE } from '../domain/mayo-table';
 import type { PlacedItem } from '../domain/placement';
 import { ModelLibrary } from './model-library';
@@ -134,6 +135,8 @@ function numberTexture(value: number, ink: Color): Texture {
 interface ScenePiece {
   item: PlacedItem;
   group: Group;
+  /** Lo que ocupa la pieza armada, medido con el grupo en el origen. */
+  bounds: Box3;
   materials: MeshStandardMaterial[];
   shadow: Mesh;
   number: Sprite | null;
@@ -217,10 +220,27 @@ export class MayoScene {
     }
     this.clearTable();
     this.pieces = built;
-    for (const piece of built) {
+    // Cada pieza parte del centro de su celda y se corre lo justo para quedar
+    // dentro de la mesa y no tapar a otra (`domain/arrangement.ts`)
+    const centers = built.map((piece) => piece.bounds.getCenter(new Vector3()));
+    const sizes = built.map((piece) => piece.bounds.getSize(new Vector3()));
+    const points = arrange(
+      built.map((piece, i) => ({
+        x: piece.item.x + centers[i].x,
+        z: piece.item.z + centers[i].z,
+        halfLength: sizes[i].x / 2,
+        halfWidth: sizes[i].z / 2,
+      })),
+    );
+    built.forEach((piece, i) => {
+      piece.group.position.set(points[i].x - centers[i].x, 0, points[i].z - centers[i].z);
       this.piecesGroup.add(piece.group);
-      if (piece.number) this.numbersGroup.add(piece.number);
-    }
+      if (piece.number) {
+        // Junto a la pieza, del lado de los anillos (−X)
+        piece.number.position.set(points[i].x - sizes[i].x / 2 - 0.012, 0.006, points[i].z);
+        this.numbersGroup.add(piece.number);
+      }
+    });
     this.scaleNumbers();
     this.selected = null;
     this.paint();
@@ -236,7 +256,8 @@ export class MayoScene {
     this.paint();
     if (this.selected && travel) {
       const [position, target] = this.framing();
-      const toward = new Vector3(this.selected.item.x * 0.1, 0, this.selected.item.z * 0.14);
+      const { x, z } = this.selected.group.position;
+      const toward = new Vector3(x * 0.1, 0, z * 0.14);
       this.moveCamera(position.add(toward), target.add(toward));
     }
     this.requestFrame();
@@ -330,9 +351,9 @@ export class MayoScene {
 
   // ---------- Las piezas ----------
 
+  /** Arma la pieza en el origen; `setTable` la pone en su lugar. */
   private async buildPiece(item: PlacedItem): Promise<ScenePiece> {
     const group = new Group();
-    group.position.set(item.x, 0, item.z);
     group.userData['itemId'] = item.itemId;
     // Materiales propios de la pieza: así se apaga o se tiñe sola
     const steel = new MeshStandardMaterial({
@@ -376,8 +397,9 @@ export class MayoScene {
       group.add(model);
     });
 
-    const box = new Box3().setFromObject(group);
-    const size = box.getSize(new Vector3());
+    const bounds = new Box3().setFromObject(group);
+    const size = bounds.getSize(new Vector3());
+    const center = bounds.getCenter(new Vector3());
     const shadow = new Mesh(
       this.shadowGeometry,
       new MeshBasicMaterial({
@@ -389,10 +411,10 @@ export class MayoScene {
     );
     shadow.scale.set(size.x * 1.15, Math.max(0.03, size.z * 1.4), 1);
     shadow.rotation.x = -Math.PI / 2;
-    shadow.position.y = SURFACE_Y - 0.0001;
+    shadow.position.set(center.x, SURFACE_Y - 0.0001, center.z);
     group.add(shadow);
 
-    // El número va junto a la pieza, del lado de los anillos (−X); no sube con ella
+    // El número no sube con la pieza: va aparte, y `setTable` lo pone junto a ella
     let number: Sprite | null = null;
     if (item.legendNumber !== null) {
       number = new Sprite(
@@ -405,9 +427,8 @@ export class MayoScene {
         }),
       );
       number.renderOrder = 5;
-      number.position.set(box.min.x - 0.012, 0.006, item.z);
     }
-    return { item, group, materials: [steel, blade], shadow, number };
+    return { item, group, bounds, materials: [steel, blade], shadow, number };
   }
 
   private numberTexture(value: number): Texture {
