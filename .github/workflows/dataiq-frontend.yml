@@ -9,6 +9,8 @@ on:
     paths:
       - "dataiq/frontend/**"
       - "shared/design/**"
+      # La página /politica-de-datos importa este documento en el build
+      - "docs/privacidad.md"
       # Un cambio de rutas o esquemas del backend obliga a regenerar los tipos
       - "dataiq/backend/app/**"
       - ".github/workflows/dataiq-frontend.yml"
