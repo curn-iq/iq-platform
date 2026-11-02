@@ -18,28 +18,31 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Presupuesto estricto: código inicial con aviso a los 300 KB y error a los 500 KB
 - [x] `index.html` en español
 - [x] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo creó el frontend de DataIQ
-- [ ] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens
-- [ ] Instalar `three` y sus tipos; presupuesto aparte para el chunk del visor
-- [ ] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build
-- [ ] Script de npm que genera los tipos de la API de DataIQ desde su `/openapi.json` (y los de SIMIQ3D cuando exista su API)
-- [ ] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen)
+- [x] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens (el azul de quirófano en vez del verde de interfaz)
+- [x] Sin la página de ejemplo de la CLI de Angular
+- [x] Instalar `three` y sus tipos (0.187.0, versión fija); presupuesto aparte para el chunk del visor: cada archivo de código, aviso a los 750 KB y error a los 900 KB (Three.js con lo que usa el visor mide 675 KB, 169 KB comprimido; medido el 2026-11-01)
+- [x] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build y de `npm start`. Conserva los nodos con nombre (`blade_mount`); los 23 modelos pasan de 698 KB a 172 KB
+- [x] `npm run api:types`: genera los tipos de las APIs de DataIQ y de SIMIQ3D (`src/app/data/api/`) desde el OpenAPI de cada backend, como el frontend de DataIQ
+- [x] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen): `src/environments/`
 
 ### Fase 1 — Núcleo
 
-- [ ] `domain/`: las acciones del chat y la geometría de la mesa (celda → posición en metros, centro de varias celdas), con pruebas
-- [ ] `data/`: repositorio de DataIQ (técnicas, mesa de una técnica, instrumentos) y de SIMIQ3D (chat y mapeo de modelos)
-- [ ] `core/http`: `provideHttpClient(withFetch())`, interceptor de `X-IQ-Client: web` e interceptor de errores
-- [ ] `core/session`: cuenta de `GET /api/dataiq/auth/me` y `sessionGuard`, que lleva al ingreso del shell con `?volver=`
+- [x] `domain/`: las acciones del chat (`sceneFor`: qué cambia en el visor con cada una) y la geometría de la mesa (celda → posición en metros, centro de varias celdas), con pruebas; el nombre de cada objeto de la leyenda, con la misma regla de DataIQ (`itemName`)
+- [x] `data/`: repositorio de DataIQ (cuenta, técnicas, mesa de una técnica, instrumentos) y de SIMIQ3D (chat y mapeo de modelos); `toMayoTable` saca la mesa de Mayo de la respuesta de DataIQ
+- [x] `core/http`: `provideHttpClient(withFetch())`, interceptor de `X-IQ-Client: web` e interceptor del 401 (sesión vencida → ingreso del shell); los demás errores los dice cada pantalla en su sitio
+- [x] `core/session`: cuenta de `GET /api/dataiq/auth/me` y `sessionGuard`, que lleva al ingreso del shell con `?volver=`. Si DataIQ no responde, la ruta espera y vuelve a preguntar (5, 10, 20 y 30 s, al volver la conexión y con «Reintentar»), sin mandar a ingresar a quien quizá tiene sesión
 
 ### Fase 2 — Visor (técnico, sin la interfaz final)
 
-- [ ] Escena, cámara y `OrbitControls` adaptados al tacto (girar, acercar), con límites para no perder la mesa
-- [ ] Carga de GLB con meshopt; cada modelo se descarga una vez y se reutiliza
-- [ ] La mesa de Mayo, de tamaño provisional, con cada instrumento a escala real y su centro en el de su celda; el mango con su hoja montada en `blade_mount` (README, «Cómo se arma la mesa»)
-- [ ] Dibujar solo cuando algo cambia; `devicePixelRatio` hasta 2; luz sencilla
-- [ ] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
-- [ ] Liberar la memoria al cambiar de técnica
-- [ ] Sin WebGL: aviso y enlace a la mesa en DataIQ
+- [x] Escena, cámara y `OrbitControls` adaptados al tacto (girar, acercar), con límites para no perder la mesa
+- [x] Carga de GLB con meshopt; cada modelo se descarga una vez y se reutiliza (`viewer/model-library.ts`)
+- [x] La mesa de Mayo, de tamaño provisional, con cada instrumento a escala real y su centro en el de su celda; el mango con su hoja montada en `blade_mount` (README, «Cómo se arma la mesa»)
+- [x] Dibujar solo cuando algo cambia; `devicePixelRatio` hasta 2; luz sencilla
+- [x] Tocar un instrumento lo resalta (raycasting); lo mismo desde la leyenda
+- [x] Liberar la memoria al cambiar de técnica (la geometría de cada modelo queda en la biblioteca para reutilizarla)
+- [x] Sin WebGL: aviso y enlace a la mesa en DataIQ
+- [x] Las piezas quedan dentro de la mesa y no se tapan entre sí: cada una se corre lo justo desde el centro de su celda (`domain/arrangement.ts`; decidido por Mauricio el 2026-11-01)
+- [x] Página técnica para ver el visor con datos reales (`explore/`): técnicas, visor y leyenda; la pantalla final es la fase 4
 - [ ] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar
 
 ### Fase 3 — Mockups
@@ -60,18 +63,21 @@ del chat, descripciones con fuente).
 
 ### Fase 4 — Pantalla de exploración
 
-- [ ] `/simiq3d`: chat con sugerencias y escena vacía
-- [ ] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
-- [ ] Ficha del instrumento con su descripción de DataIQ
-- [ ] Barra para volver al shell
+- [x] `/simiq3d`: la bienvenida «Elige una técnica para verla en 3D», con una opción por técnica de Cirugía General, y la mesa vacía. Las sugerencias del chat van con la fase 5
+- [x] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
+- [x] Ficha del instrumento con su descripción de DataIQ: se abre al tocar la pieza; un objeto de varios instrumentos muestra la de cada uno
+- [x] Barra para volver al shell: «Técnicas» y «Herramientas» llevan al shell, «Explorar en 3D» es esta pantalla; la marca sigue verde
+- [x] La pantalla como el mockup: el chat como panel ajustable (300 a 560 px), la cabeza con el selector de técnica y la marca «provisional», la leyenda plegable, la insignia del número, los controles de vista (3D · Arriba, acercar, alejar, centrar) y la pista para girar. En celular, el lienzo a pantalla completa, el campo fijo abajo, el historial desde la izquierda y la técnica en una hoja inferior
 
 ### Fase 5 — Chat
 
 Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 
-- [ ] Pregunta → acción → escena, con las ocho acciones del contrato; las opciones se envían como pregunta
-- [ ] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando
-- [ ] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
+- [x] Pregunta → acción → escena, con las ocho acciones del contrato; las opciones se envían como pregunta. La conversación sigue al abrir otra técnica (`explore/conversation.service.ts`); si la respuesta pide otra técnica, se abre y, cuando llega su mesa, se señala el instrumento
+- [x] Mensajes con quién habla, el chip de la acción, la lista de «Instrumental» que señala cada pieza, los tres puntos mientras llega la respuesta y las sugerencias para empezar, armadas con nombres de DataIQ. En celular, la última respuesta encima del campo
+- [x] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando; el campo sigue activo para volver a intentar
+- [x] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
+- [x] Revisión de la fase 5 (2026-11-02): la rueda y el pellizco acercan hacia el puntero; en celular, los tres puntos mientras llega la respuesta y la leyenda que se pliega al elegir; la ficha como nota translúcida en el azul claro de SIMIQ3D, con el número de la pieza, la primera oración de la descripción y «Ver más»
 - [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
 
 ### Fase 6 — Despliegue
@@ -98,7 +104,7 @@ cada instrumento es para después del MVP
 ([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
 
 - [x] La descripción de los 23 instrumentos en DataIQ (`instruments.description`, con su fuente en `description_source`)
-- [ ] Los modelos 3D
+- [x] Los modelos 3D de las cinco mesas de Mayo de Cirugía General (`simiq3d/models/modelos.csv`), comprobado el 2026-11-02 contra DataIQ local: ningún instrumento sin modelo
 
 Mientras falten, la escena funciona con valores provisionales marcados como
 tales en el código, nunca presentados como datos.

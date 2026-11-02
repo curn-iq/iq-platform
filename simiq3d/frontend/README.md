@@ -34,7 +34,7 @@ Decididas por Juan Caraballo el 2026-10-15.
 | Modelos 3D | GLB comprimidos con **meshopt** (`gltfpack`); el decodificador pesa unos 20 KB. Se sirven como archivos estáticos con caché |
 | Sistema visual | Dos capas: tokens base compartidos en `shared/design/` (raíz del repo) y el tema de SIMIQ3D en `src/styles/theme.scss`, que puede cambiar lo que necesite. Todo color nuevo se anota en `DESIGN.md` |
 | Sin conexión | No en el MVP: la caché HTTP guarda la app y los modelos después de la primera visita (ver `docs/despues-del-mvp.md`) |
-| Presupuesto | Código inicial: aviso a los 300 KB, error a los 500 KB. Cada GLB por debajo de 150 KB |
+| Presupuesto | Código inicial: aviso a los 300 KB, error a los 500 KB. Cada archivo de código, aviso a los 750 KB y error a los 900 KB: el del visor lleva Three.js, que con lo que usa mide 675 KB (169 KB comprimido). Cada GLB por debajo de 150 KB (`npm run models` falla si uno pasa) |
 | Estado | Servicios con signals. Sin NgRx |
 | Caché HTTP | Sin `ETag` a mano: el navegador revalida con lo que manda cada API |
 | Sesión y seguridad | La cookie `HttpOnly` de DataIQ; la cuenta sale de `GET /api/dataiq/auth/me`. `X-IQ-Client: web` en todas las peticiones; CSP estricta, sin `innerHTML` con datos de las APIs |
@@ -58,7 +58,11 @@ src/
     │   └── simiq3d.repository.ts   chat y mapeo modelo 3D → instrumento
     ├── viewer/             ★ el visor en Three.js; ver abajo
     ├── chat/               mensajes, sugerencias y campo de pregunta
-    └── explore/            la pantalla: chat + visor (rutas / y /tecnicas/:id)
+    ├── explore/            la pantalla: chat + visor (rutas / y /tecnicas/:id), con la
+    │                       cabeza, la leyenda, la ficha, los controles de vista y la hoja
+    │                       inferior del celular
+    ├── shell/              la barra del shell
+    └── shared/             media queries e iniciales del avatar, como en DataIQ
 ```
 
 **Reglas de dependencia**: `explore` usa `chat`, `viewer`, `data`, `domain` y
@@ -94,7 +98,8 @@ qué posición) y la dibuja. Para que corra bien en un celular modesto:
 La regla está en [`../README.md`, «Cómo se arma la mesa en 3D»](../README.md#cómo-se-arma-la-mesa-en-3d).
 En código: la cuadrícula de la técnica (`zones`: `rows` × `columns`, de
 `GET /techniques/{id}/instruments`) se reparte en partes iguales sobre la
-mesa, de tamaño provisional y el mismo para todas las técnicas; cada objeto
+mesa, de tamaño provisional y el mismo para todas las técnicas (56 × 40 cm,
+el del mockup; `MAYO_TABLE_SIZE` en `domain/mayo-table.ts`); cada objeto
 va con su centro en el centro de sus celdas (si ocupa varias, el centro de
 todas). Unidades en metros, el eje Y hacia arriba, las columnas sobre X y las
 filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
@@ -109,6 +114,13 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
   instrumentos independientes en la misma celda van uno al lado del otro.
 - **Todos apuntan igual**, a lo largo de X. Hacia dónde apunta cada uno es
   para después del MVP.
+- **Dentro de la mesa y sin taparse:** `domain/arrangement.ts` parte del
+  centro de las celdas de cada objeto y lo corre lo justo para que quede
+  entero sobre la mesa (a 1 cm del borde) y a 3 mm de cualquier otra pieza.
+  Dos piezas que se tapan se separan por el lado en que menos se tapan; como
+  son largas y delgadas, casi siempre es a lo ancho, así que cada una sigue en
+  su fila y en el mismo orden. Las medidas de cada pieza salen del modelo
+  armado, en la escena.
 
 ### El chat
 
@@ -137,6 +149,14 @@ nunca saca nada del texto:
 
 Las opciones se muestran como botones y, al tocarlas, se envían como
 pregunta.
+
+La conversación vive en `explore/conversation.service.ts`, aparte de la
+pantalla: al abrir otra técnica desde la bienvenida, la pantalla se vuelve a
+crear y la conversación sigue. Si la respuesta pide otra técnica, la pantalla
+la abre y, cuando llega su mesa, señala el instrumento (y abre su ficha, si se
+pidió). Mientras llega una respuesta no se envía otra. Si el chat no responde,
+el aviso lo dice y el campo sigue activo: la única forma de saber si volvió es
+preguntar otra vez.
 
 ### Modelos 3D
 
@@ -181,7 +201,11 @@ Relativas a `/simiq3d/`. Las rutas de las APIs son relativas a `/api/dataiq` y
 
 Las dos piden cuenta. Sin sesión, se va al ingreso del shell:
 `/cuenta/ingresar?volver=/simiq3d/…` (navegación completa, porque el shell es
-otra app). La barra para volver al shell también son enlaces normales.
+otra app). Si DataIQ no responde, no se sabe si hay sesión: la ruta espera y
+vuelve a preguntar sola, sin mandar a ingresar a quien quizá la tiene. Una
+sesión que vence mientras se usa la app (un 401 de cualquiera de las dos APIs)
+lleva al ingreso para volver a donde se estaba. La barra para volver al shell
+también son enlaces normales.
 
 ### Errores de las APIs
 
@@ -209,10 +233,16 @@ Hace falta Node.js y el backend de DataIQ corriendo (ver
 
 ```sh
 npm install
-npm start      # http://localhost:4300/simiq3d/
-npm test       # Vitest
-npm run build  # producción, con los presupuestos de angular.json
+npm start          # http://localhost:4300/simiq3d/
+npm test           # Vitest
+npm run build      # producción, con los presupuestos de angular.json
+npm run models     # comprime los modelos 3D (corre solo antes de start y build)
+npm run api:types  # tipos de las APIs, tras cambiar una ruta o un esquema de un backend
 ```
+
+`npm run api:types` necesita `uv` (el de los backends), pero no que los
+backends estén corriendo. Los tipos generados se versionan y se suben en el
+mismo PR que cambia el backend.
 
 `proxy.conf.json` manda `/api/dataiq` a `http://127.0.0.1:8000` y
 `/api/simiq3d` a `http://127.0.0.1:8001`.
@@ -221,7 +251,9 @@ Para el chat hace falta también el backend de SIMIQ3D en el puerto 8001 (ver
 [`../backend/README.md`](../backend/README.md)).
 
 Para entrar con una cuenta: la cookie de sesión no distingue puertos, así que
-sirve la que deja el ingreso del shell en `localhost:4200`. Sin el shell
+sirve la que deja el ingreso del shell en `localhost:4200`. En desarrollo, el
+shell no vuelve solo a `localhost:4300` después de ingresar (solo vuelve a
+rutas de su mismo origen): hay que volver a mano. Sin el shell
 corriendo, se puede pedir desde la consola del navegador, en
 `localhost:4300/simiq3d/`:
 

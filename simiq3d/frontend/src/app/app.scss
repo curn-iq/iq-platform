@@ -1,0 +1,7 @@
+// La barra arriba y la pantalla abierta con todo el alto que queda, sin scroll de página
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  overflow: hidden;
+}

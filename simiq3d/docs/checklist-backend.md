@@ -48,6 +48,13 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 - [x] Modelo del MVP: Qwen3-VL 8B instruct
 - [x] Banco de preguntas con su respuesta correcta, para medir la exactitud
   (`eval/banco.csv` y el comando `chat_bank`)
+- [ ] Con el modelo de lenguaje, la acción solo sale como `show_technique`,
+  `highlight_instrument`, `answer` o `clarify` (`_finish`, en
+  `app/adapters/outbound/language/ollama.py`); `describe_instrument`,
+  `show_clinical_data`, `list_instruments` y `no_answer` solo salen de las
+  plantillas. Visto el 2026-11-02 en local con Qwen3-VL: «¿Qué es la tijera de
+  Mayo?» no abre la ficha en el visor, aunque el texto la describe. El banco
+  califica «describir» y «listar» por el texto, no por la acción
 
 ## Modelos 3D
 
