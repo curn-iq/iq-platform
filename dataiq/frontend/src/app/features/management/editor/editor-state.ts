@@ -41,6 +41,8 @@ export class EditorState implements OnDestroy {
   private inFlight = false;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private abandoned = false;
+  /** Quienes esperan que termine el guardado (`whenSaved()`). */
+  private waiters: ((saved: boolean) => void)[] = [];
 
   /** Lo que hay en pantalla, o `undefined` mientras no llega la versión. */
   readonly content = this.contentState.asReadonly();
@@ -81,6 +83,17 @@ export class EditorState implements OnDestroy {
     if (this.dirty) this.save();
   }
 
+  /**
+   * Manda lo pendiente y espera a que no quede nada sin guardar. `true` si todo quedó guardado; `false` si
+   * el guardado falló o la versión ya no existe. Sin nada pendiente responde al momento.
+   */
+  whenSaved(): Promise<boolean> {
+    if (this.abandoned) return Promise.resolve(false);
+    this.flush();
+    if (!this.dirty && !this.inFlight) return Promise.resolve(true);
+    return new Promise((resolve) => this.waiters.push(resolve));
+  }
+
   /** Si hay algo sin guardar: por mandar, yendo o rechazado. */
   hasUnsaved(): boolean {
     return this.dirty || this.inFlight;
@@ -92,10 +105,17 @@ export class EditorState implements OnDestroy {
     this.dirty = false;
     clearTimeout(this.timer);
     this.timer = undefined;
+    this.notify(false);
   }
 
   ngOnDestroy(): void {
     this.flush();
+  }
+
+  private notify(saved: boolean): void {
+    const waiting = this.waiters;
+    this.waiters = [];
+    for (const resolve of waiting) resolve(saved);
   }
 
   private save(): void {
@@ -115,12 +135,14 @@ export class EditorState implements OnDestroy {
         if (this.versionId === id && !this.dirty) this.statusState.set('saved');
         // Hubo cambios mientras iba: salen ya, salvo que su espera siga corriendo
         else if (this.dirty && this.timer === undefined) this.save();
+        if (!this.dirty && !this.inFlight) this.notify(true);
       },
       error: () => {
         this.inFlight = false;
         if (this.abandoned || this.versionId !== id) return;
         this.dirty = true;
         this.statusState.set('failed');
+        this.notify(false);
       },
     });
   }

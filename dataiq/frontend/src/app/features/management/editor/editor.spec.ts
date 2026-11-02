@@ -336,11 +336,13 @@ describe('Editor', () => {
       expect(root.querySelector('.sheet .not-carried')).not.toBeNull();
     });
 
-    it('la hoja de revisar sigue vacía hasta su casilla', async () => {
+    it('la hoja de revisar resume las secciones y manda la versión; un colaborador envía', async () => {
       await open('revisar');
 
-      expect(root.querySelector('.sheet app-table-step')).toBeNull();
-      expect(root.querySelector('.sheet')!.children).toHaveLength(0);
+      expect(root.querySelector('.sheet app-review-step')).not.toBeNull();
+      expect(text('.sheet .title h2')).toBe('Revisar y enviar');
+      expect(root.querySelectorAll('.sheet .summary li')).toHaveLength(4);
+      expect(text('.sheet .submit')).toBe('Enviar a revisión');
     });
 
     it('lo armado en la mesa se refleja en lo que dice el paso y se guarda', async () => {

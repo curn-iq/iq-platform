@@ -301,6 +301,66 @@ describe('EditorState', () => {
       expect(state.hasUnsaved()).toBe(false);
     });
 
+    it('«whenSaved» sin nada pendiente responde que sí, sin pedir nada', async () => {
+      state.load(version());
+
+      await expect(state.whenSaved()).resolves.toBe(true);
+      http.expectNone(() => true);
+    });
+
+    it('«whenSaved» manda lo pendiente y espera su respuesta', async () => {
+      state.load(version());
+      edit('Pendiente');
+
+      let done: boolean | undefined;
+      void state.whenSaved().then((saved) => (done = saved));
+      const request = http.expectOne(urlOf());
+      await Promise.resolve();
+      expect(done).toBeUndefined();
+
+      request.flush(version());
+      await Promise.resolve();
+      expect(done).toBe(true);
+      expect(state.saveStatus()).toBe('saved');
+    });
+
+    it('«whenSaved» espera también lo que se editó mientras iba el guardado', async () => {
+      state.load(version());
+      edit('Uno');
+      let done: boolean | undefined;
+      void state.whenSaved().then((saved) => (done = saved));
+      const first = http.expectOne(urlOf());
+      edit('Dos');
+
+      first.flush(version());
+      await Promise.resolve();
+      expect(done).toBeUndefined();
+      vi.advanceTimersByTime(AUTOSAVE_DELAY_MS);
+      http.expectOne(urlOf()).flush(version());
+      await Promise.resolve();
+      expect(done).toBe(true);
+    });
+
+    it('«whenSaved» responde que no si el guardado falla', async () => {
+      state.load(version());
+      edit('Pendiente');
+
+      let done: boolean | undefined;
+      void state.whenSaved().then((saved) => (done = saved));
+      http.expectOne(urlOf()).flush('', { status: 500, statusText: 'Error' });
+      await Promise.resolve();
+
+      expect(done).toBe(false);
+      expect(state.saveStatus()).toBe('failed');
+    });
+
+    it('«whenSaved» responde que no si la versión ya no existe', async () => {
+      state.load(version());
+      state.abandon();
+
+      await expect(state.whenSaved()).resolves.toBe(false);
+    });
+
     it('«abandon» cancela lo pendiente y no guarda más: la versión ya no existe', () => {
       edit('Pendiente');
 

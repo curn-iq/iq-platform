@@ -101,7 +101,7 @@
           [versionId]="version.summary.id"
           [current]="current.slug"
         />
-        <!-- La hoja de «Revisar y enviar» llega en su casilla -->
+        <!-- La hoja de cada paso es su componente -->
         <div class="sheet" role="region" [attr.aria-label]="stepName()">
           @if (current.slug === 'datos-clinicos') {
             <app-clinical-step
@@ -117,6 +117,12 @@
             <app-table-step kind="mayo" />
           } @else if (current.slug === 'mesa-de-reserva') {
             <app-table-step kind="reserve" />
+          } @else if (current.slug === 'revisar') {
+            <app-review-step
+              [version]="version.summary"
+              [publishes]="publishesOwn()"
+              [role]="session.role()"
+            />
           }
         </div>
       }

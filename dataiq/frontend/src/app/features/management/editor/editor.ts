@@ -19,6 +19,7 @@ import { EditorStepItem, EditorSteps } from './editor-steps/editor-steps';
 import { InstrumentalStep } from './instrumental-step/instrumental-step';
 import { MoreActions } from './more-actions/more-actions';
 import { NewTechnique } from './new-technique/new-technique';
+import { ReviewStep } from './review-step/review-step';
 import { TableStep } from './table-step/table-step';
 
 /**
@@ -31,8 +32,8 @@ import { TableStep } from './table-step/table-step';
  *
  * El contenido de la versión y su autoguardado están en `EditorState`; el avance de cada paso sale de
  * él (`versionProgress`, Resuelto 22) y se actualiza con cada cambio. Una versión que no es un
- * borrador (en revisión) se abre en solo lectura. El contenido de cada paso llega en las casillas
- * siguientes de la fase 6 (`dataiq/docs/checklist-frontend.md`): hoy están los de los datos clínicos, el instrumental y las dos mesas; las demás hojas están vacías.
+ * borrador (en revisión) se abre en solo lectura. La hoja de cada paso es su componente: `ClinicalStep`,
+ * `InstrumentalStep`, `TableStep` (las dos mesas) y `ReviewStep` («Revisar y enviar» o «Revisar y publicar»).
  *
  * Una versión que no existe, un `versionId` que no puede serlo (un id imposible ni se pide: la API
  * respondería 422) o un paso que no es uno de los cinco muestra «No encontrada». Si la API falla por
@@ -48,6 +49,7 @@ import { TableStep } from './table-step/table-step';
     MoreActions,
     NewTechnique,
     NotFound,
+    ReviewStep,
     RouterLink,
     StatusPill,
     TableStep,
@@ -60,7 +62,7 @@ import { TableStep } from './table-step/table-step';
 })
 export class Editor {
   private readonly params = toSignal(inject(ActivatedRoute).paramMap, { requireSync: true });
-  private readonly session = inject(SessionService);
+  protected readonly session = inject(SessionService);
   protected readonly state = inject(EditorState);
   private readonly resource = inject(VersionsRepository).get(() => this.versionId());
 
@@ -95,7 +97,7 @@ export class Editor {
   });
 
   /** Revisor y admin publican lo suyo sin revisión: el último paso lo dice. */
-  private readonly publishesOwn = computed(() => {
+  protected readonly publishesOwn = computed(() => {
     const role = this.session.role();
     return role !== null && hasAtLeast(role, 'reviewer');
   });
