@@ -63,10 +63,11 @@ del chat, descripciones con fuente).
 
 ### Fase 4 — Pantalla de exploración
 
-- [ ] `/simiq3d`: chat con sugerencias y escena vacía
-- [ ] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
-- [ ] Ficha del instrumento con su descripción de DataIQ
-- [ ] Barra para volver al shell
+- [x] `/simiq3d`: la bienvenida «Elige una técnica para verla en 3D», con una opción por técnica de Cirugía General, y la mesa vacía. Las sugerencias del chat van con la fase 5
+- [x] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
+- [x] Ficha del instrumento con su descripción de DataIQ: se abre al tocar la pieza; un objeto de varios instrumentos muestra la de cada uno
+- [x] Barra para volver al shell: «Técnicas» y «Herramientas» llevan al shell, «Explorar en 3D» es esta pantalla; la marca sigue verde
+- [x] La pantalla como el mockup: el chat como panel ajustable (300 a 560 px), la cabeza con el selector de técnica y la marca «provisional», la leyenda plegable, la insignia del número, los controles de vista (3D · Arriba, acercar, alejar, centrar) y la pista para girar. En celular, el lienzo a pantalla completa, el campo fijo abajo, el historial desde la izquierda y la técnica en una hoja inferior
 
 ### Fase 5 — Chat
 

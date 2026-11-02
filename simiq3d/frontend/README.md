@@ -58,7 +58,11 @@ src/
     │   └── simiq3d.repository.ts   chat y mapeo modelo 3D → instrumento
     ├── viewer/             ★ el visor en Three.js; ver abajo
     ├── chat/               mensajes, sugerencias y campo de pregunta
-    └── explore/            la pantalla: chat + visor (rutas / y /tecnicas/:id)
+    ├── explore/            la pantalla: chat + visor (rutas / y /tecnicas/:id), con la
+    │                       cabeza, la leyenda, la ficha, los controles de vista y la hoja
+    │                       inferior del celular
+    ├── shell/              la barra del shell
+    └── shared/             media queries e iniciales del avatar, como en DataIQ
 ```
 
 **Reglas de dependencia**: `explore` usa `chat`, `viewer`, `data`, `domain` y
