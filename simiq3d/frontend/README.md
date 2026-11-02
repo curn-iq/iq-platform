@@ -34,7 +34,7 @@ Decididas por Juan Caraballo el 2026-10-15.
 | Modelos 3D | GLB comprimidos con **meshopt** (`gltfpack`); el decodificador pesa unos 20 KB. Se sirven como archivos estáticos con caché |
 | Sistema visual | Dos capas: tokens base compartidos en `shared/design/` (raíz del repo) y el tema de SIMIQ3D en `src/styles/theme.scss`, que puede cambiar lo que necesite. Todo color nuevo se anota en `DESIGN.md` |
 | Sin conexión | No en el MVP: la caché HTTP guarda la app y los modelos después de la primera visita (ver `docs/despues-del-mvp.md`) |
-| Presupuesto | Código inicial: aviso a los 300 KB, error a los 500 KB. Cada GLB por debajo de 150 KB |
+| Presupuesto | Código inicial: aviso a los 300 KB, error a los 500 KB. Cada archivo de código, aviso a los 750 KB y error a los 900 KB: el del visor lleva Three.js, que con lo que usa mide 675 KB (169 KB comprimido). Cada GLB por debajo de 150 KB |
 | Estado | Servicios con signals. Sin NgRx |
 | Caché HTTP | Sin `ETag` a mano: el navegador revalida con lo que manda cada API |
 | Sesión y seguridad | La cookie `HttpOnly` de DataIQ; la cuenta sale de `GET /api/dataiq/auth/me`. `X-IQ-Client: web` en todas las peticiones; CSP estricta, sin `innerHTML` con datos de las APIs |

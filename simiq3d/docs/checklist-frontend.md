@@ -20,7 +20,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo creó el frontend de DataIQ
 - [x] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens (el azul de quirófano en vez del verde de interfaz)
 - [x] Sin la página de ejemplo de la CLI de Angular
-- [ ] Instalar `three` y sus tipos; presupuesto aparte para el chunk del visor
+- [x] Instalar `three` y sus tipos (0.187.0, versión fija); presupuesto aparte para el chunk del visor: cada archivo de código, aviso a los 750 KB y error a los 900 KB (Three.js con lo que usa el visor mide 675 KB, 169 KB comprimido; medido el 2026-11-01)
 - [ ] `npm run models`: comprime `simiq3d/models/glb/*.glb` con `gltfpack` (meshopt) hacia `public/models/`, que no se versiona; corre también antes del build
 - [ ] Script de npm que genera los tipos de la API de DataIQ desde su `/openapi.json` (y los de SIMIQ3D cuando exista su API)
 - [ ] URL del shell por entorno (en desarrollo, `http://localhost:4200`; en producción, el mismo origen)
