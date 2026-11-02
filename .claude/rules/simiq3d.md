@@ -9,8 +9,9 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
 `simiq3d/backend/README.md`. Modelos 3D: `simiq3d/models/README.md`.
 
 - **Alcance del MVP:** la mesa de Mayo de las cinco técnicas de Cirugía
-  General de DataIQ. La mesa es de tamaño provisional, la misma para todas, y
-  todos los instrumentos apuntan igual.
+  General de DataIQ, sin tiempos quirúrgicos (DataIQ no los tiene: el chat no
+  ordena ni agrupa las piezas por tiempos). La mesa es de tamaño provisional,
+  la misma para todas, y todos los instrumentos apuntan igual.
 - **SIMIQ3D no es evaluación:** explora y consulta. Practicar con puntaje es
   función de SIVRI.
 - **El chat es un agente:** el modelo de lenguaje (Ollama en el Servidor PC2)
