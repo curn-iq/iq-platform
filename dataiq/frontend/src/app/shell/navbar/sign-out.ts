@@ -8,7 +8,7 @@ import { SessionService } from '../../core/session/session.service';
  * y llevar al inicio, como en los mockups: desde una pantalla de gestión no se puede quedar, porque
  * ya no es de quien salió. Si no se pudo cerrar la sesión (sin conexión, un error del servidor) el
  * interceptor ya lo avisó, la cuenta sigue —la cookie sigue— y se queda donde está, para intentarlo
- * de nuevo. Un 401 es una sesión que ya había vencido: también sale.
+ * de nuevo.
  */
 @Injectable({ providedIn: 'root' })
 export class SignOut {

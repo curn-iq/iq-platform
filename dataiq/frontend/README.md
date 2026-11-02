@@ -247,12 +247,12 @@ El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a
 Ingresar y Crear cuenta son una sola pantalla (`AccountEntry`, `cuenta.html`) en **una sola ruta**, `cuenta/:modo` (`ingresar` o `crear`; otro segmento es «No encontrada», por `canMatch`). Con una ruta por pestaña, pasar de una a otra volvería a crear la pantalla y no habría raya que se deslice ni mitades que cambien de lado. El modo y el título de la pestaña del navegador salen de `domain/account-entry.ts` (`accountModeOf()`), que también tiene el saludo según la hora (`greeting()`) y saca de `?volver=` la técnica a la que se iba (`techniqueIdOfReturnUrl()`; un id que no es un UUID ni se pide). Los dos formularios son Signal Forms (`form()` y `[formField]`) y cada pantalla pinta solo el de la pestaña abierta.
 
 - **La mitad izquierda** es la técnica que se quería abrir (`LockedTechnique`): ruta, nombre, especialidad y una vista bloqueada con las cuatro pestañas del detalle y un candado, igual para toda técnica, así que no revela si le falta una mesa (Resuelto 36). Pide `GET /techniques/{id}`, que es público; mientras llega, nombre y especialidad son barras y la mitad dice `aria-busy`. Si la técnica no existe o la API falla, vuelve a ser el saludo: no se queda en blanco ni ofrece un candado sin técnica. Sin técnica (ingreso directo) es el saludo con su ilustración (`LoginIllustration` y `RegisterIllustration`, SVG del mockup, decorativas; no se muestran en celular).
-- **Cambio de lado** (FLIP, 700 ms): solo en el ingreso directo y solo al pasar a Crear cuenta; con una técnica las mitades no se mueven. Cada mitad parte de donde estaba la última vez que se pintó (se vuelve a medir al cambiar el tamaño de la ventana) y no corre con movimiento reducido.
+- **Cambio de lado** (FLIP, 700 ms): solo en el ingreso directo y solo al pasar a Crear cuenta; con una técnica las mitades no se mueven. Depende de la URL (`?volver=`), no de si la técnica cargó, para que la respuesta de la API no las mueva con la persona escribiendo. Cada mitad parte de donde estaba la última vez que se pintó (se vuelve a medir al cambiar el tamaño de la ventana, cancelando el deslizamiento en curso, cuya medida saldría torcida) y no corre con movimiento reducido.
 - **Pestañas:** `shared/ui/tabs` con enlaces a `/cuenta/ingresar` y `/cuenta/crear` que **conservan la consulta** (`TabItem.queryParamsHandling: 'preserve'`), para no perder `?volver=` al cambiar de una a otra, con el ratón o con las flechas.
 - **Campos:** `shared/ui/text-field` (`app-text-field`) es un control de Signal Forms (`FormValueControl<string>`) con su etiqueta, y «Mostrar» / «Ocultar» para las contraseñas, que no le quita el foco a la caja. Un error de validación sale bajo la caja (`app-field-error`, `role="alert"`, sin rojo) solo cuando el campo se tocó: al salir de él o al intentar enviar. `shared/ui/checkbox-field` (`app-checkbox-field`) es lo mismo para una casilla (`FormCheckboxControl`), con su texto dentro y enlaces si hace falta.
 - **Sin Google ni «¿Olvidaste tu contraseña?»** (Resuelto 20).
-- **Ingresar** (Resuelto 43 y 44): valida al enviar igual que el registro (`loginSchema`, en `login-form.ts`): «Escribir el correo.» si falta, «Escribir un correo válido.» si no tiene forma de correo y «Escribir la contraseña.» si falta; la contraseña no se juzga (ni largo mínimo, para no decirle a quien prueba cuál es la regla, ni recorte). Manda `POST /auth/login` con el correo sin espacios de más y la contraseña tal cual, y va a `?volver=` o al catálogo (`returnTarget()`: solo rutas de esta app y nunca la propia cuenta, que lo dejaría en círculos). Con una contraseña incorrecta (401, que el interceptor deja a la pantalla) dice lo que responde la API, «Correo o contraseña incorrectos», que no delata si el correo existe; no marca ningún campo, deja el correo, **vacía la contraseña y le da el foco** para escribirla de nuevo. Cualquier otro fallo (sin conexión, un error del servidor) ya lo avisó el interceptor y se conserva lo escrito. Al ingresar se vacía el formulario. Un segundo envío mientras va el primero no hace nada. No hay límite de intentos: es un pendiente del backend (`docs/despues-del-mvp.md`).
-- **Crear cuenta** (Resuelto 43): valida al enviar con Signal Forms (`registrationSchema`, en `registration-form.ts`; las reglas puras de correo y contraseña, en `domain/registration.ts`): un mensaje bajo cada campo, el foco al primero con error y nada enviado si algo falla. La casilla «Soy mayor de 18 años y acepto el aviso de privacidad.» empieza sin marcar y enlaza `/politica-de-datos` en otra pestaña, para no perder lo escrito. Envía `POST /auth/register` con `accepts_policy: true` y el nombre y el correo sin espacios de más (la contraseña, tal cual); la API crea la cuenta pero no inicia sesión, así que ingresa sola con las mismas credenciales y va a `?volver=` o al catálogo (`returnTarget()`); si el ingreso falla, queda en Ingresar con lo que iba a abrir. Al crearse se vacía el formulario: la contraseña no se queda en la memoria de la pantalla. Un segundo envío mientras va el primero no hace nada.
+- **Ingresar** (Resuelto 43 y 44): valida al enviar igual que el registro (`loginSchema`, en `login-form.ts`): «Escribir el correo.» si falta, «Escribir un correo válido.» si no tiene forma de correo y «Escribir la contraseña.» si falta; la contraseña no se juzga (ni largo mínimo, para no decirle a quien prueba cuál es la regla, ni recorte). Manda `POST /auth/login` con el correo sin espacios de más y la contraseña tal cual, y va a `?volver=` o al catálogo (`returnTarget()`: solo rutas de esta app y nunca la propia cuenta, que lo dejaría en círculos). Con una contraseña incorrecta (401, que el interceptor deja a la pantalla) dice lo que responde la API, «Correo o contraseña incorrectos», que no delata si el correo existe; no marca ningún campo, deja el correo, **vacía la contraseña y le da el foco** para escribirla de nuevo. Cualquier otro fallo (sin conexión, un error del servidor) ya lo avisó el interceptor y se conserva lo escrito. Cada intento quita los errores del anterior (`NoticeService.dismissErrors()`), porque se quedan hasta cerrarlos y uno viejo seguiría a la persona ya adentro. Al ingresar se vacía el formulario. Un segundo envío mientras va el primero no hace nada. No hay límite de intentos: es un pendiente del backend (`docs/despues-del-mvp.md`).
+- **Crear cuenta** (Resuelto 43 y 46): valida al enviar con Signal Forms (`registrationSchema`, en `registration-form.ts`; la regla pura del correo y los topes, en `domain/registration.ts`): un mensaje bajo cada campo, el foco al primero con error y nada enviado si algo falla. Los campos no llevan `maxlength`: cortaría en silencio una contraseña pegada y la cuenta quedaría con una que la persona no conoce; pasar el tope se dice bajo el campo. La casilla «Soy mayor de 18 años y acepto el aviso de privacidad.» empieza sin marcar y enlaza `/politica-de-datos` en otra pestaña, para no perder lo escrito. Envía `POST /auth/register` con `accepts_policy: true` y el nombre y el correo sin espacios de más (la contraseña, tal cual); la API crea la cuenta pero no inicia sesión, así que ingresa sola con las mismas credenciales y va a `?volver=` o al catálogo (`returnTarget()`). Al crearse se vacía el formulario: la contraseña no se queda en la memoria de la pantalla. Si el ingreso falla, va a Ingresar con el correo puesto y con lo que iba a abrir, y dice «La cuenta se creó, pero no se pudo ingresar. Intentar de nuevo con ese correo y esa contraseña.», para que no se registre otra vez. Un segundo envío mientras va el primero no hace nada.
 - **Correo repetido: mitigación visual temporal** (Resuelto 43). La API responde 409 «Ya hay una cuenta con ese correo», que le dice a quien prueba correos cuáles tienen cuenta (enumeración de usuarios). La petición de registro va en silencio (`QUIET_ERRORS`: el interceptor no muestra el texto de la API) y la pantalla da un aviso neutro, igual para un 409 y para lo que no tiene un texto propio: «No se pudo completar el registro. Verificar los datos e intentar de nuevo.». No marca el campo del correo ni ofrece recuperar la contraseña. Es una mitigación, no la solución: el 409 sigue en el backend, y el pendiente (respuestas uniformes y límite de intentos) está en [`checklist-backend.md`](../docs/checklist-backend.md). Los demás 409 de la aplicación no cambian, y los demás errores del registro (sin conexión, un error del servidor, datos no válidos) dicen lo de siempre.
 
 #### Salir
@@ -262,7 +262,7 @@ separado por un filete) y del menú de celular, para cualquier rol (Resuelto 45 
 [checklist](../docs/checklist-frontend.md)). Lo hace `SignOut` (`shell/navbar/sign-out.ts`):
 `POST /auth/logout`, que borra la cookie `HttpOnly`; al salir se olvida la cuenta y **se lleva al
 inicio**, como en los mockups, también desde una pantalla de gestión, que ya no es de quien salió.
-Un 401 es que la sesión ya había vencido: también sale, sin aviso. Si no se pudo cerrar (sin conexión,
+La ruta no pide sesión, así que una ya vencida no es un error. Si no se pudo cerrar (sin conexión,
 un error del servidor) el interceptor ya avisó, la cuenta sigue —la cookie sigue, así que no se
 simula una salida que no ocurrió— y se queda donde está para intentarlo de nuevo. Un segundo toque
 mientras va la petición no pide otra vez (`aria-busy`).
@@ -428,9 +428,8 @@ manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
 
 - Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
   cuenta; lo trata la pantalla:
-  - el de `GET /auth/me` (visitante), el de `POST /auth/login` (contraseña mal
-    puesta) y el de `POST /auth/logout` (una sesión que ya había vencido: quien sale
-    igual queda fuera, y lo trata `SessionService.logout()`);
+  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
+    puesta);
   - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
     página pública: no lo saca de ahí;
   - el de una petición que salió antes de ingresar o salir
@@ -462,7 +461,7 @@ shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión)
 Solo el 401 dice que es un visitante, y es definitivo. Si la API no respondió
 (sin conexión o un 5xx en un arranque en frío) no se sabe si hay sesión:
 `loaded()` sigue en `false`, `loadFailed()` pasa a `true` y el próximo `load()`
-vuelve a preguntar; lo llaman los guards y `provideSession()`, al cambiar de
+vuelve a preguntar; lo llama `provideSession()`, al cambiar de
 página. Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una
 respuesta tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
 
@@ -472,7 +471,8 @@ respuesta tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
 que no hay nada que intentar antes) y `verification_unavailable` (sin conexión, un 5xx
 o un tiempo agotado). Esto último **no** dice que la sesión haya vencido: nunca cierra la
 sesión ni manda a ingresar. `GET /auth/me` espera 15 s como máximo (`timeout`) y pasa a
-no disponible, para que una API colgada no deje la app esperando.
+no disponible, para que una API colgada no deje la app esperando. Ese tiempo agotado se
+corta fuera de `HttpClient`, así que el interceptor no lo ve y lo avisa el propio servicio.
 
 **Comprobación con espera** (`verified()`, la que usan los guards): emite cuando ya se sabe
 (sesión o 401). Si la API no responde **no emite**: la navegación queda pendiente con su
@@ -481,7 +481,8 @@ URL (nada de la pantalla protegida se crea ni se pide), y `verificationBlocked()
 Mientras espera, vuelve a preguntar sola **en silencio** (`QUIET_ERRORS`: un reintento
 automático no repite el aviso de error) a los 5, 10, 20 y 30 s (y cada 30 s después), al
 volver la conexión (`online`) y cuando se pide con `retry()` («Reintentar», que sí avisa si
-falla). Al responder, la navegación sigue a la ruta que se había pedido; si otra
+falla; si se pide mientras va una pregunta en silencio y esa falla, se pregunta otra vez con
+aviso, para que el toque no se pierda). Al responder, la navegación sigue a la ruta que se había pedido; si otra
 navegación la cancela, deja de preguntar y el aviso se va. Quien ya tiene su información en
 pantalla no la pierde: la espera es una navegación pendiente, no destruye lo que se ve.
 
@@ -495,11 +496,13 @@ pantalla no la pierde: la espera es una navegación pendiente, no destruye lo qu
   403). Es solo para no mostrar pantallas que no se pueden usar: la API decide en cada
   petición, y el rol que guarda el navegador nunca da un permiso por sí solo.
 - `guestGuard`, en la ruta de la cuenta (`/cuenta/ingresar`, `/cuenta/crear`): a quien ya
-  tiene sesión lo lleva a donde iba (`?volver=`, por `returnTarget()`; nunca a otra pantalla
+  se sabe que tiene sesión lo lleva a donde iba (`?volver=`, por `returnTarget()`; nunca a otra pantalla
   de la cuenta, que lo devolvería en círculos) o al catálogo, **sin ningún aviso**: decirle a
   una URL que ya hay una sesión sería dar información de más. Quien quiera crear otra cuenta
-  cierra antes la sesión desde «Mi cuenta». No espera la comprobación: si no se sabe,
-  esa pantalla es adonde va quien no tiene sesión.
+  cierra antes la sesión desde «Mi cuenta». **No espera** a `GET /auth/me`: el formulario es lo
+  que necesita quien no tiene sesión y no se deja en blanco por un servidor que tarda, ni un
+  cambio de pestaña depende de esa respuesta. Si llega con la pantalla abierta y sí hay sesión,
+  `AccountEntry` hace lo mismo que el guard (Resuelto 46).
 - **Aviso de sesión sin comprobar** (`shell/session-unavailable/`): lo muestra `App` arriba de
   la ruta mientras `verificationBlocked()`, así ninguna pantalla lo resuelve por su cuenta. Dice
   que no se pudo comprobar la sesión y que la página se abre en cuanto responda el servidor, y

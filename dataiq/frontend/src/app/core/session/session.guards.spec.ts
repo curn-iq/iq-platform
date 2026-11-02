@@ -298,14 +298,18 @@ describe('guards de sesión', () => {
     it('si no se sabe si hay sesión, no la bloquea: quien llega a ingresar la ve', async () => {
       await failSession();
 
-      const navigation = router.navigateByUrl('/cuenta/ingresar');
-      // La pantalla de ingreso no espera a la comprobación: es adonde va quien no tiene sesión.
-      const request = await vi.waitFor(() => me());
-      request.flush(null, unavailable);
-
-      expect(await navigation).toBe(true);
+      expect(await router.navigateByUrl('/cuenta/ingresar')).toBe(true);
       expect(router.url).toBe('/cuenta/ingresar');
       expect(session.verificationBlocked()).toBe(false);
+    });
+
+    it('no espera a GET /auth/me: un servidor que tarda no deja la pantalla en blanco', async () => {
+      const pending = session.load();
+
+      expect(await router.navigateByUrl('/cuenta/ingresar')).toBe(true);
+
+      me().flush(null, unavailable);
+      await pending;
     });
   });
 });

@@ -6,6 +6,7 @@ import {
   NAME_ERROR,
   EMAIL_ERROR,
   PASSWORD_ERROR,
+  PASSWORD_TOO_LONG_ERROR,
   POLICY_ERROR,
   registrationSchema,
 } from './registration-form';
@@ -89,6 +90,13 @@ describe('registrationSchema', () => {
     expect(create({ ...valid, password: '1234567' }).messages().password).toEqual([PASSWORD_ERROR]);
     expect(create({ ...valid, password: '12345678' }).messages().password).toEqual([]);
     expect(create({ ...valid, password: '        ' }).messages().password).toEqual([]);
+  });
+
+  it('dice el tope de la contraseña en vez de cortarla en silencio', () => {
+    expect(create({ ...valid, password: 'x'.repeat(128) }).messages().password).toEqual([]);
+    expect(create({ ...valid, password: 'x'.repeat(129) }).messages().password).toEqual([
+      PASSWORD_TOO_LONG_ERROR,
+    ]);
   });
 
   it('sin aceptar el aviso no es válido, aunque lo demás esté bien', () => {

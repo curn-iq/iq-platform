@@ -130,9 +130,11 @@ describe('AccountEntry', () => {
 
     describe('el cambio de lado se anima', () => {
       let animate: ReturnType<typeof vi.fn>;
+      const cancel = vi.fn();
 
       beforeEach(() => {
-        animate = vi.fn();
+        cancel.mockClear();
+        animate = vi.fn(() => ({ cancel }));
         Object.defineProperty(HTMLElement.prototype, 'animate', {
           configurable: true,
           writable: true,
@@ -168,6 +170,26 @@ describe('AccountEntry', () => {
         await open('/cuenta/crear');
         await harness.navigateByUrl('/cuenta/crear?otra=1');
 
+        expect(animate).not.toHaveBeenCalled();
+      });
+
+      it('un cambio de pestaña en pleno deslizamiento cancela el anterior', async () => {
+        await open('/cuenta/ingresar');
+        await harness.navigateByUrl('/cuenta/crear');
+        expect(cancel).not.toHaveBeenCalled();
+
+        await harness.navigateByUrl('/cuenta/ingresar');
+
+        expect(cancel).toHaveBeenCalledTimes(2);
+        expect(animate).toHaveBeenCalledTimes(4);
+      });
+
+      it('la respuesta de la técnica no mueve las mitades mientras se escribe', async () => {
+        await open(`/cuenta/crear?volver=${BACK}`);
+
+        await respondTechnique(null, 404);
+
+        expect(entry().classList.contains('inverted')).toBe(false);
         expect(animate).not.toHaveBeenCalled();
       });
     });
@@ -427,8 +449,13 @@ describe('AccountEntry', () => {
         expect(link.getAttribute('rel')).toBe('noopener');
       });
 
-      it('la contraseña no deja escribir más de lo que acepta la API', () => {
-        expect(field('Contraseña').getAttribute('maxlength')).toBe('128');
+      it('una contraseña pegada más larga que el máximo no se corta: se dice', async () => {
+        await type(field('Contraseña'), 'x'.repeat(150));
+        expect(field('Contraseña').value).toHaveLength(150);
+        field('Contraseña').dispatchEvent(new Event('blur'));
+        await settle();
+
+        expect(errors()).toContain('La contraseña admite hasta 128 caracteres.');
       });
     });
 
@@ -568,6 +595,12 @@ describe('AccountEntry', () => {
 
         expect(router.url).toBe(`/cuenta/ingresar?volver=${BACK}`);
         expect(TestBed.inject(SessionService).isLoggedIn()).toBe(false);
+        // Dice que no hace falta registrarse otra vez, y deja el correo para no reescribirlo
+        expect(noticeTexts()).toContain(
+          'La cuenta se creó, pero no se pudo ingresar. Intentar de nuevo con ese correo y esa contraseña.',
+        );
+        expect(field('Correo').value).toBe('ana@example.com');
+        expect(field('Contraseña').value).toBe('');
       });
 
       it('borra lo escrito de la memoria de la pantalla en cuanto se crea la cuenta (la contraseña no se queda)', async () => {
@@ -626,6 +659,7 @@ describe('AccountEntry', () => {
 
         expect(field('Correo').value).toBe('ana@example.com');
         await submit();
+        expect(noticeTexts()).toEqual([]);
         registerRequest().flush(ACCOUNT, { status: 201, statusText: 'Created' });
         await settle();
         loginRequest().flush(ACCOUNT);

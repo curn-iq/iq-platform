@@ -1,19 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import {
-  catchError,
-  firstValueFrom,
-  fromEvent,
-  Observable,
-  of,
-  Subject,
-  tap,
-  throwError,
-  timeout,
-} from 'rxjs';
+import { firstValueFrom, fromEvent, Observable, Subject, tap, timeout, TimeoutError } from 'rxjs';
 import type { Account, Credentials } from '../../data/api/models';
 import { AuthRepository } from '../../data/auth.repository';
 import { hasAtLeast, Role } from '../../domain/role';
+import { describeApiError } from '../http/error-message';
+import { NoticeService } from '../notice/notice.service';
 
 /**
  * En qué punto está saber si hay sesión:
@@ -40,6 +32,7 @@ const RETRY_DELAYS_MS = [5_000, 10_000, 20_000, 30_000];
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly auth = inject(AuthRepository);
+  private readonly notices = inject(NoticeService);
   private readonly current = signal<Account | null>(null);
   private readonly done = signal(false);
   private readonly failed = signal(false);
@@ -87,7 +80,7 @@ export class SessionService {
    * promesa. Nunca se rechaza. Un 401 dice que es un visitante, y es definitivo. Si
    * la API no respondió (sin conexión, 5xx en un arranque en frío) no se sabe si hay
    * sesión: `loaded` sigue en `false`, `loadFailed` pasa a `true` y la próxima
-   * llamada vuelve a preguntar (el error ya lo avisó el interceptor). Tomar a esa
+   * llamada vuelve a preguntar (el error ya se avisó). Tomar a esa
    * persona por visitante le mostraría la puerta de cuenta aunque la tenga.
    */
   load(): Promise<void> {
@@ -99,7 +92,8 @@ export class SessionService {
    * los guards. Si la API no responde **no emite**: la navegación queda en espera, con su URL, y
    * no se manda a ingresar a quien quizá tiene sesión. Mientras espera vuelve a preguntar solo,
    * en silencio y cada vez más despacio (5, 10, 20 y 30 s), al volver la conexión (`online`) y
-   * cuando se pide con `retry()`. Si la navegación se cancela, deja de preguntar.
+   * cuando se pide con `retry()`; si se pide mientras va una pregunta en silencio, se repite
+   * al terminar para que la persona sepa qué pasó. Si la navegación se cancela, deja de preguntar.
    */
   verified(): Observable<void> {
     return new Observable<void>((subscriber) => {
@@ -107,10 +101,15 @@ export class SessionService {
       let timer: ReturnType<typeof setTimeout> | undefined;
       let attempts = 0;
       let running = false;
+      let requested = false;
       let closed = false;
 
       const check = async (quiet: boolean): Promise<void> => {
-        if (running || closed) return;
+        if (closed) return;
+        if (running) {
+          requested ||= !quiet;
+          return;
+        }
         running = true;
         clearTimeout(timer);
         try {
@@ -126,6 +125,11 @@ export class SessionService {
           return;
         }
         this.stalled.set(true);
+        if (requested) {
+          requested = false;
+          void check(false);
+          return;
+        }
         const delay = RETRY_DELAYS_MS[Math.min(attempts++, RETRY_DELAYS_MS.length - 1)];
         timer = setTimeout(() => void check(true), delay);
       };
@@ -156,19 +160,11 @@ export class SessionService {
   }
 
   /**
-   * Sale: la API borra la cookie. Si falla (sin conexión, un error del servidor), la cuenta sigue,
-   * porque la cookie sigue. Un 401 es que la sesión ya había vencido: no hay nada que cerrar, así
-   * que también sale y no es un error.
+   * Sale: la API borra la cookie (no pide sesión, así que una vencida no es un error). Si falla
+   * (sin conexión, un error del servidor), la cuenta sigue, porque la cookie sigue.
    */
   logout(): Observable<void> {
-    return this.auth.logout().pipe(
-      catchError((error: unknown) =>
-        error instanceof HttpErrorResponse && error.status === 401
-          ? of(undefined)
-          : throwError(() => error),
-      ),
-      tap(() => this.replace(null)),
-    );
+    return this.auth.logout().pipe(tap(() => this.replace(null)));
   }
 
   /** Olvida la cuenta sin hablar con la API (p. ej. cuando una petición responde 401). */
@@ -197,9 +193,13 @@ export class SessionService {
         this.auth.me({ quiet }).pipe(timeout(VERIFICATION_TIMEOUT_MS)),
       );
     } catch (error) {
-      // Un 401 es un visitante; lo demás lo avisó el interceptor y no dice si
-      // la cookie sirve, así que se vuelve a preguntar en el próximo `load()`.
+      // Un 401 es un visitante; lo demás no dice si la cookie sirve, así que se vuelve
+      // a preguntar en el próximo `load()`. El interceptor avisa lo que responde la API;
+      // el tiempo agotado se corta aquí, fuera de `HttpClient`, y no lo ve.
       answered = error instanceof HttpErrorResponse && error.status === 401;
+      if (error instanceof TimeoutError && !quiet) {
+        this.notices.show('error', describeApiError(0, undefined) ?? []);
+      }
     }
     if (this.changes !== seen) return;
     if (answered) {

@@ -54,17 +54,14 @@ export function roleGuard(minimum: Role): CanActivateFn {
 }
 
 /**
- * Para ingresar y crear la cuenta: a quien ya tiene sesión lo lleva a donde iba (`?volver=`) o al
- * catálogo, **sin ningún aviso** (decirle a una URL que ya hay una sesión sería dar información
- * de más); quien quiera crear otra cuenta cierra antes la sesión desde «Mi cuenta». No espera a
- * que se pueda comprobar la sesión: si no se sabe, es la pantalla a la que va quien no la tiene.
+ * Para ingresar y crear la cuenta: a quien ya se sabe que tiene sesión lo lleva a donde iba
+ * (`?volver=`) o al catálogo, **sin ningún aviso** (decirle a una URL que ya hay una sesión sería
+ * dar información de más); quien quiera crear otra cuenta cierra antes la sesión desde «Mi cuenta».
+ * **No espera** a `GET /auth/me`: el formulario es lo que necesita quien no tiene sesión y no se
+ * deja en blanco por un servidor que tarda. Si la respuesta llega después y sí hay sesión, la
+ * pantalla hace lo mismo que este guard (`AccountEntry`).
  */
-export const guestGuard: CanActivateFn = async (route) => {
-  const session = inject(SessionService);
-  const router = inject(Router);
-
-  await session.load();
-  return session.isLoggedIn()
-    ? router.parseUrl(returnTarget(route.queryParamMap.get('volver')))
+export const guestGuard: CanActivateFn = (route) =>
+  inject(SessionService).isLoggedIn()
+    ? inject(Router).parseUrl(returnTarget(route.queryParamMap.get('volver')))
     : true;
-};

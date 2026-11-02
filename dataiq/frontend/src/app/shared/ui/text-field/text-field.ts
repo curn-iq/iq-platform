@@ -25,6 +25,11 @@ let nextId = 0;
  * `revealable` (para contraseñas) suma a la derecha «Mostrar» / «Ocultar», que deja ver lo
  * escrito. El botón no le quita el foco a la caja.
  *
+ * Sin `maxlength`: la caja cortaría en silencio una contraseña pegada, y la cuenta quedaría con una
+ * que la persona no conoce; el largo se valida y se dice. Un correo o una contraseña van sin
+ * corrector ortográfico (el de algunos navegadores manda lo escrito a un servidor, también la
+ * contraseña que se está mostrando) ni mayúscula automática.
+ *
  * Un error de validación se dice bajo la caja (`app-field-error`) solo cuando el campo se tocó:
  * al salir de él o al intentar enviar el formulario. Así no se le reclama a quien aún no escribe.
  */
@@ -42,8 +47,6 @@ export class TextField implements FormValueControl<string> {
   readonly autocomplete = input('');
   readonly placeholder = input('');
   readonly revealable = input(false, { transform: booleanAttribute });
-  /** El largo máximo que deja escribir la caja (p. ej. el que acepta la API). */
-  readonly maxlength = input<number>();
   /** Los errores de validación del campo y si se tocó: los enlaza `[formField]`. */
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
   readonly touched = input(false);

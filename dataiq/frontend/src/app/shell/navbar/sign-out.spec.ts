@@ -59,15 +59,6 @@ describe('SignOut', () => {
     expect(router.url).toBe('/');
   });
 
-  it('con un 401 (la sesión ya había vencido) también sale, sin error', async () => {
-    const done = signOut.run();
-    logoutRequest().flush(null, { status: 401, statusText: 'Unauthorized' });
-    await done;
-
-    expect(session.isLoggedIn()).toBe(false);
-    expect(router.url).toBe('/');
-  });
-
   it('si no se pudo cerrar, la sesión sigue (la cookie sigue) y no se mueve de pantalla', async () => {
     const done = signOut.run();
     logoutRequest().flush(null, { status: 503, statusText: 'Service Unavailable' });

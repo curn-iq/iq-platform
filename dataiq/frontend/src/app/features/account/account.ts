@@ -4,9 +4,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -71,6 +73,10 @@ const TITLES: Record<AccountMode, string> = {
 const REGISTRATION_FAILED =
   'No se pudo completar el registro. Verificar los datos e intentar de nuevo.';
 
+/** La cuenta ya existe y lo que falló fue ingresar: que no se registre otra vez. */
+const SIGN_IN_AFTER_REGISTRATION_FAILED =
+  'La cuenta se creó, pero no se pudo ingresar. Intentar de nuevo con ese correo y esa contraseña.';
+
 /** Dónde estaban las dos mitades la última vez que se pintaron. */
 interface Layout {
   readonly inverted: boolean;
@@ -93,7 +99,11 @@ interface Layout {
  * las mismas credenciales (la API crea la cuenta pero no inicia sesión) y va a `?volver=` o al
  * catálogo. **Ingresar** valida igual, manda `POST /auth/login` y va al mismo sitio; con una
  * contraseña incorrecta dice lo que responde la API («Correo o contraseña incorrectos», que no
- * delata si el correo existe), deja el correo, vacía la contraseña y le da el foco.
+ * delata si el correo existe), deja el correo, vacía la contraseña y le da el foco. Cada intento
+ * quita los errores del anterior.
+ *
+ * Quien tiene sesión no se queda aquí: `guestGuard` no espera a `GET /auth/me`, así que si la
+ * respuesta llega con la pantalla abierta, se hace lo mismo que él.
  */
 @Component({
   selector: 'app-account',
@@ -147,8 +157,13 @@ export class AccountEntry {
     () => this.techniqueId() !== undefined && this.technique.error() === undefined,
   );
 
-  /** Las mitades cambian de lado solo en el ingreso directo, al crear la cuenta. */
-  protected readonly inverted = computed(() => this.mode() === 'register' && !this.hasTechnique());
+  /**
+   * Las mitades cambian de lado solo en el ingreso directo, al crear la cuenta. Sale de la URL y
+   * no de si la técnica cargó: si no, la respuesta de la API las movería con la persona escribiendo.
+   */
+  protected readonly inverted = computed(
+    () => this.mode() === 'register' && this.techniqueId() === undefined,
+  );
 
   private readonly hour = new Date().getHours();
   protected readonly greeting = computed(() => greeting(this.mode(), this.hour));
@@ -160,8 +175,14 @@ export class AccountEntry {
   private readonly pane = viewChild.required<ElementRef<HTMLElement>>('pane');
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
   private layout: Layout | undefined;
+  private slides: Animation[] = [];
+  private leaving = false;
 
   constructor() {
+    effect(() => {
+      if (this.session.isLoggedIn()) untracked(() => void this.continueAfterSignIn());
+    });
+
     // FLIP: cuando las mitades cambian de lado, cada una parte de donde estaba y se desliza al
     // sitio nuevo. Se compara con dónde estaban la última vez que se pintaron.
     afterRenderEffect(() => {
@@ -192,6 +213,7 @@ export class AccountEntry {
   }
 
   private async signIn(): Promise<void> {
+    this.notices.dismissErrors();
     const { email, password } = this.loginForm().value();
     try {
       await firstValueFrom(this.session.login({ email: email.trim(), password }));
@@ -222,6 +244,7 @@ export class AccountEntry {
   }
 
   private async createAccount(): Promise<void> {
+    this.notices.dismissErrors();
     const { name, email, password } = this.registerForm().value();
     const credentials = { email: email.trim(), password };
     try {
@@ -244,7 +267,10 @@ export class AccountEntry {
       await firstValueFrom(this.session.login(credentials));
     } catch {
       // La cuenta ya existe pero no se pudo ingresar (el interceptor avisa si fue un fallo del
-      // servidor): se queda en Ingresar, con a dónde se iba, para intentarlo.
+      // servidor): va a Ingresar con el correo puesto y con a dónde se iba, y se dice que no hace
+      // falta registrarse otra vez.
+      this.notices.show('error', [SIGN_IN_AFTER_REGISTRATION_FAILED]);
+      this.loginForm().reset({ email, password: '' });
       await this.router.navigate(['/cuenta', ACCOUNT_SEGMENTS.login], {
         queryParamsHandling: 'preserve',
       });
@@ -255,10 +281,18 @@ export class AccountEntry {
 
   /** Ya hay sesión: a donde se iba (`?volver=`, solo si es de esta app y no de la cuenta) o al catálogo. */
   private async continueAfterSignIn(): Promise<void> {
+    if (this.leaving) return;
+    this.leaving = true;
     await this.router.navigateByUrl(returnTarget(this.query().get('volver')));
   }
 
+  /**
+   * Dónde quedan las mitades. Un deslizamiento en curso se cancela antes: la medida incluye su
+   * desplazamiento, y guardarla torcería el siguiente.
+   */
   private measure(inverted: boolean): Layout {
+    this.slides.forEach((slide) => slide.cancel());
+    this.slides = [];
     return {
       inverted,
       asideLeft: this.aside().nativeElement.getBoundingClientRect().left,
@@ -268,10 +302,12 @@ export class AccountEntry {
 
   private slide(element: HTMLElement, distance: number): void {
     if (Math.abs(distance) <= 1 || typeof element.animate !== 'function') return;
-    element.animate([{ transform: `translateX(${distance}px)` }, { transform: 'none' }], {
-      duration: SWAP_MS,
-      easing: 'cubic-bezier(.16, 1, .3, 1)',
-    });
+    this.slides.push(
+      element.animate([{ transform: `translateX(${distance}px)` }, { transform: 'none' }], {
+        duration: SWAP_MS,
+        easing: 'cubic-bezier(.16, 1, .3, 1)',
+      }),
+    );
   }
 }
 

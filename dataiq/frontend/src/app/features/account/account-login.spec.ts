@@ -1,7 +1,9 @@
+import { withInterceptors } from '@angular/common/http';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { errorInterceptor } from '../../core/http/error.interceptor';
 import { NoticeService } from '../../core/notice/notice.service';
 import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
@@ -34,7 +36,7 @@ describe('AccountEntry: ingresar', () => {
   async function open(url: string): Promise<void> {
     TestBed.configureTestingModule({
       providers: [
-        provideRepositoryTesting(),
+        provideRepositoryTesting(withInterceptors([errorInterceptor])),
         provideRouter([
           { path: 'cuenta/:modo', component: AccountEntry },
           { path: 'tecnicas', children: [{ path: '**', children: [] }] },
@@ -241,7 +243,9 @@ describe('AccountEntry: ingresar', () => {
       loginRequest().flush(null, { status: 503, statusText: 'Service Unavailable' });
       await settle();
 
-      expect(noticeTexts()).toEqual([]);
+      expect(noticeTexts()).toEqual([
+        'El servidor no pudo responder. Intentar de nuevo en un momento.',
+      ]);
       expect(field('Contraseña').value).toBe('una contraseña');
       expect(router.url).toBe('/cuenta/ingresar');
     });
@@ -254,6 +258,55 @@ describe('AccountEntry: ingresar', () => {
       await settle();
 
       expect(root.textContent).not.toMatch(/Olvidaste|recuperar/i);
+    });
+  });
+
+  describe('los avisos de un intento anterior', () => {
+    it('al ingresar bien no queda el error de la contraseña incorrecta', async () => {
+      await open('/cuenta/ingresar');
+      await fill();
+      await submit();
+      loginRequest().flush(WRONG, { status: 401, statusText: 'Unauthorized' });
+      await settle();
+      expect(noticeTexts()).toEqual([WRONG.detail]);
+
+      await fill();
+      await submit();
+      expect(noticeTexts()).toEqual([]);
+      loginRequest().flush(ACCOUNT);
+      await settle();
+
+      expect(noticeTexts()).toEqual([]);
+      expect(router.url).toBe('/tecnicas');
+    });
+
+    it('tampoco queda el de un servidor que no respondió', async () => {
+      await open('/cuenta/ingresar');
+      await fill();
+      await submit();
+      loginRequest().flush(null, { status: 503, statusText: 'Service Unavailable' });
+      await settle();
+      expect(noticeTexts()).toHaveLength(1);
+
+      await submit();
+      loginRequest().flush(ACCOUNT);
+      await settle();
+
+      expect(noticeTexts()).toEqual([]);
+    });
+  });
+
+  describe('cuando la sesión se confirma con la pantalla abierta', () => {
+    it('quien sí tenía sesión va a donde iba, sin ningún aviso', async () => {
+      await open(`/cuenta/ingresar?volver=${BACK}`);
+
+      TestBed.inject(SessionService).login({ email: 'a@b.co', password: 'x' }).subscribe();
+      loginRequest().flush(ACCOUNT);
+      await settle();
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe(`/tecnicas/${ID}/instrumental`);
+      expect(noticeTexts()).toEqual([]);
     });
   });
 

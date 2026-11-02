@@ -4,6 +4,7 @@ import type { Account } from '../../data/api/models';
 import { QUIET_ERRORS } from '../../data/http-context';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
+import { NoticeService } from '../notice/notice.service';
 import { SessionService } from './session.service';
 
 const account = (role: Role = 'user'): Account => ({
@@ -207,18 +208,6 @@ describe('SessionService', () => {
       expect(session.account()).toBeNull();
     });
 
-    it('un 401 es que la sesión ya había vencido: igual sale, sin error', () => {
-      const done = vi.fn();
-      const failed = vi.fn();
-      session.logout().subscribe({ next: done, error: failed, complete: () => done('complete') });
-      http.expectOne(`${TEST_API_BASE}/auth/logout`).flush(null, unauthorized);
-
-      expect(failed).not.toHaveBeenCalled();
-      expect(done).toHaveBeenCalledWith('complete');
-      expect(session.account()).toBeNull();
-      expect(session.status()).toBe('unauthenticated');
-    });
-
     it('sin conexión, la cuenta sigue y el error le llega a quien llamó', () => {
       const failed = vi.fn();
       session.logout().subscribe({ error: failed });
@@ -335,6 +324,19 @@ describe('SessionService', () => {
   describe('si la API no responde nunca', () => {
     beforeEach(() => vi.useFakeTimers());
     afterEach(() => vi.useRealTimers());
+
+    it('el tiempo agotado no pasa por el interceptor: lo avisa el servicio', async () => {
+      const notices = TestBed.inject(NoticeService);
+      const loading = session.load();
+      me();
+
+      await vi.advanceTimersByTimeAsync(15_000);
+      await loading;
+
+      expect(notices.notices().flatMap((notice) => notice.messages)).toEqual([
+        'No hay conexión con el servidor.',
+      ]);
+    });
 
     it('pasados 15 s se da por no disponible y se cancela la petición', async () => {
       const loading = session.load();
@@ -477,6 +479,24 @@ describe('SessionService', () => {
       session.retry();
 
       expect(http.match(`${TEST_API_BASE}/auth/me`)).toHaveLength(1);
+    });
+
+    it('«retry» durante una pregunta en silencio no se pierde: si falla, se pregunta otra vez con aviso', async () => {
+      watch();
+      me().flush(null, unavailable);
+      await settle();
+      await vi.advanceTimersByTimeAsync(5_000);
+      const silent = me();
+      expect(silent.request.context.get(QUIET_ERRORS)).toBe(true);
+
+      session.retry();
+      silent.flush(null, unavailable);
+      await settle();
+
+      const asked = me();
+      expect(asked.request.context.get(QUIET_ERRORS)).toBe(false);
+      asked.flush(account());
+      await settle();
     });
 
     it('si se cancela (otra navegación), deja de preguntar y quita el aviso', async () => {

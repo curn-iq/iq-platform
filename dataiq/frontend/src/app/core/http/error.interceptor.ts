@@ -11,10 +11,8 @@ import { describeApiError } from './error-message';
 const ACCOUNT_PREFIX = '/cuenta';
 
 // Un 401 de estas rutas no es una sesión que venció en medio de algo: en `/auth/me` es un
-// visitante, en `/auth/login`, una contraseña mal puesta y en `/auth/logout`, una sesión que
-// ya había vencido (quien sale igual queda fuera, y lo trata `SessionService.logout()`).
-// Cada pantalla o servicio lo trata.
-const SILENT_401_PATHS = ['/auth/me', '/auth/login', '/auth/logout'];
+// visitante y en `/auth/login`, una contraseña mal puesta. Cada pantalla o servicio lo trata.
+const SILENT_401_PATHS = ['/auth/me', '/auth/login'];
 
 /** Cómo estaba la sesión cuando salió la petición. */
 interface SentWith {
@@ -61,7 +59,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
 /**
  * Un 401 que no es una sesión vencida no se avisa ni olvida la cuenta:
- * - el de `/auth/me`, `/auth/login` y `/auth/logout` (ver `SILENT_401_PATHS`);
+ * - el de `/auth/me` y `/auth/login` (ver `SILENT_401_PATHS`);
  * - el de un visitante: una página pública que pide algo que exige cuenta (la
  *   vista previa de la puerta de cuenta) no lo saca de ahí;
  * - el de una petición que salió antes de ingresar o salir: viene de la cookie

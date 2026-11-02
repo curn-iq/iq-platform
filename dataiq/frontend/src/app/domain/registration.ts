@@ -10,8 +10,3 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 export function isPlausibleEmail(value: string): boolean {
   return EMAIL_SHAPE.test(value.trim());
 }
-
-/** `true` si la contraseña tiene un largo que la API acepta. No se recorta: los espacios cuentan. */
-export function isPlausiblePassword(value: string): boolean {
-  return value.length >= MIN_PASSWORD_LENGTH && value.length <= MAX_PASSWORD_LENGTH;
-}

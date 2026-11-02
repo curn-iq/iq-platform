@@ -111,24 +111,6 @@ describe('errorInterceptor', () => {
       expect(navigate).not.toHaveBeenCalled();
     });
 
-    it('en /auth/logout es una sesión que ya había vencido: ni aviso ni redirección, y lo trata el servicio', () => {
-      const session = signIn();
-      const navigate = vi.spyOn(router, 'navigate');
-
-      const error = fail(
-        '/api/dataiq/auth/logout',
-        401,
-        { detail: 'Hace falta iniciar sesión' },
-        'POST',
-      );
-
-      expect(error?.status).toBe(401);
-      expect(notices.notices()).toEqual([]);
-      expect(navigate).not.toHaveBeenCalled();
-      // Olvidar la cuenta lo hace `SessionService.logout()`, no el interceptor
-      expect(session.isLoggedIn()).toBe(true);
-    });
-
     it('en /auth/login es una contraseña mal puesta: lo trata la pantalla', () => {
       const navigate = vi.spyOn(router, 'navigate');
 

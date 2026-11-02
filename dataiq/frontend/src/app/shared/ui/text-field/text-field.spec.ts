@@ -18,7 +18,6 @@ import { TextField } from './text-field';
       type="password"
       autocomplete="current-password"
       revealable
-      [maxlength]="20"
       [formField]="credentials.password"
     />
   `,
@@ -139,9 +138,15 @@ describe('TextField', () => {
     });
   });
 
-  it('maxlength limita lo que se puede escribir', () => {
-    expect(input(0).getAttribute('maxlength')).toBeNull();
-    expect(input(1).getAttribute('maxlength')).toBe('20');
+  it('un correo y una contraseña van sin corrector ni mayúscula automática', () => {
+    for (const index of [0, 1]) {
+      expect(input(index).getAttribute('spellcheck')).toBe('false');
+      expect(input(index).getAttribute('autocapitalize')).toBe('none');
+    }
+  });
+
+  it('no corta lo que se pega: el largo lo dice la validación', () => {
+    expect(input(1).hasAttribute('maxlength')).toBe(false);
   });
 
   describe('mostrar la contraseña', () => {
