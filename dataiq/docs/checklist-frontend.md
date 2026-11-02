@@ -76,7 +76,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Instrumental: el instrumental, las suturas por plano, los equipos biomédicos y el equipo médico-quirúrgico, todo detrás de la puerta de cuenta (Resuelto 27). Las suturas se muestran una fila por plano: `data/` separa el `usage` («Piel; Fascia») en planos
 - [x] Puerta de cuenta sin sesión: vista previa real y tarjeta que no revela si a la técnica le falta una mesa
 - [x] «Ver en 3D» y «Comprobar con la cámara» llevan a la cuenta sin sesión. Con sesión, «Ver en 3D» va a `/simiq3d/tecnicas/:id` (`simiq3d/frontend/README.md`) y «Comprobar con la cámara» a `/sivri/` (SIVRI reconoce la técnica sola). Se muestran en todas las técnicas: si el módulo no cubre una (el MVP de los dos es la mesa de Mayo de Cirugía General), su propia pantalla lo dice (Resuelto 17)
-- [ ] Republicar `diseno/mockups/inicio.html` en el [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK), como pide `.claude/rules/diseno.md`. El repo ya tiene las preguntas frecuentes corregidas (Resuelto 38) y el comportamiento del escenario de `DESIGN.md`. A cargo de Mauricio Lugo, dueño del Artifact
+- [x] Republicar `diseno/mockups/inicio.html` en el [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK), como pide `.claude/rules/diseno.md`. El repo ya tiene las preguntas frecuentes corregidas (Resuelto 38) y el comportamiento del escenario de `DESIGN.md`. A cargo de Mauricio Lugo, dueño del Artifact
 
 ### Fase 5 — Cuenta
 
@@ -101,6 +101,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Pasos de mesa: arrastrar a la celda (CDK drag-drop) o tocar celda → elegir objeto; filas y columnas de la mesa en `zones`; «no lleva esta mesa» es `used: false`
 - [x] Revisar y enviar (colaborador) / Revisar y publicar (revisor o admin) con confirmación en la misma tarjeta; el envío se bloquea mientras una sección no esté completa (Resuelto 22). Sin «Nota para el revisor» en el MVP (Resuelto 18)
 - [x] Desde el detalle: «Editar técnica» / «Continuar borrador» / «Ver versión en revisión» según el rol y la versión en curso. Un revisor o un admin ve «En curso por …»; a un colaborador, la versión en curso de otra persona le llega como el 409 de «Editar técnica», y su texto se muestra en el mismo botón (Resuelto 24)
+- [ ] Mis borradores en una sola petición, cuando `GET /versions` traiga el contenido de cada versión (pieza 11 de [`checklist-backend.md`](checklist-backend.md), a cargo de Mauricio Lugo): deja `VersionsRepository.getMany`, que hoy pide cada versión aparte
 
 ### Fase 7 — Gestión del revisor
 
