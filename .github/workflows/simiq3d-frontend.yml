@@ -1,0 +1,76 @@
+# Frontend de SIMIQ3D: build y pruebas en cada PR; en main, el despliegue a
+# Vercel (producción). El navegador llega a la app por el rewrite /simiq3d/ del
+# proyecto del shell (simiq3d/frontend/README.md, «Despliegue»).
+
+name: SIMIQ3D frontend
+
+on:
+  pull_request:
+    paths:
+      - "simiq3d/frontend/**"
+      # El build comprime los modelos de aquí (npm run models)
+      - "simiq3d/models/glb/**"
+      - "shared/design/**"
+      - ".github/workflows/simiq3d-frontend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "simiq3d/frontend/**"
+      - "simiq3d/models/glb/**"
+      - "shared/design/**"
+      - ".github/workflows/simiq3d-frontend.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: simiq3d/frontend
+
+jobs:
+  test:
+    name: Build y pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: simiq3d/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npx ng test --watch=false
+
+  deploy:
+    name: Despliegue en Vercel (producción)
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Un despliegue a la vez: si llegan dos pushes seguidos, el segundo espera
+    concurrency: vercel-produccion-simiq3d-frontend
+    env:
+      # No son secretos: identifican la cuenta y el proyecto de Vercel
+      VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
+      VERCEL_PROJECT_ID: prj_IcNsiS4nwgfjgPlkqlCocM2fPnjs
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: simiq3d/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      # El shell trae la app con la ruta completa (/simiq3d/…), así que se
+      # publica dentro de simiq3d/, con vercel.json (encabezados y rutas) al lado.
+      # Vercel no la construye: el build lee ../../shared/design/ y ../models/.
+      - name: Carpeta que se publica
+        run: |
+          mkdir -p "$RUNNER_TEMP/deploy/simiq3d"
+          cp -r dist/simiq3d/browser/. "$RUNNER_TEMP/deploy/simiq3d/"
+          cp vercel.json "$RUNNER_TEMP/deploy/"
+      # El plan Hobby no conecta repos de una organización de GitHub: por eso
+      # se despliega con el CLI y un token
+      - working-directory: ${{ runner.temp }}/deploy
+        run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}

@@ -264,3 +264,41 @@ fetch('/api/dataiq/auth/login', {
   body: JSON.stringify({ email: '<correo>', password: '<contraseña>' }),
 });
 ```
+
+## Despliegue
+
+El proyecto de Vercel `simiq3d-frontend` (cuenta de Mauricio, plan Hobby)
+sirve la app como sitio estático. El workflow
+[`simiq3d-frontend.yml`](../../.github/workflows/simiq3d-frontend.yml) corre
+el build y las pruebas en cada PR y, en cada push a `main`, construye en
+GitHub Actions y publica con el CLI de Vercel. Vercel no la construye, porque
+el build lee `../../shared/design/` y `../models/glb/`, que están fuera de
+esta carpeta.
+
+- **La ruta completa.** El proyecto del shell trae la app con un rewrite
+  `/simiq3d/:path*` hacia `https://simiq3d-frontend.vercel.app/simiq3d/:path*`
+  (Resuelto 1 de la [checklist](../docs/checklist-frontend.md#resuelto)). Por
+  eso la app se publica dentro de `simiq3d/`, y `vercel.json` manda a
+  `simiq3d/index.html` toda ruta que no sea un archivo, como
+  `/simiq3d/tecnicas/:id`.
+- **CSP** (`vercel.json`): todo sale de este mismo origen, salvo las fuentes
+  de `fonts.gstatic.com`, porque el build incrusta el CSS de Google Fonts. Las
+  excepciones:
+  - `'wasm-unsafe-eval'`: el decodificador meshopt de los modelos es
+    WebAssembly;
+  - `style-src 'unsafe-inline'`: Angular pone los estilos de cada componente
+    en un `<style>`, y un sitio estático no puede firmarlos con un nonce;
+  - `img-src data:`: la textura de tela de los tokens.
+
+  Los scripts van sin `'unsafe-inline'`. Por eso el build de producción no
+  incrusta el CSS crítico (`inlineCritical: false` en `angular.json`): esa
+  optimización agrega un script en línea. Se comprobó el 2026-11-02 con la app
+  completa (escena, fuentes y chat) en Brave: el navegador no bloqueó nada.
+- **Caché.** El código y los estilos llevan un hash en el nombre, así que se
+  guardan un año (`immutable`). Los modelos no lo llevan: se guardan un día y
+  se siguen sirviendo una semana más mientras se revalidan
+  (`stale-while-revalidate`), para que un modelo corregido llegue al día
+  siguiente. `index.html` va sin caché, como lo deja Vercel.
+- **Las APIs no pasan por este proyecto.** El navegador las pide al dominio
+  del shell (`/api/dataiq/*`, `/api/simiq3d/*`), que tiene sus propios
+  rewrites.
