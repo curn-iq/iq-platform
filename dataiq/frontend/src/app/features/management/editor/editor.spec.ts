@@ -259,6 +259,39 @@ describe('Editor', () => {
       expect(text('a[href$="/revisar"] .name')).toBe('5Revisar y enviar');
     });
 
+    it('la hoja de los datos clínicos tiene su paso, con el nombre y la especialidad de la versión', async () => {
+      await open('datos-clinicos');
+
+      const step = root.querySelector('.sheet app-clinical-step');
+      expect(step).not.toBeNull();
+      expect(
+        Array.from(step!.querySelectorAll<HTMLInputElement>('.identity input')).map((i) => i.value),
+      ).toEqual(['Colecistectomía', 'Cirugía general']);
+      expect(root.querySelector('.sheet')!.getAttribute('aria-label')).toBe('Datos clínicos');
+    });
+
+    it('lo que se escribe en la hoja se refleja en lo que falta del paso', async () => {
+      await open('datos-clinicos');
+      const label = Array.from(root.querySelectorAll('.sheet label')).find((l) =>
+        l.textContent!.trim().startsWith('Anestesia'),
+      )!;
+      const input = root.querySelector<HTMLInputElement>(`#${label.getAttribute('for')}`)!;
+
+      input.value = 'General.';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await settle();
+
+      expect(hint('datos-clinicos')).toBe('Faltan 6 campos');
+      await saveNow();
+    });
+
+    it('las demás hojas siguen vacías hasta su casilla', async () => {
+      await open('instrumental');
+
+      expect(root.querySelector('.sheet app-clinical-step')).toBeNull();
+      expect(root.querySelector('.sheet')!.children).toHaveLength(0);
+    });
+
     it('lo que falta sigue a lo que se edita, al momento', async () => {
       await open();
 

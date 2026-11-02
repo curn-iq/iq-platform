@@ -1,0 +1,133 @@
+<div class="title">
+  <h2>Datos clínicos</h2>
+  <p>Lo que se sabe del procedimiento antes de armar la mesa.</p>
+</div>
+
+<div class="layout">
+  <div class="card">
+    <!-- Se eligen al crear la técnica y desde ahí no cambian (Resuelto 28) -->
+    <div class="identity">
+      <app-text-field label="Nombre de la técnica" readonly [value]="technique()" />
+      <app-text-field label="Especialidad" readonly [value]="specialty()" />
+    </div>
+
+    <h3>Descripción</h3>
+    <app-textarea-field
+      label="Para qué sirve"
+      placeholder="En qué consiste el procedimiento y qué busca resolver."
+      [badge]="badge('description')"
+      [readonly]="readonly()"
+      [value]="text('description')"
+      (valueChange)="set('description', $event)"
+    />
+    <app-textarea-field
+      label="Indicaciones"
+      placeholder="En qué casos se realiza."
+      [badge]="badge('indications')"
+      [readonly]="readonly()"
+      [value]="text('indications')"
+      (valueChange)="set('indications', $event)"
+    />
+    <app-textarea-field
+      label="Complicaciones"
+      placeholder="Las más frecuentes y cómo se previenen."
+      optional
+      [readonly]="readonly()"
+      [value]="text('complications')"
+      (valueChange)="set('complications', $event)"
+    />
+    <app-textarea-field
+      label="Técnica quirúrgica"
+      placeholder="Los tiempos quirúrgicos, en orden."
+      optional
+      tall
+      [readonly]="readonly()"
+      [value]="text('surgical_technique')"
+      (valueChange)="set('surgical_technique', $event)"
+    />
+    <app-textarea-field
+      label="Fuente"
+      placeholder="De qué documento sale esta información."
+      [badge]="badge('source')"
+      [readonly]="readonly()"
+      [value]="text('source')"
+      (valueChange)="set('source', $event)"
+    />
+  </div>
+
+  <div class="card">
+    <h3>Preparación</h3>
+    <app-text-field
+      label="Código CUPS"
+      placeholder="Código del procedimiento"
+      inputmode="numeric"
+      optional
+      [readonly]="readonly()"
+      [value]="text('cups_code')"
+      (valueChange)="set('cups_code', $event)"
+    />
+    <app-text-field
+      label="Anestesia"
+      placeholder="Tipo de anestesia"
+      [badge]="badge('anesthesia')"
+      [readonly]="readonly()"
+      [value]="text('anesthesia')"
+      (valueChange)="set('anesthesia', $event)"
+    />
+    <app-text-field
+      label="Ropa"
+      placeholder="Paquete de ropa"
+      [badge]="badge('drapes')"
+      [readonly]="readonly()"
+      [value]="text('drapes')"
+      (valueChange)="set('drapes', $event)"
+    />
+    <app-text-field
+      label="Posición del paciente"
+      placeholder="Cómo se ubica al paciente"
+      [badge]="badge('patient_position')"
+      [readonly]="readonly()"
+      [value]="text('patient_position')"
+      (valueChange)="set('patient_position', $event)"
+    />
+    <app-chip-list
+      label="Equipos biomédicos"
+      inputLabel="Nuevo equipo"
+      [names]="content()?.equipment ?? []"
+      [readonly]="readonly()"
+      (added)="add('equipment', $event)"
+      (removed)="remove('equipment', $event)"
+    />
+
+    <!-- Se ven, pero se editan en la casilla de suturas -->
+    <section class="sutures" aria-labelledby="sutures-title">
+      <p class="label" id="sutures-title">
+        Suturas por plano
+        @if (sutures().length === 0) {
+          <span class="badge">{{ missing }}</span>
+        }
+      </p>
+      @if (sutures().length > 0) {
+        <dl>
+          @for (row of sutures(); track $index) {
+            <div [class.no-plane]="row.plane === null">
+              @if (row.plane !== null) {
+                <dt>{{ row.plane }}</dt>
+              }
+              <dd>{{ row.text }}</dd>
+            </div>
+          }
+        </dl>
+      }
+    </section>
+
+    <app-chip-list
+      label="Equipo médico-quirúrgico"
+      inputLabel="Nuevo equipo médico-quirúrgico"
+      [names]="content()?.devices ?? []"
+      [readonly]="readonly()"
+      (added)="add('devices', $event)"
+      (removed)="remove('devices', $event)"
+    />
+  </div>
+</div>

@@ -13,6 +13,7 @@ import { versionProgress } from '../../../domain/version-progress';
 import { Button } from '../../../shared/ui/button/button';
 import { NotFound } from '../../../shared/ui/not-found/not-found';
 import { StatusPill } from '../../../shared/ui/status-pill/status-pill';
+import { ClinicalStep } from './clinical-step/clinical-step';
 import { EditorState } from './editor-state';
 import { EditorStepItem, EditorSteps } from './editor-steps/editor-steps';
 import { MoreActions } from './more-actions/more-actions';
@@ -29,7 +30,7 @@ import { NewTechnique } from './new-technique/new-technique';
  * El contenido de la versión y su autoguardado están en `EditorState`; el avance de cada paso sale de
  * él (`versionProgress`, Resuelto 22) y se actualiza con cada cambio. Una versión que no es un
  * borrador (en revisión) se abre en solo lectura. El contenido de cada paso llega en las casillas
- * siguientes de la fase 6 (`dataiq/docs/checklist-frontend.md`): sus hojas están vacías.
+ * siguientes de la fase 6 (`dataiq/docs/checklist-frontend.md`): hoy está el de los datos clínicos y las demás hojas están vacías.
  *
  * Una versión que no existe, un `versionId` que no puede serlo (un id imposible ni se pide: la API
  * respondería 422) o un paso que no es uno de los cinco muestra «No encontrada». Si la API falla por
@@ -37,7 +38,16 @@ import { NewTechnique } from './new-technique/new-technique';
  */
 @Component({
   selector: 'app-editor',
-  imports: [Button, EditorSteps, MoreActions, NewTechnique, NotFound, RouterLink, StatusPill],
+  imports: [
+    Button,
+    ClinicalStep,
+    EditorSteps,
+    MoreActions,
+    NewTechnique,
+    NotFound,
+    RouterLink,
+    StatusPill,
+  ],
   templateUrl: './editor.html',
   styleUrl: './editor.scss',
   providers: [EditorState],

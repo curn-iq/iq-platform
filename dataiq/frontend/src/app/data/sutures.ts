@@ -8,7 +8,9 @@ import type { Suture } from './api/models';
  * (Resuelto 29 de `dataiq/docs/checklist-frontend.md`). Una sutura sin plano da una sola
  * fila sin plano. Todo en el orden en que llega de la API.
  */
-export function toPlaneSutures(sutures: readonly Suture[]): PlaneSuture[] {
+export function toPlaneSutures(
+  sutures: readonly Pick<Suture, 'name' | 'gauge' | 'needle_type' | 'usage'>[],
+): PlaneSuture[] {
   return sutures.flatMap((suture): PlaneSuture[] => {
     const base = { name: suture.name, gauge: suture.gauge, needleType: suture.needle_type };
     const planes = (suture.usage ?? '')

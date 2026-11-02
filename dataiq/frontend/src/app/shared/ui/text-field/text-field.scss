@@ -26,6 +26,12 @@ label {
   line-height: 20px;
 }
 
+// «Opcional»: texto, no pastilla
+.optional {
+  color: var(--color-text-subtle);
+  font-weight: 500;
+}
+
 .control {
   position: relative;
 }
@@ -50,6 +56,12 @@ input {
   &:focus {
     outline: none;
     box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
+
+  // Solo se lee: sobre `fondo`
+  &[readonly] {
+    background: var(--color-bg);
+    cursor: default;
   }
 
   // Deja sitio al botón de mostrar

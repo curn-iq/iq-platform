@@ -30,8 +30,10 @@ let nextId = 0;
  * corrector ortográfico (el de algunos navegadores manda lo escrito a un servidor, también la
  * contraseña que se está mostrando) ni mayúscula automática.
  *
- * `badge` suma junto a la etiqueta una pastilla («Falta», «Opcional») según «Editor de técnica
- * (página)» de `DESIGN.md`; quien la usa decide cuándo mostrarla.
+ * `badge` suma junto a la etiqueta la pastilla «Falta» y `optional`, el texto «Opcional», según «Editor de
+ * técnica (página)» de `DESIGN.md`; quien los usa decide cuándo mostrarlos. `readonly` deja ver el valor
+ * sin cambiarlo (nombre y especialidad de una técnica ya creada, o una versión en revisión), sobre
+ * `fondo`.
  *
  * Un error de validación se dice bajo la caja (`app-field-error`) solo cuando el campo se tocó:
  * al salir de él o al intentar enviar el formulario. Así no se le reclama a quien aún no escribe.
@@ -51,6 +53,12 @@ export class TextField implements FormValueControl<string> {
   readonly placeholder = input('');
   /** El texto de la pastilla junto a la etiqueta; sin texto, no hay pastilla. */
   readonly badge = input('');
+  /** Dice «Opcional» junto a la etiqueta, en vez de la pastilla. */
+  readonly optional = input(false, { transform: booleanAttribute });
+  /** Solo se lee: el valor se ve y se puede seleccionar, pero no se cambia. */
+  readonly readonly = input(false, { transform: booleanAttribute });
+  /** El teclado que ofrece un celular (`numeric`, p. ej. para el código CUPS). */
+  readonly inputmode = input('');
   readonly revealable = input(false, { transform: booleanAttribute });
   /** Los errores de validación del campo y si se tocó: los enlaza `[formField]`. */
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);

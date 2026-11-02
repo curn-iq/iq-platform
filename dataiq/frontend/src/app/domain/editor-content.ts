@@ -1,3 +1,15 @@
+/** Los datos clínicos de la versión que son un texto (el paso «Datos clínicos» del editor los escribe). */
+export type ClinicalTextField =
+  | 'description'
+  | 'indications'
+  | 'complications'
+  | 'surgical_technique'
+  | 'source'
+  | 'cups_code'
+  | 'anesthesia'
+  | 'drapes'
+  | 'patient_position';
+
 /** Una celda de un objeto en la mesa, contada desde 1. */
 export interface EditorCell {
   row: number;

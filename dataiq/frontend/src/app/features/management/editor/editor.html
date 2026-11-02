@@ -100,7 +100,14 @@
           [current]="current.slug"
         />
         <!-- La hoja de cada paso llega en la casilla de ese paso -->
-        <div class="sheet" role="region" [attr.aria-label]="stepName()"></div>
+        <div class="sheet" role="region" [attr.aria-label]="stepName()">
+          @if (current.slug === 'datos-clinicos') {
+            <app-clinical-step
+              [technique]="version.summary.technique"
+              [specialty]="version.summary.specialty"
+            />
+          }
+        </div>
       }
     }
   </section>

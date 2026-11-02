@@ -49,10 +49,15 @@ export function instrumentalSheet(source: InstrumentalSource): InstrumentalSheet
         item.source_text,
       ),
     ),
-    sutures: source.sutures.map((suture) => ({ plane: suture.plane, text: sutureText(suture) })),
+    sutures: source.sutures.map(sutureRow),
     equipment: source.equipment.map((element) => element.name),
     devices: source.devices.map((element) => element.name),
   };
+}
+
+/** La fila de una sutura: su plano y cómo se escribe. */
+export function sutureRow(suture: PlaneSuture): SutureRow {
+  return { plane: suture.plane, text: sutureText(suture) };
 }
 
 /** «Seda 2/0, aguja cortante»: el nombre con su calibre, y la aguja tras una coma. */
