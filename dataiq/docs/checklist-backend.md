@@ -125,7 +125,7 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     página manda a SIVRI en `Authorization: Bearer`; SIVRI lo valida con el
     JWKS y lo reenvía a DataIQ para pedir los datos. Revisar que la ruta del
     JWKS quede accesible en el despliegue (Vercel reserva `/.well-known`)
-11. [ ] Contenido de las versiones en la lista de `GET /versions`. A cargo de
+11. [x] Contenido de las versiones en la lista de `GET /versions`. A cargo de
     Mauricio Lugo (asignado por Juan el 2026-11-02; hallazgo de la revisión
     de la fase 6 del frontend)
     - **Por qué:** Mis borradores muestra el avance de cada sección y la nota
@@ -137,18 +137,19 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       aparte con su propia conexión a Neon (`NullPool`). Además es todo o
       nada: si una falla, la matriz entera dice que no pudo cargar, y
       «Reintentar» vuelve a pedir las N.
-    - **Recomendado:** que la lista pueda traer en la misma respuesta el
-      contenido y los rechazos de cada versión, los mismos de
-      `GET /versions/{id}` (p. ej. `GET /versions?include=content`), con una
-      sola consulta con eager loading, sin N+1, y con `Cache-Control` y
-      `ETag` (regla 3 de `CLAUDE.md`). Sin `include`, la lista sigue como
-      está, para no cargar a quien solo necesita el resumen. El avance se
-      sigue calculando en el frontend (`versionProgress`, Resuelto 22 de
-      [`checklist-frontend.md`](checklist-frontend.md)): el backend no conoce
-      esa regla y no hace falta moverla.
-    - **Después:** con la ruta en `main`, el frontend regenera sus tipos
-      (`npm run api:types`) y Mis borradores la usa en lugar de `getMany`
-      (pendiente en la fase 6 de [`checklist-frontend.md`](checklist-frontend.md))
+    - **Hecho el 2026-11-02:** `GET /versions?include=content` trae cada
+      versión como `GET /versions/{id}` (resumen, contenido y rechazos), con
+      los mismos filtros y permisos, `Cache-Control` y `ETag`. El contenido de
+      todas sale con las mismas consultas, sean una o muchas: el repositorio
+      lo arma con `build_details`, como `/catalog/full`, y una prueba compara
+      las consultas con una versión y con tres. `GET /versions/{id}` usa el
+      mismo código, así que las dos rutas devuelven lo mismo. Sin `include`,
+      la lista sigue como estaba. El avance se sigue calculando en el
+      frontend (`versionProgress`, Resuelto 22 de
+      [`checklist-frontend.md`](checklist-frontend.md)).
+    - **Después:** Mis borradores la usa en lugar de `getMany` (pendiente en
+      la fase 6 de [`checklist-frontend.md`](checklist-frontend.md)). Los tipos
+      del frontend ya se regeneraron con la ruta (`npm run api:types`)
 
 ## Hallazgos de seguridad pendientes
 
