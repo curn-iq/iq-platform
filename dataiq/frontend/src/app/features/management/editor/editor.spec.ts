@@ -91,6 +91,29 @@ describe('Editor', () => {
     await harness.navigateByUrl(`/gestion/editor/${ID}/${path}`);
     root = harness.routeNativeElement as HTMLElement;
     http.expectOne(VERSION_URL).flush(body);
+    if (path === 'instrumental') {
+      // El paso de instrumental pide el catálogo al abrirse: sin responderlo no hay estabilidad
+      for (let i = 0; i < 3; i++) {
+        await Promise.resolve();
+        harness.detectChanges();
+      }
+      await answerCatalog();
+    } else {
+      await settle();
+    }
+  }
+
+  async function answerCatalog(): Promise<void> {
+    http.expectOne(`${TEST_API_BASE}/catalog/full`).flush({
+      specialties: [],
+      zones: [],
+      categories: [{ id: 'c-1', name: 'Pinza' }],
+      instruments: [],
+      sutures: [],
+      equipment: [],
+      devices: [],
+      techniques: [],
+    });
     await settle();
   }
 
@@ -285,11 +308,41 @@ describe('Editor', () => {
       await saveNow();
     });
 
-    it('las demás hojas siguen vacías hasta su casilla', async () => {
+    it('la hoja del instrumental tiene su paso, con la técnica y su especialidad, y pide el catálogo', async () => {
       await open('instrumental');
 
+      expect(root.querySelector('.sheet app-instrumental-step')).not.toBeNull();
       expect(root.querySelector('.sheet app-clinical-step')).toBeNull();
+      expect(text('.sheet .title h2')).toBe('Instrumental');
+      expect(text('.sheet #suggested-title')).toBe('Sugeridos para Cirugía general');
+    });
+
+    it('las demás hojas siguen vacías hasta su casilla', async () => {
+      await open('mesa-de-mayo');
+
+      expect(root.querySelector('.sheet app-clinical-step')).toBeNull();
+      expect(root.querySelector('.sheet app-instrumental-step')).toBeNull();
       expect(root.querySelector('.sheet')!.children).toHaveLength(0);
+    });
+
+    it('lo agregado en el instrumental se refleja en lo que dice el paso y se guarda', async () => {
+      await open('instrumental');
+      state().edit((content) => ({
+        ...content,
+        items: [
+          {
+            zone_id: null,
+            legend_number: null,
+            source_text: 'Gasa',
+            components: [{ instrument_id: 'i-gasa', suture_id: null, name: 'Gasa' }],
+            cells: [],
+          },
+        ],
+      }));
+      harness.detectChanges();
+
+      expect(hint('instrumental')).toBe('1 objeto');
+      await saveNow();
     });
 
     it('lo que falta sigue a lo que se edita, al momento', async () => {
@@ -313,7 +366,7 @@ describe('Editor', () => {
     it('en el primer paso solo tiene «Siguiente», con el nombre del que sigue', async () => {
       await open('datos-clinicos');
 
-      expect(text('.count')).toBe('Paso 1 de 5 · Datos clínicos');
+      expect(text('.footer .count')).toBe('Paso 1 de 5 · Datos clínicos');
       expect(footerLinks().map((a) => a.textContent!.trim())).toEqual(['Siguiente: Instrumental']);
       expect(footerLinks()[0].getAttribute('href')).toBe(`/gestion/editor/${ID}/instrumental`);
     });
@@ -321,7 +374,7 @@ describe('Editor', () => {
     it('en un paso del medio tiene «Anterior» y «Siguiente»', async () => {
       await open('mesa-de-mayo');
 
-      expect(text('.count')).toBe('Paso 3 de 5 · Mesa de Mayo');
+      expect(text('.footer .count')).toBe('Paso 3 de 5 · Mesa de Mayo');
       expect(footerLinks().map((a) => a.textContent!.trim())).toEqual([
         'Anterior',
         'Siguiente: Mesa de reserva',
@@ -332,7 +385,7 @@ describe('Editor', () => {
     it('en el último paso solo tiene «Anterior»', async () => {
       await open('revisar');
 
-      expect(text('.count')).toBe('Paso 5 de 5 · Revisar y enviar');
+      expect(text('.footer .count')).toBe('Paso 5 de 5 · Revisar y enviar');
       expect(footerLinks().map((a) => a.textContent!.trim())).toEqual(['Anterior']);
     });
 
@@ -340,10 +393,19 @@ describe('Editor', () => {
       await open('datos-clinicos');
 
       footerLinks()[0].click();
-      await settle();
+      await vi.waitFor(() => {
+        harness.detectChanges();
+        expect(router.url).toBe(`/gestion/editor/${ID}/instrumental`);
+      });
+      for (let i = 0; i < 3; i++) {
+        await Promise.resolve();
+        harness.detectChanges();
+      }
+      // Pasar a un paso nuevo no vuelve a pedir la versión; el instrumental sí pide su catálogo
+      await answerCatalog();
 
       expect(router.url).toBe(`/gestion/editor/${ID}/instrumental`);
-      expect(text('.count')).toBe('Paso 2 de 5 · Instrumental');
+      expect(text('.footer .count')).toBe('Paso 2 de 5 · Instrumental');
       expect(
         links()
           .find((a) => a.getAttribute('aria-current') === 'step')!
@@ -359,7 +421,7 @@ describe('Editor', () => {
       await open('revisar');
 
       expect(text('a[href$="/revisar"] .name')).toBe('5Revisar y publicar');
-      expect(text('.count')).toBe('Paso 5 de 5 · Revisar y publicar');
+      expect(text('.footer .count')).toBe('Paso 5 de 5 · Revisar y publicar');
     });
   });
 

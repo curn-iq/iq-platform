@@ -108,6 +108,11 @@
               [technique]="version.summary.technique"
               [specialty]="version.summary.specialty"
             />
+          } @else if (current.slug === 'instrumental') {
+            <app-instrumental-step
+              [techniqueId]="version.summary.technique_id"
+              [specialty]="version.summary.specialty"
+            />
           }
         </div>
       }
