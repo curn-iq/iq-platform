@@ -450,6 +450,43 @@ async def test_reviewed_by_me_lists_what_the_reviewer_approved_or_rejected(
 
 
 @pytest.mark.anyio
+async def test_reviewed_by_me_with_include_content_brings_what_the_reviewer_decided(
+    client, contributor, reviewer, specialty, zone, instrument
+):
+    approved = await create_technique(client, contributor, specialty, "Aprobada")
+    rejected = await create_technique(client, contributor, specialty, "Rechazada")
+    for version in (approved, rejected):
+        await edit(client, contributor, version["id"], content(zone, instrument))
+        await action(client, contributor, version["id"], "submit")
+    await action(client, reviewer, approved["id"], "approve")
+    await action(
+        client, reviewer, rejected["id"], "reject", json={"reason": "Falta la ropa"}
+    )
+
+    response_ = await client.get(
+        "/versions?reviewed_by_me=true&include=content",
+        headers=auth_headers(reviewer),
+    )
+    as_contributor = await client.get(
+        "/versions?reviewed_by_me=true&include=content",
+        headers=auth_headers(contributor),
+    )
+
+    assert response_.status_code == 200
+    details = {v["summary"]["technique"]: v for v in response_.json()}
+    assert set(details) == {"Aprobada", "Rechazada"}
+    for detail in details.values():
+        alone = await client.get(
+            f"/versions/{detail['summary']['id']}", headers=auth_headers(reviewer)
+        )
+        assert detail == alone.json()
+    assert [r["reason"] for r in details["Rechazada"]["rejections"]] == [
+        "Falta la ropa"
+    ]
+    assert as_contributor.status_code == 403
+
+
+@pytest.mark.anyio
 async def test_include_content_brings_each_version_like_its_detail(
     session, client, contributor, reviewer, specialty, zone, instrument
 ):
