@@ -67,7 +67,8 @@ ul {
   width: max(260px, min(calc((100svh - 480px) * var(--aspect, 1)), 440px));
 }
 
-.single .stage {
+.single .stage,
+.single .side-head {
   width: 100%;
 }
 
@@ -127,9 +128,14 @@ ul {
   font-weight: 700;
 }
 
-// Un cambio de la mesa entera no tiene número
-span.number {
-  background: none;
+// Un cambio de la mesa entera no tiene número: su texto ocupa toda la fila
+.whole {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.whole .detail {
+  margin-top: 0;
+  text-wrap: balance;
 }
 
 .detail {
@@ -168,5 +174,12 @@ span.number {
 @media (max-width: 760px) {
   .compare:not(.single) {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  // El título y su subtítulo se apilan, para que el título no se parta
+  .side-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 }

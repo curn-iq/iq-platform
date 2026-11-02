@@ -155,6 +155,9 @@ describe('ReviewTable', () => {
     expect(text(resized)).toBe('La mesa pasa de 4 × 6 a 4 × 7');
     expect(resized.getAttribute('tabindex')).toBeNull();
     expect(resized.querySelector('strong')).toBeNull();
+    // Sin número no deja un hueco a la izquierda: el texto ocupa toda la fila
+    expect(resized.querySelector('.number')).toBeNull();
+    expect(resized.classList.contains('whole')).toBe(true);
   });
 
   describe('sin cambios', () => {
