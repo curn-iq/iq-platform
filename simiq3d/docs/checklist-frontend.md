@@ -59,7 +59,7 @@ del chat, descripciones con fuente).
 - [x] Pantalla de exploración en celular (390 px): cómo conviven el chat y la escena
 - [x] La misma pantalla en escritorio (1310 px)
 - [x] Ficha del instrumento al tocarlo, leyenda, estados (cargando, chat no disponible, sin respuesta, sin WebGL)
-- [ ] Publicar el mockup como página del [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK)
+- [x] Publicar el mockup como página del [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK) (versión 32, 2026-11-02): en el rol «Usuario», el flujo «Explorar una mesa en 3D». El mockup se ve como producción: bandeja de acero y funda azul, sin cuadrícula ni celdas, instrumentos a tamaño real acomodados como en la app y la ficha nueva
 
 ### Fase 4 — Pantalla de exploración
 
