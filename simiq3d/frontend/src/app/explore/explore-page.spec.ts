@@ -2,6 +2,7 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideRepositoryTesting, TEST_DATAIQ, TEST_SIMIQ3D } from '../data/testing';
+import { MOBILE_QUERY } from '../shared/media-query';
 import { ExplorePage } from './explore-page';
 
 const TECHNIQUES = [
@@ -34,7 +35,10 @@ describe('ExplorePage', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([]), provideRepositoryTesting()] });
   });
 
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
 
   /** Abre la pantalla y responde cada petición con datos de prueba. */
   async function open(id?: string) {
@@ -89,6 +93,24 @@ describe('ExplorePage', () => {
     TestBed.tick();
     expect(piece.getAttribute('aria-current')).toBe('true');
     expect(page.textContent).not.toMatch(/fila|columna/i);
+  });
+
+  it('en celular, la leyenda se pliega al elegir una pieza para que se vea en la mesa', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === MOBILE_QUERY,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    const page = await open('t-1');
+    page.querySelector<HTMLButtonElement>('app-legend .toggle')!.click();
+    TestBed.tick();
+    page.querySelector<HTMLButtonElement>('app-legend .piece')!.click();
+    TestBed.tick();
+    expect(page.querySelector('app-legend .panel')).toBeNull();
+
+    page.querySelector<HTMLButtonElement>('app-legend .toggle')!.click();
+    TestBed.tick();
+    expect(page.querySelector('app-legend .piece')?.getAttribute('aria-current')).toBe('true');
   });
 
   it('la respuesta del chat señala el instrumento en su mesa y abre su ficha', async () => {

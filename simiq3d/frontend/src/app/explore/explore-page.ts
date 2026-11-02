@@ -239,6 +239,12 @@ export class ExplorePage {
     void this.router.navigate(['/tecnicas', id]);
   }
 
+  /** En celular la leyenda tapa la mesa: al elegir una pieza se pliega para que se vea. */
+  protected pickFromLegend(id: string): void {
+    this.selected.set(id);
+    if (this.mobile()) this.legendOpen.set(false);
+  }
+
   /** Tocar una pieza la señala y abre su ficha; tocar la mesa vacía la suelta. */
   protected onTap(itemId: string | null): void {
     this.cardOpen.set(itemId !== null);

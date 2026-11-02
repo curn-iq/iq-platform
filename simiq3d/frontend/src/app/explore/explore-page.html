@@ -75,7 +75,7 @@
       [selected]="selected()"
       [(open)]="legendOpen"
       [disabled]="!mayo()"
-      (choose)="selected.set($event)"
+      (choose)="pickFromLegend($event)"
     />
     @if (cardOpen() && selectedItem(); as item) {
       <app-instrument-card
