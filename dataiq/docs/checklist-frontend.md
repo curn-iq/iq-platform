@@ -101,7 +101,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Pasos de mesa: arrastrar a la celda (CDK drag-drop) o tocar celda → elegir objeto; filas y columnas de la mesa en `zones`; «no lleva esta mesa» es `used: false`
 - [x] Revisar y enviar (colaborador) / Revisar y publicar (revisor o admin) con confirmación en la misma tarjeta; el envío se bloquea mientras una sección no esté completa (Resuelto 22). Sin «Nota para el revisor» en el MVP (Resuelto 18)
 - [x] Desde el detalle: «Editar técnica» / «Continuar borrador» / «Ver versión en revisión» según el rol y la versión en curso. Un revisor o un admin ve «En curso por …»; a un colaborador, la versión en curso de otra persona le llega como el 409 de «Editar técnica», y su texto se muestra en el mismo botón (Resuelto 24)
-- [ ] Mis borradores en una sola petición, cuando `GET /versions` traiga el contenido de cada versión (pieza 11 de [`checklist-backend.md`](checklist-backend.md), a cargo de Mauricio Lugo): deja `VersionsRepository.getMany`, que hoy pide cada versión aparte
+- [x] Mis borradores en una sola petición: `GET /versions?mine=true&include=content` trae el contenido de cada versión (pieza 11 de [`checklist-backend.md`](checklist-backend.md), a cargo de Mauricio Lugo), en lugar de `VersionsRepository.getMany`, que pedía cada versión aparte
 
 ### Fase 7 — Gestión del revisor
 

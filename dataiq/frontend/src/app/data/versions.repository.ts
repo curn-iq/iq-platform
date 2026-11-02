@@ -1,7 +1,6 @@
 import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
-import { inject, Injectable, ResourceRef } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { forkJoin, Observable, of } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import type { VersionState } from '../domain/version-state';
 import { API_BASE_URL } from './api-base-url';
 import type { VersionContent, VersionDetail, VersionSummary } from './api/models';
@@ -28,14 +27,19 @@ export class VersionsRepository {
   list(
     filter: () => VersionsFilter | undefined = () => ({}),
   ): HttpResourceRef<VersionSummary[] | undefined> {
-    return httpResource<VersionSummary[]>(() => {
-      const f = filter();
-      if (f === undefined) return undefined;
-      const params: Record<string, string | boolean | readonly string[]> = {};
-      if (f.state?.length) params['state'] = f.state;
-      if (f.mine !== undefined) params['mine'] = f.mine;
-      if (f.reviewedByMe !== undefined) params['reviewed_by_me'] = f.reviewedByMe;
-      return { url: `${this.base}/versions`, params };
+    return httpResource<VersionSummary[]>(() => this.listRequest(filter()));
+  }
+
+  /**
+   * Versiones según el filtro, cada una con su contenido y sus rechazos, como `get()`: todas en una
+   * sola petición (`GET /versions?include=content`). Un filtro indefinido deja el recurso quieto.
+   */
+  listWithContent(
+    filter: () => VersionsFilter | undefined = () => ({}),
+  ): HttpResourceRef<VersionDetail[] | undefined> {
+    return httpResource<VersionDetail[]>(() => {
+      const request = this.listRequest(filter());
+      return request && { ...request, params: { ...request.params, include: 'content' } };
     });
   }
 
@@ -44,22 +48,6 @@ export class VersionsRepository {
     return httpResource<VersionDetail>(() => {
       const versionId = id();
       return versionId === undefined ? undefined : this.versionUrl(versionId);
-    });
-  }
-
-  /**
-   * Varias versiones con su contenido y sus rechazos, en el orden de los ids (una petición por
-   * versión: la API no trae el contenido en la lista). Es todo o nada: si una falla, falla el
-   * recurso, y `reload()` las pide otra vez. Sin ids entrega una lista vacía; con ids
-   * indefinidos no pide nada.
-   */
-  getMany(ids: () => readonly string[] | undefined): ResourceRef<VersionDetail[] | undefined> {
-    return rxResource<VersionDetail[], readonly string[] | undefined>({
-      params: ids,
-      stream: ({ params }) =>
-        params.length === 0
-          ? of([])
-          : forkJoin(params.map((id) => this.http.get<VersionDetail>(this.versionUrl(id)))),
     });
   }
 
@@ -91,6 +79,18 @@ export class VersionsRepository {
   /** Devuelve una versión en revisión a borrador, con el motivo. Responde 409 si otro ya decidió. */
   reject(id: string, reason: string): Observable<void> {
     return this.http.post<void>(`${this.versionUrl(id)}/reject`, { reason });
+  }
+
+  /** La petición de `GET /versions` con los parámetros del filtro, o `undefined` sin filtro. */
+  private listRequest(
+    f: VersionsFilter | undefined,
+  ): { url: string; params: Record<string, string | boolean | readonly string[]> } | undefined {
+    if (f === undefined) return undefined;
+    const params: Record<string, string | boolean | readonly string[]> = {};
+    if (f.state?.length) params['state'] = f.state;
+    if (f.mine !== undefined) params['mine'] = f.mine;
+    if (f.reviewedByMe !== undefined) params['reviewed_by_me'] = f.reviewedByMe;
+    return { url: `${this.base}/versions`, params };
   }
 
   private versionUrl(id: string): string {
