@@ -150,6 +150,14 @@ nunca saca nada del texto:
 Las opciones se muestran como botones y, al tocarlas, se envían como
 pregunta.
 
+La conversación vive en `explore/conversation.service.ts`, aparte de la
+pantalla: al abrir otra técnica desde la bienvenida, la pantalla se vuelve a
+crear y la conversación sigue. Si la respuesta pide otra técnica, la pantalla
+la abre y, cuando llega su mesa, señala el instrumento (y abre su ficha, si se
+pidió). Mientras llega una respuesta no se envía otra. Si el chat no responde,
+el aviso lo dice y el campo sigue activo: la única forma de saber si volvió es
+preguntar otra vez.
+
 ### Modelos 3D
 
 ```

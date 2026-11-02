@@ -73,9 +73,11 @@ del chat, descripciones con fuente).
 
 Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 
-- [ ] Pregunta → acción → escena, con las ocho acciones del contrato; las opciones se envían como pregunta
-- [ ] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando
-- [ ] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
+- [x] Pregunta → acción → escena, con las ocho acciones del contrato; las opciones se envían como pregunta. La conversación sigue al abrir otra técnica (`explore/conversation.service.ts`); si la respuesta pide otra técnica, se abre y, cuando llega su mesa, se señala el instrumento
+- [x] Mensajes con quién habla, el chip de la acción, la lista de «Instrumental» que señala cada pieza, los tres puntos mientras llega la respuesta y las sugerencias para empezar, armadas con nombres de DataIQ. En celular, la última respuesta encima del campo
+- [x] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando; el campo sigue activo para volver a intentar
+- [x] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
+- [x] Revisión de la fase 5 (2026-11-02): la rueda y el pellizco acercan hacia el puntero; en celular, los tres puntos mientras llega la respuesta y la leyenda que se pliega al elegir; la ficha como nota translúcida en el azul claro de SIMIQ3D, con el número de la pieza, la primera oración de la descripción y «Ver más»
 - [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
 
 ### Fase 6 — Despliegue
@@ -102,7 +104,7 @@ cada instrumento es para después del MVP
 ([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
 
 - [x] La descripción de los 23 instrumentos en DataIQ (`instruments.description`, con su fuente en `description_source`)
-- [ ] Los modelos 3D
+- [x] Los modelos 3D de las cinco mesas de Mayo de Cirugía General (`simiq3d/models/modelos.csv`), comprobado el 2026-11-02 contra DataIQ local: ningún instrumento sin modelo
 
 Mientras falten, la escena funciona con valores provisionales marcados como
 tales en el código, nunca presentados como datos.
