@@ -69,7 +69,8 @@ let nextGradient = 0;
  *
  * `highlighted` es el número señalado y `focused` el de la pieza con el foco: con
  * `[(highlighted)]` y `[(focused)]` se enlazan con `app-table-legend`. La pieza señalada se levanta y las demás se atenúan; pasar
- * el puntero o enfocar una pieza la señala. El ancho lo decide quien lo use.
+ * el puntero o enfocar una pieza la señala. `highlightedPiece` señala una pieza por su `id`, tenga número
+ * o no: el editor de las mesas lo usa para el objeto elegido en su lista. El ancho lo decide quien lo use.
  */
 @Component({
   selector: 'app-table-diagram',
@@ -96,6 +97,21 @@ export class TableDiagram {
    * enlazarlo, el diagrama recuerda solo el suyo.
    */
   readonly focused = model<number | null>(null);
+  /** La pieza señalada por su `id` (el de su objeto en la mesa), aunque no tenga número; `null` si ninguna. */
+  readonly highlightedPiece = input<string | null>(null);
+
+  /** Hay una pieza señalada, por su número o por su `id`: las demás se atenúan. */
+  protected readonly marking = computed(
+    () => this.highlighted() !== null || this.highlightedPiece() !== null,
+  );
+
+  /** Si la pieza está señalada: por su número, si lo tiene y se enlaza, o por su `id`. */
+  protected isActive(piece: Pick<Piece, 'id' | 'linked' | 'legendNumber'>): boolean {
+    return (
+      (piece.linked && piece.legendNumber === this.highlighted()) ||
+      (!this.preview() && piece.id === this.highlightedPiece())
+    );
+  }
 
   protected readonly preview = computed(() => this.variant() === 'preview');
   protected readonly visibleRows = computed(() => Math.min(this.table().rows, PREVIEW_ROWS));

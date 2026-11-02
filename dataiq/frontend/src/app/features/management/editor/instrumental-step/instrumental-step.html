@@ -1,0 +1,209 @@
+<div class="title">
+  <h2>Instrumental</h2>
+  <p>{{ count() }} en esta técnica.</p>
+</div>
+
+@if (failed()) {
+  <div class="notice" role="status">
+    <p>No se pudo cargar el catálogo.</p>
+    <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+  </div>
+} @else if (!loaded()) {
+  <p class="notice" aria-busy="true">Cargando…</p>
+} @else {
+  <div class="layout">
+    <section class="card chosen" aria-labelledby="chosen-title">
+      <div class="head">
+        <h3 id="chosen-title">En esta técnica</h3>
+        <span class="count">{{ count() }}</span>
+      </div>
+      <div class="groups">
+        @for (group of groups(); track group.category) {
+          <div class="group">
+            <p class="group-name">
+              <span>{{ group.category }}</span>
+              {{ ' ' }}
+              <span class="count">{{ group.items.length }}</span>
+            </p>
+            <ul>
+              @for (entry of group.items; track entry.item) {
+                <li [class.fresh]="entry.item === fresh()">
+                  {{ entry.name }}
+                  @if (!readonly()) {
+                    <button
+                      type="button"
+                      class="remove"
+                      [attr.aria-label]="'Quitar ' + entry.name"
+                      (click)="remove(entry.index)"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                        <path
+                          d="M3 3l6 6M9 3l-6 6"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        } @empty {
+          <p class="empty">
+            Todavía no hay instrumental. Se agrega desde los sugeridos o el catálogo.
+          </p>
+        }
+      </div>
+    </section>
+
+    <section class="card catalog" aria-label="Agregar instrumental">
+      <div class="head">
+        <h3 id="suggested-title">Sugeridos para {{ specialty() }}</h3>
+        @if (hiddenSuggestions() > 0) {
+          <button type="button" class="more" [attr.aria-expanded]="showAll()" (click)="toggleAll()">
+            {{ showAll() ? 'Ver menos' : 'Ver ' + hiddenSuggestions() + ' más' }}
+          </button>
+        }
+      </div>
+      <p class="sub">Lo que usan las otras técnicas de la especialidad y esta todavía no tiene.</p>
+      <div class="suggested" role="group" aria-labelledby="suggested-title">
+        @for (suggestion of suggested(); track suggestion.instrument.id) {
+          <button
+            type="button"
+            class="chip"
+            [disabled]="readonly()"
+            [title]="'Lo usan ' + suggestion.uses + ' de ' + suggestion.total + ' técnicas'"
+            [attr.aria-label]="
+              'Agregar ' +
+              suggestion.instrument.name +
+              ', lo usan ' +
+              suggestion.uses +
+              ' de ' +
+              suggestion.total +
+              ' técnicas'
+            "
+            (click)="add(suggestion.instrument)"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M8 3v10M3 8h10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>{{ suggestion.instrument.name }}</span>
+            <span class="dots" aria-hidden="true">
+              @for (dot of [1, 2, 3]; track dot) {
+                <i [class.full]="dot <= suggestion.dots"></i>
+              }
+            </span>
+          </button>
+        } @empty {
+          <p class="empty">Ya tiene todo lo que usan las otras técnicas.</p>
+        }
+      </div>
+
+      <div class="explore">
+        <div class="head">
+          <h3 id="explore-title">Explorar el catálogo</h3>
+          <span class="count">{{ found() }}</span>
+        </div>
+        <app-search-field
+          size="compact"
+          label="Buscar en el catálogo de instrumental"
+          placeholder="Buscar por nombre"
+          [(value)]="query"
+        />
+        <div class="types" role="group" aria-label="Filtrar por tipo">
+          <button
+            type="button"
+            class="type"
+            [attr.aria-pressed]="category() === ''"
+            [class.none]="chipsTotal() === 0"
+            (click)="chooseCategory('')"
+          >
+            <span>Todos</span>{{ ' ' }}<span class="count">{{ chipsTotal() }}</span>
+          </button>
+          @for (chip of chips(); track chip.category) {
+            <button
+              type="button"
+              class="type"
+              [attr.aria-pressed]="category() === chip.category"
+              [class.none]="chip.count === 0"
+              (click)="chooseCategory(chip.category)"
+            >
+              <span>{{ chip.category }}</span>
+              {{ ' ' }}
+              <span class="count">{{ chip.count }}</span>
+            </button>
+          }
+        </div>
+        <div class="list" role="group" aria-labelledby="explore-title">
+          @for (group of catalogList(); track group.category) {
+            <p class="list-group">
+              <span>{{ group.category }}</span>
+              {{ ' ' }}
+              <span class="count">{{ group.rows.length }}</span>
+            </p>
+            @for (row of group.rows; track row.instrument.id) {
+              <button
+                type="button"
+                class="row"
+                [attr.aria-pressed]="row.inTechnique"
+                [attr.aria-disabled]="
+                  readonly() || (row.inTechnique && !row.removable) ? 'true' : null
+                "
+                (click)="toggle(row)"
+              >
+                <span>
+                  @for (segment of row.segments; track $index) {
+                    @if (segment.match) {
+                      <mark>{{ segment.text }}</mark>
+                    } @else {
+                      {{ segment.text }}
+                    }
+                  }
+                </span>
+                <span class="action">
+                  @if (row.inTechnique) {
+                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M3.5 8.5l3 3 6-6.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.9"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    En la técnica
+                  } @else {
+                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M8 3v10M3 8h10"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    Agregar
+                  }
+                </span>
+              </button>
+            }
+          } @empty {
+            <p class="empty">
+              Ningún instrumento coincide. Un revisor puede agregarlo al catálogo.
+            </p>
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+}

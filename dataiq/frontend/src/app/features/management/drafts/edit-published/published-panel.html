@@ -1,0 +1,64 @@
+<app-search-field
+  size="compact"
+  label="Buscar una técnica publicada"
+  placeholder="Buscar una técnica publicada"
+  [(value)]="query"
+/>
+
+@if (failed()) {
+  <div class="notice">
+    <p>No se pudieron cargar las técnicas publicadas.</p>
+    <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+  </div>
+} @else if (!loaded()) {
+  <p class="notice" aria-busy="true">Cargando…</p>
+} @else {
+  <div class="list">
+    @for (group of groups(); track group.specialty) {
+      <section>
+        <h3 class="group">{{ group.specialty }}</h3>
+        <ul>
+          @for (technique of group.techniques; track technique.id) {
+            <li>
+              @if (technique.busy; as busy) {
+                <span class="busy">
+                  {{ technique.name }}
+                  <small [attr.role]="technique.conflict ? 'alert' : null">{{ busy }}</small>
+                </span>
+              } @else {
+                <button
+                  type="button"
+                  class="choice"
+                  [attr.aria-busy]="creating() === technique.id"
+                  (click)="choose(technique.id)"
+                >
+                  <span>
+                    @for (segment of technique.segments; track $index) {
+                      @if (segment.match) {
+                        <mark>{{ segment.text }}</mark>
+                      } @else {
+                        <span>{{ segment.text }}</span>
+                      }
+                    }
+                  </span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                      d="M3 8h9M8.5 4L12.5 8l-4 4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    } @empty {
+      <p class="empty">Ninguna técnica publicada coincide.</p>
+    }
+  </div>
+}

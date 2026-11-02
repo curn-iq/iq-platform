@@ -11,3 +11,11 @@ export const ROLES: readonly Role[] = ['user', 'contributor', 'reviewer', 'admin
 export function hasAtLeast(role: Role, minimum: Role): boolean {
   return ROLES.indexOf(role) >= ROLES.indexOf(minimum);
 }
+
+/**
+ * Dice si quien tiene ese rol publica lo suyo sin revisión: un revisor o un admin (`docs/flujos.md`).
+ * Sin cuenta (`null`), no.
+ */
+export function publishesOwn(role: Role | null): boolean {
+  return role !== null && hasAtLeast(role, 'reviewer');
+}

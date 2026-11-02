@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { QUIET_ERRORS } from '../../data/http-context';
+import { HANDLED_STATUSES, QUIET_ERRORS } from '../../data/http-context';
 import { NoticeService } from '../notice/notice.service';
 import { LOGIN_PATH } from '../session/login-path';
 import { SessionService } from '../session/session.service';
@@ -27,7 +27,8 @@ interface SentWith {
  * sesión y la sesión no cambió desde entonces. Los demás códigos (p. ej. el 404)
  * no se avisan. Un fallo de comunicación (sin conexión, 5xx, tiempo agotado) nunca
  * cierra la sesión: no dice que haya vencido. Una petición marcada con `QUIET_ERRORS`
- * (un reintento automático) no avisa.
+ * (un reintento automático) no avisa, y una con `HANDLED_STATUSES` no avisa de esos códigos: la
+ * pantalla los trata.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notices = inject(NoticeService);
@@ -37,7 +38,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: unknown) => {
-      const quiet = req.context.get(QUIET_ERRORS);
+      const quiet =
+        req.context.get(QUIET_ERRORS) ||
+        (error instanceof HttpErrorResponse &&
+          req.context.get(HANDLED_STATUSES).includes(error.status));
       if (
         error instanceof HttpErrorResponse &&
         !quiet &&

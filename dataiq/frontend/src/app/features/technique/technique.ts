@@ -24,6 +24,7 @@ import { NotFound } from '../../shared/ui/not-found/not-found';
 import { TabItem, Tabs } from '../../shared/ui/tabs/tabs';
 import { TechniqueClinical } from './technique-clinical/technique-clinical';
 import { TechniqueColumn } from './technique-column/technique-column';
+import { TechniqueEditAction } from './technique-edit-action/technique-edit-action';
 import { GatePreview, TechniqueGate } from './technique-gate/technique-gate';
 import { TechniqueInstrumental } from './technique-instrumental/technique-instrumental';
 import { TechniqueTable } from './technique-table/technique-table';
@@ -84,6 +85,7 @@ const GATE_TEXTS: Record<string, { preview: GatePreview; title: string; text: st
     Tabs,
     TechniqueClinical,
     TechniqueColumn,
+    TechniqueEditAction,
     TechniqueGate,
     TechniqueInstrumental,
     TechniqueTable,

@@ -1,0 +1,262 @@
+<div class="title">
+  <h2>{{ zoneName() }}</h2>
+  @if (isReserve()) {
+    <p>Lo que se tiene a mano fuera de la mesa de Mayo.</p>
+  } @else {
+    <p>
+      <span class="with-mouse">
+        Arrastrar cada objeto a su celda, o tocar una celda y elegir qué va ahí.
+      </span>
+      <span class="with-finger">
+        Tocar una celda y elegir qué va ahí, o elegir un objeto y luego su celda.
+      </span>
+    </p>
+  }
+</div>
+
+@if (failed()) {
+  <div class="notice" role="status">
+    <p>No se pudo cargar el catálogo.</p>
+    <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+  </div>
+} @else if (!loaded()) {
+  <p class="notice" aria-busy="true">Cargando…</p>
+} @else {
+  @if (isReserve()) {
+    <div class="not-carried">
+      <app-checkbox-field
+        [checked]="notCarried()"
+        [disabled]="readonly()"
+        (checkedChange)="setNotCarried($event)"
+      >
+        <strong>Esta técnica no lleva mesa de reserva</strong>
+        <span class="help">
+          {{ notCarried() ? 'Desmarcar para armarla.' : 'Marcar si la técnica no la lleva.' }}
+        </span>
+      </app-checkbox-field>
+    </div>
+  }
+
+  @if (notCarried()) {
+    <p class="none">Sin mesa de reserva en esta versión.</p>
+  } @else {
+    <div class="editor" [style.--ratio]="columns() / rows()" [class.dragging]="dragging()">
+      <div class="objects">
+        <h3>Objetos de la mesa</h3>
+        <p class="sub">
+          @if (isReserve()) {
+            Lo que se agrega aquí entra también al instrumental de la técnica.
+          } @else {
+            El número es el de la leyenda; cada mesa tiene su propia numeración.
+          }
+        </p>
+        <ol
+          class="list"
+          cdkDropList
+          cdkDropListSortingDisabled
+          [cdkDropListEnterPredicate]="acceptNone"
+        >
+          @for (object of objects(); track object.index) {
+            <li>
+              <button
+                type="button"
+                class="object"
+                cdkDrag
+                [cdkDragDisabled]="readonly()"
+                [cdkDragStartDelay]="{ mouse: 0, touch: 350 }"
+                [class.unplaced]="!object.placed"
+                [class.selected]="selected() === object.index"
+                [attr.aria-pressed]="selected() === object.index"
+                (click)="toggleSelected(object.index, $event)"
+                (mouseenter)="hover(object.index)"
+                (mouseleave)="hover(null)"
+                (cdkDragStarted)="dragStarted()"
+                (cdkDragMoved)="dragMoved($event)"
+                (cdkDragEnded)="dragEnded($event, object.index)"
+              >
+                <b class="number">{{ object.number }}</b>
+                {{ ' ' }}
+                <span>
+                  <span class="name">{{ object.name }}</span>
+                  {{ ' ' }}
+                  <span class="place">{{ object.place }}</span>
+                </span>
+                @if (!readonly()) {
+                  <svg class="grip" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                    <circle cx="5" cy="3" r="1.2" fill="currentColor" />
+                    <circle cx="9" cy="3" r="1.2" fill="currentColor" />
+                    <circle cx="5" cy="7" r="1.2" fill="currentColor" />
+                    <circle cx="9" cy="7" r="1.2" fill="currentColor" />
+                    <circle cx="5" cy="11" r="1.2" fill="currentColor" />
+                    <circle cx="9" cy="11" r="1.2" fill="currentColor" />
+                  </svg>
+                }
+                <span *cdkDragPreview class="ghost">
+                  <b class="number">{{ object.number }}</b>
+                  {{ object.name }}
+                </span>
+              </button>
+            </li>
+          }
+        </ol>
+        @if (!readonly()) {
+          @if (picking()) {
+            <app-object-picker
+              [instruments]="allInstruments()"
+              [categoryOrder]="categoryOrder()"
+              [present]="present()"
+              [quick]="quick()"
+              quickLabel="Más usados en mesas de reserva"
+              (picked)="addObject($event)"
+              (closed)="closePicker()"
+            />
+          } @else {
+            <button type="button" class="add" (click)="openPicker($event)">
+              <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M8 3v10M3 8h10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Agregar objeto
+            </button>
+          }
+        }
+      </div>
+
+      <div class="side">
+        <div class="bar">
+          <div class="size">
+            <span class="label">Tamaño</span>
+            @for (axis of ['rows', 'columns']; track axis) {
+              <span class="counter">
+                <span class="stepper">
+                  <button
+                    type="button"
+                    [attr.aria-label]="axis === 'rows' ? 'Quitar una fila' : 'Quitar una columna'"
+                    [disabled]="readonly() || (axis === 'rows' ? rows() : columns()) <= minSize"
+                    (click)="resize($any(axis), -1)"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M3.5 8h9"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                  <span class="value">{{ axis === 'rows' ? rows() : columns() }}</span>
+                  <button
+                    type="button"
+                    [attr.aria-label]="axis === 'rows' ? 'Agregar una fila' : 'Agregar una columna'"
+                    [disabled]="readonly() || (axis === 'rows' ? rows() : columns()) >= maxSize"
+                    (click)="resize($any(axis), 1)"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M8 3.5v9M3.5 8h9"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </span>
+                {{ axis === 'rows' ? 'filas' : 'columnas' }}
+              </span>
+            }
+          </div>
+          <p class="hint" role="status">{{ helpText() }}</p>
+        </div>
+
+        <div class="stage">
+          <div inert>
+            <app-table-diagram [table]="table()" [highlightedPiece]="highlighted()" />
+          </div>
+          <div
+            class="cells"
+            role="grid"
+            cdkDropList
+            cdkDropListSortingDisabled
+            [cdkDropListEnterPredicate]="acceptNone"
+            [attr.aria-label]="'Celdas de la ' + zoneName().toLowerCase()"
+            [style.grid-template-columns]="'repeat(' + columns() + ', minmax(0, 1fr))'"
+            [style.grid-template-rows]="'repeat(' + rows() + ', minmax(0, 1fr))'"
+          >
+            @for (cell of cells(); track cell.row * 100 + cell.column) {
+              <button
+                #button
+                type="button"
+                class="cell"
+                cdkDrag
+                [cdkDragDisabled]="readonly() || cell.occupant === -1"
+                [cdkDragStartDelay]="{ mouse: 0, touch: 350 }"
+                [class.over]="over()?.row === cell.row && over()?.column === cell.column"
+                [class.chosen]="choice()?.row === cell.row && choice()?.column === cell.column"
+                [attr.data-row]="cell.row"
+                [attr.data-column]="cell.column"
+                [attr.aria-label]="cell.label"
+                (click)="tapCell(cell, button, $event)"
+                (cdkDragStarted)="dragStarted()"
+                (cdkDragMoved)="dragMoved($event)"
+                (cdkDragEnded)="dragEnded($event, cell.occupant, cell)"
+              >
+                @if (cell.object; as object) {
+                  <span *cdkDragPreview class="ghost">
+                    <b class="number">{{ object.number }}</b>
+                    {{ object.name }}
+                  </span>
+                }
+              </button>
+            }
+          </div>
+          @if (choice(); as at) {
+            <div
+              class="choice"
+              role="dialog"
+              tabindex="-1"
+              [attr.aria-label]="'Qué va en la fila ' + at.row + ', columna ' + at.column"
+              [style.left.px]="at.left"
+              [style.top.px]="at.top"
+              (click)="$event.stopPropagation()"
+            >
+              <p>Fila {{ at.row }} · Columna {{ at.column }}</p>
+              <ul>
+                @for (object of choiceObjects(); track object.index) {
+                  <li>
+                    <button
+                      type="button"
+                      [class.here]="object.here"
+                      (click)="chooseObject(object.index)"
+                    >
+                      <b class="number">{{ object.number }}</b>
+                      {{ ' ' }}
+                      <span>
+                        <span class="name">{{ object.name }}</span>
+                        {{ ' ' }}
+                        <small>{{ object.here ? 'Está aquí' : object.place }}</small>
+                      </span>
+                    </button>
+                  </li>
+                } @empty {
+                  <li class="empty">Primero se agregan objetos a la mesa.</li>
+                }
+              </ul>
+              @if (choiceOccupied()) {
+                <button type="button" class="empty-cell" (click)="emptyChoice()">
+                  Vaciar celda
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+}

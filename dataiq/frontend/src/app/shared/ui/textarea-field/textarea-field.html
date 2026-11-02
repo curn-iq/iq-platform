@@ -1,0 +1,19 @@
+<label [for]="id">
+  <span>{{ label() }}</span>
+  {{ ' ' }}
+  @if (optional()) {
+    <span class="optional">Opcional</span>
+  } @else if (badge()) {
+    <span class="badge">{{ badge() }}</span>
+  }
+</label>
+<textarea
+  #field
+  [id]="id"
+  [class.tall]="tall()"
+  [placeholder]="placeholder()"
+  [readOnly]="readonly()"
+  [value]="value()"
+  (input)="value.set(field.value)"
+  (blur)="touch.emit()"
+></textarea>

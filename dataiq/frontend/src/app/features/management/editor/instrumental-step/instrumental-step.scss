@@ -1,0 +1,430 @@
+// Paso «Instrumental» del editor: ver «Editor de técnica (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 15.5px;
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// Todo a la vista, en un bloque del alto de la ventana (entre 460 y 760 px); cada lista se desplaza sola.
+// Lo que queda arriba (la barra, la cabecera con sus pasos y el título) y la barra de abajo suman unos
+// 456 px.
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: 24px;
+  height: clamp(460px, calc(100vh - 456px), 760px);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+// «En esta técnica» va a la derecha aunque esté primero: en celular queda arriba
+.chosen {
+  order: 2;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+}
+
+.count {
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+
+.sub {
+  margin: 2px 0 10px;
+  color: var(--color-text-subtle);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.empty {
+  margin: 0;
+  padding: 16px 6px;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+}
+
+// ---------- En esta técnica ----------
+
+.groups {
+  flex: 1;
+  min-height: 0;
+  margin: 12px -8px 0 0;
+  padding: 0 8px 40px 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 64px), transparent);
+}
+
+.group + .group {
+  margin-top: 16px;
+}
+
+.group-name {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.group li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding-left: 4px;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  font-size: 15.5px;
+  line-height: 1.35;
+
+  // Lo recién agregado se ilumina y se apaga
+  &.fresh {
+    animation: highlight 1.6s var(--ease-fade);
+  }
+}
+
+@keyframes highlight {
+  0%,
+  35% {
+    background: var(--color-accent-soft);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.remove {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover);
+    color: var(--color-text);
+  }
+}
+
+// ---------- Sugeridos ----------
+
+.more {
+  flex: none;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.suggested {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px 0 10px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-fade);
+
+  &:hover:not(:disabled) {
+    background: var(--color-accent-soft-hover);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+// Tres puntos: cuántas de las otras técnicas lo usan (los llenos)
+.dots {
+  display: inline-flex;
+  gap: 2px;
+
+  i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-accent-strong) 22%, transparent);
+
+    &.full {
+      background: var(--color-accent);
+    }
+  }
+}
+
+// ---------- Explorar el catálogo ----------
+
+.explore {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+
+  app-search-field {
+    flex: none;
+    margin-top: 10px;
+  }
+}
+
+.types {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  margin-top: 10px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+
+.type {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover);
+  }
+
+  &.none {
+    color: var(--color-text-subtle);
+    box-shadow: inset 0 0 0 1px var(--color-border);
+  }
+
+  .count {
+    font-size: 13px;
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--color-accent);
+    box-shadow: none;
+    color: var(--color-surface);
+
+    .count {
+      color: var(--color-accent-soft);
+    }
+  }
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 12px;
+  padding-bottom: 20px;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-border);
+  scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+}
+
+.list-group {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 12px 6px 6px;
+  background: var(--color-surface);
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 15.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-fade);
+
+  &:hover {
+    background: var(--color-hover);
+  }
+
+  &:focus-visible {
+    outline-offset: -2.5px;
+  }
+
+  mark {
+    border-radius: 3px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+  }
+
+  &[aria-pressed='true'] {
+    background: color-mix(in oklab, var(--color-accent-soft) 45%, var(--color-surface));
+
+    .action {
+      color: var(--color-accent-strong);
+    }
+  }
+
+  &[aria-disabled='true'] {
+    cursor: default;
+  }
+}
+
+.action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-accent);
+  font-size: 13.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+// ---------- Pantallas angostas ----------
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .groups {
+    margin-right: 0;
+    padding: 0 0 8px;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .list {
+    flex: none;
+    max-height: 460px;
+  }
+}
+
+@media (max-width: 760px) {
+  .card {
+    padding: 18px;
+  }
+}

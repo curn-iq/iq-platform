@@ -1,0 +1,514 @@
+// Pasos «Mesa de Mayo» y «Mesa de reserva» del editor: ver «Editor de técnica (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.title {
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 26px;
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 15.5px;
+  }
+}
+
+// Con ratón se arrastra; con el dedo, se toca
+.with-finger {
+  display: none;
+}
+
+@media (hover: none), (max-width: 1100px) {
+  .with-mouse {
+    display: none;
+  }
+
+  .with-finger {
+    display: inline;
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---------- «No lleva» (mesa de reserva) ----------
+
+.not-carried {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  strong {
+    display: block;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 650;
+  }
+
+  .help {
+    display: block;
+    margin-top: 2px;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+  }
+}
+
+.none {
+  margin: 0;
+  padding: 16px 6px;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+}
+
+// ---------- El editor: objetos a la izquierda, la mesa a la derecha ----------
+
+.editor {
+  display: grid;
+  grid-template-columns: minmax(280px, 480px) auto;
+  justify-content: start;
+  gap: 32px;
+  align-items: start;
+}
+
+.number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-dark) 72%, transparent);
+  color: var(--color-surface);
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.objects {
+  position: sticky;
+  top: calc(var(--size-navbar) + 16px);
+  max-height: calc(100vh - var(--size-navbar) - 190px);
+  padding-bottom: 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 650;
+  }
+
+  .sub {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+
+.list {
+  margin: 14px 0 12px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.object {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 20px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 7px 6px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+  touch-action: manipulation;
+  transition: background-color 0.2s var(--ease-fade);
+
+  &:hover {
+    background: var(--color-hover);
+  }
+
+  &.selected {
+    background: var(--color-accent-soft);
+  }
+
+  &:focus-visible {
+    outline-offset: -2.5px;
+  }
+
+  .name {
+    display: block;
+    font-size: 15.5px;
+    line-height: 1.3;
+  }
+
+  .place {
+    display: block;
+    margin-top: 2px;
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Sin ubicar: el número es un aro y el lugar se dice con más peso
+  &.unplaced {
+    .number {
+      background: transparent;
+      box-shadow: inset 0 0 0 1.5px var(--color-border-strong);
+      color: var(--color-text-subtle);
+    }
+
+    .place {
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+  }
+
+  .grip {
+    color: var(--color-text-subtle);
+  }
+
+  // El objeto que se arrastra queda atenuado en su lugar
+  &.cdk-drag-placeholder {
+    opacity: 0.45;
+  }
+}
+
+.add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-accent-soft-hover);
+  }
+}
+
+// ---------- La mesa ----------
+
+.side {
+  display: grid;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--size-navbar) + 16px);
+  // Alto de la ventana menos lo que la rodea, en proporción a la mesa
+  width: min(100%, max(320px, calc((100vh - var(--size-navbar) - 250px) * var(--ratio, 1))));
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.size {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--color-hover);
+    }
+
+    &:disabled {
+      color: var(--color-text-subtle);
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  .value {
+    min-width: 22px;
+    color: var(--color-text);
+    text-align: center;
+  }
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+}
+
+// El diagrama de abajo; las celdas, encima: coinciden con su dibujo (4,5 % de margen por lado)
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.cells {
+  position: absolute;
+  inset: 4.5%;
+  z-index: 2;
+  display: grid;
+}
+
+.cell {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color 0.2s var(--ease-fade),
+    box-shadow 0.2s var(--ease-fade);
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2.5px solid var(--color-accent);
+    outline-offset: -3px;
+  }
+
+  &.over {
+    background: var(--color-accent-soft);
+    box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
+
+  &.chosen {
+    box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
+}
+
+// Mientras se arrastra, todas las celdas se marcan para ver adónde puede ir
+.dragging .cell {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+// ---------- «Qué va aquí» ----------
+
+.choice {
+  position: absolute;
+  z-index: 5;
+  width: 300px;
+  padding: 8px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-soft);
+
+  p {
+    margin: 0;
+    padding: 6px 8px 8px;
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  ul {
+    max-height: 260px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  li button {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 15px;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-hover);
+    }
+
+    &:focus-visible {
+      outline-offset: -2.5px;
+    }
+
+    &.here {
+      background: var(--color-accent-soft);
+
+      small {
+        color: var(--color-accent-strong);
+        font-weight: 600;
+      }
+    }
+
+    .number {
+      width: 26px;
+      height: 26px;
+      font-size: 12.5px;
+    }
+
+    .name {
+      display: block;
+    }
+
+    small {
+      display: block;
+      margin-top: 1px;
+      color: var(--color-text-subtle);
+      font-size: 13px;
+    }
+  }
+
+  .empty {
+    padding: 6px 8px;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+  }
+
+  .empty-cell {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 9px 8px;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-hover);
+    }
+  }
+}
+
+// El objeto que viaja con el puntero
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border-strong),
+    var(--shadow-floating);
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+// ---------- Pantallas angostas ----------
+
+@media (max-width: 1100px) {
+  .editor {
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  .editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  // La mesa va arriba de la lista y ocupa todo el ancho
+  .side {
+    position: static;
+    order: -1;
+    width: 100%;
+  }
+
+  .objects {
+    position: static;
+    max-height: none;
+    padding-bottom: 0;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .choice {
+    right: 0;
+    left: 0 !important;
+    width: auto;
+  }
+}

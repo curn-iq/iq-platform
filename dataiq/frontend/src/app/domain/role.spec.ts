@@ -1,4 +1,4 @@
-import { hasAtLeast, Role, ROLES } from './role';
+import { hasAtLeast, publishesOwn, Role, ROLES } from './role';
 
 describe('hasAtLeast', () => {
   it('cada rol alcanza su propio nivel', () => {
@@ -26,5 +26,15 @@ describe('hasAtLeast', () => {
         expect(hasAtLeast(role, minimum)).toBe(i >= j);
       });
     });
+  });
+});
+
+describe('publishesOwn', () => {
+  it('un revisor o un admin publica lo suyo; un colaborador, un usuario o nadie, no', () => {
+    expect(publishesOwn('reviewer')).toBe(true);
+    expect(publishesOwn('admin')).toBe(true);
+    expect(publishesOwn('contributor')).toBe(false);
+    expect(publishesOwn('user')).toBe(false);
+    expect(publishesOwn(null)).toBe(false);
   });
 });

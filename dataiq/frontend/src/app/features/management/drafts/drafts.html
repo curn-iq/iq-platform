@@ -1,0 +1,231 @@
+<section class="page" aria-labelledby="drafts-title">
+  <header class="head">
+    <div>
+      <h1 id="drafts-title">Mis borradores</h1>
+      @if (loaded()) {
+        <p class="summary" aria-live="polite">{{ summary() }}</p>
+      }
+    </div>
+    <div class="actions">
+      <app-edit-published />
+      <a app-button class="new" routerLink="/gestion/editor/nueva">
+        <svg class="plus" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M8 3v10M3 8h10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        Nueva técnica
+      </a>
+    </div>
+  </header>
+
+  @if (failed()) {
+    <div class="notice" role="status">
+      <p>No se pudo cargar Mis borradores.</p>
+      <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+    </div>
+  } @else if (!loaded()) {
+    <p class="notice loading" aria-busy="true">Cargando…</p>
+  } @else if (total() === 0) {
+    @if (lastPublished(); as published) {
+      <p class="last">
+        <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M3.5 8.4l2.9 2.8 6.1-6.4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        La versión {{ published.number }} de {{ published.technique }} ya está publicada.
+      </p>
+    }
+  } @else {
+    @if (showFilters()) {
+      <div class="filters">
+        <app-segmented-control
+          label="Filtrar por estado"
+          [options]="filterOptions()"
+          [value]="filter()"
+          (valueChange)="chooseFilter($event)"
+        />
+        <ul class="legend" aria-label="Qué indica cada marca">
+          <li>
+            <app-progress-mark
+              status="complete"
+              size="small"
+              [animated]="false"
+              aria-hidden="true"
+            />
+            Completa
+          </li>
+          <li>
+            <app-progress-mark
+              status="in_progress"
+              size="small"
+              [animated]="false"
+              aria-hidden="true"
+            />
+            En curso
+          </li>
+          <li>
+            <app-progress-mark
+              status="pending"
+              size="small"
+              [animated]="false"
+              aria-hidden="true"
+            />
+            Pendiente
+          </li>
+          <li>
+            <app-progress-mark
+              status="no_table"
+              size="small"
+              [animated]="false"
+              aria-hidden="true"
+            />
+            La técnica no tiene esa mesa
+          </li>
+        </ul>
+      </div>
+    }
+
+    <div class="table-box">
+      <table class="matrix">
+        <caption class="sr-only">
+          Técnicas en curso y avance de cada sección
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Técnica</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="edited-col">Editada</th>
+            @for (section of sections; track section.key) {
+              <th scope="col" class="section">{{ section.name }}</th>
+            }
+            <th scope="col"><span class="sr-only">Acción</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id; let rowIndex = $index) {
+            <tr class="row" [class.with-note]="row.note">
+              <td class="technique">
+                <p class="name">{{ row.technique }}</p>
+                <p class="meta">{{ row.specialty }} · Versión {{ row.number }}</p>
+                @if (row.note) {
+                  <button
+                    type="button"
+                    class="note-toggle"
+                    [attr.aria-expanded]="noteOpen(row.id)"
+                    [attr.aria-controls]="'note-' + row.id"
+                    (click)="toggleNote(row.id)"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                      <path
+                        d="M2.5 4.5L6 8l3.5-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Comentario de la revisión
+                  </button>
+                }
+              </td>
+              <td class="state">
+                <app-status-pill [kind]="row.status" />
+                <span class="state-date">{{ row.edited }}</span>
+              </td>
+              <td class="edited">{{ row.edited }}</td>
+              @for (section of sections; track section.key; let column = $index) {
+                <td class="section" [attr.data-label]="section.name">
+                  <app-progress-mark
+                    [status]="row.progress[section.key].status"
+                    [column]="column"
+                    [row]="rowIndex"
+                  />
+                </td>
+              }
+              <td class="action">
+                <a
+                  class="continue"
+                  [class.view]="row.status === 'in_review'"
+                  [routerLink]="['/gestion/editor', row.id, firstStep]"
+                  [attr.aria-label]="
+                    (row.status === 'in_review' ? 'Ver ' : 'Continuar ') + row.technique
+                  "
+                >
+                  {{ row.status === 'in_review' ? 'Ver' : 'Continuar' }}
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                      d="M3 8h9M8.5 4L12.5 8l-4 4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </td>
+            </tr>
+            @if (row.note; as note) {
+              <tr class="note-row">
+                <td colspan="8">
+                  <div class="note-box" [id]="'note-' + row.id" [class.closed]="!noteOpen(row.id)">
+                    <div>
+                      <div class="note">
+                        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                          <path
+                            d="M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V6A1.5 1.5 0 0 1 4 4.5Z"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        <div>
+                          <p class="note-head">Revisión · {{ note.date }}</p>
+                          <p class="note-text">{{ note.reason }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="continue only-mobile"
+                    [routerLink]="['/gestion/editor', row.id, firstStep]"
+                    [attr.aria-label]="'Continuar ' + row.technique"
+                  >
+                    Continuar
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M3 8h9M8.5 4L12.5 8l-4 4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </a>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr class="empty-filter">
+              <td colspan="8">No hay técnicas en este estado.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

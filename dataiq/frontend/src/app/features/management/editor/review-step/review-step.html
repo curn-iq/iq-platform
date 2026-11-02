@@ -1,0 +1,94 @@
+<div class="title">
+  <h2>{{ title() }}</h2>
+  <p>{{ subtitle() }}</p>
+</div>
+
+<div class="layout">
+  <section class="card">
+    <ol class="summary" aria-label="Estado de cada sección">
+      @for (section of sections(); track section.key) {
+        <li>
+          <app-progress-mark [status]="section.mark" [animated]="false" />
+          <div>
+            <strong>{{ section.name }}</strong>
+            <span>{{ section.text }}</span>
+          </div>
+          @if (section.blocking && editable()) {
+            <a
+              class="complete"
+              [routerLink]="['/gestion/editor', version().id, section.slug]"
+              [attr.aria-label]="'Completar ' + section.name"
+            >
+              Completar
+            </a>
+          }
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="card send" [attr.aria-label]="title()">
+    @if (editable()) {
+      @if (reason(); as why) {
+        <p class="reason" role="status">
+          <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+            <rect
+              x="4.5"
+              y="9"
+              width="11"
+              height="8"
+              rx="2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            />
+            <path
+              d="M7 9V6.8a3 3 0 0 1 6 0V9"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            />
+          </svg>
+          <span>{{ why }}</span>
+        </p>
+      }
+      @if (confirming()) {
+        <div class="confirm" role="group" aria-label="Confirmar la publicación">
+          <p>
+            Publicar la versión {{ version().number }} de <b>{{ version().technique }}</b
+            >.
+            @if (isFirst()) {
+              La técnica entra al catálogo y la ven estudiantes, SIVRI y SIMIQ3D.
+            } @else {
+              Desde ese momento es la que ven estudiantes, SIVRI y SIMIQ3D.
+            }
+          </p>
+          <div class="buttons">
+            <button #confirmButton app-button type="button" [disabled]="busy()" (click)="send()">
+              {{ busy() ? 'Publicando…' : 'Publicar' }}
+            </button>
+            <button app-button variant="soft" type="button" [disabled]="busy()" (click)="cancel()">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      } @else {
+        <button
+          #sendButton
+          app-button
+          class="submit"
+          type="button"
+          [disabled]="reason() !== null || busy()"
+          (click)="start()"
+        >
+          {{ buttonLabel() }}
+        </button>
+      }
+    }
+    @if (note(); as text) {
+      @if (!publishes() || editable()) {
+        <p class="note">{{ text }}</p>
+      }
+    }
+  </section>
+</div>

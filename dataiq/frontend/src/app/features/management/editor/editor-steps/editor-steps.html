@@ -1,0 +1,30 @@
+<nav class="steps" aria-label="Pasos del editor">
+  <ol #list>
+    @for (step of steps(); track step.slug; let index = $index) {
+      <li>
+        <a
+          #link
+          [routerLink]="['/gestion/editor', versionId(), step.slug]"
+          [attr.aria-current]="step.slug === current() ? 'step' : null"
+          [attr.aria-label]="
+            'Paso ' + (index + 1) + ', ' + step.label + ': ' + step.stateName + '. ' + step.hint
+          "
+        >
+          <app-progress-mark [status]="step.mark" [animated]="false" [retrace]="true" />
+          <span class="name">
+            <b>{{ index + 1 }}</b
+            >{{ step.label }}
+          </span>
+          <span class="hint">{{ step.hint }}</span>
+        </a>
+      </li>
+    }
+  </ol>
+  <span
+    class="line"
+    aria-hidden="true"
+    [class.ready]="lineReady()"
+    [style.width.px]="lineWidth()"
+    [style.transform]="'translateX(' + lineLeft() + 'px)'"
+  ></span>
+</nav>

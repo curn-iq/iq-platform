@@ -1,0 +1,41 @@
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+  @switch (kind()) {
+    @case ('returned') {
+      <path
+        d="M6 3L2.5 6.5 6 10"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M3 6.5h6.5a4 4 0 0 1 0 8H7"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+      />
+    }
+    @case ('in_review') {
+      <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+      <path
+        d="M8 4.8V8l2.2 1.6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+      />
+    }
+    @default {
+      <path
+        d="M10.5 2.5l3 3-8 8H2.5v-3z"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+    }
+  }
+</svg>
+{{ labels[kind()] }}

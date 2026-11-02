@@ -4,7 +4,7 @@
   [style.--number-scale]="numberScale()"
   [style.--steel-fill]="'url(#' + steelId + ')'"
   [style.--blade-fill]="'url(#' + bladeId + ')'"
-  [class.marking]="highlighted() !== null"
+  [class.marking]="marking()"
   [attr.role]="preview() ? null : 'group'"
   [attr.aria-label]="preview() ? null : table().name"
   [attr.aria-hidden]="preview() ? 'true' : null"
@@ -22,11 +22,7 @@
   <g class="shapes" aria-hidden="true">
     @for (piece of pieces(); track piece.id) {
       <g class="placing" [style.--i]="$index">
-        <g
-          class="shape"
-          [class.flat]="piece.flat"
-          [class.active]="piece.linked && piece.legendNumber === highlighted()"
-        >
+        <g class="shape" [class.flat]="piece.flat" [class.active]="isActive(piece)">
           @for (shape of piece.shapes; track $index) {
             @if (shape.kind === 'unknown') {
               <rect
@@ -56,7 +52,7 @@
   @for (piece of pieces(); track piece.id) {
     <g
       class="piece placing"
-      [class.active]="piece.linked && piece.legendNumber === highlighted()"
+      [class.active]="isActive(piece)"
       [style.--i]="$index"
       [attr.data-n]="piece.linked ? piece.legendNumber : null"
       [attr.tabindex]="piece.linked ? 0 : null"

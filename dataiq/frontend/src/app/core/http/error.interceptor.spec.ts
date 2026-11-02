@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { QUIET_ERRORS } from '../../data/http-context';
+import { HANDLED_STATUSES, QUIET_ERRORS } from '../../data/http-context';
 import { NoticeService } from '../notice/notice.service';
 import { LOGIN_PATH } from '../session/login-path';
 import { SessionService } from '../session/session.service';
@@ -283,6 +283,47 @@ describe('errorInterceptor', () => {
       fail('/api/dataiq/auth/me', 503, null);
 
       expect(messages()).toHaveLength(1);
+    });
+  });
+
+  describe('códigos que trata la pantalla', () => {
+    const handling = (...statuses: number[]) => new HttpContext().set(HANDLED_STATUSES, statuses);
+
+    function send(status: number, context: HttpContext): HttpErrorResponse | undefined {
+      let seen: HttpErrorResponse | undefined;
+      client
+        .post('/api/dataiq/techniques', {}, { context })
+        .subscribe({ error: (e: HttpErrorResponse) => (seen = e) });
+      http
+        .expectOne('/api/dataiq/techniques')
+        .flush(
+          { detail: 'Ya hay una técnica con ese nombre en la especialidad' },
+          { status, statusText: 'Error' },
+        );
+      return seen;
+    }
+
+    it('un código marcado no se avisa, y el error llega a quien llamó con su texto', () => {
+      const seen = send(409, handling(409));
+
+      expect(notices.notices()).toEqual([]);
+      expect(seen?.status).toBe(409);
+      expect(seen?.error).toEqual({
+        detail: 'Ya hay una técnica con ese nombre en la especialidad',
+      });
+    });
+
+    it('los demás códigos de la misma petición sí se avisan', () => {
+      send(500, handling(409));
+      send(403, handling(409));
+
+      expect(messages()).toHaveLength(2);
+    });
+
+    it('sin la marca, el 409 sí se avisa', () => {
+      send(409, new HttpContext());
+
+      expect(messages()).toEqual([['Ya hay una técnica con ese nombre en la especialidad']]);
     });
   });
 

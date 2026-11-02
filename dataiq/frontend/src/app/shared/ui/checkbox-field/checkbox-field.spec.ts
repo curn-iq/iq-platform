@@ -61,6 +61,14 @@ describe('CheckboxField', () => {
     expect(box().checked).toBe(true);
   });
 
+  it('deshabilitada, la casilla no se puede cambiar', async () => {
+    fixture.destroy();
+    const standalone = TestBed.createComponent(CheckboxField);
+    standalone.componentRef.setInput('disabled', true);
+    await standalone.whenStable();
+    expect((standalone.nativeElement as HTMLElement).querySelector('input')!.disabled).toBe(true);
+  });
+
   it('tocar el texto la marca, pero tocar su enlace no', async () => {
     root().querySelector<HTMLElement>('.text')!.click();
     await fixture.whenStable();

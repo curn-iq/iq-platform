@@ -1,0 +1,195 @@
+// Cabecera, pasos y barra de abajo del editor: ver «Editor de técnica (página)» en DESIGN.md.
+@use 'editor-head';
+
+:host {
+  display: block;
+}
+
+.page {
+  @include editor-head.page;
+  padding-bottom: 48px;
+  // Llena la ventana (menos la barra de arriba y la de abajo): en una hoja corta, la barra de abajo
+  // queda igual al borde de la ventana
+  min-height: calc(100svh - var(--size-navbar) - 66px);
+}
+
+.route {
+  @include editor-head.route;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+
+  h1 {
+    @include editor-head.title;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 17px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+// El autoguardado y «Ver la versión publicada» se juntan, y «Más acciones» queda a su derecha
+.info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  min-width: 0;
+}
+
+// Autoguardado: «Guardando…» con un giro, luego «Guardado hace un momento» con visto
+.saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+  font-weight: 550;
+
+  svg {
+    color: var(--color-accent);
+  }
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.published {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-accent);
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.read-only {
+  max-width: 72ch;
+  margin: 20px 0 0;
+  color: var(--color-text-muted);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+// La hoja del paso abierto: cada paso la llena en su casilla
+.sheet {
+  min-height: 240px;
+}
+
+// Barra de abajo: «Paso n de 5 · nombre», Anterior y Siguiente. Se queda al borde de la ventana al
+// desplazar (`sticky`, no `fixed`) y al final de la página se detiene sobre el pie del sitio, sin tapar
+// su franja legal.
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px var(--space-gutter);
+  background: color-mix(in oklab, var(--color-surface) 92%, transparent);
+  box-shadow: 0 -1px 0 var(--color-border);
+  backdrop-filter: blur(10px);
+}
+
+.count {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding-top: 32px;
+    min-height: calc(100svh - var(--size-navbar-mobile) - 66px);
+  }
+
+  .head > div:first-child {
+    flex: 1 0 100%;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .info {
+    flex: 1;
+  }
+
+  .head h1 {
+    font-size: 30px;
+  }
+
+  .count {
+    display: none;
+  }
+
+  .buttons {
+    width: 100%;
+
+    [app-button] {
+      flex: 1;
+    }
+  }
+}

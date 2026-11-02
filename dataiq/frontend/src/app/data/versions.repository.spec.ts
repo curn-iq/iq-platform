@@ -88,6 +88,82 @@ describe('VersionsRepository', () => {
     });
   });
 
+  describe('getMany', () => {
+    const flushed = async () => {
+      await Promise.resolve();
+      TestBed.tick();
+    };
+
+    it('pide cada versión y entrega todas juntas, en el orden de los ids', async () => {
+      const resource = TestBed.runInInjectionContext(() =>
+        repository.getMany(() => ['v-1', 'v-2']),
+      );
+      TestBed.tick();
+
+      // Responden en otro orden: el resultado sigue el de los ids
+      http.expectOne(`${TEST_API_BASE}/versions/v-2`).flush({ summary: { id: 'v-2' } });
+      http.expectOne(`${TEST_API_BASE}/versions/v-1`).flush({ summary: { id: 'v-1' } });
+      await flushed();
+
+      expect(resource.value()).toEqual([{ summary: { id: 'v-1' } }, { summary: { id: 'v-2' } }]);
+    });
+
+    it('sin ids no pide nada y entrega una lista vacía', async () => {
+      const resource = TestBed.runInInjectionContext(() => repository.getMany(() => []));
+      TestBed.tick();
+      await flushed();
+
+      http.expectNone(() => true);
+      expect(resource.value()).toEqual([]);
+    });
+
+    it('con ids indefinidos no pide nada hasta que los haya', async () => {
+      const ids = signal<string[] | undefined>(undefined);
+      const resource = TestBed.runInInjectionContext(() => repository.getMany(ids));
+      TestBed.tick();
+      http.expectNone(() => true);
+      expect(resource.value()).toBeUndefined();
+
+      ids.set(['v-1']);
+      TestBed.tick();
+      http.expectOne(`${TEST_API_BASE}/versions/v-1`).flush({ summary: { id: 'v-1' } });
+      await flushed();
+
+      expect(resource.value()).toEqual([{ summary: { id: 'v-1' } }]);
+    });
+
+    it('si una falla, falla todo, y volver a pedir lo reintenta', async () => {
+      const resource = TestBed.runInInjectionContext(() =>
+        repository.getMany(() => ['v-1', 'v-2']),
+      );
+      TestBed.tick();
+
+      http
+        .expectOne(`${TEST_API_BASE}/versions/v-1`)
+        .flush(null, { status: 500, statusText: 'Server Error' });
+      await flushed();
+      expect(resource.error()).toBeDefined();
+      // La otra petición se cancela sola al fallar la primera
+      http.match(`${TEST_API_BASE}/versions/v-2`);
+
+      resource.reload();
+      TestBed.tick();
+      http.expectOne(`${TEST_API_BASE}/versions/v-1`).flush({ summary: { id: 'v-1' } });
+      http.expectOne(`${TEST_API_BASE}/versions/v-2`).flush({ summary: { id: 'v-2' } });
+      await flushed();
+
+      expect(resource.error()).toBeUndefined();
+      expect(resource.value()).toHaveLength(2);
+    });
+
+    it('codifica el id en la ruta', () => {
+      TestBed.runInInjectionContext(() => repository.getMany(() => ['a/b']));
+      TestBed.tick();
+
+      http.expectOne(`${TEST_API_BASE}/versions/a%2Fb`).flush({});
+    });
+  });
+
   describe('escrituras', () => {
     it('update reemplaza el contenido con PUT', () => {
       let result: unknown;

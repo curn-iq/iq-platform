@@ -1,4 +1,12 @@
-<label [for]="id">{{ label() }}</label>
+<label [for]="id">
+  <span>{{ label() }}</span>
+  {{ ' ' }}
+  @if (optional()) {
+    <span class="optional">Opcional</span>
+  } @else if (badge()) {
+    <span class="badge">{{ badge() }}</span>
+  }
+</label>
 <div class="control">
   <input
     #field
@@ -6,6 +14,8 @@
     [type]="shown() ? 'text' : type()"
     [attr.autocomplete]="autocomplete() || null"
     [placeholder]="placeholder()"
+    [readOnly]="readonly()"
+    [attr.inputmode]="inputmode() || null"
     [class.revealable]="revealable()"
     [attr.spellcheck]="type() === 'text' ? null : 'false'"
     [attr.autocapitalize]="type() === 'text' ? null : 'none'"

@@ -3,6 +3,7 @@
     #box
     type="checkbox"
     [checked]="checked()"
+    [disabled]="disabled()"
     [attr.aria-invalid]="error() ? 'true' : null"
     [attr.aria-describedby]="error() ? errorId : null"
     (change)="checked.set(box.checked)"

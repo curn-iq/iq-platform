@@ -1,3 +1,6 @@
+/** Los nombres de las dos mesas de una técnica, como los trae la API (`zone`). */
+export const ZONE_NAMES = { mayo: 'Mesa de Mayo', reserve: 'Mesa de reserva' } as const;
+
 /** Una celda de la grilla, contada desde 1: la fila 1 es la de arriba y la columna 1, la de la izquierda. */
 export interface TableCell {
   row: number;
