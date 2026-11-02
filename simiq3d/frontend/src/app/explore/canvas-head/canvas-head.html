@@ -1,0 +1,55 @@
+@if (mobile()) {
+  <h1 class="name">
+    <button type="button" class="name-button" aria-haspopup="dialog" (click)="openSheet.emit()">
+      {{ title() }}
+      <span class="chevron" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <path
+            d="M2.5 4.5L6 8l3.5-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+    </button>
+  </h1>
+  @if (meta(); as line) {
+    <p class="meta">{{ line }} · <span class="provisional">provisional</span></p>
+  }
+} @else {
+  <h1 class="name">{{ title() }}</h1>
+  @if (meta(); as line) {
+    <p class="meta">{{ line }}</p>
+  }
+  <div class="actions">
+    <span class="selector">
+      <label class="sr-only" for="technique-select">Técnica</label>
+      <select id="technique-select" (change)="onChange($event)">
+        @if (!listed()) {
+          <option value="" selected disabled>Elegir técnica</option>
+        }
+        @for (technique of techniques(); track technique.id) {
+          <option [value]="technique.id" [selected]="technique.id === currentId()">
+            {{ technique.name }}
+          </option>
+        }
+      </select>
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+        <path
+          d="M2.5 4.5L6 8l3.5-3.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
+    @if (meta()) {
+      <span class="provisional">mesa y orientación provisionales</span>
+    }
+  </div>
+}

@@ -1,0 +1,117 @@
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgb(10 27 34 / 0.32);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--ease-fade),
+    visibility 0.3s;
+}
+
+.sheet {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 61;
+  max-height: 72svh;
+  padding: 8px 12px calc(16px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -24px 48px -32px rgb(10 27 34 / 0.55);
+  transform: translateY(104%);
+  visibility: hidden;
+  transition:
+    transform 0.45s var(--ease-enter),
+    visibility 0.45s;
+}
+
+:host(.open) {
+  .veil {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .sheet {
+    transform: none;
+    visibility: visible;
+  }
+}
+
+.handle {
+  width: 40px;
+  height: 4px;
+  margin: 4px auto 12px;
+  border-radius: 2px;
+  background: var(--color-border-strong);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 8px 10px;
+  border-bottom: 1px solid var(--color-border);
+
+  h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 0.84375rem;
+  }
+}
+
+ul {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:active {
+    background: var(--color-hover);
+  }
+
+  svg {
+    flex: none;
+    color: var(--color-accent);
+    visibility: hidden;
+  }
+
+  &[aria-current='true'] {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-weight: 650;
+
+    svg {
+      visibility: visible;
+    }
+  }
+}
