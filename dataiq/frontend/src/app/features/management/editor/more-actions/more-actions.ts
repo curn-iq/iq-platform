@@ -16,6 +16,7 @@ import { VersionsRepository } from '../../../../data/versions.repository';
 import { canDiscard, discardDeletesTechnique } from '../../../../domain/discard-draft';
 import type { VersionState } from '../../../../domain/version-state';
 import { Button } from '../../../../shared/ui/button/button';
+import { EditorState } from '../editor-state';
 
 /** Lo que de la versión hace falta para descartarla. */
 export interface DiscardableVersion {
@@ -59,6 +60,8 @@ export class MoreActions {
   private readonly router = inject(Router);
   private readonly notices = inject(NoticeService);
   private readonly versions = inject(VersionsRepository);
+  // La versión que se descarta ya no existe: el autoguardado no debe mandarle nada más
+  private readonly editorState = inject(EditorState, { optional: true });
   private readonly trigger = viewChild.required('trigger', { read: ElementRef<HTMLButtonElement> });
   private readonly confirmButton = viewChild('confirmButton', {
     read: ElementRef<HTMLButtonElement>,
@@ -95,6 +98,7 @@ export class MoreActions {
     this.discarding.set(true);
     this.versions.discard(this.version().id).subscribe({
       next: () => {
+        this.editorState?.abandon();
         this.notices.show('confirmation', [DISCARDED]);
         void this.router.navigate(['/gestion/borradores']);
       },

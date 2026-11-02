@@ -86,8 +86,30 @@ svg {
   }
 }
 
-:host([data-status='pending']) .ring {
+:host([data-status='pending']) .ring,
+:host([data-status='locked']) .ring {
   stroke: var(--color-border-strong);
+}
+
+:host([data-status='ready']) .ring {
+  stroke: var(--color-accent);
+}
+
+// El candado y la flecha del último paso del editor
+.icon {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:host([data-status='locked']) .icon {
+  stroke: var(--color-text-subtle);
+  stroke-width: 1.6;
+}
+
+:host([data-status='ready']) .icon {
+  stroke: var(--color-accent);
+  stroke-width: 1.7;
 }
 
 .dash {

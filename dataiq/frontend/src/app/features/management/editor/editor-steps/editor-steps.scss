@@ -1,0 +1,119 @@
+// Fila de pasos del editor: ver «Editor de técnica (página)» en DESIGN.md.
+
+:host {
+  display: block;
+  scroll-margin-top: calc(var(--size-navbar) + 16px);
+}
+
+.steps {
+  position: relative;
+  margin: 32px 0 28px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+ol {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: start;
+  width: 100%;
+  padding: 14px 16px 16px 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline-offset: -3px;
+  }
+}
+
+li + li a {
+  padding-left: 16px;
+  border-left: 1px solid var(--color-border);
+}
+
+.name {
+  color: var(--color-text-muted);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  transition: color 0.2s var(--ease-fade);
+
+  b {
+    margin-right: 6px;
+    color: var(--color-text-subtle);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.hint {
+  grid-column: 2;
+  margin-top: 2px;
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+a:hover .name,
+a[aria-current='step'] .name {
+  color: var(--color-text);
+}
+
+a[aria-current='step'] .name {
+  font-weight: 650;
+}
+
+// La raya del paso abierto se desliza bajo él
+.line {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
+  background: var(--color-text);
+  pointer-events: none;
+
+  &.ready {
+    transition:
+      transform 0.45s var(--ease-enter),
+      width 0.45s var(--ease-enter);
+  }
+}
+
+// En celular los pasos son una tira que se desplaza hasta el abierto
+@media (max-width: 760px) {
+  .steps {
+    margin: 24px calc(-1 * var(--space-gutter)) 22px;
+  }
+
+  ol {
+    display: flex;
+    padding: 0 var(--space-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--space-gutter);
+    scrollbar-width: none;
+  }
+
+  li {
+    flex: none;
+    width: 62vw;
+    scroll-snap-align: start;
+  }
+
+  a[aria-current='step'] {
+    box-shadow: inset 0 -2px 0 var(--color-text);
+  }
+
+  .line {
+    display: none;
+  }
+}

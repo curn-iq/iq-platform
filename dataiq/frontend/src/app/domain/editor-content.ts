@@ -1,0 +1,69 @@
+/** Una celda de un objeto en la mesa, contada desde 1. */
+export interface EditorCell {
+  row: number;
+  column: number;
+}
+
+/**
+ * Un componente de un objeto: un instrumento o una sutura del catálogo (nunca los dos). El `name`
+ * es solo para mostrarlo: la API recibe el `id`.
+ */
+export interface EditorComponent {
+  instrument_id: string | null;
+  suture_id: string | null;
+  name: string;
+}
+
+/** Un objeto de la mesa tal como lo edita el editor. Sin mesa (`zone_id: null`) es solo del listado de instrumental. */
+export interface EditorItem {
+  zone_id: string | null;
+  legend_number: number | null;
+  /** El texto literal de la fuente. */
+  source_text: string;
+  components: EditorComponent[];
+  cells: EditorCell[];
+}
+
+/** Si la versión lleva una mesa y, si la lleva, su tamaño en celdas. */
+export interface EditorZone {
+  zone_id: string;
+  /** El nombre de la mesa, como lo trae la API («Mesa de Mayo»). */
+  zone: string;
+  used: boolean;
+  rows: number | null;
+  columns: number | null;
+}
+
+/** Una sutura de la versión, como la entrega la API (una por sutura, con sus planos en `usage`). */
+export interface EditorSuture {
+  name: string;
+  gauge: string | null;
+  needle_type: string | null;
+  usage: string | null;
+}
+
+/**
+ * Todo el contenido de una versión que el editor tiene en pantalla y guarda con cada autoguardado
+ * (`PUT /versions/{id}` reemplaza todo el contenido). Los campos tienen los nombres de la API, pero
+ * el modelo es del editor: lleva lo que hace falta para mostrar (nombres de mesas y componentes) y
+ * no lo que la API solo entrega (ids de objetos, descripciones de equipos). `data/version-content.ts`
+ * lo convierte desde y hacia la API. Cumple `ProgressSource`: el avance sale de él directamente.
+ */
+export interface EditorContent {
+  cups_code: string | null;
+  anesthesia: string | null;
+  patient_position: string | null;
+  drapes: string | null;
+  description: string | null;
+  indications: string | null;
+  complications: string | null;
+  surgical_technique: string | null;
+  source: string | null;
+  zones: EditorZone[];
+  items: EditorItem[];
+  sutures: EditorSuture[];
+  /** Equipos biomédicos, por nombre. */
+  equipment: string[];
+  /** Equipo médico-quirúrgico, por nombre. */
+  devices: string[];
+}

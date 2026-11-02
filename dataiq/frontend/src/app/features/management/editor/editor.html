@@ -29,9 +29,113 @@
           </p>
         </div>
         <div class="actions">
+          @if (state.editable()) {
+            <p
+              class="saved"
+              [attr.data-status]="state.saveStatus()"
+              role="status"
+              aria-live="polite"
+            >
+              @switch (state.saveStatus()) {
+                @case ('saving') {
+                  <span class="spinner" aria-hidden="true"></span>
+                  Guardando…
+                }
+                @case ('saved') {
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                      d="M3.5 8.5l3 3 6-6.5"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.9"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Guardado hace un momento
+                }
+                @case ('failed') {
+                  No se pudo guardar.
+                  <button type="button" class="retry" (click)="state.retry()">Reintentar</button>
+                }
+                @default {
+                  Sin cambios todavía
+                }
+              }
+            </p>
+          }
+          @if (hasPublished()) {
+            <a
+              class="published"
+              [routerLink]="['/tecnicas', version.summary.technique_id, 'datos-clinicos']"
+            >
+              Ver la versión publicada
+              <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M3 8h9M8.5 4L12.5 8l-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          }
           <app-more-actions [version]="version.summary" />
         </div>
       </header>
+
+      @if (inReview()) {
+        <p class="read-only">
+          Mientras esté en revisión no se puede editar; si el revisor la devuelve, vuelve a Mis
+          borradores con su comentario.
+        </p>
+      }
+
+      @if (step(); as current) {
+        <app-editor-steps
+          [steps]="steps()"
+          [versionId]="version.summary.id"
+          [current]="current.slug"
+        />
+        <!-- La hoja de cada paso llega en la casilla de ese paso -->
+        <div class="sheet" role="region" [attr.aria-label]="stepName()"></div>
+      }
     }
   </section>
+
+  @if (version(); as loaded) {
+    @if (step()) {
+      <div class="footer">
+        <p class="count">Paso {{ stepNumber() + 1 }} de 5 · {{ stepName() }}</p>
+        <div class="buttons">
+          @if (previous(); as before) {
+            <a
+              app-button
+              variant="soft"
+              [routerLink]="['/gestion/editor', loaded.summary.id, before.slug]"
+            >
+              Anterior
+            </a>
+          }
+          @if (next(); as after) {
+            <a app-button [routerLink]="['/gestion/editor', loaded.summary.id, after.slug]">
+              Siguiente: {{ after.label }}
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M3 8h9M8.5 4L12.5 8l-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  }
 }
