@@ -150,6 +150,12 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     - **Después:** Mis borradores la usa en lugar de `getMany` (fase 6 de
       [`checklist-frontend.md`](checklist-frontend.md)). Los tipos del
       frontend ya se regeneraron con la ruta (`npm run api:types`)
+    - [ ] Limitar `reviewed_by_me=true&include=content` antes de que una
+      pantalla la use (la revisión de la fase 7, por ejemplo): sin `state`, un
+      revisor recibe el contenido completo de todo lo que aprobó o rechazó,
+      también lo reemplazado, y la lista no tiene límite. Se limita con
+      `state` o con paginación. Mis borradores no la pide así (observación de
+      Juan en el PR #55, 2026-11-02)
 
 ## Hallazgos de seguridad pendientes
 
