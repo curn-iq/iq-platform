@@ -17,6 +17,7 @@
 }
 
 .actions {
+  position: relative;
   display: flex;
   gap: 10px;
 }
@@ -116,6 +117,11 @@
 }
 
 // ---------- La matriz ----------
+
+// Sin filtros (revisor o admin) la tabla va justo bajo la cabecera: lleva el mismo aire que ellos
+.head + .table-box {
+  margin-top: 36px;
+}
 
 .table-box {
   overflow-x: auto;

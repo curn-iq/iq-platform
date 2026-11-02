@@ -1,22 +1,38 @@
-<!-- Un estado nuevo vuelve a crear el dibujo, que es lo que lo traza de nuevo -->
-@for (current of [status()]; track current) {
-  @if (current === 'no_table') {
+<!-- Cada estado es su propia vista: al cambiar de estado el dibujo se vuelve a crear, y eso lo traza de nuevo -->
+@switch (status()) {
+  @case ('no_table') {
     <span class="dash" aria-hidden="true"></span>
-  } @else {
+  }
+  @case ('complete') {
     <svg viewBox="0 0 22 22" aria-hidden="true">
       <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
-      @if (current === 'complete') {
-        <g class="fill">
-          <circle cx="11" cy="11" r="9" />
-          <path d="M7 11.4l2.7 2.6L15 8.6" />
-        </g>
-      } @else if (current === 'in_progress') {
-        <path class="fill half" d="M11 2a9 9 0 0 0 0 18Z" />
-      } @else if (current === 'locked') {
-        <path class="icon" d="M8 10.5h6v4.5H8zM9.3 10.5V9a1.7 1.7 0 0 1 3.4 0v1.5" />
-      } @else if (current === 'ready') {
-        <path class="icon" d="M7 11h7.5M11.5 7.8L14.7 11l-3.2 3.2" />
-      }
+      <g class="fill">
+        <circle cx="11" cy="11" r="9" />
+        <path d="M7 11.4l2.7 2.6L15 8.6" />
+      </g>
+    </svg>
+  }
+  @case ('in_progress') {
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
+      <path class="fill half" d="M11 2a9 9 0 0 0 0 18Z" />
+    </svg>
+  }
+  @case ('locked') {
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
+      <path class="icon" d="M8 10.5h6v4.5H8zM9.3 10.5V9a1.7 1.7 0 0 1 3.4 0v1.5" />
+    </svg>
+  }
+  @case ('ready') {
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
+      <path class="icon" d="M7 11h7.5M11.5 7.8L14.7 11l-3.2 3.2" />
+    </svg>
+  }
+  @default {
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <circle class="ring" cx="11" cy="11" r="9" pathLength="1" />
     </svg>
   }
 }

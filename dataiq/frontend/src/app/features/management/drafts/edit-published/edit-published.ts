@@ -34,8 +34,8 @@ import { PublishedPanel } from './published-panel';
     }
   `,
   styles: `
+    // Sin posición propia: el panel se ancla al grupo de botones de Mis borradores
     :host {
-      position: relative;
       display: inline-block;
     }
 
