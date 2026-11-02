@@ -1,6 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 import { MAX_ERRORS, NoticeService } from './notice.service';
 
+describe('NoticeService.dismissErrors', () => {
+  it('quita los errores y deja las confirmaciones', () => {
+    const notices = new NoticeService();
+    notices.show('error', ['Uno']);
+    notices.show('error', ['Dos']);
+    notices.show('confirmation', ['Hecho']);
+
+    notices.dismissErrors();
+
+    expect(notices.notices().map((notice) => notice.messages)).toEqual([['Hecho']]);
+  });
+});
+
 describe('NoticeService', () => {
   let service: NoticeService;
 

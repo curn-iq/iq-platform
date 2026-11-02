@@ -45,6 +45,13 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
   OAuth en el backend de DataIQ y declararlo en el aviso de privacidad.
 - **Limitar los intentos de inicio de sesión** para frenar a quien prueba
   contraseñas por fuerza bruta.
+- **Registro sin delatar qué correos tienen cuenta.** Hoy `POST /auth/register`
+  responde 409 si el correo ya existe y 201 si es nuevo, y cualquiera puede probar
+  correos así. Hace falta una respuesta uniforme para los dos casos (mismo mensaje, mismo
+  código y mismo tiempo) y limitar los intentos en el registro, además del ingreso. El
+  detalle y por qué está en [`checklist-backend.md`](../dataiq/docs/checklist-backend.md),
+  «Hallazgos de seguridad pendientes». Mientras tanto la pantalla de crear cuenta no
+  repite el texto del 409.
 - **Una clave propia para SIVRI y SIMIQ3D** al pedir `/catalog/full`, si
   algún día lo piden sin que haya una persona usando el módulo. En el MVP lo
   piden con el token de quien lo usa.

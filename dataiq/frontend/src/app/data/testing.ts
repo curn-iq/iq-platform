@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpFeature, HttpFeatureKind, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { EnvironmentProviders, Provider } from '@angular/core';
 import { API_BASE_URL } from './api-base-url';
@@ -11,10 +11,15 @@ import { API_BASE_URL } from './api-base-url';
  */
 export const TEST_API_BASE = '/api-de-prueba';
 
-/** Lo que necesita una prueba de un repositorio: HttpClient de prueba y la base de la API. */
-export function provideRepositoryTesting(): (Provider | EnvironmentProviders)[] {
+/**
+ * Lo que necesita una prueba de un repositorio: HttpClient de prueba y la base de la API. Una
+ * pantalla que deja los avisos al interceptor lo pasa con `withInterceptors`.
+ */
+export function provideRepositoryTesting(
+  ...features: HttpFeature<HttpFeatureKind>[]
+): (Provider | EnvironmentProviders)[] {
   return [
-    provideHttpClient(),
+    provideHttpClient(...features),
     provideHttpClientTesting(),
     { provide: API_BASE_URL, useValue: TEST_API_BASE },
   ];

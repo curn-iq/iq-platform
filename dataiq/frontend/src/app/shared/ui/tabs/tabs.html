@@ -5,6 +5,7 @@
       role="tab"
       [id]="'tab-' + tab.key"
       [routerLink]="tab.link"
+      [queryParamsHandling]="tab.queryParamsHandling"
       [attr.aria-selected]="index === currentIndex()"
       [attr.aria-controls]="'panel-' + tab.key"
       [attr.tabindex]="index === currentIndex() ? 0 : -1"

@@ -1,9 +1,12 @@
+import { HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import type { Account } from '../../data/api/models';
 import type { Role } from '../../domain/role';
+import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { AccountMenu } from './account-menu';
+import { SignOut } from './sign-out';
 
 @Component({ template: '' })
 class Blank {}
@@ -28,7 +31,7 @@ describe('AccountMenu', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{ path: '**', component: Blank }])],
+      providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
     });
   });
 
@@ -118,5 +121,62 @@ describe('AccountMenu', () => {
 
     root().querySelector<HTMLAnchorElement>('.links a')!.click();
     expect(chosen).toBe(1);
+  });
+
+  describe('cerrar sesión', () => {
+    const button = () => root().querySelector<HTMLButtonElement>('button.exit')!;
+
+    it.each(['user', 'contributor', 'reviewer', 'admin'] as const)(
+      'un %s la tiene al final, después de lo demás, con su ícono',
+      async (role) => {
+        await open(role);
+
+        expect(button().textContent!.trim()).toBe('Cerrar sesión');
+        expect(button().querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
+        expect(root().lastElementChild).toBe(button());
+      },
+    );
+
+    it('un usuario sin gestión solo ve quién es y cerrar sesión', async () => {
+      await open('user');
+
+      expect(root().querySelector('.title')).toBeNull();
+      expect(links()).toEqual([]);
+      expect(button()).not.toBeNull();
+    });
+
+    it('es un botón, no un enlace: no navega por sí mismo', async () => {
+      await open('contributor');
+
+      expect(button().tagName).toBe('BUTTON');
+      expect(button().type).toBe('button');
+    });
+
+    it('al tocarlo, cierra la sesión y avisa con `chosen` para que el panel se cierre', async () => {
+      await open('contributor');
+      const run = vi.spyOn(TestBed.inject(SignOut), 'run').mockResolvedValue();
+      let chosen = 0;
+      fixture.componentInstance.chosen.subscribe(() => chosen++);
+
+      button().click();
+
+      expect(run).toHaveBeenCalledTimes(1);
+      expect(chosen).toBe(1);
+    });
+
+    it('mientras cierra, dice que está ocupado', async () => {
+      await open('contributor');
+      const http = TestBed.inject(HttpTestingController);
+      expect(button().getAttribute('aria-busy')).toBe('false');
+
+      button().click();
+      await fixture.whenStable();
+      expect(button().getAttribute('aria-busy')).toBe('true');
+
+      http
+        .expectOne(`${TEST_API_BASE}/auth/logout`)
+        .flush(null, { status: 204, statusText: 'No Content' });
+      await vi.waitFor(() => expect(button().getAttribute('aria-busy')).toBe('false'));
+    });
   });
 });

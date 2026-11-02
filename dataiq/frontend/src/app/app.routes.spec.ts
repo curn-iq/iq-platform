@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { NoticeService } from './core/notice/notice.service';
 import { SessionService } from './core/session/session.service';
 import { provideTitle } from './core/title/title.providers';
 import type { Account } from './data/api/models';
@@ -18,6 +19,7 @@ import { Instruments } from './features/management/instruments/instruments';
 import { Review } from './features/management/review/review';
 import { Users } from './features/management/users/users';
 import { NotFoundPage } from './features/not-found/not-found';
+import { Privacy } from './features/privacy/privacy';
 import { TechniqueDetail } from './features/technique/technique';
 
 const TECHNIQUE_ID = '019a0c1e-7b3d-7c2a-9e4f-0a1b2c3d4e5f';
@@ -27,8 +29,7 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/', Home, 'IQ Platform'],
   ['/tecnicas', Catalog, 'Catálogo de técnicas · IQ Platform'],
   [`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`, TechniqueDetail, 'Técnica · IQ Platform'],
-  ['/cuenta/ingresar', AccountEntry, 'Ingresar · IQ Platform'],
-  ['/cuenta/crear', AccountEntry, 'Crear cuenta · IQ Platform'],
+  ['/politica-de-datos', Privacy, 'Aviso de privacidad · IQ Platform'],
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
   ['/gestion/editor/abc/1', Editor, 'Editar técnica · IQ Platform'],
@@ -38,6 +39,8 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/gestion/instrumental/abc', Instruments, 'Instrumental · IQ Platform'],
   ['/gestion/usuarios', Users, 'Usuarios y roles · IQ Platform'],
   ['/no-existe', NotFoundPage, 'No encontrada · IQ Platform'],
+  ['/cuenta/registro', NotFoundPage, 'No encontrada · IQ Platform'],
+  ['/cuenta', NotFoundPage, 'No encontrada · IQ Platform'],
   ['/gestion/otra/cosa', NotFoundPage, 'No encontrada · IQ Platform'],
 ];
 
@@ -97,6 +100,42 @@ describe('rutas', () => {
     expect(component).toBeInstanceOf(screen);
     expect(router.url).toBe(url);
     expect(document.title).toBe(title);
+  });
+
+  it.each([
+    ['/cuenta/ingresar', 'Ingresar · IQ Platform'],
+    ['/cuenta/crear', 'Crear cuenta · IQ Platform'],
+  ])('%s abre la pantalla de cuenta a un visitante', async (url, title) => {
+    await loadSession(null);
+
+    const harness = await RouterTestingHarness.create();
+    const component = await harness.navigateByUrl(url);
+
+    expect(component).toBeInstanceOf(AccountEntry);
+    expect(document.title).toBe(title);
+  });
+
+  it.each(['/cuenta/ingresar', '/cuenta/crear'])(
+    'quien ya tiene sesión no ve %s: va a donde iba, sin avisos',
+    async (url) => {
+      await loadSession('user');
+
+      await router.navigateByUrl(`${url}?volver=%2Ftecnicas%2F${TECHNIQUE_ID}%2Finstrumental`);
+
+      expect(router.url).toBe(`/tecnicas/${TECHNIQUE_ID}/instrumental`);
+      expect(TestBed.inject(NoticeService).notices()).toEqual([]);
+    },
+  );
+
+  it('ingresar y crear cuenta son la misma pantalla: pasar de una a otra no la vuelve a crear', async () => {
+    await loadSession(null);
+    const harness = await RouterTestingHarness.create();
+
+    const login = await harness.navigateByUrl('/cuenta/ingresar?volver=%2Ftecnicas');
+    const register = await harness.navigateByUrl('/cuenta/crear?volver=%2Ftecnicas');
+
+    expect(register).toBe(login);
+    expect(document.title).toBe('Crear cuenta · IQ Platform');
   });
 
   it('una técnica sin pestaña abre los datos clínicos', async () => {

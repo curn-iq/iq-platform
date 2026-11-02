@@ -1,0 +1,42 @@
+// Casilla de verificación: ver «Ingresar / Crear cuenta (página)» en DESIGN.md.
+
+:host {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+
+  // Con un error se rodea de `tinta`, no de rojo
+  &[aria-invalid='true'] {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+  }
+}
+
+// Los enlaces dentro del texto son de la marca, como los demás enlaces del formulario
+.text ::ng-deep a {
+  color: var(--color-accent);
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

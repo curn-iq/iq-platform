@@ -19,7 +19,7 @@ describe('Tabs', () => {
   const line = () => root.querySelector<HTMLElement>('.line')!;
 
   async function mount(current = 'one', items: readonly TabItem[] = ITEMS) {
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', children: [] }])] });
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(Tabs);
     fixture.componentRef.setInput('label', 'Contenido');
@@ -70,6 +70,37 @@ describe('Tabs', () => {
       'false',
     ]);
     expect(tabs().map((tab) => tab.getAttribute('tabindex'))).toEqual(['-1', '-1', '0', '-1']);
+  });
+
+  describe('consulta de la URL', () => {
+    const KEEPING: TabItem[] = ITEMS.map((tab) => ({ ...tab, queryParamsHandling: 'preserve' }));
+
+    it('una pestaña que lo pide conserva la consulta de la URL en su enlace', async () => {
+      await mount('one', KEEPING);
+      await router.navigateByUrl('/x/one?volver=%2Ftecnicas');
+      await fixture.whenStable();
+
+      expect(tabs()[1].getAttribute('href')).toBe('/x/two?volver=%2Ftecnicas');
+    });
+
+    it('y también al pasar de una a otra con el teclado', async () => {
+      await mount('one', KEEPING);
+      const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      tabs()[0].dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }),
+      );
+
+      expect(navigate).toHaveBeenCalledWith(['/x', 'two'], { queryParamsHandling: 'preserve' });
+    });
+
+    it('sin pedirlo, el enlace no lleva consulta', async () => {
+      await mount('one');
+      await router.navigateByUrl('/x/one?volver=%2Ftecnicas');
+      await fixture.whenStable();
+
+      expect(tabs()[1].getAttribute('href')).toBe('/x/two');
+    });
   });
 
   it('el candado lo llevan solo las pestañas que lo piden', async () => {

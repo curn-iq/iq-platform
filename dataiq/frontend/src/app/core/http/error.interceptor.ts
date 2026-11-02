@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { QUIET_ERRORS } from '../../data/http-context';
 import { NoticeService } from '../notice/notice.service';
 import { LOGIN_PATH } from '../session/login-path';
 import { SessionService } from '../session/session.service';
@@ -9,8 +10,8 @@ import { describeApiError } from './error-message';
 
 const ACCOUNT_PREFIX = '/cuenta';
 
-// Un 401 de estas rutas no es una sesión vencida: en `/auth/me` es un visitante
-// y en `/auth/login`, una contraseña mal puesta. Cada pantalla lo trata.
+// Un 401 de estas rutas no es una sesión que venció en medio de algo: en `/auth/me` es un
+// visitante y en `/auth/login`, una contraseña mal puesta. Cada pantalla o servicio lo trata.
 const SILENT_401_PATHS = ['/auth/me', '/auth/login'];
 
 /** Cómo estaba la sesión cuando salió la petición. */
@@ -24,7 +25,9 @@ interface SentWith {
  * errores del servidor) y deja pasar el error para que quien llamó lo conozca.
  * Un 401 además olvida la cuenta y lleva a ingresar, si la petición salió con
  * sesión y la sesión no cambió desde entonces. Los demás códigos (p. ej. el 404)
- * no se avisan.
+ * no se avisan. Un fallo de comunicación (sin conexión, 5xx, tiempo agotado) nunca
+ * cierra la sesión: no dice que haya vencido. Una petición marcada con `QUIET_ERRORS`
+ * (un reintento automático) no avisa.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notices = inject(NoticeService);
@@ -34,7 +37,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: unknown) => {
-      if (error instanceof HttpErrorResponse && !isSilent(req.url, error.status, sent, session)) {
+      const quiet = req.context.get(QUIET_ERRORS);
+      if (
+        error instanceof HttpErrorResponse &&
+        !quiet &&
+        !isSilent(req.url, error.status, sent, session)
+      ) {
         const messages = describeApiError(error.status, error.error);
         if (messages) {
           notices.show('error', messages);

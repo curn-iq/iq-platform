@@ -6,6 +6,7 @@ import { Button } from '../../shared/ui/button/button';
 import { managementLinks } from './management-links';
 import { NavLink } from './nav-link';
 import { NAV_MENUS, specialtyTarget } from './nav-menus';
+import { SignOut } from './sign-out';
 import { SpecialtiesNav } from './specialties-nav';
 
 /**
@@ -34,6 +35,7 @@ export class MobileMenu {
   protected readonly menus = NAV_MENUS;
   protected readonly specialties = inject(SpecialtiesNav);
   protected readonly session = inject(SessionService);
+  protected readonly signOut = inject(SignOut);
 
   protected readonly specialtyLinks = computed(() =>
     this.specialties.entries().map((specialty) => ({
@@ -55,6 +57,12 @@ export class MobileMenu {
 
   constructor() {
     this.specialties.retry();
+  }
+
+  /** Cierra la sesión y el menú; `SignOut` lleva al inicio si salió. */
+  protected exit(): void {
+    void this.signOut.run();
+    this.chosen.emit();
   }
 
   protected onClick(event: Event): void {

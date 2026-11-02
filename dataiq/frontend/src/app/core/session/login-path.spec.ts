@@ -1,4 +1,4 @@
-import { LOGIN_PATH, safeReturnUrl } from './login-path';
+import { DEFAULT_RETURN_PATH, LOGIN_PATH, returnTarget, safeReturnUrl } from './login-path';
 
 describe('safeReturnUrl', () => {
   it('acepta rutas de esta app, con su consulta y su fragmento', () => {
@@ -34,5 +34,30 @@ describe('safeReturnUrl', () => {
 
   it('LOGIN_PATH es la pantalla de ingreso de la cuenta', () => {
     expect(LOGIN_PATH).toBe('/cuenta/ingresar');
+  });
+});
+
+describe('returnTarget', () => {
+  it('vuelve a la ruta de ?volver= si es de esta app', () => {
+    expect(returnTarget('/tecnicas/abc/instrumental')).toBe('/tecnicas/abc/instrumental');
+    expect(returnTarget('/gestion/borradores?x=1')).toBe('/gestion/borradores?x=1');
+  });
+
+  it('sin ?volver= o con uno que no es de esta app, va al catálogo', () => {
+    expect(DEFAULT_RETURN_PATH).toBe('/tecnicas');
+    expect(returnTarget(null)).toBe('/tecnicas');
+    expect(returnTarget('')).toBe('/tecnicas');
+    expect(returnTarget('https://sitio.example')).toBe('/tecnicas');
+    expect(returnTarget('//sitio.example')).toBe('/tecnicas');
+  });
+
+  it('no vuelve a la cuenta: quien ya ingresó daría vueltas entre las dos pantallas', () => {
+    expect(returnTarget('/cuenta/ingresar')).toBe('/tecnicas');
+    expect(returnTarget('/cuenta/crear?volver=%2Fx')).toBe('/tecnicas');
+    expect(returnTarget('/cuenta')).toBe('/tecnicas');
+  });
+
+  it('una ruta que solo empieza parecido sí es de otra parte', () => {
+    expect(returnTarget('/cuentas-claras')).toBe('/cuentas-claras');
   });
 });

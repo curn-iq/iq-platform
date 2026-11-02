@@ -1,0 +1,5 @@
+<p class="title">No se pudo comprobar la sesión.</p>
+<p class="hint">Se vuelve a intentar sola y la página se abre en cuanto responda el servidor.</p>
+<button app-button type="button" variant="soft" [attr.aria-busy]="busy()" (click)="retry.emit()">
+  Reintentar
+</button>

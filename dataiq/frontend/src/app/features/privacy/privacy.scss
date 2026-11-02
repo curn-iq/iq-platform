@@ -1,0 +1,194 @@
+// Aviso de privacidad: ver «Aviso de privacidad (página)» en DESIGN.md. Titular lateral, como el
+// catálogo: el titular y la versión en las columnas 1-5, el texto en 7-12, y entre ellos y
+// lo que los precede, el filete de 2 px en `tinta`.
+
+:host {
+  display: block;
+  padding: clamp(56px, 8vh, 96px) var(--space-gutter) clamp(72px, 10vh, 112px);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-column-gap);
+  border-top: 2px solid var(--color-text);
+}
+
+.head {
+  grid-column: 1 / 6;
+  position: sticky;
+  top: var(--size-navbar);
+  align-self: start;
+  padding-block: 32px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.summary {
+  margin: 20px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.text {
+  grid-column: 7 / 13;
+  padding-block: 32px 0;
+}
+
+h2,
+h3 {
+  margin: 48px 0 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+.text > :first-child {
+  margin-top: 0;
+}
+
+p,
+li {
+  color: var(--color-text-muted);
+  font-size: 16.5px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+p {
+  margin: 0 0 14px;
+}
+
+ul,
+ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+
+li {
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+strong {
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+// ---------- Tabla de datos: filas con filete, sin celdas ni fondos ----------
+
+table {
+  width: 100%;
+  margin: 8px 0 14px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th {
+  padding: 0 16px 10px 0;
+  color: var(--color-text-subtle);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+td {
+  padding: 16px 16px 16px 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.55;
+  vertical-align: top;
+
+  &:first-child {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+}
+
+tbody tr:last-child td {
+  border-bottom: 1px solid var(--color-border);
+}
+
+// Tableta: el titular arriba y el texto debajo, a todo el ancho.
+@media (max-width: 1100px) {
+  .head,
+  .text {
+    grid-column: 1 / -1;
+  }
+
+  .head {
+    position: static;
+    padding-bottom: 8px;
+  }
+
+  .text {
+    max-width: 76ch;
+  }
+}
+
+// Celular: cada fila de la tabla es una ficha, y cada celda dice a qué columna pertenece.
+@media (max-width: 760px) {
+  h1 {
+    font-size: 32px;
+  }
+
+  thead {
+    // Los encabezados se leen en cada celda (`data-label`); a los lectores de pantalla
+    // les quedan en la tabla.
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  tbody tr {
+    display: grid;
+    gap: 6px;
+    padding: 16px 0;
+    border-top: 1px solid var(--color-border);
+
+    &:last-child {
+      border-bottom: 1px solid var(--color-border);
+    }
+  }
+
+  td {
+    display: block;
+    padding: 0;
+    border: 0;
+
+    &::before {
+      display: block;
+      content: attr(data-label);
+      color: var(--color-text-subtle);
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}

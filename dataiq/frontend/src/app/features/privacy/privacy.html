@@ -1,0 +1,96 @@
+<article class="layout" aria-labelledby="privacy-title">
+  <header class="head">
+    <h1 id="privacy-title">
+      <ng-container *ngTemplateOutlet="inlines; context: { $implicit: document.title }" />
+    </h1>
+    <p class="summary">
+      <ng-container *ngTemplateOutlet="inlines; context: { $implicit: document.summary }" />
+    </p>
+  </header>
+
+  <div class="text">
+    @for (block of document.blocks; track $index) {
+      @switch (block.type) {
+        @case ('heading') {
+          @if (block.level === 2) {
+            <h2>
+              <ng-container *ngTemplateOutlet="inlines; context: { $implicit: block.inlines }" />
+            </h2>
+          } @else {
+            <h3>
+              <ng-container *ngTemplateOutlet="inlines; context: { $implicit: block.inlines }" />
+            </h3>
+          }
+        }
+        @case ('paragraph') {
+          <p>
+            <ng-container *ngTemplateOutlet="inlines; context: { $implicit: block.inlines }" />
+          </p>
+        }
+        @case ('list') {
+          @if (block.ordered) {
+            <ol>
+              @for (item of block.items; track $index) {
+                <li>
+                  <ng-container *ngTemplateOutlet="inlines; context: { $implicit: item }" />
+                </li>
+              }
+            </ol>
+          } @else {
+            <ul>
+              @for (item of block.items; track $index) {
+                <li>
+                  <ng-container *ngTemplateOutlet="inlines; context: { $implicit: item }" />
+                </li>
+              }
+            </ul>
+          }
+        }
+        @case ('table') {
+          <table role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                @for (cell of block.header; track $index) {
+                  <th role="columnheader" scope="col">
+                    <ng-container *ngTemplateOutlet="inlines; context: { $implicit: cell }" />
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody role="rowgroup">
+              @for (row of block.rows; track $index) {
+                <tr role="row">
+                  @for (cell of row; track $index; let column = $index) {
+                    <td role="cell" [attr.data-label]="plain(block.header[column])">
+                      <ng-container *ngTemplateOutlet="inlines; context: { $implicit: cell }" />
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      }
+    }
+  </div>
+</article>
+
+<!-- Un trozo de texto: sin espacios sobrantes alrededor, para que la coma tras una negrita quede pegada. -->
+<ng-template #inlines let-items>
+  @for (inline of items; track $index) {
+    @switch (inline.type) {
+      @case ('strong') {
+        <strong>{{ inline.text }}</strong>
+      }
+      @case ('em') {
+        <em>{{ inline.text }}</em>
+      }
+      @case ('link') {
+        <a [href]="inline.href" rel="noopener">{{ inline.text }}</a>
+      }
+      @default {
+        <ng-container>{{ inline.text }}</ng-container>
+      }
+    }
+  }
+</ng-template>

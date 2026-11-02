@@ -11,7 +11,7 @@ import { SessionService } from './session.service';
 /**
  * Pide la cuenta al arrancar. No espera la respuesta: el backend puede tardar
  * segundos en arrancar en frío y las páginas públicas no deben quedar en blanco.
- * Los guards sí la esperan (`SessionService.load()`). Si la API no respondió, se
+ * Las rutas protegidas sí la esperan (`SessionService.verified()`). Si la API no respondió, se
  * vuelve a preguntar al cambiar de página, también en las públicas, que no tienen
  * guard; si ya respondió, `load()` no pide nada.
  */

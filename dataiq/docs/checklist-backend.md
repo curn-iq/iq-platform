@@ -126,6 +126,27 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     JWKS y lo reenvía a DataIQ para pedir los datos. Revisar que la ruta del
     JWKS quede accesible en el despliegue (Vercel reserva `/.well-known`)
 
+## Hallazgos de seguridad pendientes
+
+Cosas que se vieron al construir el frontend y que el backend aún no resuelve. Se anotan
+aquí para que quien opere el backend las decida; no están en el alcance del MVP.
+
+- [ ] **Enumeración de usuarios en `POST /auth/register`** (hallazgo de la fase 5 del frontend,
+  decidido por Juan el 2026-11-01). Un correo que ya tiene cuenta responde `409 «Ya hay una
+  cuenta con ese correo»` (`UserRepository.create`), y uno nuevo responde `201`: cualquiera
+  puede probar correos con una petición directa y saber cuáles tienen cuenta. El ingreso ya
+  está cuidado (compara contra un hash de relleno para que tarde igual y dice lo mismo si el
+  correo no existe), así que el registro es la diferencia observable.
+  - **Recomendado:** respuestas externas uniformes para un correo nuevo y uno existente, sin
+    diferencias observables en el mensaje, el código HTTP ni el tiempo de respuesta; sin un
+    servicio de correo, quien ya tiene cuenta lo sabría al fallar su ingreso. Y **limitar los
+    intentos** (rate limiting) en el registro y en el ingreso, para frenar a quien prueba
+    correos de forma automática (ver también `docs/despues-del-mvp.md`).
+  - **Mientras tanto:** el frontend no repite el texto del 409 ni marca el campo del correo
+    (Resuelto 43 de [`checklist-frontend.md`](checklist-frontend.md)); es una mitigación
+    visual temporal que no impide la consulta directa a la API. El backend y sus contratos no
+    se tocan en la fase 5.
+
 ## Datos de la fuente que no cuadraban
 
 Criterio: lo que los documentos de IQ traen completo se carga tal cual. Lo que

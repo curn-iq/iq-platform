@@ -52,6 +52,16 @@
         >{{ link.label }}</a
       >
     }
+    <button
+      app-button
+      variant="ghost"
+      class="framed exit"
+      type="button"
+      [attr.aria-busy]="signOut.busy()"
+      (click)="exit()"
+    >
+      Cerrar sesión
+    </button>
   </div>
 } @else if (session.loaded()) {
   <div class="actions">

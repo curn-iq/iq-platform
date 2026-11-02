@@ -140,4 +140,12 @@ describe('Footer', () => {
       'IQ Platform es un nombre provisional.',
     ]);
   });
+
+  it('enlaza el aviso de privacidad en la franja de abajo, junto al derecho de autor', () => {
+    const link = root().querySelector<HTMLAnchorElement>('.base a')!;
+
+    expect(link.textContent!.trim()).toBe('Aviso de privacidad');
+    expect(link.getAttribute('href')).toBe('/politica-de-datos');
+    expect(handledByRouter(link)).toBe(true);
+  });
 });

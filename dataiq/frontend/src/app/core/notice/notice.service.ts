@@ -60,4 +60,12 @@ export class NoticeService {
   dismiss(id: number): void {
     this.list.update((notices) => notices.filter((notice) => notice.id !== id));
   }
+
+  /**
+   * Quita los errores a la vista, que se quedan hasta cerrarlos: al volver a intentar algo, los
+   * del intento anterior ya no dicen nada. Las confirmaciones se van solas.
+   */
+  dismissErrors(): void {
+    this.list.update((notices) => notices.filter((notice) => notice.kind !== 'error'));
+  }
 }

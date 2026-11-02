@@ -84,6 +84,13 @@ a {
   font-size: 14px;
 }
 
+// El derecho de autor y, a su lado, el aviso de privacidad.
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
 // Tableta: la marca arriba, a todo el ancho, y las cuatro columnas debajo.
 @media (max-width: 1100px) {
   .grid {

@@ -55,24 +55,25 @@ src/
     │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
     │   │                   interceptores: X-IQ-Client y errores
     │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
-    │   ├── session/        SessionService (signal con la cuenta), sessionGuard, roleGuard(min)
+    │   ├── session/        SessionService (la cuenta y su estado), sessionGuard, roleGuard(min), guestGuard
     │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
     ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
     │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad, búsqueda sin tildes, pestañas del detalle
+    │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
     │                       auth, users)
     ├── shared/
     │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya, segmented control,
-    │   │                   status pill, progress mark (22 px), search field, demo tag, floating panel,
+    │   │                   status pill, progress mark (22 px), search field, text field, checkbox field, field error,
+    │   │                   demo tag, floating panel,
     │   │                   notice stack (los avisos: error y confirmación)
     │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
-    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie
+    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie, aviso de sesión sin comprobar
     └── features/
-        ├── home/  catalog/  technique/  account/
+        ├── home/  catalog/  technique/  account/  privacy/
         └── management/
             ├── drafts/  editor/  review/  instruments/  users/
 ```
@@ -241,6 +242,39 @@ El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a
 - **Puerta de cuenta** (`technique-gate/`, Resuelto 36): sin sesión, Instrumental, Mesa de Mayo y Mesa de reserva muestran un vistazo difuminado y, debajo, la tarjeta («Crear cuenta gratis» y «Ya tengo cuenta»), ambos a `/cuenta/...?volver=<la pestaña>`. El vistazo no lleva datos (la API los entrega solo con cuenta): una cuadrícula vacía con la variante `preview` de `app-table-diagram`, o barras en lugar de objetos, igual en toda técnica, así que no revela si le falta una mesa. Solo aparece cuando ya se sabe que no hay sesión (`SessionService.loaded()`), y sin sesión no se pide `/instruments`. Mientras no se sabe, la hoja dice «Cargando…»; si `GET /auth/me` falló por algo que no es un 401, tampoco se sabe (`loadFailed()`): no hay puerta ni candados, y la hoja ofrece «Reintentar».
 - **«Ver en 3D» y «Comprobar con la cámara»** (cabecera, `domain/module-links.ts`): con sesión son enlaces normales (`href`, no `routerLink`) a `/simiq3d/tecnicas/:id` y `/sivri/`, porque SIMIQ3D y SIVRI son apps aparte servidas en el mismo origen (Resuelto 17) y el router de esta no las conoce; sin sesión, `routerLink` a `/cuenta/crear?volver=<la pestaña>`. Están en toda técnica (si el módulo no cubre una, su pantalla lo dice) y no se muestran hasta que `SessionService.loaded()` es verdadero. En desarrollo (`ng serve`) esas dos rutas no existen: hace falta el rewrite de Vercel o los módulos corriendo en el mismo origen.
 
+### Cuenta (`features/account/`)
+
+Ingresar y Crear cuenta son una sola pantalla (`AccountEntry`, `cuenta.html`) en **una sola ruta**, `cuenta/:modo` (`ingresar` o `crear`; otro segmento es «No encontrada», por `canMatch`). Con una ruta por pestaña, pasar de una a otra volvería a crear la pantalla y no habría raya que se deslice ni mitades que cambien de lado. El modo y el título de la pestaña del navegador salen de `domain/account-entry.ts` (`accountModeOf()`), que también tiene el saludo según la hora (`greeting()`) y saca de `?volver=` la técnica a la que se iba (`techniqueIdOfReturnUrl()`; un id que no es un UUID ni se pide). Los dos formularios son Signal Forms (`form()` y `[formField]`) y cada pantalla pinta solo el de la pestaña abierta.
+
+- **La mitad izquierda** es la técnica que se quería abrir (`LockedTechnique`): ruta, nombre, especialidad y una vista bloqueada con las cuatro pestañas del detalle y un candado, igual para toda técnica, así que no revela si le falta una mesa (Resuelto 36). Pide `GET /techniques/{id}`, que es público; mientras llega, nombre y especialidad son barras y la mitad dice `aria-busy`. Si la técnica no existe o la API falla, vuelve a ser el saludo: no se queda en blanco ni ofrece un candado sin técnica. Sin técnica (ingreso directo) es el saludo con su ilustración (`LoginIllustration` y `RegisterIllustration`, SVG del mockup, decorativas; no se muestran en celular).
+- **Cambio de lado** (FLIP, 700 ms): solo en el ingreso directo y solo al pasar a Crear cuenta; con una técnica las mitades no se mueven. Depende de la URL (`?volver=`), no de si la técnica cargó, para que la respuesta de la API no las mueva con la persona escribiendo. Cada mitad parte de donde estaba la última vez que se pintó (se vuelve a medir al cambiar el tamaño de la ventana, cancelando el deslizamiento en curso, cuya medida saldría torcida) y no corre con movimiento reducido.
+- **Pestañas:** `shared/ui/tabs` con enlaces a `/cuenta/ingresar` y `/cuenta/crear` que **conservan la consulta** (`TabItem.queryParamsHandling: 'preserve'`), para no perder `?volver=` al cambiar de una a otra, con el ratón o con las flechas.
+- **Campos:** `shared/ui/text-field` (`app-text-field`) es un control de Signal Forms (`FormValueControl<string>`) con su etiqueta, y «Mostrar» / «Ocultar» para las contraseñas, que no le quita el foco a la caja. Un error de validación sale bajo la caja (`app-field-error`, `role="alert"`, sin rojo) solo cuando el campo se tocó: al salir de él o al intentar enviar. `shared/ui/checkbox-field` (`app-checkbox-field`) es lo mismo para una casilla (`FormCheckboxControl`), con su texto dentro y enlaces si hace falta.
+- **Sin Google ni «¿Olvidaste tu contraseña?»** (Resuelto 20).
+- **Ingresar** (Resuelto 43 y 44): valida al enviar igual que el registro (`loginSchema`, en `login-form.ts`): «Escribir el correo.» si falta, «Escribir un correo válido.» si no tiene forma de correo y «Escribir la contraseña.» si falta; la contraseña no se juzga (ni largo mínimo, para no decirle a quien prueba cuál es la regla, ni recorte). Manda `POST /auth/login` con el correo sin espacios de más y la contraseña tal cual, y va a `?volver=` o al catálogo (`returnTarget()`: solo rutas de esta app y nunca la propia cuenta, que lo dejaría en círculos). Con una contraseña incorrecta (401, que el interceptor deja a la pantalla) dice lo que responde la API, «Correo o contraseña incorrectos», que no delata si el correo existe; no marca ningún campo, deja el correo, **vacía la contraseña y le da el foco** para escribirla de nuevo. Cualquier otro fallo (sin conexión, un error del servidor) ya lo avisó el interceptor y se conserva lo escrito. Cada intento quita los errores del anterior (`NoticeService.dismissErrors()`), porque se quedan hasta cerrarlos y uno viejo seguiría a la persona ya adentro. Al ingresar se vacía el formulario. Un segundo envío mientras va el primero no hace nada. No hay límite de intentos: es un pendiente del backend (`docs/despues-del-mvp.md`).
+- **Crear cuenta** (Resuelto 43 y 46): valida al enviar con Signal Forms (`registrationSchema`, en `registration-form.ts`; la regla pura del correo y los topes, en `domain/registration.ts`): un mensaje bajo cada campo, el foco al primero con error y nada enviado si algo falla. Los campos no llevan `maxlength`: cortaría en silencio una contraseña pegada y la cuenta quedaría con una que la persona no conoce; pasar el tope se dice bajo el campo. La casilla «Soy mayor de 18 años y acepto el aviso de privacidad.» empieza sin marcar y enlaza `/politica-de-datos` en otra pestaña, para no perder lo escrito. Envía `POST /auth/register` con `accepts_policy: true` y el nombre y el correo sin espacios de más (la contraseña, tal cual); la API crea la cuenta pero no inicia sesión, así que ingresa sola con las mismas credenciales y va a `?volver=` o al catálogo (`returnTarget()`). Al crearse se vacía el formulario: la contraseña no se queda en la memoria de la pantalla. Si el ingreso falla, va a Ingresar con el correo puesto y con lo que iba a abrir, y dice «La cuenta se creó, pero no se pudo ingresar. Intentar de nuevo con ese correo y esa contraseña.», para que no se registre otra vez. Un segundo envío mientras va el primero no hace nada.
+- **Correo repetido: mitigación visual temporal** (Resuelto 43). La API responde 409 «Ya hay una cuenta con ese correo», que le dice a quien prueba correos cuáles tienen cuenta (enumeración de usuarios). La petición de registro va en silencio (`QUIET_ERRORS`: el interceptor no muestra el texto de la API) y la pantalla da un aviso neutro, igual para un 409 y para lo que no tiene un texto propio: «No se pudo completar el registro. Verificar los datos e intentar de nuevo.». No marca el campo del correo ni ofrece recuperar la contraseña. Es una mitigación, no la solución: el 409 sigue en el backend, y el pendiente (respuestas uniformes y límite de intentos) está en [`checklist-backend.md`](../docs/checklist-backend.md). Los demás 409 de la aplicación no cambian, y los demás errores del registro (sin conexión, un error del servidor, datos no válidos) dicen lo de siempre.
+
+#### Salir
+
+«Cerrar sesión» está al final del panel de «Mi cuenta» (un botón, no un enlace, con su ícono y
+separado por un filete) y del menú de celular, para cualquier rol (Resuelto 45 de la
+[checklist](../docs/checklist-frontend.md)). Lo hace `SignOut` (`shell/navbar/sign-out.ts`):
+`POST /auth/logout`, que borra la cookie `HttpOnly`; al salir se olvida la cuenta y **se lleva al
+inicio**, como en los mockups, también desde una pantalla de gestión, que ya no es de quien salió.
+La ruta no pide sesión, así que una ya vencida no es un error. Si no se pudo cerrar (sin conexión,
+un error del servidor) el interceptor ya avisó, la cuenta sigue —la cookie sigue, así que no se
+simula una salida que no ocurrió— y se queda donde está para intentarlo de nuevo. Un segundo toque
+mientras va la petición no pide otra vez (`aria-busy`).
+
+### Aviso de privacidad (`features/privacy/`)
+
+El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs/privacidad.md), que el registro obliga a aceptar (Resuelto 30 de la [checklist](../docs/checklist-frontend.md)). La ruta, el diseño y el enlace del pie los decidió Juan el 2026-11-01 (Resuelto 41); el diseño está en «Aviso de privacidad (página)» de [`DESIGN.md`](../../DESIGN.md).
+
+- **El texto no se copia.** `angular.json` carga los `.md` como texto (`loader`), la página importa el documento de la raíz del repo y `domain/markdown.ts` (`parseMarkdown()`, sin Angular y con pruebas) lo vuelve nodos: titulares, párrafos, listas con viñetas o numeradas, tablas, negrita, cursiva y enlaces. La plantilla los pinta como elementos, sin `innerHTML`, y un enlace solo se dibuja si va a `https:` o `mailto:`. Cambiar `docs/privacidad.md` cambia la página; `POLICY_VERSION` del backend cambia en el mismo PR (`.claude/rules/dataiq.md`).
+- **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
+- **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |
@@ -266,7 +300,8 @@ relativas a `/api/dataiq`.
 | `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
-| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
+| `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
+| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
 | `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
 | `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
@@ -338,9 +373,9 @@ las toma por una ruta desconocida y abre «No encontrada».
   `false`, `loadFailed()` pasa a `true` y se vuelve a preguntar al cambiar de página
   (`provideSession`). El panel se cierra si la sesión
   cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
-  alto: al abrirlo de nuevo se ancla a la altura nueva. Todavía faltan: la cifra junto a
-  cada acceso, que llega con su pantalla (borradores, por revisar, instrumental), y
-  «Cerrar sesión», de la fase 5.
+  alto: al abrirlo de nuevo se ancla a la altura nueva. Al final lleva «Cerrar sesión»
+  (ver «Salir», abajo). Todavía falta la cifra junto a cada acceso, que llega con su pantalla
+  (borradores, por revisar, instrumental).
 - **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
   menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
@@ -360,8 +395,8 @@ las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
 Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
 no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
 «Preguntas frecuentes» y «Para docentes» (la opción que va solo en la barra
-lleva `inFooter: false` en `nav-menus.ts`); la política de datos se suma con su
-página (fase 5). Las especialidades las da `Specialties` (`GET /specialties`,
+lleva `inFooter: false` en `nav-menus.ts`); «Aviso de privacidad», que abre su
+página, va en la franja de abajo, junto al derecho de autor. Las especialidades las da `Specialties` (`GET /specialties`,
 una sola petición al cargar la app, porque el pie está en todas las páginas, que
 comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si
 fallaron (p. ej. un 5xx en un arranque en frío), se vuelven a pedir al cambiar
@@ -426,19 +461,55 @@ shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión)
 Solo el 401 dice que es un visitante, y es definitivo. Si la API no respondió
 (sin conexión o un 5xx en un arranque en frío) no se sabe si hay sesión:
 `loaded()` sigue en `false`, `loadFailed()` pasa a `true` y el próximo `load()`
-vuelve a preguntar; lo llaman los guards y `provideSession()`, al cambiar de
+vuelve a preguntar; lo llama `provideSession()`, al cambiar de
 página. Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una
 respuesta tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
+
+**Estado** (`status()`, decidido por Juan el 2026-11-01, Resuelto 42 de la
+[checklist](../docs/checklist-frontend.md)): `loading` (se está comprobando),
+`authenticated`, `unauthenticated` (solo el 401: el JWT dura 2 horas y no se renueva, así
+que no hay nada que intentar antes) y `verification_unavailable` (sin conexión, un 5xx
+o un tiempo agotado). Esto último **no** dice que la sesión haya vencido: nunca cierra la
+sesión ni manda a ingresar. `GET /auth/me` espera 15 s como máximo (`timeout`) y pasa a
+no disponible, para que una API colgada no deje la app esperando. Ese tiempo agotado se
+corta fuera de `HttpClient`, así que el interceptor no lo ve y lo avisa el propio servicio.
+
+**Comprobación con espera** (`verified()`, la que usan los guards): emite cuando ya se sabe
+(sesión o 401). Si la API no responde **no emite**: la navegación queda pendiente con su
+URL (nada de la pantalla protegida se crea ni se pide), y `verificationBlocked()` pasa a
+`true`, con lo que `App` muestra el aviso «No se pudo comprobar la sesión» (ver abajo).
+Mientras espera, vuelve a preguntar sola **en silencio** (`QUIET_ERRORS`: un reintento
+automático no repite el aviso de error) a los 5, 10, 20 y 30 s (y cada 30 s después), al
+volver la conexión (`online`) y cuando se pide con `retry()` («Reintentar», que sí avisa si
+falla; si se pide mientras va una pregunta en silencio y esa falla, se pregunta otra vez con
+aviso, para que el toque no se pierda). Al responder, la navegación sigue a la ruta que se había pedido; si otra
+navegación la cancela, deja de preguntar y el aviso se va. Quien ya tiene su información en
+pantalla no la pierde: la espera es una navegación pendiente, no destruye lo que se ve.
 
 - `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
   la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
   interceptor ante un 401).
 - `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
-  (`load()`). Al visitante lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
+  (`verified()`). Al visitante (401) lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
   tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
   aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
-  403). Es solo para
-  no mostrar pantallas que no se pueden usar: la API decide en cada petición.
+  403). Es solo para no mostrar pantallas que no se pueden usar: la API decide en cada
+  petición, y el rol que guarda el navegador nunca da un permiso por sí solo.
+- `guestGuard`, en la ruta de la cuenta (`/cuenta/ingresar`, `/cuenta/crear`): a quien ya
+  se sabe que tiene sesión lo lleva a donde iba (`?volver=`, por `returnTarget()`; nunca a otra pantalla
+  de la cuenta, que lo devolvería en círculos) o al catálogo, **sin ningún aviso**: decirle a
+  una URL que ya hay una sesión sería dar información de más. Quien quiera crear otra cuenta
+  cierra antes la sesión desde «Mi cuenta». **No espera** a `GET /auth/me`: el formulario es lo
+  que necesita quien no tiene sesión y no se deja en blanco por un servidor que tarda, ni un
+  cambio de pestaña depende de esa respuesta. Si llega con la pantalla abierta y sí hay sesión,
+  `AccountEntry` hace lo mismo que el guard (Resuelto 46).
+- **Aviso de sesión sin comprobar** (`shell/session-unavailable/`): lo muestra `App` arriba de
+  la ruta mientras `verificationBlocked()`, así ninguna pantalla lo resuelve por su cuenta. Dice
+  que no se pudo comprobar la sesión y que la página se abre en cuanto responda el servidor, y
+  ofrece «Reintentar» (`aria-busy` mientras comprueba). Los textos los aprobó Juan el
+  2026-11-01 (Resuelto 42).
+- Un `403` es acceso denegado: avisa y conserva la sesión. Un 5xx, la falta de conexión o
+  un tiempo agotado tampoco la cierran (lo prueban el interceptor y el servicio).
 - `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
   que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
   `//sitio`, `https://…`, `\` ni caracteres de control).

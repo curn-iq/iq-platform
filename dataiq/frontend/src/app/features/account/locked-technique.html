@@ -1,0 +1,99 @@
+<nav class="route" aria-label="Ruta">
+  <a routerLink="/tecnicas">Técnicas</a>
+  @if (specialty(); as specialty) {
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+      <path
+        d="M4.5 2.5L8 6l-3.5 3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <span>{{ specialty }}</span>
+  }
+</nav>
+
+<div>
+  <p class="technique-name" id="technique-name">
+    @if (name(); as name) {
+      {{ name }}
+    } @else {
+      <span class="bar" aria-hidden="true"></span>
+    }
+  </p>
+  <p class="technique-specialty">
+    @if (specialty(); as specialty) {
+      {{ specialty }}
+    } @else {
+      <span class="bar short" aria-hidden="true"></span>
+    }
+  </p>
+</div>
+
+<div class="locked">
+  <div class="fake-tabs" aria-hidden="true">
+    @for (label of tabLabels; track label) {
+      <span>{{ label }}</span>
+    }
+  </div>
+  <div class="body">
+    @for (column of columns; track $index) {
+      <div aria-hidden="true">
+        @for (width of column; track $index) {
+          <span class="bone" [style.width.%]="width"></span>
+        }
+      </div>
+    }
+    <div class="lock">
+      <span>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+          <rect
+            x="4"
+            y="9"
+            width="12"
+            height="8"
+            rx="2"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path
+            d="M7 9V6.5a3 3 0 0 1 6 0V9"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+      <p>{{ promise }}</p>
+    </div>
+  </div>
+</div>
+
+<p class="promise">
+  <span>
+    <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+      <rect
+        x="4"
+        y="9"
+        width="12"
+        height="8"
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+      />
+      <path
+        d="M7 9V6.5a3 3 0 0 1 6 0V9"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+      />
+    </svg>
+  </span>
+  <span>{{ promise }}</span>
+</p>
