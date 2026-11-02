@@ -1,3 +1,5 @@
+import { ZONE_NAMES } from './table';
+
 /** Una pestaña del detalle de técnica. */
 export interface TechniqueTab {
   /** Cómo se llama en la URL: `/tecnicas/:id/<slug>`. */
@@ -14,12 +16,12 @@ export interface TechniqueTab {
 export const TECHNIQUE_TABS: readonly TechniqueTab[] = [
   { slug: 'datos-clinicos', label: 'Datos clínicos', requiresAccount: false, zone: null },
   { slug: 'instrumental', label: 'Instrumental', requiresAccount: true, zone: null },
-  { slug: 'mesa-de-mayo', label: 'Mesa de Mayo', requiresAccount: true, zone: 'Mesa de Mayo' },
+  { slug: 'mesa-de-mayo', label: 'Mesa de Mayo', requiresAccount: true, zone: ZONE_NAMES.mayo },
   {
     slug: 'mesa-de-reserva',
     label: 'Mesa de reserva',
     requiresAccount: true,
-    zone: 'Mesa de reserva',
+    zone: ZONE_NAMES.reserve,
   },
 ];
 

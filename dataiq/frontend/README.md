@@ -275,6 +275,10 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
 - **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
 
+### Gestión del colaborador (`features/management/`)
+
+- **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.
+
 ### Glosario (interfaz → código y API)
 
 | Interfaz | Código y API |

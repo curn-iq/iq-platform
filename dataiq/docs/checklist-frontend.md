@@ -90,7 +90,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 ### Fase 6 — Gestión del colaborador
 
-- [ ] `domain/`: avance de cada sección de una versión (completa, en curso, pendiente o sin mesa) con la regla de Resuelto 22, con pruebas. La usan Mis borradores y el editor
+- [x] `domain/`: avance de cada sección de una versión (completa, en curso, pendiente o sin mesa) con la regla de Resuelto 22, con pruebas. La usan Mis borradores y el editor
 - [ ] Mis borradores: matriz de avance por sección, filtros, motivo de la devolución (`rejections`, con sus saltos de línea: ver Resuelto 18)
 - [ ] «Nueva técnica»: el editor pide primero nombre y especialidad (`GET /specialties`) y crea la técnica con `POST /techniques` en cuanto tiene los dos (un 409 dice que ya existe ese nombre en la especialidad); el autoguardado empieza después. «Editar una publicada» (un 409 dice que ya hay una versión en curso)
 - [ ] Descartar un borrador (`DELETE /versions/{id}`) desde «Más acciones» del editor, con confirmación en el mismo panel, como Archivar. Solo en borrador; si es la versión 1 de una técnica que nunca se publicó, la confirmación avisa que también se borra la técnica (Resuelto 25)
