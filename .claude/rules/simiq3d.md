@@ -17,9 +17,11 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
 - **El modelo entiende y DataIQ responde:** el modelo de lenguaje (Ollama en
   el Servidor PC2) solo convierte la pregunta en pedidos (`TOOLS` del agente,
   `app/domain/requests.py`); cada pedido se responde con las plantillas de
-  `app/domain/chat.py`, con datos de DataIQ, y el texto del modelo nunca llega
-  al estudiante. Lo que pide el modelo se valida contra las palabras de la
-  conversación (`as_said`, `contradicted`). Si el Servidor PC2 está lento,
+  `app/domain/chat.py`, con datos de DataIQ. Después el modelo redacta la
+  respuesta solo con esos datos (`app/domain/writing.py`), y el texto se
+  verifica antes de mostrarlo; si no pasa o tarda, se muestra lo armado. Lo que
+  pide el modelo se valida contra las palabras de la conversación (`as_said`,
+  `contradicted`). Si el Servidor PC2 está lento,
   responden las reglas fijas (`adapters/outbound/language/fake.py`). Un tipo
   de pregunta nuevo es un pedido nuevo con su plantilla y sus preguntas en
   `eval/banco.csv`.

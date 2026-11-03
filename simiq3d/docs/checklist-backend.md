@@ -128,6 +128,47 @@ Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
 - [x] Documentación: el README del backend («Cómo responde el chat»), el
   contrato de `POST /chat` y `.claude/rules/simiq3d.md`
 
+### La redacción
+
+Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat», «La
+redacción»).
+
+- [x] Prueba con las 8 preguntas de la conversación del celular, antes de
+  construir: las 8 pasaron la verificación; redactar sumó de 1,5 a 8 s, y 17 s
+  la más larga
+- [x] El modelo redacta solo con los datos de cada pedido y la descripción de
+  la técnica (`app/domain/writing.py`); la mesa de Mayo va después, tal como
+  sale de DataIQ
+- [x] Verificación: nombres, números en cifras y en letras, cuadrícula,
+  tiempos quirúrgicos u orden de uso, explicaciones y relleno, datos omitidos,
+  lo que DataIQ no tiene dicho y nada más dado por faltante, y el largo
+- [x] Respaldo: lo armado si no pasa o si tarda más de `LLM_WRITE_DEADLINE`
+  (12 s); tope de `max_tokens` en las dos llamadas; las aclaraciones y las
+  negativas no se redactan; `LLM_WRITE=false` la apaga
+- [x] «No va en esta mesa» dice dónde sí va, con la pregunta para verlo ahí
+- [x] `compare` con el ejemplo de «qué lleva X que no lleve Y»
+- [x] Banco: el juez de fidelidad (`--fidelidad`), que revisa cada frase
+  redactada contra sus datos, y «modelo, texto armado» en quién respondió
+- [x] La fuente en el campo de pregunta: «Responde con los datos de DataIQ»
+- [x] Banco con la redacción, en local con Qwen3-VL 8B el 2026-11-03. Cada
+  corrida ajustó las instrucciones o la verificación según lo que marcó el
+  juez:
+
+  | Corrida | Exactitud | Redactadas | Sin frases sin respaldo (juez) | Mediana |
+  |---|---|---|---|---|
+  | Sin redacción (#68) | 137/138 | — | — | 1,4 s |
+  | 1. Instrucciones iniciales | 135/138 | 102 | 93 | 3,7 s |
+  | 2. Con lo que muestra el visor como contexto | 137/138 | 93 | 67 | 4,9 s |
+  | 3. Instrucciones en positivo | 137/138 | 78 | 62 | 4,9 s |
+  | 4. Las iniciales, sin contar objetos ni explicar, con toda la verificación | 137/138 | 90 | 88 | 3,6 s |
+
+  Queda la 4. Las respuestas no redactadas son aclaraciones, negativas o
+  textos que no pasaron la verificación (18), que muestran lo armado. El juez
+  es el mismo modelo y se equivoca: en una respuesta no respondió frase por
+  frase. Falla la misma pregunta que sin redacción («dime lo demás sin tiempo
+  quirúrgico»)
+- [ ] Probar en producción, con el Servidor PC2: el tiempo de punta a punta
+
 ## Modelos 3D
 
 - [x] `GET /models` con `Cache-Control` y `ETag`

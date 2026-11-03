@@ -77,15 +77,17 @@ instrumento: [`models/README.md`](models/README.md).
 ## Chat
 
 Decidido por Mauricio el 2026-10-15. El reparto entre el modelo y DataIQ lo
-cambió Mauricio el 2026-11-03, después de probar el chat en producción.
+cambió Mauricio el 2026-11-03, después de probar el chat en producción, y ese
+mismo día decidió que el modelo redacte la respuesta con los datos de DataIQ.
 
 - **El modelo entiende y DataIQ responde.** El modelo de lenguaje lee la
   pregunta, con la técnica abierta en el visor y las preguntas anteriores de la
   conversación, y la convierte en una lista de **pedidos** (*tool calling*:
   varios en un mismo turno si la pregunta pide varias cosas). El backend
   resuelve cada pedido con los datos de DataIQ y su plantilla, y la respuesta
-  une los resultados en el orden en que se pidieron. El modelo no redacta el
-  texto que lee el estudiante.
+  une los resultados en el orden en que se pidieron. Después, el modelo
+  **redacta** la respuesta, conversando, solo con esos datos (ver «La
+  redacción»).
 
   | Pedido | Ejemplo | Qué responde |
   |---|---|---|
@@ -154,15 +156,76 @@ cambió Mauricio el 2026-11-03, después de probar el chat en producción.
 - **El visor muestra una sola cosa.** Si la respuesta tiene varios pedidos, la
   escena es la del más visual (ubicar, listar o mostrar) y el texto cubre el
   resto.
+- **La redacción** (decidido por Mauricio el 2026-11-03). Una respuesta armada
+  con plantillas es correcta, pero no conversa: pega los datos uno tras otro.
+  Comparada con el mismo modelo sin DataIQ, que conversa pero inventa (puso una
+  «máquina quirúrgica» en la mesa de Mayo y duraciones de la cirugía), se
+  decidió que el modelo escriba la respuesta y que el texto no salga de él sin
+  revisar:
+  - **Qué recibe:** los datos de DataIQ de cada pedido, cada uno en su
+    etiqueta; como contexto, la descripción de la técnica de la que se habla;
+    y la pregunta al final. Así lo recomienda Anthropic para
+    responder con documentos
+    ([*Prompting best practices*](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)),
+    con la instrucción de usar solo esa información y decir lo que no está
+    ([*Reduce hallucinations*](https://platform.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations)).
+    Como en el reformulador de respuestas de Rasa, la plantilla dice qué se
+    responde y el modelo cómo se dice, con temperatura 0; y la mesa de Mayo no
+    se reescribe, porque una lista pierde su estructura: va después del texto,
+    tal como sale de DataIQ
+    ([*Contextual response rephraser*](https://rasa.com/docs/reference/primitives/contextual-response-rephraser)).
+  - **Cómo se verifica:** antes de mostrarlo, el texto no puede nombrar un
+    instrumento, una técnica ni un número (en cifras o en letras) que no estén
+    en sus datos o en la pregunta, ni hablar de la cuadrícula, ni de tiempos
+    quirúrgicos u orden de uso si los datos no lo hacen (el modelo escribía
+    «los instrumentos están dispuestos en orden de uso»); tampoco explicaciones
+    ni relleno que los datos no traen («porque», «por eso», «los instrumentos
+    necesarios para…», «la mesa está preparada…»: el modelo explicaba por qué
+    un instrumento no va en una mesa); no puede omitir un
+    dato (cada uno debe aparecer al menos en un 40 % de sus palabras, como en
+    el banco); si los datos dicen que algo no está en DataIQ, el texto también
+    lo dice, y si no lo dicen, no dice que falta (con «Muéstrame la
+    colecistectomía» escribía «No se muestra la mesa…»); y no puede ser mucho
+    más largo que sus datos. Estas reglas salieron de las fallas que midió el
+    juez del banco, como recomienda OpenAI: agregar protecciones según las
+    fallas reales. Una respuesta que solo dice que no tiene la respuesta
+    no se redacta: reescrita, cambiaba su sentido («la cesárea no está en
+    DataIQ», cuando es de otra especialidad). Los servicios que verifican el sentido de
+    cada frase contra la fuente son pagos (la detección de contenido sin
+    respaldo de Microsoft, que además solo trabaja en inglés, y la de Google);
+    su método, revisar cada frase contra los datos, se aplica en el banco de
+    preguntas con el mismo modelo como juez, como en el cookbook de OpenAI
+    ([*Developing hallucination guardrails*](https://developers.openai.com/cookbook/examples/developing_hallucination_guardrails)).
+  - **Respaldo:** si el texto no pasa la verificación, o si redactarlo tarda
+    más de `LLM_WRITE_DEADLINE` (12 segundos), se muestra la respuesta armada
+    con las plantillas, que es correcta. Cada llamada tiene además un tope de
+    largo (`max_tokens`): un modelo que se repite no espera hasta el límite de
+    tiempo. Es degradar con gracia hacia otra
+    estrategia (guía 10 de Microsoft). Nunca se muestra un texto sin revisar.
+  - **La fuente a la vista:** el campo de pregunta dice que el chat responde
+    con los datos de DataIQ. La OMS advierte que en salud las personas tienden
+    a creerle de más a la IA (sesgo de automatización)
+    ([*Guidance on large multi-modal models*](https://www.who.int/news/item/18-01-2024-who-releases-ai-ethics-and-governance-guidance-for-large-multi-modal-models)).
+  - **Sin mostrar el texto mientras se escribe:** un texto a medias no se puede
+    verificar. Por eso hay un tope de tiempo, y la mesa no se reescribe.
 - **Qué cambia respecto al 2026-10-27.** Ese día el modelo pasó a redactar la
   respuesta, porque elegir una de seis acciones, con el texto de plantillas,
-  no justificaba usar IA. Ahora el modelo hace lo que sí la justifica según
-  OpenAI: interpretar lenguaje natural, varias intenciones en un mensaje y el
-  contexto de la conversación. Deja de redactar, que es donde estaba el riesgo
-  de inventar: el texto sale de DataIQ. Lo que se pierde: una pregunta que no
-  encaja en ningún pedido se responde como fuera de alcance, aunque el modelo
-  hubiera podido contestarla con las consultas. El registro anónimo muestra
-  cuáles aparecen, para agregar pedidos.
+  no justificaba usar IA. Ahora el modelo interpreta la pregunta (varias
+  intenciones en un mensaje y el contexto de la conversación) y después
+  redacta, pero ya no decide qué consultar ni en cuántos pasos: escribe sobre
+  datos que el backend fijó, lo que es más rápido y más fácil de verificar. Lo
+  que se pierde: una pregunta que no encaja en ningún pedido se responde como
+  fuera de alcance, aunque el modelo hubiera podido contestarla con las
+  consultas. El registro anónimo muestra cuáles aparecen, para agregar
+  pedidos.
+- **Riesgo aceptado: el modelo puede agregar explicaciones** que no están en
+  DataIQ al redactar («la pinza hemostática sirve para controlar el
+  sangrado»). La verificación revisa nombres y números, no el sentido de las
+  frases, así que una explicación con palabras propias pasa. Decidido por
+  Mauricio el 2026-11-03: se acepta, porque una respuesta que no conversa no
+  cumple el propósito del chat, y un modelo mayor, si el proyecto se financia,
+  reduce el riesgo. Se mide con el juez del banco (frases sin respaldo en sus
+  datos), y la respuesta siempre se apoya en los datos de DataIQ.
 - **Riesgo aceptado: el modelo puede entender mal** (elegir otro pedido u otra
   técnica), y la respuesta sería verdadera pero de otra pregunta. Se controla
   así, como recomienda OpenAI con protecciones en capas sobre lo que devuelve

@@ -141,7 +141,19 @@ El diseño y su porqué: [`../README.md`](../README.md), «Chat».
    quitar la vesícula»; `app/domain/tools.py`): una técnica de otra
    especialidad se responde como fuera de alcance, «el bisturí» en una mesa que
    lleva varios pregunta cuál, y un nombre parecido, «¿Quizás te refieres a…?».
-5. Las **reglas fijas** (`adapters/outbound/language/fake.py`, con
+5. **El modelo redacta** la respuesta, en una segunda llamada, solo con lo que
+   armaron las plantillas y la descripción de la técnica como contexto
+   (`app/domain/writing.py`; no se redacta lo que pide aclarar ni lo que solo
+   dice que no tiene la respuesta). El texto se verifica (`unsupported`):
+   ningún instrumento, técnica ni número que no esté en sus datos o en la
+   pregunta; nada de la cuadrícula ni de tiempos quirúrgicos u orden de uso que
+   no digan los datos; ninguna explicación ni relleno que no traigan
+   («porque», «necesarios para», «preparada»); ningún dato omitido; lo que DataIQ no tiene, dicho, y
+   nada más dado por faltante; y no mucho más largo que sus datos. La mesa de Mayo va después, tal
+   como sale de DataIQ. Si no pasa, o si tarda más de `LLM_WRITE_DEADLINE`
+   segundos, se muestra lo armado; el registro lo marca como «texto de
+   plantillas». Con `LLM_WRITE=false` no se redacta.
+6. Las **reglas fijas** (`adapters/outbound/language/fake.py`, con
    `app/domain/guards.py` y `asked_action` en `app/domain/names.py`)
    interpretan la pregunta sin el modelo, una sola cosa por mensaje y sin las
    preguntas anteriores, y responden con las mismas plantillas. Son el motor
@@ -172,6 +184,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
   | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
   | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
+  | `LLM_WRITE`, `LLM_WRITE_DEADLINE` | `true`, `12` (los valores por defecto) |
 
   Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
   carpeta.
@@ -203,6 +216,8 @@ uv run python -m app.adapters.inbound.cli.chat_log borrar
 
 # Banco de preguntas: corre eval/banco.csv contra el chat y mide su exactitud
 uv run python -m app.adapters.inbound.cli.chat_bank --salida resultados.csv
+# Con --fidelidad, el modelo revisa además cada frase redactada contra sus datos
+uv run python -m app.adapters.inbound.cli.chat_bank --fidelidad --salida resultados.csv
 ```
 
 `load_models` y `chat_bank` piden una cuenta de DataIQ (o el token en
