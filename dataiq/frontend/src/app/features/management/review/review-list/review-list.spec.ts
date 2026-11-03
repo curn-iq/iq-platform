@@ -228,12 +228,12 @@ describe('ReviewList', () => {
       http.expectNone(isReviewed);
     });
 
-    it('al abrirla pide las revisadas por mí con el contenido de cada una', async () => {
+    it('al abrirla pide las revisadas por mí con sus devoluciones, sin el contenido', async () => {
       await open([]);
       await chooseReviewed();
 
       const request = http.expectOne(isReviewed);
-      expect(request.request.params.get('include')).toBe('content');
+      expect(request.request.params.get('include')).toBe('rejections');
       expect(request.request.params.has('state')).toBe(false);
       expect(text(root.querySelector('.loading'))).toBe('Cargando…');
       request.flush([]);

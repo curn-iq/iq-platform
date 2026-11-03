@@ -3,7 +3,12 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import type { VersionState } from '../domain/version-state';
 import { API_BASE_URL } from './api-base-url';
-import type { VersionContent, VersionDetail, VersionSummary } from './api/models';
+import type {
+  VersionContent,
+  VersionDetail,
+  VersionRejections,
+  VersionSummary,
+} from './api/models';
 
 /** Filtros de `GET /versions`. Sin ninguno, la API devuelve las versiones en curso. */
 export interface VersionsFilter {
@@ -12,6 +17,8 @@ export interface VersionsFilter {
   mine?: boolean;
   /** Las de otros que quien pregunta aprobó o rechazó. Desde revisor. */
   reviewedByMe?: boolean;
+  /** Solo las de esa técnica. */
+  techniqueId?: string;
 }
 
 /**
@@ -37,10 +44,18 @@ export class VersionsRepository {
   listWithContent(
     filter: () => VersionsFilter | undefined = () => ({}),
   ): HttpResourceRef<VersionDetail[] | undefined> {
-    return httpResource<VersionDetail[]>(() => {
-      const request = this.listRequest(filter());
-      return request && { ...request, params: { ...request.params, include: 'content' } };
-    });
+    return httpResource<VersionDetail[]>(() => this.listRequest(filter(), 'content'));
+  }
+
+  /**
+   * Versiones según el filtro, cada una con su resumen y sus rechazos pero sin el contenido
+   * (`GET /versions?include=rejections`): para lo que solo muestra el estado y las devoluciones, que
+   * pesa unas 40 veces menos. Un filtro indefinido deja el recurso quieto.
+   */
+  listWithRejections(
+    filter: () => VersionsFilter | undefined = () => ({}),
+  ): HttpResourceRef<VersionRejections[] | undefined> {
+    return httpResource<VersionRejections[]>(() => this.listRequest(filter(), 'rejections'));
   }
 
   /** Una versión con todo su contenido y sus rechazos. */
@@ -81,15 +96,18 @@ export class VersionsRepository {
     return this.http.post<void>(`${this.versionUrl(id)}/reject`, { reason });
   }
 
-  /** La petición de `GET /versions` con los parámetros del filtro, o `undefined` sin filtro. */
+  /** La petición de `GET /versions` con los parámetros del filtro (e `include`), o `undefined` sin filtro. */
   private listRequest(
     f: VersionsFilter | undefined,
+    include?: 'content' | 'rejections',
   ): { url: string; params: Record<string, string | boolean | readonly string[]> } | undefined {
     if (f === undefined) return undefined;
     const params: Record<string, string | boolean | readonly string[]> = {};
     if (f.state?.length) params['state'] = f.state;
     if (f.mine !== undefined) params['mine'] = f.mine;
     if (f.reviewedByMe !== undefined) params['reviewed_by_me'] = f.reviewedByMe;
+    if (f.techniqueId !== undefined) params['technique_id'] = f.techniqueId;
+    if (include) params['include'] = include;
     return { url: `${this.base}/versions`, params };
   }
 

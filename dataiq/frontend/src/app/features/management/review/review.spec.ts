@@ -142,7 +142,7 @@ describe('Review', () => {
     await visit();
     http.expectOne(PROPOSAL_URL).flush(detail(PROPOSAL_ID, 2, 'in_review', proposed));
     await settle();
-    http.expectOne(LIST_URL).flush([summary('otra', 't-9'), summary(PUBLISHED_ID, 't-1')]);
+    http.expectOne(LIST_URL).flush([summary(PUBLISHED_ID, 't-1')]);
     await settle();
     http.expectOne(PUBLISHED_URL).flush(detail(PUBLISHED_ID, 1, 'published', published));
     await settle();
@@ -162,7 +162,7 @@ describe('Review', () => {
   });
 
   describe('una edición de la publicada', () => {
-    it('pide la propuesta y, de las publicadas, la de esa técnica', async () => {
+    it('pide la propuesta y la publicada de esa técnica, filtrada por la API', async () => {
       await configure();
       await visit();
       http.expectOne(PROPOSAL_URL).flush(detail(PROPOSAL_ID, 2, 'in_review', content()));
@@ -170,7 +170,8 @@ describe('Review', () => {
 
       const list = http.expectOne(LIST_URL);
       expect(list.request.params.getAll('state')).toEqual(['published']);
-      list.flush([summary('otra', 't-9'), summary(PUBLISHED_ID, 't-1')]);
+      expect(list.request.params.get('technique_id')).toBe('t-1');
+      list.flush([summary(PUBLISHED_ID, 't-1')]);
       await settle();
       http.expectOne(PUBLISHED_URL).flush(detail(PUBLISHED_ID, 1, 'published', content()));
       await settle();

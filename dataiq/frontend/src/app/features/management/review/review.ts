@@ -36,8 +36,9 @@ import { SectionComments } from './section-comments/section-comments';
  * Revisión de una versión (`/gestion/revision/:versionId`, `revision.html`): la versión publicada y
  * la propuesta lado a lado, sección por sección, con los cambios calculados en el cliente
  * (`domain/version-diff.ts`, Resuelto 59 de `dataiq/docs/checklist-frontend.md`). Pide la propuesta
- * (`GET /versions/{id}`) y, si es una edición, la versión publicada de esa técnica: la API no
- * entrega una diferencia, así que se piden las dos completas. La sección abierta no va en la URL;
+ * (`GET /versions/{id}`) y, si es una edición, la versión publicada de esa técnica
+ * (`GET /versions?state=published&technique_id=…`): la API no entrega una diferencia, así que se
+ * piden las dos completas. La sección abierta no va en la URL;
  * abre en la mesa de Mayo, como el mockup.
  *
  * Una versión que ya no está en revisión (la decidió otro revisor) o que es propia no se revisa: lo
@@ -123,18 +124,17 @@ export class Review {
     () => this.reviewable() === true && (this.proposal()?.summary.number ?? 1) > 1,
   );
 
-  /** Las versiones publicadas (resúmenes), de las que se toma la de esta técnica. */
-  private readonly publishedList = this.repository.list(() =>
-    this.needsPublished() ? { state: ['published'] } : undefined,
-  );
-
-  private readonly publishedSummary = computed(() => {
+  /** La versión publicada de esta técnica (su resumen), si tiene una: la API filtra por técnica. */
+  private readonly publishedList = this.repository.list(() => {
     const proposal = this.proposal();
-    if (!proposal || !this.publishedList.hasValue()) return undefined;
-    return this.publishedList
-      .value()
-      ?.find((version) => version.technique_id === proposal.summary.technique_id);
+    return proposal && this.needsPublished()
+      ? { state: ['published'], techniqueId: proposal.summary.technique_id }
+      : undefined;
   });
+
+  private readonly publishedSummary = computed(() =>
+    this.publishedList.hasValue() ? this.publishedList.value()?.[0] : undefined,
+  );
 
   private readonly publishedResource = this.repository.get(() => this.publishedSummary()?.id);
 

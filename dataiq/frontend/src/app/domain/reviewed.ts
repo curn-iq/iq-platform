@@ -3,7 +3,7 @@ import type { VersionState } from './version-state';
 
 /**
  * Una versión con sus devoluciones, con los nombres de la API (es lo que entrega
- * `GET /versions?include=content`). El dominio no importa los tipos de la API: la estructura
+ * `GET /versions?include=rejections`). El dominio no importa los tipos de la API: la estructura
  * basta, y esos tipos la cumplen.
  */
 export interface ReviewedSource {

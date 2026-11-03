@@ -163,19 +163,7 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       la lista se vuelve larga de leer; con `limit` y `offset` opcionales no
       rompe nada. Mis borradores no la pide así (observación de
       Juan en el PR #55, 2026-11-02)
-      - **Decidido por Juan el 2026-11-02: con paginación**, porque «Revisadas
-        por mí» (fase 7 del frontend) ya la pide. A cargo de Mauricio Lugo.
-        `GET /versions` recibe `limit` (como máximo 100) y `offset`, ambos
-        opcionales; sin `limit` la lista sigue como hoy, así que Mis borradores
-        no cambia. El orden, de la más reciente a la más vieja, lleva el `id`
-        como desempate para que dos páginas no repitan ni salten una versión.
-        Siguen `Cache-Control` y `ETag`, con su prueba, su documentación en
-        Swagger y los tipos del frontend regenerados (`npm run api:types`)
-      - **Después:** «Revisadas por mí» pide de a 20 y «Cargar más» trae las
-        siguientes (fase 7 de [`checklist-frontend.md`](checklist-frontend.md)),
-        en el PR de la fase 7 del frontend, después de que el del backend entre
-        a `main`
-12. [ ] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
+12. [x] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
     (asignado por Juan el 2026-11-02; hallazgo de la revisión de la fase 7
     del frontend)
     - **Por qué:** la pantalla de revisión compara una edición con la versión
@@ -190,11 +178,12 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       (un revisor ve las de todos), con `Cache-Control` y `ETag`, su prueba,
       su documentación en Swagger y los tipos del frontend regenerados
       (`npm run api:types`).
-    - **Después:** la pantalla de revisión pide
-      `GET /versions?state=published&technique_id=…` en lugar de la lista
-      completa (fase 7 de [`checklist-frontend.md`](checklist-frontend.md)).
-      Va en el PR de la fase 7 del frontend, después de que el del backend
-      entre a `main`
+    - **Hecho en el PR #62:** `GET /versions?technique_id=…` filtra en la
+      consulta y se combina con `state`, `mine`, `reviewed_by_me` e
+      `include`, con los mismos permisos, `Cache-Control` y `ETag`; un id que
+      no es UUID responde 422. La pantalla de revisión ya pide
+      `GET /versions?state=published&technique_id=…` (fase 7 de
+      [`checklist-frontend.md`](checklist-frontend.md))
 
 ## Hallazgos de seguridad pendientes
 

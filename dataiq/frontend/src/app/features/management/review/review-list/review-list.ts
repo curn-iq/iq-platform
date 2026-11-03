@@ -34,8 +34,9 @@ type ReviewView = 'pending' | 'reviewed';
  *
  * **Revisadas por mí:** las que aprobé o devolví (`GET /versions?reviewed_by_me=true`), con el
  * resultado deducido del estado de la versión y, en las devueltas, la fecha y el motivo
- * (`domain/reviewed.ts`). Se pide la primera vez que se abre la vista, no al cargar la pantalla:
- * crece con el tiempo y trae el contenido de cada versión.
+ * (`domain/reviewed.ts`). Se pide con `include=rejections`: cada versión con sus devoluciones y
+ * sin el contenido, que no se muestra. Se pide la primera vez que se abre la vista, no al cargar
+ * la pantalla, porque crece con el tiempo.
  *
  * Los textos, de Juan, 2026-11-02 (Resueltos 57 y 58 de `dataiq/docs/checklist-frontend.md`). Ver
  * «Versiones por revisar (página)» en `DESIGN.md`.
@@ -71,7 +72,7 @@ export class ReviewList {
 
   /** Se pide la primera vez que se abre la vista. */
   private readonly reviewedRequested = signal(false);
-  private readonly reviewedResource = inject(VersionsRepository).listWithContent(() =>
+  private readonly reviewedResource = inject(VersionsRepository).listWithRejections(() =>
     this.reviewedRequested() ? { reviewedByMe: true } : undefined,
   );
 
