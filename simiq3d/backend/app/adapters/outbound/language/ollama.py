@@ -1,34 +1,23 @@
 import json
 import logging
-import re
-import time
 from dataclasses import replace
+from enum import StrEnum
 from uuid import UUID
 
 import httpx
 
 from app.adapters.outbound.language.fake import TemplateChat
-from app.domain import tools
-from app.domain.catalog import (
-    PLACE_PHRASES,
-    Catalog,
-    find_instrument,
-    find_technique,
-    in_scope,
-    item_with,
-    normalize,
-    technique_by_id,
-)
-from app.domain.chat import ChatAction, Reply, Vocabulary, the
-from app.domain.grounding import unsupported
-from app.domain.guards import before_the_model
-from app.domain.names import (
-    asked_action,
-    asks_to_describe,
-    contains,
-    instrument_in,
-    instruments_in,
-    technique_in,
+from app.domain.catalog import Catalog, Technique, in_scope, technique_by_id
+from app.domain.chat import ClinicalField, Comparison, Reply
+from app.domain.requests import (
+    Request,
+    RequestKind,
+    Topic,
+    Turn,
+    as_said,
+    contradicted,
+    respond,
+    with_known_limits,
 )
 from app.ports.chat import ModelUnavailable
 
@@ -39,122 +28,157 @@ class _Busy(Exception):
     """El modelo tardó demasiado o el Servidor PC2 está lleno (429)."""
 
 
-SYSTEM = """Eres el chat de SIMIQ3D: ayudas a estudiantes de Instrumentación \
-Quirúrgica a explorar la mesa de Mayo de las técnicas de Cirugía General, que \
-se ven en 3D.
-Reglas:
-- No sabes nada por tu cuenta. Todo dato sale de las herramientas: consúltalas \
-antes de responder, las veces que haga falta.
-- Si una herramienta devuelve "quizas" en vez del dato, no supongas: pregunta \
-«¿Quizás te refieres a …?».
-- Si una herramienta devuelve "fuera_de_alcance" (la técnica es de otra \
-especialidad o DataIQ no la tiene), responde en una frase que SIMIQ3D solo cubre \
-la mesa de Mayo de las técnicas de Cirugía General. No ofrezcas otras técnicas.
-- Si la pregunta no trata de estas técnicas o de su instrumental, o te pide otra \
-cosa, dilo en una frase.
-- La mesa de Mayo y el instrumental de una técnica se consultan con \
-get_technique; find_instrument es para un instrumento.
-- Cuando hables de una técnica o de dónde va un instrumento, llama a show_in_3d \
-para que el visor lo muestre.
-- Para decir dónde va algo, usa la ubicacion (la zona de la mesa), lo que \
-tiene junto_a y su numero_en_el_diagrama. Nunca hables de filas, columnas ni \
-celdas: la mesa real es un campo sin cuadrícula.
-- No ordenes las piezas por tiempos quirúrgicos ni por el orden en que se \
-usan, y no expliques por qué la mesa está armada así: DataIQ no tiene esos datos.
-- Los datos clínicos (indicaciones, complicaciones, anestesia…) se citan como \
-vienen; no los resumas con palabras tuyas.
-- Si un instrumento va en varias técnicas, di su ubicación en cada una: no \
-generalices («en todas va en…») si cambia.
-- Si preguntan qué es un instrumento y su descripción dice que DataIQ no tiene \
-el dato, responde eso; después puedes decir dónde va.
+SYSTEM = """Eres quien interpreta las preguntas del chat de SIMIQ3D, que muestra \
+en 3D la mesa de Mayo de estas técnicas de Cirugía General: {techniques}.
+No respondes al estudiante: conviertes su mensaje en pedidos, llamando a las \
+funciones.
+- Llama una función por cada cosa que pida el mensaje. Si pide varias, llama \
+varias en el mismo turno, en el orden en que las pide.
+- Si el mensaje no nombra la técnica, es la técnica abierta en el visor. Si no \
+hay técnica abierta, no pongas technique: no la adivines.
+- Una técnica descrita sin nombrarla («la cirugía para quitar la vesícula», \
+«operar una hernia incisional») va en technique con las palabras del \
+estudiante: no es otra técnica.
+- Un instrumento solo («¿y la Rochester?») pregunta dónde va: locate.
+- Un seguimiento («¿y para qué sirve?», «¿y en la tiroidectomía?») habla de lo \
+mismo que la pregunta anterior: si era un instrumento, de ese instrumento; si \
+era una técnica, de esa técnica.
+- «Lo demás», «lo otro» o «el resto» son lo que pidió la pregunta anterior, \
+quitando lo que el mensaje excluya.
+- «¿Qué es…?», «¿para qué sirve…?» o «¿para qué se usa…?»: de un instrumento es \
+describe; de una técnica, clinical_data con field description. En un \
+seguimiento («¿y para qué sirve?»), de lo mismo que la pregunta anterior: si \
+era un instrumento, describe ese instrumento.
+- Si una parte pide algo que DataIQ no tiene, llama a out_of_scope para esa \
+parte y a las demás funciones para el resto. DataIQ no tiene dosis, \
+diagnósticos, tratamientos ni tiempos quirúrgicos: si se pide una dosis de \
+anestesia, llama a clinical_data con anesthesia_position y a out_of_scope con \
+missing_clinical_data.
+- Los tiempos quirúrgicos son la diéresis, la hemostasia, la síntesis y el \
+orden en que se usa el instrumental («¿qué pieza se usa primero?», «¿qué \
+instrumentos son de diéresis?»): out_of_scope con surgical_times, y nada más \
+si es todo lo que pide.
+- Llama siempre al menos una función. Si el mensaje no trata de estas técnicas \
+o te pide otra cosa, llama a out_of_scope con topic other.
+- Usa los nombres como los escribe el estudiante; no los corrijas ni los \
+completes.
 
-- Termina siempre llamando a reply con la respuesta en español, breve (una a \
-tres frases), sin inventar nada que no esté en lo que devolvieron las \
-herramientas. Si piden el instrumental o lo que lleva la mesa, nombra todos sus \
-objetos.
-- Si DataIQ no tiene un dato, dilo así."""
+{open_technique}"""
 
-TOOLS = [
-    {
+
+def _function(name: str, description: str, **params: dict) -> dict:
+    return {
         "type": "function",
         "function": {
             "name": name,
             "description": description,
             "parameters": {
                 "type": "object",
-                "properties": {k: {"type": t, "description": d} for k, t, d in params},
-                "required": [k for k, _, _ in params if k not in optional],
+                "properties": params,
+                "required": [k for k, p in params.items() if not p.pop("optional", 0)],
             },
         },
     }
-    for name, description, params, optional in [
-        (
-            "list_techniques",
-            "Las técnicas que hay, con cuántos objetos lleva cada mesa de Mayo "
-            "(de más a menos).",
-            [],
-            (),
-        ),
-        (
-            "compare_techniques",
-            "Compara el instrumental de las mesas de Mayo de dos técnicas: qué "
-            "comparten y qué lleva solo cada una.",
-            [
-                ("first", "string", "Primera técnica"),
-                ("second", "string", "Segunda técnica"),
-            ],
-            (),
-        ),
-        (
-            "get_technique",
-            "Datos clínicos de una técnica y su mesa de Mayo (número, objeto y celda).",
-            [("technique", "string", "Nombre de la técnica, aunque esté mal escrito")],
-            (),
-        ),
-        (
-            "find_instrument",
-            "Un instrumento: su descripción y en qué técnicas va, con número y celda.",
-            [
-                (
-                    "instrument",
-                    "string",
-                    "Nombre del instrumento, aunque esté mal escrito",
-                )
-            ],
-            (),
-        ),
-        (
-            "show_in_3d",
-            "Abre una técnica en el visor 3D y, si se da, resalta un instrumento.",
-            [
-                ("technique", "string", "Nombre de la técnica"),
-                ("instrument", "string", "Nombre del instrumento a resaltar"),
-            ],
-            ("instrument",),
-        ),
-        (
-            "reply",
-            "La respuesta final para el estudiante. Llamarla siempre al terminar.",
-            [("text", "string", "La respuesta, en español")],
-            (),
-        ),
-    ]
+
+
+def _text(description: str, optional: bool = False) -> dict:
+    return {"type": "string", "description": description, "optional": optional}
+
+
+def _one_of(values: type[StrEnum], description: str) -> dict:
+    return {
+        "type": "string",
+        "enum": [v.value for v in values],
+        "description": description,
+    }
+
+
+TECHNIQUE = "Nombre de la técnica, como lo dice el estudiante"
+INSTRUMENT = "Nombre del instrumento, como lo dice el estudiante"
+
+# Los pedidos que el modelo puede hacer (README de SIMIQ3D, «Chat»). Los nombres
+# de las funciones y de sus argumentos son los de RequestKind y Request.
+TOOLS = [
+    _function(
+        RequestKind.locate,
+        "Dónde va un instrumento en la mesa de Mayo de una técnica.",
+        instrument=_text(INSTRUMENT),
+        technique=_text(TECHNIQUE, optional=True),
+    ),
+    _function(
+        RequestKind.describe,
+        "Qué es un instrumento, o para qué sirve («¿Qué es la Moynihan?»).",
+        instrument=_text(INSTRUMENT),
+    ),
+    _function(
+        RequestKind.clinical_data,
+        "Un dato clínico de una técnica: para qué sirve la técnica (description), "
+        "sus indicaciones, sus complicaciones, o la anestesia y la posición del "
+        "paciente (anesthesia_position).",
+        technique=_text(TECHNIQUE, optional=True),
+        field=_one_of(ClinicalField, "El dato"),
+    ),
+    _function(
+        RequestKind.list_instruments,
+        "El instrumental completo de la mesa de Mayo de una técnica, con cuántos "
+        "objetos lleva.",
+        technique=_text(TECHNIQUE, optional=True),
+    ),
+    _function(
+        RequestKind.show_technique,
+        "Abrir una técnica en el visor 3D, sin pedir un dato concreto.",
+        technique=_text(TECHNIQUE),
+    ),
+    _function(
+        RequestKind.find_instrument,
+        "En qué técnicas va un instrumento, o en cuántas; no qué es.",
+        instrument=_text(INSTRUMENT),
+    ),
+    _function(
+        RequestKind.compare,
+        "Compara el instrumental de dos técnicas: qué comparten (shared), qué "
+        "lleva la primera y no la segunda (only_first) o en qué se diferencian "
+        "(differences).",
+        technique=_text("La primera técnica"),
+        other_technique=_text("La segunda técnica"),
+        comparison=_one_of(Comparison, "Qué se compara"),
+    ),
+    _function(
+        RequestKind.rank,
+        "Las técnicas ordenadas por cuántos objetos lleva su mesa de Mayo: cuál "
+        "lleva más o menos.",
+    ),
+    _function(
+        RequestKind.out_of_scope,
+        "Una parte del mensaje que DataIQ no tiene: tiempos quirúrgicos u orden de "
+        "uso del instrumental (surgical_times), datos clínicos que no están, como "
+        "dosis, diagnósticos o tratamientos (missing_clinical_data), técnicas que "
+        "no son de la lista (other_technique), o algo que no trata de estas "
+        "técnicas (other).",
+        topic=_one_of(Topic, "Qué no tiene DataIQ"),
+    ),
+    _function(
+        RequestKind.greeting,
+        "Un saludo, o la pregunta de qué puede hacer el chat.",
+    ),
 ]
+
+
+# Cuántas preguntas anteriores ve el modelo: un seguimiento mira a la última, y
+# más turnos alargan el prompt (y el tiempo de cada respuesta).
+MAX_TURNS = 3
 
 
 class OllamaAgent:
     """El chat con el modelo de lenguaje del Servidor PC2 (Ollama, API compatible
-    con OpenAI). El modelo decide qué consultar del catálogo, en varios pasos, y
-    redacta la respuesta con lo que devolvieron las consultas.
+    con OpenAI). El modelo solo entiende: convierte la pregunta en pedidos, en una
+    sola llamada, y la respuesta la arman las plantillas con datos de DataIQ
+    (decidido por Mauricio el 2026-11-03, README de SIMIQ3D, «Chat»). El texto del
+    modelo nunca llega al estudiante.
 
-    Riesgo aceptado (decisión del 2026-10-27): el texto lo escribe el modelo. Se
-    controla con dos cosas: el modelo solo ve lo que devuelven las consultas, y
-    antes de responder se verifica que cada nombre y cada número del texto esté
-    en esos resultados. Si no pasa, o si el modelo no termina en pocos pasos,
-    responden las plantillas. Lo que se muestra en 3D sale de show_in_3d, con
-    ids reales, nunca del texto."""
-
-    MAX_STEPS = 6
+    Si el Servidor PC2 está lento u ocupado, o si el modelo no pide nada que se
+    entienda, responden las plantillas con sus reglas fijas. Si está apagado, el
+    chat queda no disponible (ModelUnavailable)."""
 
     def __init__(
         self,
@@ -166,101 +190,51 @@ class OllamaAgent:
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
-        # Tiempo máximo de una pregunta, sumando todos los pasos. Pasado ese
-        # tiempo responden las plantillas: el estudiante no espera minutos.
-        self._deadline = deadline
+        # Tiempo máximo de una pregunta: pasado ese tiempo responden las
+        # plantillas, para que el estudiante no espere minutos.
+        self._wait = min(timeout, deadline)
         self._model = model
         self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
-        self._timeout = timeout
         self._transport = transport
         self._fallback = TemplateChat()
         self.name = model
 
     async def reply(
-        self, question: str, catalog: Catalog, open_technique_id: UUID | None
+        self,
+        question: str,
+        catalog: Catalog,
+        open_technique_id: UUID | None,
+        previous: tuple[Turn, ...] = (),
     ) -> Reply:
-        # Una técnica de otra especialidad, o «el bisturí» de una mesa que lleva
-        # dos: se responde con reglas fijas, sin el modelo.
-        early = before_the_model(question, catalog, open_technique_id)
-        if early:
-            return replace(early, answered_by=self._fallback.name)
         open_technique = technique_by_id(catalog, open_technique_id)
-        context = (
-            f"Técnica abierta en el visor: {open_technique.name}.\n"
-            if open_technique
-            else ""
-        )
-        # «la cirugía para quitar la mama»: sin la pista, el modelo inventa un
-        # nombre («mamoplastia») y lo busca.
-        described = _described(question, catalog)
-        if described:
-            context += f"La pregunta describe la técnica {described.name}.\n"
         messages = [
-            {"role": "system", "content": SYSTEM},
-            {"role": "user", "content": f"{context}{question}"},
+            {"role": "system", "content": _system(catalog, open_technique)},
+            *_turns(previous[-MAX_TURNS:]),
+            {"role": "user", "content": question},
         ]
-        results: list[dict] = []
-        scene: tools.Scene | None = None
-        ends = time.monotonic() + self._deadline
-        async with httpx.AsyncClient(transport=self._transport) as client:
-            for _ in range(self.MAX_STEPS):
-                left = ends - time.monotonic()
-                if left <= 0:
-                    break
-                try:
-                    message = await self._ask(
-                        client, messages, min(self._timeout, left)
-                    )
-                except _Busy:
-                    # El Servidor PC2 está lento u ocupado: responden las plantillas.
-                    return await self._fall_back(question, catalog, open_technique_id)
-                calls = message.get("tool_calls") or []
-                if not calls:
-                    # Respondió con texto en vez de llamar a reply.
-                    return await self._finish(
-                        message.get("content") or "",
-                        results,
-                        scene,
-                        question,
-                        catalog,
-                        open_technique_id,
-                    )
-                messages.append(
-                    {
-                        "role": "assistant",
-                        "content": message.get("content") or "",
-                        "tool_calls": calls,
-                    }
-                )
-                for call in calls:
-                    name, args = _read_call(call)
-                    if name == "reply":
-                        return await self._finish(
-                            str(args.get("text", "")),
-                            results,
-                            scene,
-                            question,
-                            catalog,
-                            open_technique_id,
-                        )
-                    result, found_scene = _run(name, args, catalog)
-                    scene = found_scene or scene
-                    results.append(result)
-                    messages.append(
-                        {
-                            "role": "tool",
-                            "tool_call_id": call.get("id", name),
-                            "content": json.dumps(result, ensure_ascii=False),
-                        }
-                    )
-        # Sin la pregunta: ya queda en el registro de conversaciones, y en los logs de
-        # Vercel sería otra copia (ver «Aviso de privacidad», docs/privacidad.md).
-        logger.warning("El modelo no terminó a tiempo")
-        return await self._fall_back(question, catalog, open_technique_id)
+        try:
+            message = await self._ask(messages)
+        except _Busy:
+            return await self._fall_back(question, catalog, open_technique_id)
+        requests = [
+            r
+            for r in (_request(call) for call in message.get("tool_calls") or [])
+            if r is not None
+        ]
+        # Lo que pide el modelo se revisa contra las palabras del estudiante:
+        # una técnica que nadie nombró no cuenta (as_said).
+        requests = as_said(requests, question, catalog, open_technique_id, previous)
+        if not requests or contradicted(requests, question, catalog):
+            # Respondió con texto, con funciones que no existen, o dijo que la
+            # pregunta no trata de estas técnicas cuando nombra una: responden
+            # las reglas fijas. Sin la pregunta en el log (docs/privacidad.md).
+            logger.warning("El modelo no pidió nada que se pueda responder")
+            return await self._fall_back(question, catalog, open_technique_id)
+        requests = with_known_limits(requests, question)
+        reply = respond(requests, catalog, open_technique_id, question)
+        return replace(reply, answered_by=self.name, requests=tuple(requests))
 
-    async def _ask(
-        self, client: httpx.AsyncClient, messages: list[dict], timeout: float
-    ) -> dict:
+    async def _ask(self, messages: list[dict]) -> dict:
         body = {
             "model": self._model,
             "temperature": 0,
@@ -268,9 +242,10 @@ class OllamaAgent:
             "tools": TOOLS,
         }
         try:
-            response = await client.post(
-                self._url, json=body, headers=self._headers, timeout=timeout
-            )
+            async with httpx.AsyncClient(transport=self._transport) as client:
+                response = await client.post(
+                    self._url, json=body, headers=self._headers, timeout=self._wait
+                )
         except httpx.TimeoutException as error:
             raise _Busy() from error
         except httpx.HTTPError as error:
@@ -284,84 +259,64 @@ class OllamaAgent:
         except (httpx.HTTPError, ValueError, KeyError, IndexError) as error:
             raise ModelUnavailable(str(error)) from error
 
-    async def _finish(
-        self, text, results, scene, question, catalog, open_technique_id
-    ) -> Reply:
-        text, trailing = _clean(text)
-        # «¿Quizás te refieres a…?» no es una sugerencia para seguir: es la
-        # respuesta. Se conserva, y la opción es la pregunta corregida.
-        did_you_mean = next(
-            (q for q in trailing if normalize(q).startswith("¿quizas")), None
-        )
-        if did_you_mean:
-            text = f"{text} {did_you_mean}".strip()
-        text = _say_missing_description(text, question, results)
-        if not results:
-            # Respondió sin consultar nada: no hay de dónde salga lo que dice.
-            return await self._fall_back(question, catalog, open_technique_id)
-        problems = unsupported(text, results, catalog) if text else ["respuesta vacía"]
-        if problems:
-            # Sin la respuesta: podría repetir lo que escribió quien pregunta.
-            logger.warning("Respuesta sin respaldo en DataIQ: %s", problems)
-            return await self._fall_back(question, catalog, open_technique_id)
-        if scene is None:
-            scene = _implied_scene(text, question, results, catalog, open_technique_id)
-        elif scene.instrument is None:
-            # Abrió la técnica sin el instrumento por el que se preguntó
-            scene = _asked_in(scene.technique, question, catalog) or scene
-        if did_you_mean:
-            return Reply(
-                ChatAction.clarify,
-                text,
-                options=_corrected_questions(question, results),
-                answered_by=self.name,
-            )
-        options = _follow_ups(results, scene)
-        if scene is None:
-            # «¿Qué es la tijera de Mayo?» sin técnica: la ficha es la del instrumento
-            described = _described_instrument(question, catalog)
-            if described:
-                return Reply(
-                    ChatAction.describe_instrument,
-                    text,
-                    instrument_id=described.id,
-                    options=options,
-                    answered_by=self.name,
-                )
-            return Reply(
-                ChatAction.answer, text, options=options, answered_by=self.name
-            )
-        # Lo que hace el visor sale de la pregunta, con la misma regla de las
-        # plantillas: el modelo escribe el texto, no decide si se describe, si se
-        # muestra un dato clínico o la lista (names.asked_action)
-        if scene.instrument and not instruments_in(
-            question, Vocabulary.from_catalog(catalog)
-        ):
-            about_technique, _ = asked_action(question, with_instrument=False)
-            if about_technique in (
-                ChatAction.list_instruments,
-                ChatAction.show_clinical_data,
-            ):
-                # Pidió la lista o un dato de la técnica: la pieza que nombra la
-                # respuesta no se señala
-                scene = tools.Scene(scene.technique)
-        instrument = scene.instrument
-        action, field = asked_action(question, with_instrument=instrument is not None)
-        return Reply(
-            action,
-            text,
-            technique_id=scene.technique.id,
-            instrument_id=instrument.id if instrument else None,
-            field=field,
-            options=options,
-            answered_by=self.name,
-        )
-
     async def _fall_back(self, question, catalog, open_technique_id) -> Reply:
         reply = await self._fallback.reply(question, catalog, open_technique_id)
         return replace(
             reply, answered_by=f"{self._fallback.name} (respaldo de {self.name})"
         )
+
+
+def _system(catalog: Catalog, open_technique: Technique | None) -> str:
+    return SYSTEM.format(
+        techniques=", ".join(t.name for t in in_scope(catalog)),
+        open_technique=(
+            f"Técnica abierta en el visor: {open_technique.name}."
+            if open_technique
+            # «ninguna» lo tomaba como el nombre de una técnica.
+            else "No hay técnica abierta en el visor."
+        ),
+    )
+
+
+def _turns(previous: tuple[Turn, ...]) -> list[dict]:
+    """Las preguntas anteriores como turnos de la conversación, cada una con sus
+    pedidos como llamadas: con un resumen, el modelo se quedaba con la técnica
+    abierta en vez de lo que se preguntó antes (2026-11-03)."""
+    messages: list[dict] = []
+    for n, turn in enumerate(previous):
+        calls = [
+            {
+                "id": f"turno-{n}-{i}",
+                "type": "function",
+                "function": {
+                    "name": r.kind.value,
+                    "arguments": json.dumps(_arguments(r), ensure_ascii=False),
+                },
+            }
+            for i, r in enumerate(turn.requests)
+        ]
+        messages.append({"role": "user", "content": turn.question})
+        if not calls:
+            messages.append({"role": "assistant", "content": "Respondido."})
+            continue
+        messages.append({"role": "assistant", "content": "", "tool_calls": calls})
+        messages += [
+            {"role": "tool", "tool_call_id": c["id"], "content": "Respondido."}
+            for c in calls
+        ]
+    return messages
+
+
+def _arguments(request: Request) -> dict:
+    values = {
+        "technique": request.technique,
+        "instrument": request.instrument,
+        "field": request.field,
+        "other_technique": request.other_technique,
+        "comparison": request.comparison,
+        "topic": request.topic,
+    }
+    return {k: str(v) for k, v in values.items() if v is not None}
 
 
 def _read_call(call: dict) -> tuple[str, dict]:
@@ -377,230 +332,31 @@ def _read_call(call: dict) -> tuple[str, dict]:
     return str(function.get("name", "")), args if isinstance(args, dict) else {}
 
 
-def _run(name: str, args: dict, catalog: Catalog) -> tuple[dict, tools.Scene | None]:
-    """Ejecuta una consulta del catálogo. Lo que no se reconoce devuelve un error
-    que el modelo puede leer y corregir."""
-    match name:
-        case "list_techniques":
-            return tools.list_techniques(catalog), None
-        case "compare_techniques":
-            first, second = str(args.get("first", "")), str(args.get("second", ""))
-            return tools.compare_techniques(catalog, first, second), None
-        case "get_technique":
-            return tools.get_technique(catalog, str(args.get("technique", ""))), None
-        case "find_instrument":
-            return tools.find_instrument(catalog, str(args.get("instrument", ""))), None
-        case "show_in_3d":
-            found = tools.show_in_3d(
-                catalog, str(args.get("technique", "")), args.get("instrument") or None
-            )
-            if isinstance(found, tools.Scene):
-                shown = {"tecnica": found.technique.name}
-                if found.instrument:
-                    shown["instrumento"] = found.instrument.name
-                return {"ok": True, "en_el_visor": shown}, found
-            return found, None
-    return {"error": f"No existe la herramienta «{name}»"}, None
-
-
-# Sugerencias que hablan de la cuadrícula («¿en qué celda exacta…?») no sirven.
-_GRID = re.compile(r"\b(?:filas?|columnas?|celdas?|cuadricula)\b")
-
-_TOOL_NAMES = re.compile(
-    r"\b(?:reply|show_in_3d|get_technique|find_instrument|list_techniques|"
-    r"compare_techniques)\b"
-)
-# Una llamada escrita en el texto («reply("…")») en vez de hecha.
-_WRITTEN_CALL = re.compile(_TOOL_NAMES.pattern + r"\s*\(")
-
-
-# «Puedo resaltarlo para ti»: lo que se muestra ya lo hizo el visor.
-_OFFER = re.compile(
-    r"(?i)\bpuedo (?:resaltar|mostrar|ayudar|indicar|darte|explicar)|"
-    r"\bsi (?:necesitas|quieres|deseas)\b|¿\s*quieres\b"
-)
-
-
-def _plain_places(text: str) -> str:
-    """«va en la ubicación "arriba a la derecha"» → «va arriba a la derecha»: el
-    modelo copia la clave de la consulta y las comillas."""
-    for phrase in PLACE_PHRASES:
-        text = re.sub(
-            rf'\ben la (?:ubicaci[oó]n|posici[oó]n|zona)\s+"?{re.escape(phrase)}"?',
-            phrase,
-            text,
-            flags=re.IGNORECASE,
-        )
-    return text.replace('"', "")
-
-
-def _without_written_call(text: str) -> str:
-    """Lo de antes de una llamada escrita como texto: el modelo a veces responde y
-    después repite la respuesta dentro de un «reply("…")», y quedaba dos veces. Si
-    no escribió nada antes, la respuesta es lo que va entre comillas."""
-    match = _WRITTEN_CALL.search(text)
-    if match is None:
-        return text
-    before = text[: match.start()].strip()
-    if before:
-        return before
-    quoted = re.search(r'"(.+)"', text[match.end() :], re.DOTALL)
-    return quoted.group(1) if quoted else ""
-
-
-def _clean(text: str) -> tuple[str, list[str]]:
-    """Quita lo que no es para el estudiante: una llamada escrita como texto, las
-    «Sugerencias:» que el modelo escribe dentro del texto (pasan a ser opciones),
-    las frases con nombres de herramientas o que ofrecen mostrar lo que ya se
-    muestra, las comillas y el formato Markdown."""
-    text = _plain_places(_without_written_call(text.replace("**", "").strip()))
-    suggestions: list[str] = []
-    match = re.search(r"(?i)\bsugerencias?\s*:", text)
-    if match:
-        tail = text[match.end() :]
-        text = text[: match.start()]
-        for piece in re.split(r"\n|(?<=\?)\s+(?=¿)", tail):
-            piece = piece.strip(" -•\t")
-            if piece and not _TOOL_NAMES.search(piece):
-                suggestions.append(piece)
-    # Solo las frases que mencionan una herramienta («con el comando
-    # show_in_3d»): el resto de la línea es la respuesta.
-    lines = []
-    for line in text.splitlines():
-        sentences = re.split(r"(?<=[.!?])\s+", line)
-        kept = [
-            s for s in sentences if not _TOOL_NAMES.search(s) and not _OFFER.search(s)
-        ]
-        if kept:
-            lines.append(" ".join(kept))
-    text = "\n".join(lines).strip()
-    # Las preguntas que deja al final del texto también son sugerencias.
-    while (match := re.search(r"\s*(¿[^¿]*\?)\s*$", text)) and match.start() > 0:
-        suggestions.insert(0, match.group(1))
-        text = text[: match.start()].rstrip()
-    return text, suggestions
-
-
-def _described(question: str, catalog: Catalog):
-    """La técnica que la pregunta describe sin nombrar ninguna, si la hay."""
-    if technique_in(question, Vocabulary.from_catalog(catalog)):
+def _request(call: dict) -> Request | None:
+    """El pedido de una llamada, o None si la función no existe. Un argumento
+    que no es de los valores posibles se toma como no dicho."""
+    name, args = _read_call(call)
+    try:
+        kind = RequestKind(name)
+    except ValueError:
         return None
-    return tools.technique_described(catalog, question)
 
+    def text(key: str) -> str | None:
+        value = args.get(key)
+        return value.strip() or None if isinstance(value, str) else None
 
-def _implied_scene(
-    text: str, question: str, results: list[dict], catalog: Catalog, open_technique_id
-) -> tools.Scene | None:
-    """Si el modelo no llamó a show_in_3d, la escena sale de la técnica que
-    nombra la pregunta; si no nombra ninguna, la abierta en el visor; si no hay,
-    la única que nombra la respuesta o, si no, la única que consultó. Se resalta
-    el instrumento por el que se preguntó, si va en esa mesa: la respuesta
-    nombra también a sus vecinos («la Babcock va junto a la Kelly Adson»). Si la
-    pregunta no nombra ninguno, el primero que nombra la respuesta."""
+    def one_of[E: StrEnum](values: type[E], key: str) -> E | None:
+        try:
+            return values(args.get(key))
+        except ValueError:
+            return None
 
-    def named_in(words: str) -> list:
-        said = normalize(words)
-        return [
-            t for t in in_scope(catalog) if contains(said, normalize(t.name).split()[0])
-        ]
-
-    consulted = list(
-        {r["tecnica"]: r for r in results if "mesa_de_mayo" in r and "tecnica" in r}
+    return Request(
+        kind,
+        technique=text("technique"),
+        instrument=text("instrument"),
+        field=one_of(ClinicalField, "field"),
+        other_technique=text("other_technique"),
+        comparison=one_of(Comparison, "comparison"),
+        topic=one_of(Topic, "topic"),
     )
-    candidates = [
-        named_in(question),
-        [_described(question, catalog)],
-        [technique_by_id(catalog, open_technique_id)],
-        named_in(text),
-        [find_technique(catalog, name) for name in consulted],
-    ]
-    technique = next(
-        (c[0] for c in candidates if len(c) == 1 and c[0] is not None), None
-    )
-    if technique is None:
-        return None
-    vocabulary = Vocabulary.from_catalog(catalog)
-    if instruments_in(question, vocabulary):
-        return _asked_in(technique, question, catalog) or tools.Scene(technique)
-    for name in instruments_in(text, vocabulary)[:1]:
-        instrument = find_instrument(catalog, name)
-        if instrument and item_with(technique, instrument.id):
-            return tools.Scene(technique, instrument)
-    return tools.Scene(technique)
-
-
-def _asked_in(technique, question: str, catalog: Catalog) -> tools.Scene | None:
-    """La técnica con el instrumento por el que se preguntó, si va en su mesa."""
-    for name in instruments_in(question, Vocabulary.from_catalog(catalog)):
-        instrument = find_instrument(catalog, name)
-        if instrument and item_with(technique, instrument.id):
-            return tools.Scene(technique, instrument)
-    return None
-
-
-def _described_instrument(question: str, catalog: Catalog):
-    """El instrumento que la pregunta pide describir («¿qué es la Kelly?»), si hay."""
-    if not asks_to_describe(question):
-        return None
-    name = instrument_in(question, Vocabulary.from_catalog(catalog))
-    return find_instrument(catalog, name) if name else None
-
-
-def _follow_ups(results: list[dict], scene: tools.Scene | None) -> tuple[str, ...]:
-    """Las preguntas para seguir, armadas con lo que se consultó: así siempre se
-    pueden responder (las que escribe un modelo pequeño a menudo no)."""
-    options: list[str] = []
-    for result in results:
-        if "instrumento" in result and "en_tecnicas" in result:
-            name = result["instrumento"]
-            options.append(f"¿Qué es {the(name)}?")
-            options += [
-                f"¿Dónde va {the(name)} en {t['tecnica']}?"
-                for t in result["en_tecnicas"]
-            ]
-        elif "tecnica" in result and "mesa_de_mayo" in result:
-            options += [
-                f"Complicaciones de {result['tecnica']}",
-                f"¿Qué lleva la mesa de {result['tecnica']}?",
-            ]
-        elif "tecnica_1" in result:
-            options += [
-                f"¿Qué lleva la mesa de {result[k]}?"
-                for k in ("tecnica_1", "tecnica_2")
-            ]
-    if scene and not options:
-        options.append(f"¿Qué lleva la mesa de {scene.technique.name}?")
-    seen: list[str] = []
-    for option in options:
-        if option not in seen:
-            seen.append(option)
-    return tuple(seen[:3])
-
-
-def _say_missing_description(text: str, question: str, results: list[dict]) -> str:
-    """Si preguntaron qué es un instrumento y DataIQ no tiene su descripción, la
-    respuesta lo dice siempre, aunque el modelo solo haya dicho dónde va."""
-    missing = any(r.get("descripcion") == tools.NO_DATA for r in results)
-    if asks_to_describe(question) and missing and "no tiene" not in normalize(text):
-        return f"{text} DataIQ todavía no tiene su descripción.".strip()
-    return text
-
-
-def _corrected_questions(question: str, results: list[dict]) -> tuple[str, ...]:
-    """La pregunta del estudiante con el nombre que no se encontró cambiado por
-    el que sugirió la consulta: «¿Dónde va la Kely rara?» → «¿Dónde va la Pinza
-    Kelly?». Si el nombre buscado no está tal cual en la pregunta, la opción es
-    el nombre sugerido."""
-    options: list[str] = []
-    for result in results:
-        searched, suggested = result.get("buscado"), result.get("quizas") or []
-        if not suggested:
-            continue
-        if searched and searched.lower() in question.lower():
-            start = question.lower().index(searched.lower())
-            options.append(
-                question[:start] + suggested[0] + question[start + len(searched) :]
-            )
-        else:
-            options.append(suggested[0])
-    return tuple(dict.fromkeys(options))[:3]

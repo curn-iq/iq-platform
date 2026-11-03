@@ -144,7 +144,6 @@ _PLACES = {
     ("abajo", "centro"): "abajo, al centro",
     ("abajo", "derecha"): "abajo a la derecha",
 }
-PLACE_PHRASES = tuple(_PLACES.values())
 
 
 def _third(position: float, size: int, low: str, high: str) -> str:

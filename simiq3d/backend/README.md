@@ -75,8 +75,11 @@ DataIQ y un Ollama falsos: no necesitan nada más corriendo.
 | `GET /models` | Qué GLB dibuja cada instrumento (`instrument_id`, `model_file`), con `ETag` | Sí |
 | `GET /health` | Si la API está arriba | No |
 
-`POST /chat` recibe `{"question", "technique_id"}` (la técnica abierta en el
-visor, opcional) y devuelve:
+`POST /chat` recibe `{"question", "technique_id", "previous"}`:
+`technique_id` es la técnica abierta en el visor (opcional), y `previous`,
+hasta 3 preguntas anteriores de la conversación, de la más antigua a la más
+reciente, cada una con los `requests` que devolvió su respuesta (opcional; no
+se guardan). Devuelve:
 
 ```json
 {
@@ -85,7 +88,8 @@ visor, opcional) y devuelve:
   "instrument_id": "…",
   "field": null,
   "reply": "La Pinza Kelly va en el centro de la mesa de Mayo de Colecistectomía, junto a la Tijera de Mayo (n.º 10 del diagrama).",
-  "options": ["¿Qué es la Pinza Kelly?"]
+  "options": ["¿Qué es la Pinza Kelly?"],
+  "requests": [{"kind": "locate", "technique": "Colecistectomía", "instrument": "Pinza Kelly", "field": null, "other_technique": null, "comparison": null, "topic": null}]
 }
 ```
 
@@ -99,7 +103,9 @@ visor, opcional) y devuelve:
 | `no_answer` | Nada: la pregunta no trata de estas técnicas |
 
 `options` son preguntas que se pueden mandar tal cual como la siguiente.
-Errores: `401` sin sesión o si DataIQ rechaza el token; `429` si la cuenta pasó
+`requests` son los pedidos que se entendieron de la pregunta (ver «Cómo
+responde el chat»): el frontend los manda de vuelta en `previous` con la
+siguiente. Errores: `401` sin sesión o si DataIQ rechaza el token; `429` si la cuenta pasó
 el tope de preguntas (por defecto, 30 cada 10 minutos: «Espera unos minutos»);
 `503` si DataIQ o el Servidor PC2 no responden (el chat queda no disponible; el
 visor sigue). Si el Servidor PC2 está lento u ocupado, no hay error: responden
@@ -107,39 +113,41 @@ las plantillas.
 
 ## Cómo responde el chat
 
-1. Si un nombre parece mal escrito, responde «¿Quizás quisiste decir…?» con la
-   pregunta corregida (`app/domain/names.py`).
-2. **Reglas fijas** (`app/domain/guards.py`), antes del modelo y también en las
-   plantillas: si la pregunta nombra una técnica de otra especialidad («la
-   cesárea»), dice que SIMIQ3D solo cubre la mesa de Mayo de Cirugía General;
-   si pregunta por tiempos quirúrgicos o por el orden en que se usa el
-   instrumental, dice que DataIQ no los tiene y ofrece el instrumental de la
-   técnica; si nombra un instrumento por su familia («el bisturí», «la pinza»)
-   en una mesa que lleva varios, pregunta cuál, con cada uno como opción.
-3. Con `LANGUAGE_MODEL=ollama`, el **agente** (`adapters/outbound/language/ollama.py`)
-   deja que el modelo use las consultas de `app/domain/tools.py` y redacte la
-   respuesta. Antes de enviarla, `app/domain/grounding.py` verifica que cada
-   nombre, número y ubicación esté en lo consultado, que los conteos («7
-   objetos») sean un total de los resultados y que no hable de la cuadrícula.
-   Si no pasa, si no consultó nada o si no termina en 30 segundos
-   (`LLM_DEADLINE`), responden las plantillas. Lo que hace el visor no lo
-   decide el modelo: la técnica y el instrumento salen de lo que consultó (o
-   de la pregunta, si abrió la técnica sin el instrumento por el que se
-   preguntó), y la acción, de la pregunta, con la misma regla de las
-   plantillas (`asked_action`, en `app/domain/names.py`): describir si
-   pregunta qué es un instrumento, el dato clínico que nombra, la lista si
-   pide el instrumental.
-   Las consultas aceptan los nombres como se dicen («el mango número 7»), y
-   una técnica descrita sin nombrarla («la cirugía para quitar la vesícula»),
-   por las palabras de su descripción en DataIQ que solo están en ella; de una
-   técnica de otra especialidad, o que DataIQ no tiene, responden que está
-   fuera de alcance.
-4. Las **plantillas** (`app/domain/chat.py`, con las reglas de
-   `adapters/outbound/language/fake.py`) arman la respuesta solo con datos de
-   DataIQ. Son el motor con `LANGUAGE_MODEL=fake` y el respaldo del agente.
+El diseño y su porqué: [`../README.md`](../README.md), «Chat».
 
-El riesgo de que el modelo invente y cómo se controla:
-[`../README.md`](../README.md), «Chat».
+1. Si un nombre parece mal escrito, responde «¿Quizás quisiste decir…?» con la
+   pregunta corregida (`app/domain/names.py`), sin llegar al modelo.
+2. Con `LANGUAGE_MODEL=ollama`, el **agente**
+   (`adapters/outbound/language/ollama.py`) le pide al modelo, en una sola
+   llamada, que convierta la pregunta en **pedidos**: las funciones de
+   `TOOLS`, una por cada cosa que pida, con los nombres como los dijo el
+   estudiante. Las preguntas anteriores van como turnos de la conversación,
+   cada una con sus pedidos como llamadas (hasta 3, `MAX_TURNS`). El texto que
+   escriba el modelo no se usa.
+3. Lo que pide el modelo se revisa contra DataIQ y contra las palabras de la
+   conversación (`app/domain/requests.py`):
+   - una técnica o un instrumento que nadie nombró, ni la técnica abierta, se
+     toma como no dicho (`as_said`): sin técnica, se usa la abierta o se
+     pregunta cuál;
+   - si dice que la pregunta no trata de estas técnicas y nombra una de ellas o
+     un instrumento de sus mesas (`contradicted`), o si no pidió nada que se
+     entienda, responden las reglas fijas;
+   - si la pregunta pide tiempos quirúrgicos y el modelo no lo marcó, se
+     agrega la nota (`with_known_limits`).
+4. **Cada pedido se responde con DataIQ** (`respond`, con las plantillas de
+   `app/domain/chat.py`), y la respuesta los une en orden, con lo que está fuera
+   de alcance al final. La escena es la del pedido más visual (`SCENE_ORDER`).
+   Los nombres se resuelven como se dicen («el mango número 7», «la cirugía para
+   quitar la vesícula»; `app/domain/tools.py`): una técnica de otra
+   especialidad se responde como fuera de alcance, «el bisturí» en una mesa que
+   lleva varios pregunta cuál, y un nombre parecido, «¿Quizás te refieres a…?».
+5. Las **reglas fijas** (`adapters/outbound/language/fake.py`, con
+   `app/domain/guards.py` y `asked_action` en `app/domain/names.py`)
+   interpretan la pregunta sin el modelo, una sola cosa por mensaje y sin las
+   preguntas anteriores, y responden con las mismas plantillas. Son el motor
+   con `LANGUAGE_MODEL=fake` y el respaldo del agente si el Servidor PC2 está
+   lento u ocupado (pasados `LLM_DEADLINE` segundos, o con un 429 del filtro).
+   Si el Servidor PC2 está apagado, el chat queda no disponible (503).
 
 ## Producción
 
@@ -246,7 +254,7 @@ revisa el detalle.
 
 ```
 app/
-├── domain/         catálogo, chat (plantillas), consultas del agente, verificación, nombres
+├── domain/         catálogo, chat (plantillas), pedidos, nombres y reglas fijas
 ├── ports/          contratos: catálogo, motor del chat, sesión, mapeo, registro
 ├── adapters/
 │   ├── inbound/    API (rutas, sesión, esquemas) y comandos

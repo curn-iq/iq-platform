@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from app.domain.catalog import (
@@ -16,6 +17,9 @@ from app.domain.catalog import (
     technique_by_id,
 )
 
+if TYPE_CHECKING:
+    from app.domain.requests import Request
+
 
 class ChatAction(StrEnum):
     """Lo que el chat hace con una pregunta, sobre todo lo que cambia en el visor.
@@ -31,6 +35,15 @@ class ChatAction(StrEnum):
     # Pide precisar: en qué técnica, o si quiso decir otro nombre.
     clarify = "clarify"
     no_answer = "no_answer"
+
+
+class Comparison(StrEnum):
+    """Qué se pregunta al comparar dos mesas de Mayo."""
+
+    shared = "shared"
+    # Lo que lleva la primera técnica y no la segunda.
+    only_first = "only_first"
+    differences = "differences"
 
 
 class ClinicalField(StrEnum):
@@ -92,6 +105,9 @@ class Reply:
     options: tuple[str, ...] = ()
     # Quién la armó (el modelo, o las plantillas): va al registro.
     answered_by: str = ""
+    # Lo que se entendió de la pregunta: el frontend lo devuelve con la
+    # siguiente, para entender un seguimiento.
+    requests: tuple[Request, ...] = ()
 
 
 OUT_OF_SCOPE = (
@@ -309,6 +325,116 @@ def _no_answer(catalog: Catalog) -> Reply:
         ChatAction.no_answer,
         OUT_OF_SCOPE,
         options=tuple(t.name for t in in_scope(catalog)),
+    )
+
+
+def _names(instruments: list[Instrument]) -> str:
+    return _join([_the(i.name) for i in sorted(instruments, key=lambda i: i.name)])
+
+
+def where_it_goes(catalog: Catalog, instrument: Instrument) -> Reply:
+    """En qué mesas de Mayo va un instrumento, con el total."""
+    techniques = [t for t in in_scope(catalog) if item_with(t, instrument.id)]
+    the_name = _the(instrument.name, start=True)
+    if not techniques:
+        text = f"{the_name} no va en ninguna mesa de Mayo de Cirugía General."
+    elif len(techniques) == 1:
+        text = f"{the_name} va en 1 mesa de Mayo: {techniques[0].name}."
+    else:
+        names = _join([t.name for t in techniques])
+        text = f"{the_name} va en {len(techniques)} mesas de Mayo: {names}."
+    return Reply(
+        ChatAction.answer,
+        text,
+        instrument_id=instrument.id,
+        options=tuple(
+            f"{question_where(instrument.name)} en {t.name}?" for t in techniques
+        ),
+    )
+
+
+def _instruments_of(catalog: Catalog, technique: Technique) -> list[Instrument]:
+    ids = {i for item in technique.mayo_items() for i in item.instrument_ids}
+    return [i for i in catalog.instruments if i.id in ids]
+
+
+def compare(
+    catalog: Catalog, first: Technique, second: Technique, what: Comparison
+) -> Reply:
+    """Qué instrumental comparten dos mesas de Mayo, o cuál lleva solo una. Dice
+    solo lo que se pregunta: la lista completa no responde qué comparten."""
+    mine = _instruments_of(catalog, first)
+    theirs = _instruments_of(catalog, second)
+    mine_ids, their_ids = {i.id for i in mine}, {i.id for i in theirs}
+    shared = [i for i in mine if i.id in their_ids]
+    only_mine = [i for i in mine if i.id not in their_ids]
+    only_theirs = [i for i in theirs if i.id not in mine_ids]
+    a, b = first.name, second.name
+    if what == Comparison.shared:
+        text = (
+            f"Las mesas de Mayo de {a} y {b} comparten {len(shared)}: {_names(shared)}."
+            if shared
+            else f"Las mesas de Mayo de {a} y {b} no comparten instrumental."
+        )
+    elif what == Comparison.only_first:
+        text = (
+            f"Solo la mesa de Mayo de {a}, y no la de {b}, lleva {len(only_mine)}: "
+            f"{_names(only_mine)}."
+            if only_mine
+            else f"Todo lo de la mesa de Mayo de {a} está también en la de {b}."
+        )
+    else:
+        parts = [
+            f"Solo en {name}: {_names(only)}."
+            for name, only in ((a, only_mine), (b, only_theirs))
+            if only
+        ]
+        text = " ".join(parts) or f"Las mesas de Mayo de {a} y {b} llevan lo mismo."
+    return Reply(
+        ChatAction.answer,
+        text,
+        options=(f"Instrumental de la mesa de {a}", f"Instrumental de la mesa de {b}"),
+    )
+
+
+def by_objects(catalog: Catalog) -> Reply:
+    """Las técnicas, de la que lleva más objetos en la mesa de Mayo a la que
+    lleva menos."""
+    ranked = sorted(in_scope(catalog), key=lambda t: -len(t.mayo_items()))
+    listed = _join([f"{t.name} ({len(t.mayo_items())})" for t in ranked])
+    return Reply(
+        ChatAction.answer,
+        f"Objetos en la mesa de Mayo, de más a menos: {listed}.",
+        options=(f"Instrumental de la mesa de {ranked[0].name}",) if ranked else (),
+    )
+
+
+def greeting(catalog: Catalog, open_technique: Technique | None) -> Reply:
+    """Qué hace el chat, con preguntas para empezar armadas con nombres de
+    DataIQ: de la técnica abierta, si la hay."""
+    technique = open_technique or next(iter(in_scope(catalog)), None)
+    options: tuple[str, ...] = ()
+    if technique:
+        # El primer objeto del diagrama que es un solo instrumento: «¿Dónde va el
+        # Mango de bisturí y Hoja…?» no se pregunta así.
+        by_id = {i.id: i for i in catalog.instruments}
+        single = sorted(
+            (item for item in technique.mayo_items() if len(item.instrument_ids) == 1),
+            key=lambda item: item.legend_number or 99,
+        )
+        first = by_id.get(single[0].instrument_ids[0]) if single else None
+        options = (
+            f"¿Qué lleva la mesa de {technique.name}?",
+            *((f"{question_where(first.name)} en {technique.name}?",) if first else ()),
+            f"Indicaciones de {technique.name}",
+        )
+    return Reply(
+        ChatAction.answer,
+        "Hola. Te muestro la mesa de Mayo de las técnicas de Cirugía General: "
+        "puedes preguntarme qué lleva una mesa, dónde va un instrumento y qué es, "
+        "o los datos clínicos de una técnica (para qué sirve, indicaciones, "
+        "complicaciones, anestesia y posición).",
+        options=options,
     )
 
 
