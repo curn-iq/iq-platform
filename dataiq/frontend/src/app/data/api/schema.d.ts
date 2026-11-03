@@ -126,8 +126,11 @@ export interface paths {
          *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
          *     `include=content`, cada una con su contenido y sus rechazos, en la misma
          *     respuesta: así Mis borradores no pide cada versión por separado. Con
-         *     `technique_id`, solo las de esa técnica: la revisión busca así la publicada
-         *     de la técnica que se edita, sin traer las de todo el catálogo.
+         *     `include=rejections`, cada una con sus rechazos y sin el contenido, que es
+         *     casi todo el peso: lo que necesita «Revisadas por mí» para decir si se
+         *     devolvió y por qué. Con `technique_id`, solo las de esa técnica: la revisión
+         *     busca así la publicada de la técnica que se edita, sin traer las de todo el
+         *     catálogo.
          */
         get: operations["list_versions_versions_get"];
         put?: never;
@@ -1057,6 +1060,15 @@ export interface components {
             rejections: components["schemas"]["RejectionOut"][];
         };
         /**
+         * VersionRejectionsOut
+         * @description Una versión con sus rechazos, sin su contenido (`include=rejections`).
+         */
+        VersionRejectionsOut: {
+            summary: components["schemas"]["VersionSummaryOut"];
+            /** Rejections */
+            rejections: components["schemas"]["RejectionOut"][];
+        };
+        /**
          * VersionState
          * @enum {string}
          */
@@ -1321,8 +1333,8 @@ export interface operations {
                 reviewed_by_me?: boolean;
                 /** @description Solo las versiones de esa técnica */
                 technique_id?: string | null;
-                /** @description Con `content`, cada versión trae su contenido y sus rechazos, como `GET /versions/{id}` */
-                include?: "content" | null;
+                /** @description Con `content`, cada versión trae su contenido y sus rechazos, como `GET /versions/{id}`; con `rejections`, solo sus rechazos, sin el contenido */
+                include?: ("content" | "rejections") | null;
             };
             header?: never;
             path?: never;
@@ -1336,7 +1348,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VersionSummaryOut"][] | components["schemas"]["VersionDetailOut"][];
+                    "application/json": components["schemas"]["VersionSummaryOut"][] | components["schemas"]["VersionDetailOut"][] | components["schemas"]["VersionRejectionsOut"][];
                 };
             };
             /** @description Validation Error */

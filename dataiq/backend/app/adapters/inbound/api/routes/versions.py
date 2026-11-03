@@ -10,6 +10,7 @@ from app.adapters.inbound.api.schemas import (
     ContentIn,
     RejectionIn,
     VersionDetailOut,
+    VersionRejectionsOut,
     VersionSummaryOut,
 )
 from app.domain.errors import Conflict, Forbidden, NotFound
@@ -27,6 +28,7 @@ router = APIRouter(prefix="/versions", tags=["Versiones"])
 
 version_list = TypeAdapter(list[VersionSummaryOut])
 version_details = TypeAdapter(list[VersionDetailOut])
+version_rejections = TypeAdapter(list[VersionRejectionsOut])
 
 
 async def _get_version(versions: VersionRepo, version_id: UUID) -> VersionSummary:
@@ -42,7 +44,12 @@ def _require_author(version: VersionSummary, account: Account) -> None:
         raise Forbidden("Solo quien creó la versión puede hacer esto")
 
 
-@router.get("", response_model=list[VersionSummaryOut] | list[VersionDetailOut])
+@router.get(
+    "",
+    response_model=list[VersionSummaryOut]
+    | list[VersionDetailOut]
+    | list[VersionRejectionsOut],
+)
 async def list_versions(
     request: Request,
     versions: VersionRepo,
@@ -55,10 +62,11 @@ async def list_versions(
         Query(description="Solo las versiones de esa técnica"),
     ] = None,
     include: Annotated[
-        Literal["content"] | None,
+        Literal["content", "rejections"] | None,
         Query(
             description="Con `content`, cada versión trae su contenido y sus "
-            "rechazos, como `GET /versions/{id}`"
+            "rechazos, como `GET /versions/{id}`; con `rejections`, solo sus "
+            "rechazos, sin el contenido"
         ),
     ] = None,
 ) -> Response:
@@ -68,8 +76,11 @@ async def list_versions(
     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
     `include=content`, cada una con su contenido y sus rechazos, en la misma
     respuesta: así Mis borradores no pide cada versión por separado. Con
-    `technique_id`, solo las de esa técnica: la revisión busca así la publicada
-    de la técnica que se edita, sin traer las de todo el catálogo."""
+    `include=rejections`, cada una con sus rechazos y sin el contenido, que es
+    casi todo el peso: lo que necesita «Revisadas por mí» para decir si se
+    devolvió y por qué. Con `technique_id`, solo las de esa técnica: la revisión
+    busca así la publicada de la técnica que se edita, sin traer las de todo el
+    catálogo."""
     require_role(account.role, Role.contributor)
     if reviewed_by_me:
         require_role(account.role, Role.reviewer)
@@ -78,7 +89,17 @@ async def list_versions(
         only_mine = mine or not has_at_least(account.role, Role.reviewer)
         states, created_by = state or IN_PROGRESS, account.id if only_mine else None
         reviewed_by = None
-    if include == "content":
+    if include == "rejections":
+        with_rejections = await versions.list_with_rejections(
+            states,
+            created_by=created_by,
+            reviewed_by=reviewed_by,
+            technique_id=technique_id,
+        )
+        body = version_rejections.dump_json(
+            [VersionRejectionsOut.model_validate(v) for v in with_rejections]
+        )
+    elif include == "content":
         details = await versions.list_details(
             states,
             created_by=created_by,
