@@ -16,6 +16,7 @@ import { NoticeService } from '../../../core/notice/notice.service';
 import { APP_NAME } from '../../../core/title/page-title.strategy';
 import type { FullCatalog, Instrument } from '../../../data/api/models';
 import { CatalogRepository } from '../../../data/catalog.repository';
+import { hasFailed } from '../../../data/resource-state';
 import { toTables } from '../../../data/tables';
 import {
   firstInstrumentId,
@@ -64,8 +65,11 @@ export class Instruments {
 
   // ---------- El catálogo ----------
 
-  private readonly cache = signal<RequestCache>('default');
-  private readonly resource = this.repository.full(() => this.cache());
+  /** Cuántas veces se guardó: cada guardado vuelve a pedir el catálogo saltándose la caché. */
+  private readonly saves = signal(0);
+  private readonly resource = this.repository.full(() =>
+    this.saves() === 0 ? 'default' : 'reload',
+  );
   /** Lo que respondió la API al guardar, hasta que el catálogo vuelto a pedir lo trae. */
   private readonly saved = signal<ReadonlyMap<string, Instrument>>(new Map());
 
@@ -75,9 +79,8 @@ export class Instruments {
     computation: (current, previous) => current ?? previous?.value,
   });
   protected readonly loaded = computed(() => this.catalog() !== undefined);
-  protected readonly failed = computed(
-    () => !this.loaded() && !this.resource.isLoading() && this.resource.error() !== undefined,
-  );
+  /** Nunca llegó un catálogo: si falla el que se vuelve a pedir tras guardar, se sigue con el anterior. */
+  protected readonly failed = computed(() => !this.loaded() && hasFailed(this.resource));
 
   protected readonly categories = computed(() => this.catalog()?.categories ?? []);
   protected readonly specialties = computed(() =>
@@ -128,8 +131,7 @@ export class Instruments {
   /** El instrumento abierto: el de la URL o, sin ninguno, el primero del índice. */
   protected readonly entry = computed<CatalogEntry | undefined>(() => {
     const id = this.routeId();
-    const wanted =
-      id === null ? firstInstrumentId(indexGroups(this.instruments(), this.techniquesOf, '')) : id;
+    const wanted = id === null ? firstInstrumentId(this.instruments()) : id;
     return this.instruments().find((instrument) => instrument.id === wanted);
   });
   /** La URL pide un instrumento que no existe. */
@@ -225,7 +227,7 @@ export class Instruments {
       next: (instrument) => {
         this.saving.set(false);
         this.saved.update((current) => new Map(current).set(instrument.id, instrument));
-        this.cache.set('reload');
+        this.saves.update((count) => count + 1);
         this.notices.show('confirmation', [savedNotice(isNew, techniques)]);
         this.mode.set('read');
         if (isNew) void this.router.navigate(['/gestion/instrumental', instrument.id]);

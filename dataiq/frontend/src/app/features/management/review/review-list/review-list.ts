@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PendingReviews } from '../../../../core/pending-reviews/pending-reviews';
+import { SessionService } from '../../../../core/session/session.service';
+import { hasFailed } from '../../../../data/resource-state';
 import { VersionsRepository } from '../../../../data/versions.repository';
 import { formatSent, queueSummary, type QueueKind } from '../../../../domain/review-queue';
 import { formatReviewed, toReviewedRows } from '../../../../domain/reviewed';
@@ -47,6 +49,7 @@ type ReviewView = 'pending' | 'reviewed';
 })
 export class ReviewList {
   private readonly pending = inject(PendingReviews);
+  private readonly session = inject(SessionService);
   private readonly now = new Date();
 
   // ---------- Por revisar ----------
@@ -73,19 +76,16 @@ export class ReviewList {
   );
 
   protected readonly reviewedLoaded = computed(() => this.reviewedResource.hasValue());
-  protected readonly reviewedFailed = computed(
-    () =>
-      !this.reviewedLoaded() &&
-      !this.reviewedResource.isLoading() &&
-      this.reviewedResource.error() !== undefined,
-  );
+  protected readonly reviewedFailed = computed(() => hasFailed(this.reviewedResource));
 
   protected readonly reviewedRows = computed(() =>
     this.reviewedResource.hasValue()
-      ? toReviewedRows(this.reviewedResource.value() ?? []).map((row) => ({
-          ...row,
-          reviewed: formatReviewed(row.reviewedAt, this.now),
-        }))
+      ? toReviewedRows(this.reviewedResource.value() ?? [], this.session.account()?.name ?? '').map(
+          (row) => ({
+            ...row,
+            reviewed: formatReviewed(row.reviewedAt, this.now),
+          }),
+        )
       : [],
   );
 

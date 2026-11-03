@@ -271,7 +271,7 @@ describe('indexGroups', () => {
 
 describe('firstInstrumentId', () => {
   it('es el primero del índice', () => {
-    expect(firstInstrumentId(indexGroups(ALL, () => 0, ''))).toBe('i-allis');
+    expect(firstInstrumentId(ALL)).toBe('i-allis');
   });
 
   it('sin instrumentos no hay ninguno', () => {

@@ -328,6 +328,17 @@ describe('zoneDiff', () => {
     expect(change.kind).toBe('moved');
   });
 
+  it('dos objetos sin número con el mismo nombre que se quitan tienen claves distintas', () => {
+    const before = content({
+      items: [item(MAYO, null, 'Gasa', [[1, 1]]), item(MAYO, null, 'Gasa', [[1, 2]])],
+    });
+    const after = content({ items: [] });
+
+    const keys = zoneDiff(before, after, 'Mesa de Mayo').changes.map((change) => change.key);
+
+    expect(keys).toEqual(['removed-Gasa', 'removed-Gasa-2']);
+  });
+
   it('un objeto sin número se empareja por su nombre', () => {
     const before = content({ items: [item(MAYO, null, 'Gasa', [[1, 1]])] });
     const after = content({ items: [item(MAYO, null, 'gasa', [[2, 2]])] });

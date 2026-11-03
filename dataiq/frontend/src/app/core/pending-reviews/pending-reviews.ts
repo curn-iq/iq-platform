@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, linkedSignal } from '@angular/core';
+import { hasFailed } from '../../data/resource-state';
 import { VersionsRepository } from '../../data/versions.repository';
 import { hasAtLeast } from '../../domain/role';
 import { toQueueRows } from '../../domain/review-queue';
@@ -46,9 +47,7 @@ export class PendingReviews {
   readonly loaded = computed(() => this.resource.hasValue());
 
   /** No llegó por un error (el interceptor ya avisó): no se sabe cuántas hay. */
-  readonly failed = computed(
-    () => !this.loaded() && !this.resource.isLoading() && this.resource.error() !== undefined,
-  );
+  readonly failed = computed(() => hasFailed(this.resource));
 
   /** Cuántas esperan, o `null` mientras no se sabe. */
   readonly count = computed(() => (this.loaded() ? this.rows().length : null));

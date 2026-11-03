@@ -12,10 +12,11 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/session/session.service';
 import { APP_NAME } from '../../../core/title/page-title.strategy';
+import { hasFailed } from '../../../data/resource-state';
 import { toEditorContent } from '../../../data/version-content';
 import { VersionsRepository } from '../../../data/versions.repository';
 import { formatDay } from '../../../domain/edited-date';
-import { VERSION_SECTIONS } from '../../../domain/editor-steps';
+import { FIRST_EDITOR_STEP, VERSION_SECTIONS } from '../../../domain/editor-steps';
 import { ZONE_NAMES } from '../../../domain/table';
 import { isUuid } from '../../../domain/uuid';
 import type { SectionKey } from '../../../domain/version-progress';
@@ -31,14 +32,6 @@ import { ReviewTable } from './review-table/review-table';
 import { SectionComments } from './section-comments/section-comments';
 
 /** La petición terminó con un error y no hay un valor anterior que mostrar. */
-function hasFailed(resource: {
-  hasValue(): boolean;
-  isLoading(): boolean;
-  error(): unknown;
-}): boolean {
-  return !resource.hasValue() && !resource.isLoading() && resource.error() !== undefined;
-}
-
 /**
  * Revisión de una versión (`/gestion/revision/:versionId`, `revision.html`): la versión publicada y
  * la propuesta lado a lado, sección por sección, con los cambios calculados en el cliente
@@ -48,7 +41,7 @@ function hasFailed(resource: {
  * abre en la mesa de Mayo, como el mockup.
  *
  * Una versión que ya no está en revisión (la decidió otro revisor) o que es propia no se revisa: lo
- * dice. El revisor comenta (`SectionComments`, `ReviewComments`) y decide (`ReviewDecision`, Resuelto
+ * dice, cada caso con su mensaje (la propia lleva al editor, desde donde se publica). El revisor comenta (`SectionComments`, `ReviewComments`) y decide (`ReviewDecision`, Resuelto
  * 60 de `dataiq/docs/checklist-frontend.md`). Ver «Versiones por revisar (página)» en `DESIGN.md`.
  */
 @Component({
@@ -113,6 +106,17 @@ export class Review {
       proposal.summary.created_by !== this.session.account()?.id
     );
   });
+
+  /** Es de quien la mira y sigue en revisión: no se revisa, se publica desde el editor. */
+  protected readonly own = computed(() => {
+    const proposal = this.proposal();
+    return (
+      proposal?.summary.state === 'in_review' &&
+      proposal.summary.created_by === this.session.account()?.id
+    );
+  });
+
+  protected readonly firstStep = FIRST_EDITOR_STEP;
 
   /** Una edición tiene una publicada con la que comparar; la versión 1 no. */
   private readonly needsPublished = computed(

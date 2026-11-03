@@ -8,6 +8,7 @@ import {
   linkedSignal,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -89,13 +90,15 @@ export class InstrumentEntry {
   /** Se edita todo: el nombre, la categoría y los alias, además de la descripción. */
   protected readonly editsAll = computed(() => this.mode() === 'edit' || this.mode() === 'new');
 
-  /** Lo escrito; vuelve a lo que dice la entrada al abrirla de nuevo, al cambiar de instrumento o de modo. */
-  protected readonly draft = linkedSignal<
-    { entry: CatalogEntry | null; mode: EntryMode; categories: readonly CatalogCategory[] },
-    EntryDraft
-  >({
-    source: () => ({ entry: this.entry(), mode: this.mode(), categories: this.categories() }),
-    computation: ({ entry, categories }) => draftOf(entry, categories),
+  /**
+   * Lo escrito; vuelve a lo que dice la entrada al abrirla de nuevo, al cambiar de instrumento o de modo.
+   * Depende solo del `id` y del modo: el catálogo vuelto a pedir tras guardar trae objetos nuevos con lo
+   * mismo, y eso no debe borrar lo que se está escribiendo.
+   */
+  private readonly draftKey = computed(() => `${this.mode()}:${this.entry()?.id ?? ''}`);
+  protected readonly draft = linkedSignal<string, EntryDraft>({
+    source: this.draftKey,
+    computation: () => untracked(() => draftOf(this.entry(), this.categories())),
   });
 
   /** El alias que se quiso agregar y ya es de otro instrumento. */

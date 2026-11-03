@@ -150,6 +150,25 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     - **Después:** Mis borradores la usa en lugar de `getMany` (fase 6 de
       [`checklist-frontend.md`](checklist-frontend.md)). Los tipos del
       frontend ya se regeneraron con la ruta (`npm run api:types`)
+12. [ ] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
+    (asignado por Juan el 2026-11-02; hallazgo de la revisión de la fase 7
+    del frontend)
+    - **Por qué:** la pantalla de revisión compara una edición con la versión
+      publicada de su técnica. Para encontrarla pide
+      `GET /versions?state=published`, que trae las publicadas de todo el
+      catálogo, y la busca por `technique_id` en el navegador
+      (`features/management/review/review.ts`). Esa respuesta crece con el
+      catálogo y es una petición más antes de `GET /versions/{id}`, así que
+      la revisión tarda más en cargar a medida que hay más técnicas.
+    - **Qué falta:** un parámetro `technique_id` en `GET /versions` que
+      filtre en la consulta, combinable con `state` y con los mismos permisos
+      (un revisor ve las de todos), con `Cache-Control` y `ETag`, su prueba,
+      su documentación en Swagger y los tipos del frontend regenerados
+      (`npm run api:types`).
+    - **Después:** la pantalla de revisión pide
+      `GET /versions?state=published&technique_id=…` en lugar de la lista
+      completa (fase 7 de [`checklist-frontend.md`](checklist-frontend.md)).
+      Se hace en otro PR, después de que el del backend entre a `main`
 
 ## Hallazgos de seguridad pendientes
 

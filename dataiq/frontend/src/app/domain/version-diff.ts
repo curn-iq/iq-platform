@@ -2,7 +2,7 @@ import type { EditorCell, EditorContent, EditorItem, EditorZone } from './editor
 import { itemName } from './item-name';
 import { sutureRow } from './instrumental-sheet';
 import { editorTable, itemsOfZone, placeText } from './table-editor';
-import type { Table } from './table';
+import { ZONE_NAMES, type Table } from './table';
 import { plain } from './technique-search';
 
 /*
@@ -307,9 +307,16 @@ function itemChanges(
       changes.push(toChange('modified', before, after));
   }
   for (const before of unmatched) changes.push(toChange('removed', before, undefined));
-  return changes.sort(
+  changes.sort(
     (a, b) => (a.number ?? Infinity) - (b.number ?? Infinity) || a.name.localeCompare(b.name, 'es'),
   );
+  // Dos objetos sin número con el mismo nombre (dos «Gasa») dan la misma clave: la segunda lleva «-2»
+  const seen = new Map<string, number>();
+  return changes.map((change) => {
+    const count = (seen.get(change.key) ?? 0) + 1;
+    seen.set(change.key, count);
+    return count === 1 ? change : { ...change, key: `${change.key}-${count}` };
+  });
 }
 
 /**
@@ -382,8 +389,8 @@ export function reviewDiff(published: EditorContent | null, proposed: EditorCont
     isNew: published === null,
     clinical: clinicalDiff(published, proposed),
     instrumental: instrumentalDiff(published, proposed),
-    mayo: zoneDiff(published, proposed, 'Mesa de Mayo'),
-    reserve: zoneDiff(published, proposed, 'Mesa de reserva'),
+    mayo: zoneDiff(published, proposed, ZONE_NAMES.mayo),
+    reserve: zoneDiff(published, proposed, ZONE_NAMES.reserve),
   };
 }
 

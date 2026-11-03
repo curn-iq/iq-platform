@@ -314,7 +314,13 @@ describe('Review', () => {
       await settle();
 
       http.expectNone(LIST_URL);
-      expect(text('.notice p')).toBe('Esta versión ya no está en revisión.');
+      expect(text('.notice p')).toBe(
+        'Esta versión es tuya: lo propio no se revisa, se publica desde el editor.',
+      );
+      expect(text('.notice a')).toBe('Abrir en el editor');
+      expect(root.querySelector('.notice a')!.getAttribute('href')).toBe(
+        `/gestion/editor/${PROPOSAL_ID}/datos-clinicos`,
+      );
     });
   });
 

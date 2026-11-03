@@ -5,7 +5,6 @@ import {
   effect,
   inject,
   input,
-  linkedSignal,
   viewChild,
 } from '@angular/core';
 import {
@@ -59,11 +58,8 @@ export class SectionComments {
     return target === null ? '' : commentSubject(target);
   });
 
-  /** Lo escrito: vuelve a vacío cada vez que se empieza otro comentario. */
-  protected readonly draft = linkedSignal<CommentTarget | null, string>({
-    source: this.composing,
-    computation: () => '',
-  });
+  /** Lo escrito; se guarda en `ReviewComments` para que sobreviva al cambio de pestaña. */
+  protected readonly draft = this.comments.draft;
 
   private readonly field = viewChild(TextareaField);
 

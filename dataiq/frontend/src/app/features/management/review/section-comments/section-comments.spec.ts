@@ -152,6 +152,21 @@ describe('SectionComments', () => {
     expect(textarea()!.value).toBe('');
   });
 
+  it('lo escrito sigue ahí al pasar a otra pestaña y volver', async () => {
+    await mount('clinical');
+    comments.compose(FIELD);
+    await settle();
+    await write('Falta la anestesia.');
+
+    fixture.componentRef.setInput('section', 'mayo');
+    await settle();
+    expect(textarea()).toBeNull();
+
+    fixture.componentRef.setInput('section', 'clinical');
+    await settle();
+    expect(textarea()!.value).toBe('Falta la anestesia.');
+  });
+
   it('quitar un comentario lo saca de la lista', async () => {
     await mount();
     comments.compose(OBJECT);

@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Injectable, linkedSignal, signal } from '@angular/core';
 import {
   buildReason,
   flattenLines,
@@ -24,6 +24,14 @@ export class ReviewComments {
   readonly note = signal('');
   /** Sobre qué se está escribiendo un comentario ahora, o `null`. Solo hay uno a la vez. */
   readonly composing = signal<CommentTarget | null>(null);
+  /**
+   * Lo escrito en ese comentario: vuelve a vacío cada vez que se empieza otro. Vive aquí y no en
+   * `SectionComments` para que no se pierda al pasar a otra pestaña y volver.
+   */
+  readonly draft = linkedSignal<CommentTarget | null, string>({
+    source: this.composing,
+    computation: () => '',
+  });
 
   readonly count = computed(() => this.comments().length);
   /** Los comentarios en el orden de las secciones y, dentro de cada una, en el que se escribieron. */

@@ -209,9 +209,18 @@ export function indexGroups(
   return groups;
 }
 
-/** El primer instrumento del índice: la entrada que se abre cuando la URL no elige una. */
-export function firstInstrumentId(groups: readonly IndexGroup[]): string | undefined {
-  return groups[0]?.items[0]?.id;
+/**
+ * El primer instrumento del índice sin búsqueda (el primero por nombre de la primera categoría): la entrada
+ * que se abre cuando la URL no elige una. Se calcula sin armar el índice entero.
+ */
+export function firstInstrumentId(instruments: readonly CatalogEntry[]): string | undefined {
+  const [category] = sortedCategoryNames(instruments.map((instrument) => instrument.category));
+  let first: CatalogEntry | undefined;
+  for (const instrument of instruments) {
+    if (instrument.category !== category) continue;
+    if (!first || instrument.name.localeCompare(first.name, 'es') < 0) first = instrument;
+  }
+  return first?.id;
 }
 
 // ---------- Crear y editar ----------

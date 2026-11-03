@@ -282,6 +282,44 @@ describe('Instruments', () => {
       await settle();
     });
 
+    it('cada guardado vuelve a pedir el catálogo, no solo el primero', async () => {
+      await open(`/gestion/instrumental/${KELLY}`);
+      for (const name of ['Pinza Kelly curva', 'Pinza Kelly recta']) {
+        await clickEdit();
+        typeIn(nameInput(), name);
+        save().click();
+        await settle();
+        http
+          .expectOne(`${TEST_API_BASE}/instruments/${KELLY}`)
+          .flush({ ...CATALOG().instruments[0], name });
+        await settle();
+        const reload = http.expectOne(CATALOG_URL);
+        expect(reload.request.cache).toBe('reload');
+        reload.flush(CATALOG());
+        await settle();
+      }
+    });
+
+    it('lo que se escribe no se borra cuando llega el catálogo vuelto a pedir', async () => {
+      await open(`/gestion/instrumental/${KELLY}`);
+      await clickEdit();
+      typeIn(nameInput(), 'Pinza Kelly curva');
+      save().click();
+      await settle();
+      http
+        .expectOne(`${TEST_API_BASE}/instruments/${KELLY}`)
+        .flush({ ...CATALOG().instruments[0], name: 'Pinza Kelly curva' });
+      await settle();
+
+      // Antes de que llegue el catálogo, se vuelve a editar
+      await clickEdit();
+      typeIn(nameInput(), 'Pinza Kelly mediana');
+      http.expectOne(CATALOG_URL).flush(CATALOG());
+      await settle();
+
+      expect(nameInput().value).toBe('Pinza Kelly mediana');
+    });
+
     it('cambiar la categoría manda el id de la nueva', async () => {
       await open(`/gestion/instrumental/${KELLY}`);
       await clickEdit();

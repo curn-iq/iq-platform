@@ -40,14 +40,18 @@ export interface ReviewedRow {
  * Las filas de «Revisadas por mí» (Resuelto 58 de `dataiq/docs/checklist-frontend.md`), en el
  * orden en que llegan. La API no guarda el resultado de una revisión: se deduce del estado de la
  * versión. Un borrador con devoluciones es «Devuelta», con la fecha y el motivo de la más
- * reciente; una versión publicada, reemplazada o archivada es «Aprobada». Una versión que volvió
+ * reciente de las mías (`reviewer`, mi nombre: la API dice quién devolvió cada una por su nombre),
+ * no de las de otro revisor que la devolvió después; una versión publicada, reemplazada o archivada es «Aprobada». Una versión que volvió
  * a revisión espera otra decisión y está en «Por revisar», y un borrador sin devoluciones no
  * pasó por una revisión: ninguna de las dos tiene fila.
  *
  * Límite conocido: si la devolví yo y otro revisor aprobó después la versión que volvió, sale
  * «Aprobada», porque la API no dice quién aprobó cada una.
  */
-export function toReviewedRows(sources: readonly ReviewedSource[]): ReviewedRow[] {
+export function toReviewedRows(
+  sources: readonly ReviewedSource[],
+  reviewer: string,
+): ReviewedRow[] {
   return sources.flatMap(({ summary, rejections }): ReviewedRow[] => {
     const base = {
       id: summary.id,
@@ -63,7 +67,7 @@ export function toReviewedRows(sources: readonly ReviewedSource[]): ReviewedRow[
     ) {
       return [{ ...base, result: 'approved', reviewedAt: null, reason: null }];
     }
-    const latest = rejections[0];
+    const latest = rejections.find((rejection) => rejection.rejected_by === reviewer);
     if (summary.state === 'draft' && latest) {
       return [
         {

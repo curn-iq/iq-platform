@@ -1,5 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { SessionService } from '../../core/session/session.service';
+import { hasFailed } from '../../data/resource-state';
 import { VersionsRepository } from '../../data/versions.repository';
 import { hasAtLeast } from '../../domain/role';
 
@@ -25,11 +26,7 @@ export class TechniqueInProgress {
   );
 
   /** Se sabe qué hay en curso, o no se pudo saber (el interceptor ya avisó). */
-  readonly known = computed(
-    () =>
-      this.resource.hasValue() ||
-      (!this.resource.isLoading() && this.resource.error() !== undefined),
-  );
+  readonly known = computed(() => this.resource.hasValue() || hasFailed(this.resource));
 
   /** Las versiones en curso; vacío si no llegaron. */
   readonly versions = computed(() =>

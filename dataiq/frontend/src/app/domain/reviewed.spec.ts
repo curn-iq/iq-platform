@@ -1,4 +1,8 @@
-import { formatReviewed, toReviewedRows, type ReviewedSource } from './reviewed';
+import { formatReviewed, toReviewedRows as rowsOf, type ReviewedSource } from './reviewed';
+
+const ME = 'Laura Pérez';
+const toReviewedRows = (reviewer: string, sources: readonly ReviewedSource[]) =>
+  rowsOf(sources, reviewer);
 
 function source(
   state: ReviewedSource['summary']['state'],
@@ -26,7 +30,7 @@ const RETURN = {
 
 describe('toReviewedRows', () => {
   it('un borrador con devolución es «Devuelta», con su fecha y su motivo', () => {
-    const [row] = toReviewedRows([source('draft', [RETURN])]);
+    const [row] = toReviewedRows(ME, [source('draft', [RETURN])]);
 
     expect(row).toEqual({
       id: 'v-1',
@@ -42,7 +46,19 @@ describe('toReviewedRows', () => {
 
   it('con varias devoluciones toma la más reciente, que es la primera', () => {
     const older = { ...RETURN, reason: 'Antes.', created_at: new Date(2026, 8, 1).toISOString() };
-    const [row] = toReviewedRows([source('draft', [RETURN, older])]);
+    const [row] = toReviewedRows(ME, [source('draft', [RETURN, older])]);
+
+    expect(row.reason).toBe(RETURN.reason);
+    expect(row.reviewedAt).toEqual(new Date(2026, 9, 4, 9, 0));
+  });
+
+  it('toma mi devolución más reciente, no la de otro revisor que la devolvió después', () => {
+    const other = {
+      reason: 'Otro motivo.',
+      rejected_by: 'Carlos Ruiz',
+      created_at: new Date(2026, 9, 10).toISOString(),
+    };
+    const [row] = toReviewedRows(ME, [source('draft', [other, RETURN])]);
 
     expect(row.reason).toBe(RETURN.reason);
     expect(row.reviewedAt).toEqual(new Date(2026, 9, 4, 9, 0));
@@ -51,7 +67,7 @@ describe('toReviewedRows', () => {
   it.each(['published', 'superseded', 'archived'] as const)(
     'una versión %s es «Aprobada», sin fecha ni motivo: la API no los guarda',
     (state) => {
-      const [row] = toReviewedRows([source(state)]);
+      const [row] = toReviewedRows(ME, [source(state)]);
 
       expect(row.result).toBe('approved');
       expect(row.reviewedAt).toBeNull();
@@ -60,7 +76,7 @@ describe('toReviewedRows', () => {
   );
 
   it('una aprobada que antes se devolvió sigue siendo «Aprobada», sin el motivo viejo', () => {
-    const [row] = toReviewedRows([source('published', [RETURN])]);
+    const [row] = toReviewedRows(ME, [source('published', [RETURN])]);
 
     expect(row.result).toBe('approved');
     expect(row.reason).toBeNull();
@@ -68,15 +84,15 @@ describe('toReviewedRows', () => {
   });
 
   it('una devuelta que ya volvió a revisión espera de nuevo: está en «Por revisar», no aquí', () => {
-    expect(toReviewedRows([source('in_review', [RETURN])])).toEqual([]);
+    expect(toReviewedRows(ME, [source('in_review', [RETURN])])).toEqual([]);
   });
 
   it('un borrador sin devoluciones no tiene resultado', () => {
-    expect(toReviewedRows([source('draft')])).toEqual([]);
+    expect(toReviewedRows(ME, [source('draft')])).toEqual([]);
   });
 
   it('conserva el orden en que llegan', () => {
-    const rows = toReviewedRows([
+    const rows = toReviewedRows(ME, [
       source('draft', [RETURN], 'a'),
       source('published', [], 'b'),
       source('draft', [RETURN], 'c'),
