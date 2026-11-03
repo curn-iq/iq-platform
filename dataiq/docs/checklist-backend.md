@@ -114,8 +114,8 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [x] Neon: proyecto `dataiq`, migraciones y carga inicial
    - [x] Vercel: proyecto `dataiq-backend` (región `cle1`, `NullPool`,
      variables de entorno secretas), probado de punta a punta
-   - [ ] Despliegue automático a Vercel desde GitHub Actions en cada push a
-     `main`
+   - [x] Despliegue automático a Vercel desde GitHub Actions en cada push a
+     `main` (`.github/workflows/dataiq-backend.yml`, desde el 2026-10-14)
    - [ ] Previews por PR con una rama `dev` de la base en Neon (cuando haya
      usuarios que proteger)
 10. [ ] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
