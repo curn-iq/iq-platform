@@ -225,7 +225,7 @@ aquí para que quien opere el backend las decida.
     (Resuelto 43 de [`checklist-frontend.md`](checklist-frontend.md)); es una mitigación
     visual temporal que no impide la consulta directa a la API. El backend y sus contratos no
     se tocan en la fase 5.
-- [ ] **Límite de intentos en la autenticación** (decidido por Mauricio Lugo el 2026-11-01, con
+- [x] **Límite de intentos en la autenticación** (decidido por Mauricio Lugo el 2026-11-01, con
   los requisitos 6.1.1 y 6.3.1 de OWASP ASVS 5.0, de nivel 1): una regla del firewall de
   Vercel en `dataiq-backend`, con su configuración y su porqué en
   [`docs/arquitectura.md`](../../docs/arquitectura.md), «Límite de intentos de autenticación».
@@ -234,9 +234,10 @@ aquí para que quien opere el backend las decida.
     la base ni a Argon2 (sin `X-IQ-Client` responden 403). Probado el 2026-11-01: 100 × 403 y
     luego 429, también en `/auth/register`, con el cuerpo
     `{"error": {"code": "429", "message": "Too Many Requests", …}}`, sin `detail`
-  - [ ] Con el shell desplegado (fase 9 del frontend), confirmar qué IP ve el firewall del
-    backend en una petición que pasa por el rewrite (`vercel firewall traffic list`); si es la
-    de Vercel, pasar la regla al proyecto del shell
+  - [x] Con el shell desplegado (fase 9 del frontend), confirmar qué IP ve el firewall del
+    backend en una petición que pasa por el rewrite; si es la de Vercel, pasar la regla al
+    proyecto del shell. Comprobado el 2026-11-02 con `vercel logs requests`: llega la IP del
+    navegador, así que la regla se queda en el backend (`docs/arquitectura.md`, «Dónde va»)
   - [x] Avisar al frontend, en la descripción del PR que agrega este ítem, que hoy no tiene
     texto para un 429 (`describeApiError`, en `core/http/error-message.ts`, solo lee
     `detail`): el registro diría «No se pudo completar el registro»
