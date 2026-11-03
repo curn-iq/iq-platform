@@ -253,13 +253,22 @@ def _highlight(
             )
     item = item_with(technique, instrument.id)
     if item is None:
-        return Reply(
-            ChatAction.no_answer,
+        # Dice dónde sí va: «no va aquí» solo, deja a la persona sin salida.
+        elsewhere = [t for t in in_scope(catalog) if item_with(t, instrument.id)]
+        text = (
             f"{_the(instrument.name, start=True)} no va en la mesa de Mayo de "
-            f"{technique.name}.",
+            f"{technique.name}."
+        )
+        if len(elsewhere) == 1:
+            text += f" Va en la de {elsewhere[0].name}."
+        elif elsewhere:
+            text += f" Va en las de {_join([t.name for t in elsewhere])}."
+        return Reply(
+            ChatAction.answer if elsewhere else ChatAction.no_answer,
+            text,
             technique_id=technique.id,
             instrument_id=instrument.id,
-            options=(LIST_OPTION,),
+            options=tuple(f"{where} en {t.name}?" for t in elsewhere) or (LIST_OPTION,),
         )
     near = neighbors(technique, item)
     beside = f", junto a {_join([_the(n.name) for n in near])}" if near else ""

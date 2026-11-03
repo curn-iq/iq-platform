@@ -137,8 +137,9 @@ TOOLS = [
     _function(
         RequestKind.compare,
         "Compara el instrumental de dos técnicas: qué comparten (shared), qué "
-        "lleva la primera y no la segunda (only_first) o en qué se diferencian "
-        "(differences).",
+        "lleva la primera y no la segunda (only_first: «¿qué lleva la "
+        "tiroidectomía que no lleve la colecistectomía?») o en qué se "
+        "diferencian las dos (differences).",
         technique=_text("La primera técnica"),
         other_technique=_text("La segunda técnica"),
         comparison=_one_of(Comparison, "Qué se compara"),
