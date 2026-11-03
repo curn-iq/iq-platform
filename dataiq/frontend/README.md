@@ -602,3 +602,51 @@ declara TypeScript 5 como peer, y el proyecto usa TypeScript 6: el `overrides` d
 Para probar cada rol hay una cuenta de desarrollo por rol, solo en la base
 local: cuáles son y cómo se crean, en
 [`../README.md`, «Correr el backend»](../README.md#correr-el-backend).
+
+## Despliegue
+
+El proyecto de Vercel `dataiq-frontend` (cuenta de Mauricio, plan Hobby) sirve
+la app como sitio estático en https://dataiq-frontend.vercel.app. El workflow
+[`dataiq-frontend.yml`](../../.github/workflows/dataiq-frontend.yml) corre el
+build, las pruebas y la revisión de los tipos en cada PR y, en cada push a
+`main` que toque el frontend, construye en GitHub Actions y publica con el CLI
+de Vercel. Vercel no la construye, porque el build lee `../../shared/design/`
+y `../../docs/privacidad.md`, que están fuera de esta carpeta.
+
+- **Un solo origen** (`vercel.json`). El navegador pide todo a este dominio, y
+  así la cookie de sesión llega a las APIs sin CORS:
+  - `/api/dataiq/*` va a `https://dataiq-backend.vercel.app/*` y
+    `/api/simiq3d/*` a `https://simiq3d-backend.vercel.app/*`, sin el prefijo,
+    como `proxy.conf.json` en local;
+  - `/simiq3d/*` va a `https://simiq3d-frontend.vercel.app/simiq3d/*`, con la
+    ruta completa (Resuelto 17 de la
+    [checklist](../docs/checklist-frontend.md#resuelto)). `/simiq3d/`, el
+    enlace del shell, tiene su propia regla: `/simiq3d/:path*` no lo reconoce
+    con la barra final y sin nada después;
+  - el resto, a `index.html`. Un archivo que existe se sirve antes de cualquier
+    rewrite.
+  - `/sivri/` todavía no tiene rewrite, porque SIVRI no tiene frontend. Cuando
+    lo tenga, su rewrite va antes del de `index.html` y su ruta se excluye de
+    los encabezados de esta app, como `/simiq3d`.
+- **CSP** (`vercel.json`): todo sale de este mismo origen, salvo las fuentes de
+  `fonts.gstatic.com`, porque el build incrusta el CSS de Google Fonts. Las
+  excepciones:
+  - `style-src 'unsafe-inline'`: Angular pone los estilos de cada componente
+    en un `<style>`, y un sitio estático no puede firmarlos con un nonce;
+  - `img-src data:`: la textura de tela de los tokens.
+
+  Los scripts van sin `'unsafe-inline'`. Por eso el build de producción no
+  incrusta el CSS crítico (`inlineCritical: false` en `angular.json`): esa
+  optimización agrega un manejador `onload` en línea.
+
+  Los encabezados no se aplican a `/api/` ni a `/simiq3d`, que traen los suyos.
+  Si una respuesta lleva dos CSP, el navegador aplica las dos, y esta
+  bloquearía el WebAssembly de SIMIQ3D.
+- **Caché.** El código y los estilos llevan un hash en el nombre, así que se
+  guardan un año (`immutable`). `index.html` va sin caché, como lo deja
+  Vercel. Las respuestas de las APIs traen su propio `Cache-Control` y `ETag`.
+- **Tiempo de espera.** Vercel espera hasta 120 segundos a que el destino de un
+  rewrite empiece a responder
+  ([changelog de Vercel](https://vercel.com/changelog/cdn-origin-timeout-increased-to-two-minutes)).
+  El chat de SIMIQ3D corta el modelo de lenguaje a los 60 segundos
+  (`llm_timeout`) y responde con las plantillas.

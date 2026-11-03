@@ -35,8 +35,8 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 Dónde corre cada pieza en producción y cómo llega ahí:
 
 - **Vercel** (plan Hobby) tiene un proyecto por pieza que se despliega aparte:
-  el del shell y DataIQ sirve el frontend web, el de SIVRI su frontend, los de
-  SIMIQ3D su frontend (`simiq3d-frontend`, un sitio estático) y su backend
+  el del shell y DataIQ (`dataiq-frontend`) sirve el frontend web, el de SIVRI
+  su frontend, los de SIMIQ3D su frontend (`simiq3d-frontend`, un sitio estático) y su backend
   (`simiq3d-backend`), y `dataiq-backend` la API, los dos backends como
   funciones de Python en la región `cle1`. El navegador llega a la API por un rewrite
   del mismo dominio (`/api/dataiq/*`), así que la cookie de sesión viaja sin
