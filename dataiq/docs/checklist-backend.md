@@ -150,11 +150,18 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     - **Después:** Mis borradores la usa en lugar de `getMany` (fase 6 de
       [`checklist-frontend.md`](checklist-frontend.md)). Los tipos del
       frontend ya se regeneraron con la ruta (`npm run api:types`)
-    - [ ] Limitar `reviewed_by_me=true&include=content` antes de que una
-      pantalla la use (la revisión de la fase 7, por ejemplo): sin `state`, un
-      revisor recibe el contenido completo de todo lo que aprobó o rechazó,
-      también lo reemplazado, y la lista no tiene límite. Se limita con
-      `state` o con paginación. Mis borradores no la pide así (observación de
+    - [x] Limitar `reviewed_by_me=true&include=content` antes de que una
+      pantalla la use: «Revisadas por mí» (fase 7 del frontend) la pedía así,
+      y solo muestra el estado y los rechazos, no el contenido, que es casi
+      todo el peso (unos 14 KB por versión, contra 0,3 KB del resumen).
+      Decidido por Mauricio Lugo el 2026-11-03, en lugar de la paginación del
+      issue #61: `include=rejections` trae cada versión con su resumen y sus
+      rechazos, sin el contenido (una «vista» parcial, como recomienda la guía
+      AIP-157 de Google). Así la lista se mantiene pequeña sin páginas: el
+      límite de 4,5 MB de una respuesta de Vercel llegaría pasadas unas
+      10 000 versiones decididas por un mismo revisor. Paginar queda para si
+      la lista se vuelve larga de leer; con `limit` y `offset` opcionales no
+      rompe nada. Mis borradores no la pide así (observación de
       Juan en el PR #55, 2026-11-02)
 
 ## Hallazgos de seguridad pendientes
