@@ -66,7 +66,7 @@ describe('ChatField', () => {
     const fixture = TestBed.createComponent(ChatField);
     await fixture.whenStable();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(
-      'Tus preguntas se guardan sin tu nombre para medir el chat. No escribas datos de pacientes.',
+      'Responde con los datos de DataIQ. Tus preguntas se guardan sin tu nombre para medir el chat. No escribas datos de pacientes.',
     );
   });
 });
