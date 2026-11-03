@@ -138,6 +138,13 @@ class VersionDetailOut(OutModel):
     rejections: list[RejectionOut]
 
 
+class VersionRejectionsOut(OutModel):
+    """Una versión con sus rechazos, sin su contenido (`include=rejections`)."""
+
+    summary: VersionSummaryOut
+    rejections: list[RejectionOut]
+
+
 class TechniqueCreateIn(BaseModel):
     name: NonEmptyStr
     specialty_id: UUID

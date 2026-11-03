@@ -630,3 +630,85 @@ async def test_technique_id_brings_only_the_versions_of_that_technique(
     assert [v["id"] for v in in_progress.json()] == [draft.json()["summary"]["id"]]
     assert [v["id"] for v in as_author.json()] == [draft.json()["summary"]["id"]]
     assert as_other.json() == []
+
+
+@pytest.mark.anyio
+async def test_include_rejections_brings_each_version_without_its_content(
+    client, contributor, reviewer, specialty, zone, instrument
+):
+    approved = await create_technique(client, contributor, specialty, "Aprobada")
+    rejected = await create_technique(client, contributor, specialty, "Rechazada")
+    for version in (approved, rejected):
+        await edit(client, contributor, version["id"], content(zone, instrument))
+        await action(client, contributor, version["id"], "submit")
+    await action(client, reviewer, approved["id"], "approve")
+    await action(
+        client, reviewer, rejected["id"], "reject", json={"reason": "Falta la ropa"}
+    )
+
+    response_ = await client.get(
+        "/versions?reviewed_by_me=true&include=rejections",
+        headers=auth_headers(reviewer),
+    )
+    as_contributor = await client.get(
+        "/versions?reviewed_by_me=true&include=rejections",
+        headers=auth_headers(contributor),
+    )
+
+    assert response_.status_code == 200
+    assert response_.headers["cache-control"] == "private, max-age=0"
+    assert "etag" in response_.headers
+    versions = {v["summary"]["technique"]: v for v in response_.json()}
+    assert set(versions) == {"Aprobada", "Rechazada"}
+    for version in versions.values():
+        # Lo mismo que GET /versions/{id}, menos el contenido
+        assert set(version) == {"summary", "rejections"}
+        detail = await client.get(
+            f"/versions/{version['summary']['id']}", headers=auth_headers(reviewer)
+        )
+        assert version["summary"] == detail.json()["summary"]
+        assert version["rejections"] == detail.json()["rejections"]
+    assert [r["reason"] for r in versions["Rechazada"]["rejections"]] == [
+        "Falta la ropa"
+    ]
+    assert versions["Aprobada"]["rejections"] == []
+    assert as_contributor.status_code == 403
+
+
+@pytest.mark.anyio
+async def test_include_rejections_asks_the_same_queries_for_one_version_or_many(
+    session, client, contributor, reviewer, specialty
+):
+    """Sin N+1: los rechazos de todas las versiones salen en una sola consulta."""
+
+    async def queries_for_the_list() -> int:
+        connection_ = (await session.connection()).sync_connection
+        statements: list[str] = []
+
+        def count(conn, cursor, statement, parameters, context, executemany):
+            statements.append(statement)
+
+        event.listen(connection_, "before_cursor_execute", count)
+        try:
+            response_ = await client.get(
+                "/versions?reviewed_by_me=true&include=rejections",
+                headers=auth_headers(reviewer),
+            )
+            assert response_.status_code == 200
+        finally:
+            event.remove(connection_, "before_cursor_execute", count)
+        return len(statements)
+
+    async def returned(name: str) -> None:
+        version = await create_technique(client, contributor, specialty, name)
+        await action(client, contributor, version["id"], "submit")
+        await action(
+            client, reviewer, version["id"], "reject", json={"reason": "Falta"}
+        )
+
+    await returned("Una")
+    with_one = await queries_for_the_list()
+    await returned("Dos")
+    await returned("Tres")
+
+    assert await queries_for_the_list() == with_one

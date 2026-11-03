@@ -33,6 +33,7 @@ from app.domain.techniques import (
     Rejection,
     VersionContent,
     VersionDetail,
+    VersionRejections,
     VersionState,
     VersionSummary,
 )
@@ -126,6 +127,25 @@ class SQLAlchemyVersionRepository:
             )
         )
 
+    async def list_with_rejections(
+        self,
+        states: Iterable[VersionState],
+        created_by: UUID | None = None,
+        reviewed_by: UUID | None = None,
+        technique_id: UUID | None = None,
+    ) -> list[VersionRejections]:
+        summaries = await self.list_all(
+            states,
+            created_by=created_by,
+            reviewed_by=reviewed_by,
+            technique_id=technique_id,
+        )
+        rejections = await self._rejections([summary.id for summary in summaries])
+        return [
+            VersionRejections(summary=summary, rejections=rejections[summary.id])
+            for summary in summaries
+        ]
+
     async def get(self, version_id: UUID) -> VersionDetail | None:
         summary = await self.get_summary(version_id)
         if summary is None:
@@ -146,34 +166,41 @@ class SQLAlchemyVersionRepository:
                 self._session, TechniqueVersion.id.in_(ids)
             )
         }
-        rejections_query = (
-            select(
-                VersionRejection.version_id,
-                VersionRejection.reason,
-                User.name.label("rejected_by"),
-                VersionRejection.created_at,
-            )
-            .join(User, User.id == VersionRejection.rejected_by)
-            .where(VersionRejection.version_id.in_(ids))
-            .order_by(VersionRejection.created_at.desc())
-        )
-        rejections: dict[UUID, list[Rejection]] = defaultdict(list)
-        for row in await self._session.execute(rejections_query):
-            rejections[row.version_id].append(
-                Rejection(
-                    reason=row.reason,
-                    rejected_by=row.rejected_by,
-                    created_at=row.created_at,
-                )
-            )
+        rejections = await self._rejections(ids)
         return [
             VersionDetail(
                 summary=summary,
                 content=contents[(summary.technique_id, summary.number)],
-                rejections=tuple(rejections[summary.id]),
+                rejections=rejections[summary.id],
             )
             for summary in summaries
         ]
+
+    async def _rejections(self, ids: list[UUID]) -> dict[UUID, tuple[Rejection, ...]]:
+        """Los rechazos de varias versiones en una sola consulta, del más reciente
+        al más viejo; una versión sin rechazos queda con una tupla vacía."""
+        found: dict[UUID, list[Rejection]] = defaultdict(list)
+        if ids:
+            query = (
+                select(
+                    VersionRejection.version_id,
+                    VersionRejection.reason,
+                    User.name.label("rejected_by"),
+                    VersionRejection.created_at,
+                )
+                .join(User, User.id == VersionRejection.rejected_by)
+                .where(VersionRejection.version_id.in_(ids))
+                .order_by(VersionRejection.created_at.desc())
+            )
+            for row in await self._session.execute(query):
+                found[row.version_id].append(
+                    Rejection(
+                        reason=row.reason,
+                        rejected_by=row.rejected_by,
+                        created_at=row.created_at,
+                    )
+                )
+        return {version_id: tuple(found[version_id]) for version_id in ids}
 
     async def get_published_of(self, technique_id: UUID) -> VersionSummary | None:
         query = self._summary_query().where(

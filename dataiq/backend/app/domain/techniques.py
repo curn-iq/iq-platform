@@ -170,6 +170,15 @@ class VersionDetail:
     rejections: tuple[Rejection, ...]
 
 
+@dataclass(frozen=True)
+class VersionRejections:
+    """Una versión con sus rechazos y sin su contenido: lo que necesita una
+    lista que muestra si se devolvió y por qué."""
+
+    summary: VersionSummary
+    rejections: tuple[Rejection, ...]
+
+
 # Contenido que se escribe en una versión en borrador (el editor lo manda
 # completo y reemplaza lo anterior).
 
