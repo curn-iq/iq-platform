@@ -113,13 +113,17 @@ documentación de Vercel el 2026-11-01). No necesita código.
   nadie puede bloquear la cuenta de otra persona; quien pasa el límite espera
   a la ventana siguiente.
 - **Dónde va:** en el proyecto del backend, porque ahí llega quien llama a la
-  API directo. Vercel reemplaza `X-Forwarded-For` en lo que le llega desde
-  otro proxy
-  ([encabezados de la petición](https://vercel.com/docs/headers/request-headers)):
-  si una petición que pasa por el rewrite del shell llega al backend con la IP
-  de Vercel y no con la del navegador, todas las personas contarían como una.
-  En ese caso la regla se pasa al proyecto del shell (ruta
-  `/api/dataiq/auth/…`), que sí ve la IP real.
+  API directo y también lo que pasa por el rewrite del shell. Vercel reemplaza
+  `X-Forwarded-For` en lo que le llega desde otro proxy
+  ([encabezados de la petición](https://vercel.com/docs/headers/request-headers)),
+  así que había que comprobar que lo que llega por el shell trae la IP del
+  navegador y no la de Vercel; si no, todas las personas contarían como una.
+  Se comprobó el 2026-11-02 con dos peticiones marcadas, una directa al
+  backend y otra por el shell: en los registros de peticiones de
+  `dataiq-backend` (`vercel logs requests`), las dos llegaron con el país de
+  la IP de origen (Colombia) y no con el del servidor de Vercel que hace el
+  rewrite (Estados Unidos). Si eso cambiara, la regla se pasa al proyecto del
+  shell (ruta `/api/dataiq/auth/…`).
 
 La regla vive en Vercel, no en el repo. Este comando la crea igual, con el CLI
 de Vercel y la cuenta de Mauricio; `firewall diff` muestra el cambio y
