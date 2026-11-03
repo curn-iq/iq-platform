@@ -216,9 +216,11 @@ exactitud del chat (evaluación formativa: ver
 [`../README.md`](../README.md), «Cómo se evalúa»). Cada fila trae la
 pregunta, la técnica abierta en el visor si la hay (`tecnica_abierta`), el
 tipo de pregunta (`tipo`: directa, sinónimo, paráfrasis, error de escritura,
-seguimiento, ambigua, fuera de alcance o intento de desviarlo) y lo que el
-chat debe hacer (`espera`), con los nombres que hacen falta para calificarla
-(`tecnica`, `instrumento`, `dato`, `otra_tecnica`).
+seguimiento, ambigua, fuera de alcance, intento de desviarlo, varias cosas en
+una, con una parte fuera de alcance, negación o saludo) y lo que el chat debe
+hacer (`espera`), con los nombres que hacen falta para calificarla
+(`tecnica`, `instrumento`, `dato`, `otra_tecnica`). Un seguimiento que
+depende de la pregunta anterior la trae en `pregunta_anterior`.
 
 `chat_bank` hace cada pregunta como la ruta del chat (corrector, agente y
 plantillas), con el motor de `LANGUAGE_MODEL`, pero sin HTTP: no gasta el tope
@@ -240,6 +242,16 @@ catálogo de DataIQ al correr, y si un nombre ya no está en DataIQ, no corre.
 | `solo_en`, `comparten`, `diferencias` | nombra los instrumentos que corresponden y ninguno de los que no |
 | `aclarar` | pide precisar (incluye el «¿Quizás quisiste decir…?» del corrector). Si la pregunta es ambigua, `instrumento` trae las opciones separadas por «\|», y también es correcto nombrarlas todas |
 | `fuera` | no abre nada en el visor y dice que no tiene la respuesta |
+| `saludo` | no abre nada en el visor, responde y ofrece al menos dos preguntas para seguir |
+
+Una pregunta que pide varias cosas espera varias partes, unidas por «+»
+(`dato:indications+listar+nota:tiempos`). El texto debe traer cada parte, con
+la regla de su fila: `ubicar` nombra el instrumento, `describir` y
+`dato:<dato>` traen lo de DataIQ, y `listar` nombra toda la mesa. `nota:tiempos`
+y `nota:dosis` piden que el texto diga que DataIQ no tiene los tiempos
+quirúrgicos o la dosis. El visor debe mostrar la parte más visual: resaltar el
+instrumento si se pide `ubicar`; si no, la lista con `listar`; si no, la ficha
+con `describir`; si no, la técnica.
 
 Lo que hace el visor sale de la acción, como en el contrato de `POST /chat`:
 `answer`, `clarify` y `no_answer` no lo cambian aunque traigan ids. Imprime la

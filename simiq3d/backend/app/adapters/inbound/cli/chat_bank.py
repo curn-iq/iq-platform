@@ -56,6 +56,7 @@ from app.domain.chat import (
     spelling_reply,
 )
 from app.domain.names import canonical, contains, instrument_keys, suggest_spelling
+from app.domain.requests import Turn
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 from app.ports.chat import ChatEngine, ModelUnavailable
 
@@ -73,6 +74,9 @@ COLUMNS = (
     "dato",
     "otra_tecnica",
 )
+# La pregunta anterior de la conversación, en un seguimiento que la necesita
+# («¿Y para qué sirve?» después de «¿Dónde va la Kelly Adson?»). Opcional.
+PREVIOUS = "pregunta_anterior"
 
 # Qué pide cada `espera`: técnica (T), instrumento (I), dato y otra técnica (O).
 NEEDS = {
@@ -91,7 +95,15 @@ NEEDS = {
     "diferencias": "TO",
     "aclarar": "",
     "fuera": "",
+    "saludo": "",
 }
+
+# Una pregunta que pide varias cosas espera varias partes, unidas por «+»
+# («dato:indications+listar+nota:tiempos»): cada una se califica con su regla.
+# `dato:` lleva el dato clínico, y `nota:`, lo que la respuesta debe decir que
+# DataIQ no tiene.
+PARTS = {"ubicar": "TI", "describir": "I", "dato": "T", "listar": "T", "nota": ""}
+NOTES = {"tiempos": "tiempos quirurgicos", "dosis": "dosis"}
 
 # Cuánto de un dato clínico o de una descripción debe traer el texto: la
 # proporción de sus palabras de cinco letras o más. El agente cita los datos
@@ -160,6 +172,7 @@ class Question:
     instrument: str
     field: str
     other_technique: str
+    previous: str = ""
 
 
 @dataclass(frozen=True)
@@ -180,10 +193,33 @@ def read_bank(path: Path) -> list[Question]:
                 f"Al banco le faltan las columnas: {', '.join(sorted(missing))}"
             )
         return [
-            Question(*((row[c] or "").strip() for c in COLUMNS))
+            Question(
+                *((row[c] or "").strip() for c in COLUMNS),
+                previous=(row.get(PREVIOUS) or "").strip(),
+            )
             for row in reader
             if (row["pregunta"] or "").strip()
         ]
+
+
+def parts_of(expects: str) -> list[tuple[str, str]]:
+    """Las partes de una `espera` combinada, cada una con lo que lleva tras «:»."""
+    return [
+        (name, param)
+        for name, _, param in (p.partition(":") for p in expects.split("+"))
+    ]
+
+
+def needs_of(expects: str) -> str | None:
+    """Qué columnas pide una `espera` (ver NEEDS), o None si no se sabe calificar."""
+    if "+" not in expects:
+        return NEEDS.get(expects)
+    needs = set()
+    for name, _ in parts_of(expects):
+        if name not in PARTS:
+            return None
+        needs |= set(PARTS[name])
+    return "".join(sorted(needs))
 
 
 def check_bank(bank: list[Question], catalog: Catalog) -> None:
@@ -191,7 +227,7 @@ def check_bank(bank: list[Question], catalog: Catalog) -> None:
     catálogo. Falla con todos los problemas, no solo con el primero."""
     problems = []
     for q in bank:
-        needs = NEEDS.get(q.expects)
+        needs = needs_of(q.expects)
         if needs is None:
             problems.append(f"{q.id}: no se sabe calificar «{q.expects}»")
             continue
@@ -211,6 +247,11 @@ def check_bank(bank: list[Question], catalog: Catalog) -> None:
             problems.append(f"{q.id}: «{q.open_technique}» no está en DataIQ")
         if "D" in needs and q.field not in DATA_FIELDS:
             problems.append(f"{q.id}: dato desconocido «{q.field}»")
+        for name, param in parts_of(q.expects) if "+" in q.expects else ():
+            if name == "dato" and param not in DATA_FIELDS:
+                problems.append(f"{q.id}: dato desconocido «{param}»")
+            if name == "nota" and param not in NOTES:
+                problems.append(f"{q.id}: nota desconocida «{param}»")
     if problems:
         raise BankError("El banco no cuadra con DataIQ:\n" + "\n".join(problems))
 
@@ -314,11 +355,54 @@ def _compare(
     return True, ""
 
 
+def _score_parts(
+    q: Question, reply: Reply, catalog: Catalog, t: Technique, i: Instrument
+) -> tuple[bool, str]:
+    """Una pregunta que pide varias cosas: el texto trae cada parte, y el visor
+    muestra la más visual (ubicar, listar, describir; si no, la técnica)."""
+    text = reply.reply
+    names = [name for name, _ in parts_of(q.expects)]
+    for name, param in parts_of(q.expects):
+        if name == "dato" and not _covers(text, _field_text(t, param)):
+            return False, f"no trae el dato {param} de DataIQ"
+        if name == "listar":
+            named, reason = _all_named(text, _instruments(t, catalog))
+            if not named:
+                return False, reason
+        if name == "describir" and not (
+            _covers(text, i.description) or _covers_a_sentence(text, i.description)
+        ):
+            return False, "no trae la descripción de DataIQ"
+        if name == "ubicar" and not _names_instrument(text, i):
+            return False, f"no nombra {i.name}"
+        if name == "nota" and NOTES[param] not in normalize(text):
+            return False, f"no dice que DataIQ no tiene {NOTES[param]}"
+    opened = reply.technique_id if reply.action in OPENS else None
+    highlighted = reply.instrument_id if reply.action in HIGHLIGHTS else None
+    if "ubicar" in names:
+        if (opened, highlighted) != (t.id, i.id):
+            return False, "el visor no resalta el instrumento en esa técnica"
+    elif "listar" in names:
+        if (reply.action, opened) != (ChatAction.list_instruments, t.id):
+            return False, "el visor no muestra la lista de la técnica"
+    elif "describir" in names:
+        if (reply.action, reply.instrument_id) != (
+            ChatAction.describe_instrument,
+            i.id,
+        ):
+            return False, "el visor no abre la ficha del instrumento"
+    elif opened != t.id:
+        return False, "el visor no abre la técnica"
+    return True, ""
+
+
 def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
     """Si la respuesta hace lo que pide `espera`, y por qué no si no lo hace."""
     t = find_technique(catalog, q.technique)
     i = find_instrument(catalog, q.instrument)
     other = find_technique(catalog, q.other_technique)
+    if "+" in q.expects:
+        return _score_parts(q, reply, catalog, t, i)
     text = reply.reply
     opened = reply.technique_id if reply.action in OPENS else None
     # Describir también señala la pieza en el visor, además de abrir su ficha
@@ -402,6 +486,14 @@ def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
             ):
                 return True, ""
             return False, "responde en vez de decir que no tiene la respuesta"
+        case "saludo":
+            if opened or highlighted:
+                return False, "abre algo en el visor"
+            if reply.action == ChatAction.no_answer:
+                return False, "no responde el saludo"
+            if len(reply.options) < 2:
+                return False, "no muestra qué se puede preguntar"
+            return True, ""
     raise BankError(f"{q.id}: no se sabe calificar «{q.expects}»")
 
 
@@ -412,17 +504,25 @@ async def ask(
     q: Question, catalog: Catalog, engine: ChatEngine
 ) -> tuple[Reply | None, float]:
     """Como la ruta del chat: si un nombre parece mal escrito, responde el
-    corrector; si no, el motor."""
-    started = time.perf_counter()
+    corrector; si no, el motor, con la pregunta anterior si la hay."""
     open_technique = find_technique(catalog, q.open_technique)
+    open_id = open_technique.id if open_technique else None
+    previous: tuple[Turn, ...] = ()
+    if q.previous:
+        # El seguimiento llega como en el frontend: con la pregunta anterior y
+        # los pedidos que devolvió su respuesta. Esa no se califica ni se cronometra.
+        try:
+            before = await engine.reply(q.previous, catalog, open_id)
+        except ModelUnavailable:
+            return None, 0.0
+        previous = (Turn(q.previous, before.requests),)
+    started = time.perf_counter()
     corrected = suggest_spelling(q.question, Vocabulary.from_catalog(catalog))
     if corrected:
         reply = replace(spelling_reply(corrected), answered_by="corrector")
     else:
         try:
-            reply = await engine.reply(
-                q.question, catalog, open_technique.id if open_technique else None
-            )
+            reply = await engine.reply(q.question, catalog, open_id, previous)
         except ModelUnavailable:
             reply = None
         if reply is not None and not reply.answered_by:
