@@ -76,6 +76,15 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
      y `PATCH /users/{id}/role`, solo admin y no
      sobre su propia cuenta. El primer admin se asigna por terminal:
      `uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`
+   - [x] La actividad de cada cuenta en `GET /users` y en la respuesta de
+     `PATCH /users/{id}/role` (2026-11-03), para la ficha de Usuarios y roles
+     (fase 8 del frontend), que muestra «4 versiones en curso · 1 devuelta» o
+     «2 versiones revisadas · 1 técnica publicada»: sus versiones en borrador
+     (`drafts`), cuántas tienen una devolución (`returned`), las que esperan
+     revisión (`in_review`), las técnicas que llegó a publicar
+     (`published_techniques`) y las versiones de otros que aprobó o devolvió
+     (`reviewed`). Sale con cuatro consultas para todas las cuentas, sin una
+     por cuenta
    - [x] Supresión de una cuenta por terminal, cuando su titular la pide por
      el canal del aviso de privacidad ([`docs/privacidad.md`](../../docs/privacidad.md)):
      `uv run python -m app.adapters.inbound.cli.delete_account <correo>`. Sin
