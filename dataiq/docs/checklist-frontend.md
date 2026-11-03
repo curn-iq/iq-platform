@@ -126,8 +126,9 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 El backend ya está en Vercel (`dataiq-backend`, pieza 9 de
 [`checklist-backend.md`](checklist-backend.md)).
 
-- [ ] `vercel.json`: rewrites de `/api/dataiq/:path*` a `dataiq-backend`, de `/api/simiq3d/:path*` al backend de SIMIQ3D, y de `/simiq3d/:path*` y `/sivri/:path*` al proyecto de Vercel de cada módulo, con la ruta completa: cada app tiene ese prefijo como `baseHref` (Resuelto 17); el resto de rutas a `index.html`, y encabezados de seguridad (CSP)
-- [ ] Confirmar que Vercel reenvía la cookie y el `Set-Cookie`
+- [x] `vercel.json`: rewrites de `/api/dataiq/:path*` a `dataiq-backend`, de `/api/simiq3d/:path*` al backend de SIMIQ3D, y de `/simiq3d/:path*` al proyecto de Vercel de SIMIQ3D, con la ruta completa: la app tiene ese prefijo como `baseHref` (Resuelto 17); el resto de rutas a `index.html`, y encabezados de seguridad (CSP)
+- [ ] Rewrite de `/sivri/:path*` al proyecto de Vercel de SIVRI, con la ruta completa, cuando SIVRI tenga su frontend
+- [x] Confirmar que Vercel reenvía la cookie y el `Set-Cookie`: comprobado el 2026-11-02 en `dataiq-frontend.vercel.app` con la cuenta de prueba (inicio de sesión, `/auth/me` y la API de SIMIQ3D con la cookie)
 - [ ] GitHub Actions: despliegue con Vercel CLI (el plan Hobby no conecta repos de organizaciones) en `dataiq-frontend.yml`, que ya corre el build, las pruebas y la revisión de los tipos de la API en cada PR. El build lee `../../shared/design/`, fuera de `dataiq/frontend`: construir en Actions (`vercel build`) y subir con `vercel deploy --prebuilt`, o desplegar desde la raíz del repo con `dataiq/frontend` como Root Directory; si se sube solo `dataiq/frontend`, el build falla
 
 ## Lo que no cuadraba
