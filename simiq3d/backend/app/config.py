@@ -41,8 +41,13 @@ class Config(BaseSettings):
     llm_model: str = "qwen3-vl:8b-instruct"
     llm_api_key: str = ""
     llm_timeout: float = 60
-    # Tiempo máximo de una pregunta, sumando todos los pasos del agente.
+    # Tiempo máximo para entender la pregunta (la primera llamada al modelo).
     llm_deadline: float = 30
+    # Si el modelo redacta la respuesta con los datos de DataIQ (la segunda
+    # llamada), y cuánto puede tardar: pasado ese tiempo, o si el texto no pasa
+    # la verificación, se muestra la respuesta armada por las plantillas.
+    llm_write: bool = True
+    llm_write_deadline: float = 12
 
     # Tope de preguntas por cuenta: cuántas en cuántos segundos. Se cuenta con
     # el id de la cuenta cifrado con esta clave (HMAC), aparte del registro

@@ -57,6 +57,13 @@ NO_SURGICAL_TIMES = (
 )
 
 
+def surgical_time_phrases(text: str) -> set[str]:
+    """Lo que el texto dice de tiempos quirúrgicos o del orden de uso del
+    instrumental («en orden de uso», «la diéresis»), sin «sin tiempos…»."""
+    said = _WITHOUT_SURGICAL_TIMES.sub("", canonical(text))
+    return {m.group(0) for m in _SURGICAL_TIMES.finditer(said)}
+
+
 def asks_surgical_times(question: str) -> bool:
     """Si la pregunta pide tiempos quirúrgicos o el orden de uso del
     instrumental; «sin tiempos quirúrgicos» no los pide."""

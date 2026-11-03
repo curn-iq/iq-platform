@@ -27,28 +27,40 @@ def tool_calls(*calls: dict, content: str = "") -> dict:
     return {"role": "assistant", "content": content, "tool_calls": list(calls)}
 
 
-class ScriptedOllama:
-    """Hace de Ollama: responde con el mensaje del guion."""
+def written(text: str) -> dict:
+    return {"role": "assistant", "content": text}
 
-    def __init__(self, message: dict | None = None, status: int = 200) -> None:
+
+class ScriptedOllama:
+    """Hace de Ollama: a la primera llamada (entender) responde con `message`, y a
+    la segunda (redactar), con `text`. Sin `text`, la redacción sale vacía y no
+    pasa la verificación: queda lo armado por las plantillas."""
+
+    def __init__(
+        self, message: dict | None = None, text: str = "", status: int = 200
+    ) -> None:
         self.message = message or tool_calls()
+        self.text = text
         self.status = status
         self.requests: list[dict] = []
         self.headers: list[httpx.Headers] = []
 
-    def agent(self) -> OllamaAgent:
+    def agent(self, write: bool = True) -> OllamaAgent:
         def handle(request: httpx.Request) -> httpx.Response:
-            self.requests.append(json.loads(request.content))
+            body = json.loads(request.content)
+            self.requests.append(body)
             self.headers.append(request.headers)
             if self.status != 200:
                 return httpx.Response(self.status)
-            return httpx.Response(200, json={"choices": [{"message": self.message}]})
+            message = self.message if "tools" in body else written(self.text)
+            return httpx.Response(200, json={"choices": [{"message": message}]})
 
         return OllamaAgent(
             "https://pc2.prueba",
             "qwen3-vl:8b-instruct",
             api_key="clave",
             transport=httpx.MockTransport(handle),
+            write=write,
         )
 
 
@@ -72,14 +84,15 @@ async def test_the_model_understands_and_dataiq_answers():
         )
     )
 
-    reply = await server.agent().reply(
+    # Sin la redacción (LLM_WRITE=false), el texto es el de las plantillas.
+    reply = await server.agent(write=False).reply(
         "Indicaciones y mesa de la colecistectomía", CATALOG, None
     )
 
     indications, table = reply.reply.split("\n\n")
     assert indications == "Indicaciones · Colecistectomía. Colelitiasis sintomática."
     assert table.startswith("Mesa de Mayo de Colecistectomía, 4 objetos:")
-    # El texto del modelo nunca llega al estudiante.
+    # El texto que acompaña los pedidos no llega al estudiante.
     assert "siempre" not in reply.reply
     assert reply.action == ChatAction.list_instruments
     assert reply.technique_id == COLECISTECTOMIA.id
@@ -92,7 +105,7 @@ async def test_the_model_gets_the_requests_the_techniques_and_the_open_one():
 
     await server.agent().reply("Hola", CATALOG, MASTECTOMIA.id)
 
-    [body] = server.requests
+    body, _ = server.requests
     assert body["temperature"] == 0
     names = [t["function"]["name"] for t in body["tools"]]
     assert names == [
@@ -136,7 +149,8 @@ async def test_one_call_can_bring_several_requests_and_an_out_of_scope_part():
         "síntesis…) ni el orden en que se usa: solo dónde "
         "va cada pieza en la mesa de Mayo de cada técnica."
     )
-    assert len(server.requests) == 1
+    # Una llamada para entender, con los pedidos, y otra para redactar.
+    assert ["tools" in r for r in server.requests] == [True, False]
 
 
 @pytest.mark.anyio
@@ -222,7 +236,8 @@ async def test_the_call_waits_at_most_the_deadline():
 
     await _agent_with(handle, timeout=60, deadline=5).reply("Hola", CATALOG, None)
 
-    assert timeouts == [5]
+    # Entender espera hasta LLM_DEADLINE, y redactar, hasta LLM_WRITE_DEADLINE.
+    assert timeouts == [5, 12]
 
 
 @pytest.mark.anyio
@@ -255,3 +270,84 @@ async def test_a_follow_up_sees_the_previous_question_as_a_turn():
         "content": "Respondido.",
     }
     assert now == {"role": "user", "content": "¿Y para qué sirve?"}
+
+
+INDICATIONS_AND_TABLE = tool_calls(
+    call("clinical_data", technique="colecistectomía", field="indications"),
+    call("list_instruments", technique="colecistectomía"),
+)
+
+
+@pytest.mark.anyio
+async def test_the_model_writes_the_answer_with_only_the_dataiq_data():
+    text = (
+        "La colecistectomía es la extirpación quirúrgica de la vesícula biliar, y "
+        "se indica en la colelitiasis sintomática. Su mesa de Mayo lleva 4 objetos."
+    )
+    server = ScriptedOllama(INDICATIONS_AND_TABLE, text)
+
+    reply = await server.agent().reply(
+        "Indicaciones y mesa de la colecistectomía", CATALOG, None
+    )
+
+    # El texto redactado, y después la mesa tal como sale de DataIQ.
+    redacted, table = reply.reply.split("\n\n")
+    assert redacted == text
+    assert table.startswith("Mesa de Mayo de Colecistectomía, 4 objetos:")
+    assert reply.action == ChatAction.list_instruments
+    assert reply.answered_by == "qwen3-vl:8b-instruct"
+    # El modelo recibió los datos primero, con el contexto, y la pregunta al final.
+    _, write = server.requests
+    data = write["messages"][1]["content"]
+    assert data.startswith("<datos>\n<dato>\nIndicaciones · Colecistectomía.")
+    assert "Qué es Colecistectomía: Extirpación quirúrgica" in data
+    assert data.endswith(
+        "Pregunta del estudiante: Indicaciones y mesa de la colecistectomía"
+    )
+    assert "Colelitiasis sintomática." in reply.sources
+
+
+@pytest.mark.anyio
+async def test_a_written_answer_with_something_dataiq_does_not_have_is_not_shown():
+    server = ScriptedOllama(
+        INDICATIONS_AND_TABLE,
+        "Se indica en la colelitiasis sintomática y dura unas 2 horas. Lleva la "
+        "Pinza Lahey.",
+    )
+
+    reply = await server.agent().reply(
+        "Indicaciones y mesa de la colecistectomía", CATALOG, None
+    )
+
+    assert reply.reply.startswith("Indicaciones · Colecistectomía.")
+    assert "Lahey" not in reply.reply
+    assert reply.answered_by == "qwen3-vl:8b-instruct (texto de plantillas)"
+    assert reply.sources == ""
+
+
+@pytest.mark.anyio
+async def test_a_slow_writing_shows_the_answer_built_with_dataiq():
+    def handle(request):
+        if "tools" not in json.loads(request.content):
+            raise httpx.ReadTimeout("tardó demasiado", request=request)
+        message = INDICATIONS_AND_TABLE
+        return httpx.Response(200, json={"choices": [{"message": message}]})
+
+    reply = await _agent_with(handle).reply(
+        "Indicaciones y mesa de la colecistectomía", CATALOG, None
+    )
+
+    assert reply.reply.startswith("Indicaciones · Colecistectomía.")
+    assert reply.answered_by == "qwen (texto de plantillas)"
+
+
+@pytest.mark.anyio
+async def test_a_question_to_clarify_is_not_rewritten():
+    server = ScriptedOllama(tool_calls(call("locate", instrument="pinza")))
+
+    reply = await server.agent().reply(
+        "¿Dónde va la pinza?", CATALOG, COLECISTECTOMIA.id
+    )
+
+    assert reply.action == ChatAction.clarify
+    assert len(server.requests) == 1

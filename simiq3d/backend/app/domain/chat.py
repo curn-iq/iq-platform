@@ -108,6 +108,9 @@ class Reply:
     # Lo que se entendió de la pregunta: el frontend lo devuelve con la
     # siguiente, para entender un seguimiento.
     requests: tuple[Request, ...] = ()
+    # Lo que tuvo el modelo para redactar el texto, si lo redactó: los datos de
+    # DataIQ y su contexto. No va al frontend; con eso se mide su fidelidad.
+    sources: str = ""
 
 
 OUT_OF_SCOPE = (

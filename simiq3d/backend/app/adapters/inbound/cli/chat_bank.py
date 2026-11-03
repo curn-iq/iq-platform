@@ -642,6 +642,8 @@ def _engine() -> ChatEngine:
             config.llm_api_key,
             config.llm_timeout,
             config.llm_deadline,
+            write=config.llm_write,
+            write_deadline=config.llm_write_deadline,
         )
     return TemplateChat()
 
