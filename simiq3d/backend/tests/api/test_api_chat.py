@@ -90,9 +90,64 @@ async def test_the_chat_answers_with_the_action_and_dataiq_text(api, bearer, cat
             "junto a la Tijera de Mayo (n.º 10 del diagrama)."
         ),
         "options": ["¿Qué es la Pinza Kelly?"],
+        # Lo que se entendió, para mandarlo de vuelta con la siguiente pregunta.
+        "requests": [
+            {
+                "kind": "locate",
+                "technique": "Colecistectomía",
+                "instrument": "Pinza Kelly",
+                "field": None,
+                "other_technique": None,
+                "comparison": None,
+                "topic": None,
+            }
+        ],
     }
     # El catálogo se pide a DataIQ con el token de quien pregunta.
     assert catalogs.tokens == [bearer["Authorization"].removeprefix("Bearer ")]
+
+
+class RecordingEngine:
+    """Guarda lo que recibe el motor y responde con las plantillas."""
+
+    name = "registro"
+    previous: tuple = ()
+
+    async def reply(self, question, catalog, open_technique_id, previous=()):
+        RecordingEngine.previous = previous
+        return await TemplateChat().reply(question, catalog, open_technique_id)
+
+
+@pytest.mark.anyio
+async def test_the_previous_questions_reach_the_engine_with_their_requests(api, bearer):
+    app.dependency_overrides[get_chat_engine] = RecordingEngine
+    previous = {
+        "question": "¿Dónde va la Kelly Adson?",
+        "requests": [{"kind": "locate", "instrument": "Kelly Adson"}],
+    }
+
+    response_ = await api.post(
+        "/chat",
+        json={"question": "¿Y para qué sirve?", "previous": [previous]},
+        headers=bearer,
+    )
+
+    assert response_.status_code == 200
+    [turn] = RecordingEngine.previous
+    assert turn.question == "¿Dónde va la Kelly Adson?"
+    [request] = turn.requests
+    assert (request.kind, request.instrument) == ("locate", "Kelly Adson")
+
+
+@pytest.mark.anyio
+async def test_more_than_three_previous_questions_are_rejected(api, bearer):
+    previous = [{"question": "¿Dónde va la Kelly?"}] * 4
+
+    response_ = await api.post(
+        "/chat", json={"question": "¿Y la Allis?", "previous": previous}, headers=bearer
+    )
+
+    assert response_.status_code == 422
 
 
 @pytest.mark.anyio

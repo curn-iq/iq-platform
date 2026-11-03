@@ -1,12 +1,14 @@
+from dataclasses import replace
+
 import pytest
 
 from app.adapters.inbound.cli.chat_bank import (
     COLUMNS,
     DEFAULT_FILE,
-    NEEDS,
     BankError,
     Question,
     check_bank,
+    needs_of,
     read_bank,
     run,
     score,
@@ -62,7 +64,8 @@ def test_the_repo_bank_has_what_each_expectation_needs():
     bank = read_bank(DEFAULT_FILE)
     assert len({q.id for q in bank}) == len(bank)
     for q in bank:
-        needs = NEEDS[q.expects]
+        needs = needs_of(q.expects)
+        assert needs is not None, q.id
         assert "T" not in needs or q.technique, q.id
         assert "I" not in needs or q.instrument, q.id
         assert "O" not in needs or q.other_technique, q.id
@@ -317,3 +320,125 @@ def test_an_ambiguous_question_can_be_answered_for_each_option():
     one = Reply(ChatAction.answer, "La Allis va arriba.")
     assert score(q, both, CATALOG)[0] is True
     assert score(q, one, CATALOG)[0] is False
+
+
+def test_the_previous_question_is_an_optional_column(tmp_path):
+    path = tmp_path / "banco.csv"
+    path.write_text(
+        ",".join(COLUMNS) + ",pregunta_anterior\n"
+        "1,seguimiento,¿Y para qué sirve?,,describir,,Pinza Kelly,,,"
+        "¿Dónde va la Kelly?\n",
+        encoding="utf-8",
+    )
+    [q] = read_bank(path)
+    assert q.previous == "¿Dónde va la Kelly?"
+    assert question("fuera").previous == ""
+
+
+def test_a_combined_expectation_needs_what_each_part_needs():
+    assert needs_of("dato:indications+listar") == "T"
+    assert needs_of("ubicar+describir+nota:tiempos") == "IT"
+    assert needs_of("listar+adivinar") is None
+    bank = [
+        question("dato:dosis+listar", tecnica="Colecistectomía"),
+        question("listar+nota:edad", id="2", tecnica="Colecistectomía"),
+    ]
+    with pytest.raises(BankError) as error:
+        check_bank(bank, CATALOG)
+    assert "dato desconocido «dosis»" in str(error.value)
+    assert "nota desconocida «edad»" in str(error.value)
+
+
+def test_several_things_need_each_part_in_the_text():
+    q = question("dato:indications+listar+nota:tiempos", tecnica="Colecistectomía")
+    full = Reply(
+        ChatAction.list_instruments,
+        "Se indica en la colelitiasis sintomática. Lleva la Pinza de Allis, la "
+        "Pinza Kelly, la Tijera de Mayo y el Separador de Farabeuf. DataIQ no "
+        "tiene los tiempos quirúrgicos.",
+        technique_id=COLECISTECTOMIA.id,
+    )
+    assert score(q, full, CATALOG) == (True, "")
+    only_list = Reply(
+        ChatAction.list_instruments,
+        "Lleva la Pinza de Allis, la Pinza Kelly, la Tijera de Mayo y el "
+        "Separador de Farabeuf.",
+        technique_id=COLECISTECTOMIA.id,
+    )
+    assert score(q, only_list, CATALOG) == (
+        False,
+        "no trae el dato indications de DataIQ",
+    )
+    refused = Reply(ChatAction.no_answer, "DataIQ no tiene los tiempos quirúrgicos.")
+    assert score(q, refused, CATALOG)[0] is False
+
+
+def test_several_things_show_the_most_visual_part():
+    q = question(
+        "ubicar+describir", tecnica="Colecistectomía", instrumento="Tijera de Mayo"
+    )
+    text = "La Tijera de Mayo va abajo. Es una tijera recta para cortar tejidos."
+    located = Reply(
+        ChatAction.highlight_instrument,
+        text,
+        technique_id=COLECISTECTOMIA.id,
+        instrument_id=MAYO_SCISSORS.id,
+    )
+    assert score(q, located, CATALOG) == (True, "")
+    as_technique = Reply(
+        ChatAction.show_technique, text, technique_id=COLECISTECTOMIA.id
+    )
+    assert score(q, as_technique, CATALOG) == (
+        False,
+        "el visor no resalta el instrumento en esa técnica",
+    )
+
+
+def test_a_greeting_says_what_can_be_asked_without_opening_anything():
+    q = question("saludo")
+    greeting = Reply(
+        ChatAction.answer,
+        "Hola. Puedo mostrarte la mesa de Mayo de cada técnica.",
+        options=("¿Dónde va la Kelly?", "¿Qué lleva la mesa de la mastectomía?"),
+    )
+    assert score(q, greeting, CATALOG) == (True, "")
+    opened = Reply(
+        ChatAction.show_technique,
+        "La técnica Mastectomía está abierta en el visor 3D.",
+        technique_id=MASTECTOMIA.id,
+    )
+    assert score(q, opened, CATALOG) == (False, "abre algo en el visor")
+    bare = Reply(ChatAction.answer, "Hola.")
+    assert score(q, bare, CATALOG) == (False, "no muestra qué se puede preguntar")
+
+
+class RecordingEngine:
+    name = "registro"
+
+    def __init__(self) -> None:
+        self.calls: list[tuple] = []
+
+    async def reply(self, question, catalog, open_technique_id, previous=()):
+        self.calls.append((question, previous))
+        return await TemplateChat().reply(question, catalog, open_technique_id)
+
+
+@pytest.mark.anyio
+async def test_a_follow_up_is_asked_after_its_previous_question():
+    engine = RecordingEngine()
+    q = question(
+        "ubicar",
+        pregunta="¿Y en la colecistectomía?",
+        tecnica="Colecistectomía",
+        instrumento="Pinza Kelly",
+    )
+    q = replace(q, previous="¿Dónde va la Kelly en la mastectomía?")
+
+    [outcome] = await run([q], CATALOG, engine)
+
+    (first, none), (second, previous) = engine.calls
+    assert (first, none) == ("¿Dónde va la Kelly en la mastectomía?", ())
+    assert second == "¿Y en la colecistectomía?"
+    [turn] = previous
+    assert turn.question == first
+    assert turn.requests[0].instrument == "Pinza Kelly"

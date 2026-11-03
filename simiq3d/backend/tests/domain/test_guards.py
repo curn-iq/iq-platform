@@ -1,6 +1,6 @@
 from app.domain.chat import ChatAction
 from app.domain.guards import NO_SURGICAL_TIMES, before_the_model
-from tests.sample import CATALOG, COLECISTECTOMIA
+from tests.sample import CATALOG, COLECISTECTOMIA, MASTECTOMIA
 
 
 def test_a_technique_of_another_specialty_is_answered_without_the_model():
@@ -68,3 +68,12 @@ def test_surgical_times_are_not_in_dataiq_and_are_not_left_to_the_model():
 def test_the_arrangement_of_the_table_is_not_a_surgical_time():
     assert before_the_model("¿Cómo es el orden de la mesa?", CATALOG, None) is None
     assert before_the_model("¿Para qué sirve la Kelly?", CATALOG, None) is None
+
+
+def test_excluding_surgical_times_is_not_asking_for_them():
+    reply = before_the_model(
+        "Instrumental de la mastectomía, sin tiempos quirúrgicos", CATALOG, None
+    )
+
+    assert reply.action == ChatAction.list_instruments
+    assert reply.technique_id == MASTECTOMIA.id

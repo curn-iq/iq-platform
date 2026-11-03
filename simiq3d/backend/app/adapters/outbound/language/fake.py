@@ -1,3 +1,4 @@
+from dataclasses import replace
 from uuid import UUID
 
 from app.domain import tools
@@ -11,6 +12,7 @@ from app.domain.names import (
     instrument_in,
     technique_in,
 )
+from app.domain.requests import Turn, requests_of
 
 
 class FakeModel:
@@ -62,6 +64,19 @@ class TemplateChat:
         self._model = FakeModel()
 
     async def reply(
+        self,
+        question: str,
+        catalog: Catalog,
+        open_technique_id: UUID | None,
+        previous: tuple[Turn, ...] = (),
+    ) -> Reply:
+        """Las reglas fijas no usan las preguntas anteriores: un seguimiento se
+        entiende solo con la técnica abierta. Los pedidos de la respuesta salen
+        de lo que hizo el visor."""
+        reply = await self._reply(question, catalog, open_technique_id)
+        return replace(reply, requests=requests_of(reply, catalog))
+
+    async def _reply(
         self, question: str, catalog: Catalog, open_technique_id: UUID | None
     ) -> Reply:
         early = before_the_model(question, catalog, open_technique_id)

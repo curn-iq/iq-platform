@@ -8,6 +8,7 @@ from uuid import UUID
 from app.domain import tools
 from app.domain.catalog import (
     Catalog,
+    Technique,
     find_technique,
     in_scope,
     normalize,
@@ -45,11 +46,22 @@ _SURGICAL_TIMES = re.compile(
     r"(?:primero|despues|antes|al\s+(?:principio|final)|de\s+ultimo)\b"
     r"|\borden\s+de\s+uso\b"
 )
+# «Sin tiempos quirúrgicos» los excluye: no es preguntar por ellos.
+_WITHOUT_SURGICAL_TIMES = re.compile(
+    r"\bsin\s+(?:los\s+|el\s+)?tiempos?\s+(?:quirurgicos?|operatorios?)\b"
+)
 NO_SURGICAL_TIMES = (
     "DataIQ no tiene el instrumental por tiempos quirúrgicos (diéresis, hemostasia, "
     "síntesis…) ni el orden en que se usa: solo dónde va cada pieza en la mesa de "
     "Mayo de cada técnica."
 )
+
+
+def asks_surgical_times(question: str) -> bool:
+    """Si la pregunta pide tiempos quirúrgicos o el orden de uso del
+    instrumental; «sin tiempos quirúrgicos» no los pide."""
+    asked = _WITHOUT_SURGICAL_TIMES.sub("", canonical(question))
+    return _SURGICAL_TIMES.search(asked) is not None
 
 
 def before_the_model(
@@ -70,7 +82,7 @@ def before_the_model(
     technique = find_technique(catalog, named) or technique_by_id(
         catalog, open_technique_id
     )
-    if _SURGICAL_TIMES.search(canonical(question)):
+    if asks_surgical_times(question):
         return Reply(
             ChatAction.no_answer,
             NO_SURGICAL_TIMES,
@@ -90,8 +102,18 @@ def before_the_model(
             catalog,
             open_technique_id,
         )
-    family = _FAMILY.search(canonical(question))
-    if family is None or technique is None:
+    if technique is None:
+        return None
+    return which_of_the_family(catalog, technique, question)
+
+
+def which_of_the_family(
+    catalog: Catalog, technique: Technique, text: str
+) -> Reply | None:
+    """Si el texto nombra un instrumento por su familia («el bisturí», «la
+    pinza») y esa mesa lleva varios, pregunta cuál, con cada uno como opción."""
+    family = _FAMILY.search(canonical(text))
+    if family is None:
         return None
     # Un objeto por opción: el mango y su hoja son uno solo («el bisturí»).
     word = family.group(1)

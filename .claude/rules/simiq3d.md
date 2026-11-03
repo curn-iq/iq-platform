@@ -14,15 +14,15 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
   la misma para todas, y todos los instrumentos apuntan igual.
 - **SIMIQ3D no es evaluación:** explora y consulta. Practicar con puntaje es
   función de SIVRI.
-- **El chat es un agente:** el modelo de lenguaje (Ollama en el Servidor PC2)
-  solo sabe lo que devuelven las consultas de `app/domain/tools.py`, y
-  `app/domain/grounding.py` verifica que cada nombre, número y ubicación de su
-  respuesta esté en esos resultados. Si no pasa, si no consultó nada o si se
-  acaba el tiempo, responden las plantillas (`app/domain/chat.py`), que solo
-  usan datos de DataIQ. Lo que muestra el visor sale de `show_in_3d`, con ids
-  reales; si el modelo no la usó, de la técnica abierta y del instrumento por
-  el que se preguntó (`_implied_scene`), nunca del vecino que nombre la
-  respuesta.
+- **El modelo entiende y DataIQ responde:** el modelo de lenguaje (Ollama en
+  el Servidor PC2) solo convierte la pregunta en pedidos (`TOOLS` del agente,
+  `app/domain/requests.py`); cada pedido se responde con las plantillas de
+  `app/domain/chat.py`, con datos de DataIQ, y el texto del modelo nunca llega
+  al estudiante. Lo que pide el modelo se valida contra las palabras de la
+  conversación (`as_said`, `contradicted`). Si el Servidor PC2 está lento,
+  responden las reglas fijas (`adapters/outbound/language/fake.py`). Un tipo
+  de pregunta nuevo es un pedido nuevo con su plantilla y sus preguntas en
+  `eval/banco.csv`.
 - **Nunca hablarle al estudiante de filas, columnas ni celdas:** la mesa real
   no tiene cuadrícula. Se dice la zona de la mesa («arriba a la derecha»), lo
   que tiene al lado y el número del diagrama de IQ.

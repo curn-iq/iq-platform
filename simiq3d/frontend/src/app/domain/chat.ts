@@ -16,6 +16,33 @@ export type ChatAction =
 /** El dato clínico de una técnica que trae la respuesta (`ClinicalField` del backend). */
 export type ClinicalField = 'description' | 'indications' | 'complications' | 'anesthesia_position';
 
+/** Los tipos de pedido en que el chat convierte una pregunta (`RequestKind` del backend). */
+export type RequestKind =
+  | 'locate'
+  | 'describe'
+  | 'clinical_data'
+  | 'list_instruments'
+  | 'show_technique'
+  | 'find_instrument'
+  | 'compare'
+  | 'rank'
+  | 'out_of_scope'
+  | 'greeting';
+
+/**
+ * Un pedido: lo que el chat entendió de una parte de la pregunta (`ChatRequest`). El
+ * visor no lo usa; va de vuelta con la siguiente pregunta, para entender un seguimiento.
+ */
+export interface ChatRequest {
+  kind: RequestKind;
+  technique?: string | null;
+  instrument?: string | null;
+  field?: ClinicalField | null;
+  other_technique?: string | null;
+  comparison?: 'shared' | 'only_first' | 'differences' | null;
+  topic?: 'surgical_times' | 'missing_clinical_data' | 'other_technique' | 'other' | null;
+}
+
 /** La respuesta de `POST /chat` (`ChatOut`): la acción, sus ids, el texto y las opciones. */
 export interface ChatReply {
   action: ChatAction;
@@ -25,6 +52,14 @@ export interface ChatReply {
   reply: string;
   /** Preguntas que se pueden volver a enviar tal cual. */
   options: string[];
+  /** Lo que se entendió de la pregunta. */
+  requests: ChatRequest[];
+}
+
+/** Una pregunta anterior con los pedidos de su respuesta (`PreviousTurn`). */
+export interface ChatTurn {
+  question: string;
+  requests: ChatRequest[];
 }
 
 /** Un mensaje de la conversación: la pregunta de la persona o la respuesta de SIMIQ3D. */

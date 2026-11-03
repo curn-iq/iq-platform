@@ -127,11 +127,16 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
 Contrato de `POST /api/simiq3d/chat` (el porqué de cada cosa, en
 [`../README.md`, «Chat»](../README.md#chat)):
 
-- **Se envía** `{"question": "…", "technique_id": "<id>" | null}`: la
-  pregunta y la técnica abierta en el visor, si hay una, para que «¿y dónde va
-  la Kelly?» se entienda en esa técnica.
+- **Se envía** `{"question": "…", "technique_id": "<id>" | null, "previous":
+  […]}`: la pregunta; la técnica abierta en el visor, si hay una, para que «¿y
+  dónde va la Kelly?» se entienda en esa técnica; y las 3 últimas preguntas
+  respondidas, cada una con los `requests` que devolvió su respuesta, para que
+  «¿y para qué sirve?» se entienda por lo que se preguntó antes. Las guarda la
+  conversación (`explore/conversation.service.ts`), solo mientras la página
+  está abierta.
 - **Se recibe** `action`, `technique_id`, `instrument_id`, `field`, `reply`
-  (el texto) y `options` (preguntas que se pueden volver a enviar tal cual).
+  (el texto), `options` (preguntas que se pueden volver a enviar tal cual) y
+  `requests` (lo que se entendió de la pregunta; el visor no lo usa).
 
 Lo que hace el visor con cada `action`; los ids son de DataIQ y el visor
 nunca saca nada del texto:

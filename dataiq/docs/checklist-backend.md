@@ -94,6 +94,12 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
    - [ ] Pedir que se acepte de nuevo el aviso cuando cambie su versión
      (`users.policy_version` distinta de `POLICY_VERSION`), antes de publicar
      la versión 1.1; el aviso lo promete (Decreto 1377 de 2013, art. 5)
+   - [ ] En esa versión 1.1, corregir en `docs/privacidad.md` lo del equipo
+     donde corre el modelo de lenguaje del chat: desde el 2026-11-03 no
+     redacta la respuesta, interpreta la pregunta, y recibe también hasta 3
+     preguntas anteriores de la conversación, que tampoco guarda (README de
+     SIMIQ3D, «Chat»). Decidido por Mauricio el 2026-11-03: no se cambia el
+     aviso antes de que exista el paso anterior
 5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
    - `POST /auth/register` (autorregistro con la política aceptada),
      `POST /auth/login`, `GET /auth/me` y `GET /.well-known/jwks.json`

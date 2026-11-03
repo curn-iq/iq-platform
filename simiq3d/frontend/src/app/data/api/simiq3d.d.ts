@@ -16,7 +16,8 @@ export interface paths {
         /**
          * Ask
          * @description Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
-         *     técnica abierta en el visor, si hay una.
+         *     técnica abierta en el visor, si hay una, y `previous`, las preguntas
+         *     anteriores con los `requests` de su respuesta, para entender un seguimiento.
          *
          *     Si un nombre parece mal escrito («masectomia»), responde «¿Quizás quisiste
          *     decir…?» con la pregunta corregida como opción, sin suponer. Con
@@ -91,6 +92,12 @@ export interface components {
              * @description La técnica abierta en el visor, si hay una
              */
             technique_id?: string | null;
+            /**
+             * Previous
+             * @description Las preguntas anteriores de la conversación, de la más antigua a la más reciente, cada una con los `requests` que devolvió su respuesta. Sirven para entender un seguimiento; no se guardan.
+             * @default []
+             */
+            previous: components["schemas"]["PreviousTurn"][];
         };
         /** ChatOut */
         ChatOut: {
@@ -110,6 +117,28 @@ export interface components {
              * @description Preguntas que se pueden mandar tal cual
              */
             options: string[];
+            /**
+             * Requests
+             * @description Lo que se entendió de la pregunta: va de vuelta en `previous` con la siguiente
+             */
+            requests: components["schemas"]["ChatRequest"][];
+        };
+        /**
+         * ChatRequest
+         * @description Un pedido: lo que se entendió de una parte de la pregunta (README de
+         *     SIMIQ3D, «Chat»).
+         */
+        ChatRequest: {
+            kind: components["schemas"]["RequestKind"];
+            /** Technique */
+            technique?: string | null;
+            /** Instrument */
+            instrument?: string | null;
+            field?: components["schemas"]["ClinicalField"] | null;
+            /** Other Technique */
+            other_technique?: string | null;
+            comparison?: components["schemas"]["Comparison"] | null;
+            topic?: components["schemas"]["Topic"] | null;
         };
         /**
          * ClinicalField
@@ -117,6 +146,12 @@ export interface components {
          * @enum {string}
          */
         ClinicalField: "description" | "indications" | "complications" | "anesthesia_position";
+        /**
+         * Comparison
+         * @description Qué se pregunta al comparar dos mesas de Mayo.
+         * @enum {string}
+         */
+        Comparison: "shared" | "only_first" | "differences";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -132,6 +167,27 @@ export interface components {
             /** Model File */
             model_file: string;
         };
+        /** PreviousTurn */
+        PreviousTurn: {
+            /** Question */
+            question: string;
+            /**
+             * Requests
+             * @default []
+             */
+            requests: components["schemas"]["ChatRequest"][];
+        };
+        /**
+         * RequestKind
+         * @enum {string}
+         */
+        RequestKind: "locate" | "describe" | "clinical_data" | "list_instruments" | "show_technique" | "find_instrument" | "compare" | "rank" | "out_of_scope" | "greeting";
+        /**
+         * Topic
+         * @description Lo que DataIQ no tiene, en una pregunta fuera de alcance.
+         * @enum {string}
+         */
+        Topic: "surgical_times" | "missing_clinical_data" | "other_technique" | "other";
         /** ValidationError */
         ValidationError: {
             /** Location */

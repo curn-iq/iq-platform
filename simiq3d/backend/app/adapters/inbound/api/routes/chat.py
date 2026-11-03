@@ -15,6 +15,7 @@ from app.adapters.inbound.api.schemas import ChatIn, ChatOut
 from app.domain.chat import Vocabulary, spelling_reply
 from app.domain.chat_log import ChatLogEntry
 from app.domain.names import suggest_spelling
+from app.domain.requests import Request, Turn
 from app.ports.catalog import CatalogDenied, CatalogUnavailable
 from app.ports.chat import ModelUnavailable
 
@@ -32,7 +33,8 @@ async def ask(
     quota: Quota,
 ) -> ChatOut:
     """Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
-    técnica abierta en el visor, si hay una.
+    técnica abierta en el visor, si hay una, y `previous`, las preguntas
+    anteriores con los `requests` de su respuesta, para entender un seguimiento.
 
     Si un nombre parece mal escrito («masectomia»), responde «¿Quizás quisiste
     decir…?» con la pregunta corregida como opción, sin suponer. Con
@@ -63,7 +65,16 @@ async def ask(
                 "Hiciste muchas preguntas seguidas. Espera unos minutos.",
             )
         try:
-            reply = await engine.reply(body.question, catalog, body.technique_id)
+            previous = tuple(
+                Turn(
+                    turn.question,
+                    tuple(Request(**r.model_dump()) for r in turn.requests),
+                )
+                for turn in body.previous
+            )
+            reply = await engine.reply(
+                body.question, catalog, body.technique_id, previous
+            )
         except ModelUnavailable as error:
             raise HTTPException(
                 status.HTTP_503_SERVICE_UNAVAILABLE, "El chat no está disponible"
