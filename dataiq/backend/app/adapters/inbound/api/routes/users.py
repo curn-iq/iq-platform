@@ -18,8 +18,10 @@ user_list = TypeAdapter(list[UserOut])
 async def list_users(
     request: Request, users: UserRepo, account: CurrentAccount
 ) -> Response:
-    """Todas las cuentas con su rol, cuándo se registraron y qué versión de la
-    política aceptaron. Solo admin."""
+    """Todas las cuentas con su rol, cuándo se registraron, qué versión de la
+    política aceptaron y su actividad en DataIQ (sus versiones en borrador,
+    devueltas y en revisión, las técnicas que publicó y lo que revisó). Solo
+    admin."""
     require_role(account.role, Role.admin)
     records = await users.list_all()
     body = user_list.dump_json([UserOut.model_validate(r) for r in records])

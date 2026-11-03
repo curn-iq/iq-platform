@@ -76,6 +76,15 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
      y `PATCH /users/{id}/role`, solo admin y no
      sobre su propia cuenta. El primer admin se asigna por terminal:
      `uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`
+   - [x] La actividad de cada cuenta en `GET /users` y en la respuesta de
+     `PATCH /users/{id}/role` (2026-11-02), para la ficha de Usuarios y roles
+     (fase 8 del frontend), que muestra «4 versiones en curso · 1 devuelta» o
+     «2 versiones revisadas · 1 técnica publicada»: sus versiones en borrador
+     (`drafts`), cuántas tienen una devolución (`returned`), las que esperan
+     revisión (`in_review`), las técnicas que llegó a publicar
+     (`published_techniques`) y las versiones de otros que aprobó o devolvió
+     (`reviewed`). Sale con cuatro consultas para todas las cuentas, sin una
+     por cuenta
    - [x] Supresión de una cuenta por terminal, cuando su titular la pide por
      el canal del aviso de privacidad ([`docs/privacidad.md`](../../docs/privacidad.md)):
      `uv run python -m app.adapters.inbound.cli.delete_account <correo>`. Sin
@@ -154,7 +163,7 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       pantalla la use: «Revisadas por mí» (fase 7 del frontend) la pedía así,
       y solo muestra el estado y los rechazos, no el contenido, que es casi
       todo el peso (unos 14 KB por versión, contra 0,3 KB del resumen).
-      Decidido por Mauricio Lugo el 2026-11-03, en lugar de la paginación del
+      Decidido por Mauricio Lugo el 2026-11-02, en lugar de la paginación del
       issue #61: `include=rejections` trae cada versión con su resumen y sus
       rechazos, sin el contenido (una «vista» parcial, como recomienda la guía
       AIP-157 de Google). Así la lista se mantiene pequeña sin páginas: el

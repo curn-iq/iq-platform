@@ -340,12 +340,30 @@ class AccountOut(OutModel):
     role: Role
 
 
+class ActivityOut(OutModel):
+    """Lo que la cuenta hizo en DataIQ."""
+
+    drafts: int = Field(description="Sus versiones en borrador, devueltas incluidas")
+    returned: int = Field(
+        description="De esos borradores, los que tienen alguna devolución"
+    )
+    in_review: int = Field(description="Sus versiones enviadas a revisión")
+    published_techniques: int = Field(
+        description="Técnicas con una versión suya que llegó a publicarse, aunque "
+        "ya esté reemplazada o archivada"
+    )
+    reviewed: int = Field(
+        description="Versiones de otras personas que aprobó o devolvió"
+    )
+
+
 class UserOut(AccountOut):
     """Lo que ve el admin de cada cuenta."""
 
     created_at: datetime
     policy_accepted_at: datetime
     policy_version: str
+    activity: ActivityOut
 
 
 class RegisterIn(BaseModel):
