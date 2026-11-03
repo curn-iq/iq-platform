@@ -156,6 +156,18 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       también lo reemplazado, y la lista no tiene límite. Se limita con
       `state` o con paginación. Mis borradores no la pide así (observación de
       Juan en el PR #55, 2026-11-02)
+      - **Decidido por Juan el 2026-11-02: con paginación**, porque «Revisadas
+        por mí» (fase 7 del frontend) ya la pide. A cargo de Mauricio Lugo.
+        `GET /versions` recibe `limit` (como máximo 100) y `offset`, ambos
+        opcionales; sin `limit` la lista sigue como hoy, así que Mis borradores
+        no cambia. El orden, de la más reciente a la más vieja, lleva el `id`
+        como desempate para que dos páginas no repitan ni salten una versión.
+        Siguen `Cache-Control` y `ETag`, con su prueba, su documentación en
+        Swagger y los tipos del frontend regenerados (`npm run api:types`)
+      - **Después:** «Revisadas por mí» pide de a 20 y «Cargar más» trae las
+        siguientes (fase 7 de [`checklist-frontend.md`](checklist-frontend.md)),
+        en el PR de la fase 7 del frontend, después de que el del backend entre
+        a `main`
 12. [ ] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
     (asignado por Juan el 2026-11-02; hallazgo de la revisión de la fase 7
     del frontend)
