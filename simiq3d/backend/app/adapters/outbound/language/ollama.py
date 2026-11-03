@@ -14,11 +14,13 @@ from app.domain.requests import (
     RequestKind,
     Topic,
     Turn,
+    answer_parts,
     as_said,
     contradicted,
-    respond,
+    join,
     with_known_limits,
 )
+from app.domain.writing import draft, final_text, messages, unsupported
 from app.ports.chat import ModelUnavailable
 
 logger = logging.getLogger(__name__)
@@ -137,8 +139,9 @@ TOOLS = [
     _function(
         RequestKind.compare,
         "Compara el instrumental de dos técnicas: qué comparten (shared), qué "
-        "lleva la primera y no la segunda (only_first) o en qué se diferencian "
-        "(differences).",
+        "lleva la primera y no la segunda (only_first: «¿qué lleva la "
+        "tiroidectomía que no lleve la colecistectomía?») o en qué se "
+        "diferencian las dos (differences).",
         technique=_text("La primera técnica"),
         other_technique=_text("La segunda técnica"),
         comparison=_one_of(Comparison, "Qué se compara"),
@@ -164,6 +167,12 @@ TOOLS = [
 ]
 
 
+# Cuánto puede escribir el modelo en cada llamada: un tope para que un modelo
+# que se repite no tarde hasta el límite de tiempo. Los pedidos son unas pocas
+# llamadas cortas; una respuesta redactada, unos párrafos.
+MAX_TOKENS_REQUESTS = 300
+MAX_TOKENS_WRITING = 400
+
 # Cuántas preguntas anteriores ve el modelo: un seguimiento mira a la última, y
 # más turnos alargan el prompt (y el tiempo de cada respuesta).
 MAX_TURNS = 3
@@ -171,14 +180,18 @@ MAX_TURNS = 3
 
 class OllamaAgent:
     """El chat con el modelo de lenguaje del Servidor PC2 (Ollama, API compatible
-    con OpenAI). El modelo solo entiende: convierte la pregunta en pedidos, en una
-    sola llamada, y la respuesta la arman las plantillas con datos de DataIQ
-    (decidido por Mauricio el 2026-11-03, README de SIMIQ3D, «Chat»). El texto del
-    modelo nunca llega al estudiante.
+    con OpenAI), en dos llamadas (decidido por Mauricio el 2026-11-03, README de
+    SIMIQ3D, «Chat»):
 
-    Si el Servidor PC2 está lento u ocupado, o si el modelo no pide nada que se
-    entienda, responden las plantillas con sus reglas fijas. Si está apagado, el
-    chat queda no disponible (ModelUnavailable)."""
+    1. El modelo entiende: convierte la pregunta en pedidos, y cada pedido se
+       responde con las plantillas y los datos de DataIQ.
+    2. El modelo redacta: escribe la respuesta conversando, solo con eso
+       (`app/domain/writing.py`). Si el texto no pasa la verificación o tarda
+       más de `write_deadline`, se muestra lo armado por las plantillas.
+
+    Si el Servidor PC2 está lento u ocupado al entender, o si el modelo no pide
+    nada que se entienda, responden las plantillas con sus reglas fijas. Si está
+    apagado, el chat queda no disponible (ModelUnavailable)."""
 
     def __init__(
         self,
@@ -188,11 +201,15 @@ class OllamaAgent:
         timeout: float = 60,
         deadline: float = 30,
         transport: httpx.AsyncBaseTransport | None = None,
+        write: bool = True,
+        write_deadline: float = 12,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
-        # Tiempo máximo de una pregunta: pasado ese tiempo responden las
+        # Tiempo máximo de cada llamada: pasado ese tiempo responden las
         # plantillas, para que el estudiante no espere minutos.
         self._wait = min(timeout, deadline)
+        self._write = write
+        self._write_wait = min(timeout, write_deadline)
         self._model = model
         self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._transport = transport
@@ -213,7 +230,7 @@ class OllamaAgent:
             {"role": "user", "content": question},
         ]
         try:
-            message = await self._ask(messages)
+            message = await self._ask(messages, TOOLS, self._wait, MAX_TOKENS_REQUESTS)
         except _Busy:
             return await self._fall_back(question, catalog, open_technique_id)
         requests = [
@@ -231,20 +248,53 @@ class OllamaAgent:
             logger.warning("El modelo no pidió nada que se pueda responder")
             return await self._fall_back(question, catalog, open_technique_id)
         requests = with_known_limits(requests, question)
-        reply = respond(requests, catalog, open_technique_id, question)
-        return replace(reply, answered_by=self.name, requests=tuple(requests))
+        parts = answer_parts(requests, catalog, open_technique_id, question)
+        reply = replace(join(parts), answered_by=self.name, requests=tuple(requests))
+        return await self._written(reply, parts, question, catalog)
 
-    async def _ask(self, messages: list[dict]) -> dict:
+    async def _written(
+        self, reply: Reply, parts: list[Reply], question: str, catalog: Catalog
+    ) -> Reply:
+        """La respuesta redactada por el modelo, si pasa la verificación; si no,
+        la armada por las plantillas, marcada como tal en el registro."""
+        plan = draft(parts, catalog) if self._write else None
+        if plan is None:
+            return reply
+        as_built = replace(reply, answered_by=f"{self.name} (texto de plantillas)")
+        try:
+            message = await self._ask(
+                messages(question, plan), None, self._write_wait, MAX_TOKENS_WRITING
+            )
+        except _Busy, ModelUnavailable:
+            return as_built
+        text = (message.get("content") or "").strip()
+        problems = unsupported(text, plan, question, catalog)
+        if problems:
+            # Sin el texto ni la pregunta en el log (docs/privacidad.md): los
+            # problemas son nombres de DataIQ.
+            logger.warning("La redacción no pasó la verificación: %s", problems)
+            return as_built
+        return replace(reply, reply=final_text(text, plan), sources=plan.sources)
+
+    async def _ask(
+        self,
+        messages: list[dict],
+        tools: list[dict] | None,
+        wait: float,
+        max_tokens: int,
+    ) -> dict:
         body = {
             "model": self._model,
             "temperature": 0,
             "messages": messages,
-            "tools": TOOLS,
+            "max_tokens": max_tokens,
         }
+        if tools:
+            body["tools"] = tools
         try:
             async with httpx.AsyncClient(transport=self._transport) as client:
                 response = await client.post(
-                    self._url, json=body, headers=self._headers, timeout=self._wait
+                    self._url, json=body, headers=self._headers, timeout=wait
                 )
         except httpx.TimeoutException as error:
             raise _Busy() from error

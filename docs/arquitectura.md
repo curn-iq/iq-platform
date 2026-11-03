@@ -23,9 +23,10 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 - El **frontend de SIMIQ3D** (Angular y Three.js) envía la pregunta del chat a
   su **backend**, con las anteriores de la conversación. El backend pide el
   catálogo a DataIQ; el **modelo de lenguaje** convierte la pregunta en
-  pedidos (dónde va un instrumento, un dato clínico, la mesa…), y el backend
-  responde cada uno con datos de DataIQ y guarda el registro de la
-  conversación en su base.
+  pedidos (dónde va un instrumento, un dato clínico, la mesa…); el backend
+  responde cada uno con datos de DataIQ, el modelo redacta la respuesta solo
+  con esos datos, y el backend la verifica antes de enviarla y guarda el
+  registro de la conversación en su base.
   Con la respuesta, el frontend lee la mesa directo de la **API de DataIQ** y
   arma la escena.
 

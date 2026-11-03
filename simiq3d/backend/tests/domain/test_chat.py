@@ -96,15 +96,17 @@ def test_an_instrument_in_a_single_table_needs_no_technique():
     assert reply.instrument_id == LAHEY.id
 
 
-def test_an_instrument_that_is_not_in_that_table_is_not_placed():
+def test_an_instrument_that_is_not_in_that_table_says_where_it_goes():
     reply = ask(ChatAction.highlight_instrument, "Mastectomía", "Separador de Farabeuf")
 
-    assert reply.action == ChatAction.no_answer
-    assert (
-        reply.reply
-        == "El Separador de Farabeuf no va en la mesa de Mayo de Mastectomía."
+    # No se señala (no va en esa mesa), pero dice dónde sí va.
+    assert reply.action == ChatAction.answer
+    assert reply.reply == (
+        "El Separador de Farabeuf no va en la mesa de Mayo de Mastectomía. "
+        "Va en la de Colecistectomía."
     )
     assert reply.instrument_id == FARABEUF.id
+    assert reply.options == ("¿Dónde va el Separador de Farabeuf en Colecistectomía?",)
 
 
 def test_an_instrument_outside_the_mvp_tables_is_not_placed():

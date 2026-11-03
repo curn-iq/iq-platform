@@ -1,6 +1,7 @@
 """Corre el banco de preguntas contra el chat y mide su exactitud.
 
     uv run python -m app.adapters.inbound.cli.chat_bank [--salida resultados.csv]
+        [--fidelidad]
 
 Lee `eval/banco.csv`: cada fila es una pregunta (con la técnica abierta en el
 visor, si la hay) y lo que el chat debe hacer con ella (`espera`). Hace cada
@@ -16,12 +17,18 @@ en DataIQ, no corre y dice cuál.
 
 Para leer el catálogo hace falta una cuenta de DataIQ: el token va en
 `DATAIQ_TOKEN`, o se piden el correo y la contraseña.
+
+Con `--fidelidad`, el mismo modelo revisa cada frase de las respuestas que
+redactó contra los datos de DataIQ que tuvo (juez frase por frase, como en el
+cookbook de OpenAI para controlar respuestas inventadas). Solo mide: el chat no
+lo usa en vivo.
 """
 
 import argparse
 import asyncio
 import csv
 import getpass
+import json
 import os
 import re
 import statistics
@@ -182,6 +189,71 @@ class Outcome:
     seconds: float
     correct: bool
     reason: str
+    # Con --fidelidad, las frases de la respuesta redactada que el juez no
+    # encontró en los datos; None si no se juzgó (no se redactó o sin juez).
+    unsupported: tuple[str, ...] | None = None
+
+
+JUDGE = """Eres un revisor. Los DATOS son la única fuente de verdad. Para cada \
+frase numerada de la RESPUESTA, decide si todo lo que afirma está en los DATOS \
+(1) o si agrega, cambia o contradice algo (0). Una frase que solo une, ordena o \
+dice con otras palabras lo que dicen los DATOS está respaldada; una explicación \
+que los DATOS no dan, no. Responde solo con JSON: {"frases": [1, 0, …]}, una por \
+frase y en su orden."""
+
+
+def sentences(text: str) -> list[str]:
+    """Las frases de una respuesta, sin los objetos de la lista de la mesa."""
+    lines = [
+        line.strip()
+        for line in text.split("\n")
+        if line.strip()
+        and not re.match(r"^\d+\.\s", line.strip())
+        and not line.strip().startswith("Mesa de Mayo de")
+    ]
+    return [
+        sentence.strip()
+        for line in lines
+        for sentence in re.split(r"(?<=[.!?])\s+", line)
+        if sentence.strip()
+    ]
+
+
+class FidelityJudge:
+    """El modelo de lenguaje como juez de fidelidad, frase por frase."""
+
+    def __init__(self, base_url: str, model: str, api_key: str = "") -> None:
+        self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
+        self._model = model
+        self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+
+    async def unsupported(self, sources: str, text: str) -> tuple[str, ...]:
+        said = sentences(text)
+        numbered = "\n".join(f"{n}. {s}" for n, s in enumerate(said, 1))
+        body = {
+            "model": self._model,
+            "temperature": 0,
+            "messages": [
+                {"role": "system", "content": JUDGE},
+                {
+                    "role": "user",
+                    "content": f"DATOS:\n{sources}\n\nRESPUESTA:\n{numbered}",
+                },
+            ],
+        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                self._url, json=body, headers=self._headers, timeout=120
+            )
+        content = response.json()["choices"][0]["message"].get("content") or ""
+        found = re.search(r"\{.*\}", content, re.DOTALL)
+        try:
+            verdicts = json.loads(found.group(0))["frases"] if found else []
+        except ValueError, KeyError, TypeError:
+            verdicts = []
+        if len(verdicts) != len(said):
+            return ("(el juez no respondió frase por frase)",)
+        return tuple(s for s, ok in zip(said, verdicts, strict=True) if not ok)
 
 
 def read_bank(path: Path) -> list[Question]:
@@ -535,6 +607,7 @@ async def run(
     catalog: Catalog,
     engine: ChatEngine,
     progress: Callable[[int, int], None] = lambda done, total: None,
+    judge: FidelityJudge | None = None,
 ) -> list[Outcome]:
     outcomes = []
     for n, q in enumerate(bank, 1):
@@ -543,7 +616,10 @@ async def run(
             outcomes.append(Outcome(q, None, seconds, False, "el modelo no respondió"))
         else:
             correct, reason = score(q, reply, catalog)
-            outcomes.append(Outcome(q, reply, seconds, correct, reason))
+            unsupported = None
+            if judge and reply.sources:
+                unsupported = await judge.unsupported(reply.sources, reply.reply)
+            outcomes.append(Outcome(q, reply, seconds, correct, reason, unsupported))
         progress(n, len(bank))
     return outcomes
 
@@ -559,6 +635,9 @@ def who(reply: Reply | None) -> str:
         return "corrector"
     if by.startswith(TemplateChat.name):
         return "respaldo" if "respaldo" in by else TemplateChat.name
+    # El modelo entendió, pero la redacción no pasó la verificación o tardó
+    if "texto de plantillas" in by:
+        return "modelo, texto armado"
     return "modelo"
 
 
@@ -584,6 +663,15 @@ def summary(outcomes: list[Outcome]) -> str:
     by_who = Counter(who(o.reply) for o in outcomes)
     lines += ["", "Quién respondió:"]
     lines += [f"  {label:<20} {n:>3}" for label, n in by_who.most_common()]
+    judged = [o for o in outcomes if o.unsupported is not None]
+    if judged:
+        faithful = sum(not o.unsupported for o in judged)
+        loose = sum(len(o.unsupported) for o in judged)
+        lines += [
+            "",
+            f"Fidelidad (juez, respuestas redactadas): {faithful}/{len(judged)} con "
+            f"todas sus frases en los datos; {loose} frases sin respaldo",
+        ]
     seconds = [o.seconds for o in outcomes]
     lines += [
         "",
@@ -612,6 +700,7 @@ def write_results(path: Path, outcomes: list[Outcome], catalog: Catalog) -> None
                 "respondio",
                 "segundos",
                 "respuesta",
+                "frases_sin_respaldo",
             )
         )
         for o in outcomes:
@@ -630,6 +719,9 @@ def write_results(path: Path, outcomes: list[Outcome], catalog: Catalog) -> None
                     who(r),
                     f"{o.seconds:.1f}",
                     r.reply if r else "",
+                    ""
+                    if o.unsupported is None
+                    else " | ".join(o.unsupported) or "ninguna",
                 )
             )
 
@@ -642,6 +734,8 @@ def _engine() -> ChatEngine:
             config.llm_api_key,
             config.llm_timeout,
             config.llm_deadline,
+            write=config.llm_write,
+            write_deadline=config.llm_write_deadline,
         )
     return TemplateChat()
 
@@ -657,6 +751,11 @@ async def main(argv: list[str] | None = None) -> int:
         metavar="ARCHIVO",
         type=Path,
         help="CSV con cada pregunta, su respuesta y su calificación",
+    )
+    parser.add_argument(
+        "--fidelidad",
+        action="store_true",
+        help="el modelo revisa cada frase redactada contra sus datos",
     )
     args = parser.parse_args(argv)
     try:
@@ -679,6 +778,11 @@ async def main(argv: list[str] | None = None) -> int:
         print(f"No se corrió el banco. {error}", file=sys.stderr)
         return 1
     engine = _engine()
+    judge = (
+        FidelityJudge(config.llm_url, config.llm_model, config.llm_api_key)
+        if args.fidelidad
+        else None
+    )
     print(f"{len(bank)} preguntas con el motor «{engine.name}».", file=sys.stderr)
     if sys.stderr.isatty():
         outcomes = await run(
@@ -686,10 +790,11 @@ async def main(argv: list[str] | None = None) -> int:
             catalog,
             engine,
             lambda done, total: print(f"\r{done}/{total}", end="", file=sys.stderr),
+            judge,
         )
         print(file=sys.stderr)
     else:
-        outcomes = await run(bank, catalog, engine)
+        outcomes = await run(bank, catalog, engine, judge=judge)
     print(summary(outcomes))
     if args.output:
         write_results(args.output, outcomes, catalog)

@@ -1,6 +1,7 @@
 """Los pedidos: lo que el modelo de lenguaje entiende de una pregunta, varios si
 pide varias cosas. Cada uno se responde con datos de DataIQ y su plantilla, y la
-respuesta los une (README de SIMIQ3D, «Chat»). El modelo no escribe el texto."""
+respuesta los une (README de SIMIQ3D, «Chat»). Si el modelo redacta la
+respuesta, lo hace solo con estas (`app/domain/writing.py`)."""
 
 import re
 from dataclasses import dataclass, replace
@@ -247,15 +248,28 @@ def respond(
 ) -> Reply:
     """La respuesta a los pedidos, en el orden en que se pidieron. Lo que está
     fuera de alcance va al final, después de lo que sí se responde."""
+    return join(answer_parts(requests, catalog, open_technique_id, question))
+
+
+def answer_parts(
+    requests: list[Request],
+    catalog: Catalog,
+    open_technique_id: UUID | None,
+    question: str = "",
+) -> list[Reply]:
+    """La respuesta de cada pedido, por separado (las usa la redacción), con lo
+    que está fuera de alcance al final. Un pedido repetido va una vez."""
     unique = list(dict.fromkeys(requests)) or [Request(RequestKind.out_of_scope)]
     answerable = [r for r in unique if r.kind != RequestKind.out_of_scope]
     outside = [r for r in unique if r.kind == RequestKind.out_of_scope]
     replies = [_one(r, catalog, open_technique_id, question) for r in answerable]
     notes = [_outside(r, catalog, open_technique_id, question) for r in outside]
-    return _join(replies + notes)
+    return replies + notes
 
 
-def _join(replies: list[Reply]) -> Reply:
+def join(replies: list[Reply]) -> Reply:
+    """Las respuestas de varios pedidos en una: los textos en orden y la escena
+    del más visual."""
     if len(replies) == 1:
         return replies[0]
     answered = [r for r in replies if r.action in ANSWERED]

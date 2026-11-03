@@ -12,6 +12,7 @@ from app.adapters.inbound.cli.chat_bank import (
     read_bank,
     run,
     score,
+    sentences,
     summary,
     who,
 )
@@ -258,6 +259,22 @@ def test_who_answered_is_grouped():
     assert who(Reply(ChatAction.answer, "…", answered_by=backup)) == "respaldo"
     model = "qwen3-vl:8b-instruct"
     assert who(Reply(ChatAction.answer, "…", answered_by=model)) == "modelo"
+    built = f"{model} (texto de plantillas)"
+    assert who(Reply(ChatAction.answer, "…", answered_by=built)) == (
+        "modelo, texto armado"
+    )
+
+
+def test_the_judge_reads_the_sentences_without_the_table():
+    text = (
+        "La colecistectomía se indica en la colelitiasis. Lleva 4 objetos.\n\n"
+        "Mesa de Mayo de Colecistectomía, 4 objetos:\n4. Tijera de Mayo\n5. Pinza"
+    )
+
+    assert sentences(text) == [
+        "La colecistectomía se indica en la colelitiasis.",
+        "Lleva 4 objetos.",
+    ]
 
 
 @pytest.mark.anyio

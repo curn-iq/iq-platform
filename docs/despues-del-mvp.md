@@ -106,7 +106,19 @@ fuentes propias.
   «Alcance del MVP»).
 - **Un modelo de lenguaje más grande** que Qwen3-VL 8B, el del MVP: necesita
   una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
-  Se elige con el mismo banco de preguntas, para comparar la exactitud.
+  Se elige con el mismo banco de preguntas, para comparar la exactitud y la
+  fidelidad de lo que redacta (`chat_bank --fidelidad`).
+- **Verificar el sentido de cada frase en vivo,** no solo nombres y números:
+  un juez que revise cada frase redactada contra sus datos antes de
+  mostrarla, como el que hoy mide el banco. Suma una llamada al modelo por
+  respuesta; con un modelo mayor o un servicio de detección de contenido sin
+  respaldo (los de Microsoft y Google son pagos), cabe en el tiempo de
+  espera (decidido por Mauricio el 2026-11-03, [`simiq3d/README.md`](../simiq3d/README.md),
+  «La redacción»).
+- **Mostrar la respuesta mientras se escribe** (*streaming*): el texto se
+  verifica entero antes de mostrarlo, y por eso hoy se espera a que termine.
+  Mostrarlo por partes exige verificar cada frase al llegar y retirar la que
+  no pase.
 - **Usarlo sin conexión** (PWA con service worker): precargar la app y los
   modelos, e instalarla en el celular. En el MVP basta la caché HTTP, que
   guarda la app y los modelos después de la primera visita; el chat necesita
