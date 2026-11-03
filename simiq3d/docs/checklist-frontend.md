@@ -83,7 +83,7 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 ### Fase 6 — Despliegue
 
 - [x] Proyecto de Vercel del frontend de SIMIQ3D, en la cuenta de Mauricio (el plan Hobby es de una sola persona): `simiq3d-frontend`, creado el 2026-11-02
-- [ ] Servir la app bajo `/simiq3d/` en el mismo origen que el shell: el proyecto del shell la trae con un rewrite `/simiq3d/:path*` hacia el de SIMIQ3D, con la ruta completa (ver «Resuelto»). Del lado de SIMIQ3D está listo (la app se publica en `simiq3d/`, con las rutas de la app hacia `index.html`, comprobado en un despliegue de prueba); falta el rewrite, que es de la fase 9 del shell
+- [x] Servir la app bajo `/simiq3d/` en el mismo origen que el shell: el proyecto del shell la trae con un rewrite `/simiq3d/:path*` hacia el de SIMIQ3D, con la ruta completa (ver «Resuelto»). Del lado de SIMIQ3D está listo (la app se publica en `simiq3d/`, con las rutas de la app hacia `index.html`, comprobado en un despliegue de prueba). El rewrite está en el `vercel.json` del shell desde el 2026-11-02 (`dataiq/frontend/README.md`, «Despliegue»)
 - [x] Encabezados de caché y CSP en `vercel.json` (README, «Despliegue»), comprobados en un despliegue de prueba
 - [x] GitHub Actions: build (con `npm run models`), pruebas y despliegue con el CLI de Vercel (`.github/workflows/simiq3d-frontend.yml`)
 

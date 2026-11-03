@@ -48,7 +48,7 @@ porqué están en el [README](../README.md).
   en su celda, y clic en un instrumento para ver su descripción; avance en
   [`checklist-frontend.md`](checklist-frontend.md)
 - [x] Chat en el frontend: pregunta, acción y escena
-- [ ] Despliegue: el frontend en el mismo origen que el shell (`/simiq3d/*`),
+- [x] Despliegue: el frontend en el mismo origen que el shell (`/simiq3d/*`),
   el backend detrás de `/api/simiq3d/*`, con GitHub Actions
 
 ## 4. Demostración
