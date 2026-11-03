@@ -18,6 +18,8 @@ export type Instrument = DataIQSchemas['InstrumentOut'];
 
 export type ChatQuestion = Simiq3dSchemas['ChatIn'];
 export type ChatReply = Simiq3dSchemas['ChatOut'];
+export type ChatRequest = Simiq3dSchemas['ChatRequest'];
+export type ChatTurn = Simiq3dSchemas['PreviousTurn'];
 export type ChatAction = Simiq3dSchemas['ChatAction'];
 export type ClinicalField = Simiq3dSchemas['ClinicalField'];
 export type ModelFile = Simiq3dSchemas['ModelFileOut'];

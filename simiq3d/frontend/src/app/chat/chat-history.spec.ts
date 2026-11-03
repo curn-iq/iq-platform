@@ -10,6 +10,7 @@ describe('ChatHistory', () => {
     field: null,
     reply: 'La Pinza Kelly es el número 9 de la mesa de Mayo de Mastectomía.',
     options: ['¿Qué es la Pinza Kelly?'],
+    requests: [],
     ...overrides,
   });
 

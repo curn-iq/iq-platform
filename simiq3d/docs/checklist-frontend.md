@@ -79,6 +79,7 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 - [x] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
 - [x] Revisión de la fase 5 (2026-11-02): la rueda y el pellizco acercan hacia el puntero; en celular, los tres puntos mientras llega la respuesta y la leyenda que se pliega al elegir; la ficha como nota translúcida en el azul claro de SIMIQ3D, con el número de la pieza, la primera oración de la descripción y «Ver más»
 - [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
+- [x] Mandar con cada pregunta las anteriores de la conversación, con los pedidos que devolvió cada respuesta, para que el chat entienda un seguimiento (backend: «El modelo entiende y DataIQ responde»)
 
 ### Fase 6 — Despliegue
 
@@ -118,7 +119,7 @@ Nada por ahora.
 | # | Qué faltaba | Cómo quedó |
 |---|---|---|
 | 1 | Cómo llega el navegador al proyecto de Vercel de SIMIQ3D por el mismo origen que el shell, para que reciba la cookie | Un rewrite `/simiq3d/:path*` en el proyecto del shell hacia el de SIMIQ3D, como el de `/api/dataiq/*`; la app conserva su `baseHref` `/simiq3d/`. Es el Resuelto 17 de la [checklist de DataIQ](../../dataiq/docs/checklist-frontend.md#resuelto) (decidido por Juan el 2026-10-29) |
-| 2 | El contrato del chat no existía: qué recibe y qué devuelve | `POST /chat` recibe la pregunta y la técnica abierta, y devuelve la acción, sus ids, el texto y las opciones; las ocho acciones y qué hace el visor con cada una, en el README («El chat»). Contrato decidido por Mauricio el 2026-10-20; desde el 2026-10-27 el chat es un agente que redacta el texto con lo que consulta en DataIQ ([`../README.md`](../README.md), «Chat») |
+| 2 | El contrato del chat no existía: qué recibe y qué devuelve | `POST /chat` recibe la pregunta y la técnica abierta, y devuelve la acción, sus ids, el texto y las opciones; las ocho acciones y qué hace el visor con cada una, en el README («El chat»). Contrato decidido por Mauricio el 2026-10-20; desde el 2026-10-27 el chat es un agente que redacta el texto con lo que consulta en DataIQ, y desde el 2026-11-03 el modelo solo entiende la pregunta y DataIQ responde; el contrato suma `previous` (las preguntas anteriores) y `requests` (lo que se entendió) ([`../README.md`](../README.md), «Chat») |
 | 3 | Si el mapeo modelo → instrumento podía ser un archivo estático en vez de una ruta | Una ruta, `GET /models`, sobre la tabla `model_mappings` de la base de SIMIQ3D, que se carga desde `simiq3d/models/modelos.csv` (lo decidido) |
 | 4 | Conversación con contexto («¿y dónde va la Kelly?» después de abrir una técnica) | El frontend manda la técnica abierta (`technique_id`) junto con la pregunta |
 | 5 | El mockup tenía un selector de escala («a la celda», «escala real»), pero lo decidido es que los instrumentos van a escala real | Solo escala real, sin selector (decidido por Mauricio el 2026-11-01); `DESIGN.md` al día |

@@ -23,13 +23,18 @@ describe('ConversationService', () => {
     field: null,
     reply: 'La Pinza Kelly es el número 9.',
     options: ['¿Qué es la Pinza Kelly?'],
+    requests: [{ kind: 'locate', instrument: 'Pinza Kelly' }],
   };
 
   it('guarda la pregunta y la respuesta, y la escena que pide', async () => {
     const asked = conversation.ask('  ¿Dónde va la Kelly?  ', 't-1');
     expect(conversation.pending()).toBe(true);
     const request = http.expectOne(CHAT);
-    expect(request.request.body).toEqual({ question: '¿Dónde va la Kelly?', technique_id: 't-1' });
+    expect(request.request.body).toEqual({
+      question: '¿Dónde va la Kelly?',
+      technique_id: 't-1',
+      previous: [],
+    });
     request.flush(reply);
     await asked;
 
@@ -43,6 +48,21 @@ describe('ConversationService', () => {
     });
     conversation.takeScene();
     expect(conversation.scene()).toBeNull();
+  });
+
+  it('manda las tres últimas preguntas con lo que entendió el chat de cada una', async () => {
+    for (const question of ['Una', 'Dos', 'Tres', 'Cuatro']) {
+      const asked = conversation.ask(question, 't-1');
+      http.expectOne(CHAT).flush(reply);
+      await asked;
+    }
+    void conversation.ask('¿Y para qué sirve?', 't-1');
+    const request = http.expectOne(CHAT);
+
+    expect(request.request.body.previous).toEqual(
+      ['Dos', 'Tres', 'Cuatro'].map((question) => ({ question, requests: reply.requests })),
+    );
+    request.flush(reply);
   });
 
   it('una pregunta a la vez', async () => {

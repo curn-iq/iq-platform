@@ -121,7 +121,11 @@ describe('ExplorePage', () => {
     area.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
 
     const request = TestBed.inject(HttpTestingController).expectOne(`${TEST_SIMIQ3D}/chat`);
-    expect(request.request.body).toEqual({ question: '¿Qué es la Kelly?', technique_id: 't-1' });
+    expect(request.request.body).toEqual({
+      question: '¿Qué es la Kelly?',
+      technique_id: 't-1',
+      previous: [],
+    });
     request.flush({
       action: 'describe_instrument',
       technique_id: 't-1',
@@ -129,6 +133,7 @@ describe('ExplorePage', () => {
       field: null,
       reply: 'La Pinza Kelly es una pinza hemostática.',
       options: [],
+      requests: [{ kind: 'describe', instrument: 'Kelly' }],
     });
     await new Promise((resolve) => setTimeout(resolve));
     TestBed.tick();

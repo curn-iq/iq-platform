@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Simiq3dRepository } from '../data/simiq3d.repository';
-import { ChatMessage, sceneFor, SceneChange } from '../domain/chat';
+import { ChatMessage, ChatTurn, sceneFor, SceneChange } from '../domain/chat';
 
 /** El aviso cuando el chat no responde («Chat no disponible» en `DESIGN.md`). */
 export interface ChatNotice {
@@ -11,6 +11,9 @@ export interface ChatNotice {
 }
 
 const STILL_WORKS = 'La mesa, la leyenda y la ficha de cada instrumento siguen funcionando.';
+
+/** Cuántas preguntas anteriores van con cada pregunta: el backend acepta hasta tres. */
+const PREVIOUS_TURNS = 3;
 
 /**
  * La conversación con el chat. Vive aparte de la pantalla porque al abrir otra
@@ -23,6 +26,8 @@ const STILL_WORKS = 'La mesa, la leyenda y la ficha de cada instrumento siguen f
 export class ConversationService {
   private readonly simiq3d = inject(Simiq3dRepository);
   private nextId = 1;
+  /** Las últimas preguntas respondidas, con lo que entendió el chat de cada una. */
+  private turns: readonly ChatTurn[] = [];
 
   readonly messages = signal<readonly ChatMessage[]>([]);
   /** Se espera la respuesta: no se envía otra pregunta. */
@@ -39,8 +44,10 @@ export class ConversationService {
     this.push({ id: this.nextId++, from: 'person', text });
     this.pending.set(true);
     try {
-      const reply = await firstValueFrom(this.simiq3d.ask(text, techniqueId));
+      const reply = await firstValueFrom(this.simiq3d.ask(text, techniqueId, this.turns));
       this.push({ id: this.nextId++, from: 'simiq3d', reply });
+      const turn = { question: text, requests: reply.requests ?? [] };
+      this.turns = [...this.turns, turn].slice(-PREVIOUS_TURNS);
       this.notice.set(null);
       this.scene.set(sceneFor(reply));
     } catch (error) {

@@ -26,7 +26,11 @@ describe('Simiq3dRepository', () => {
     const reply = firstValueFrom(repository.ask('¿Dónde va la Kelly?', 't-1'));
     const request = http.expectOne(`${TEST_SIMIQ3D}/chat`);
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ question: '¿Dónde va la Kelly?', technique_id: 't-1' });
+    expect(request.request.body).toEqual({
+      question: '¿Dónde va la Kelly?',
+      technique_id: 't-1',
+      previous: [],
+    });
     request.flush({ action: 'no_answer', reply: '…' });
     expect((await reply).action).toBe('no_answer');
   });

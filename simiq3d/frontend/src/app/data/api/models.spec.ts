@@ -1,9 +1,11 @@
 import type {
   ChatAction as DomainChatAction,
   ChatReply as DomainChatReply,
+  ChatRequest as DomainChatRequest,
+  ChatTurn as DomainChatTurn,
   ClinicalField as DomainClinicalField,
 } from '../../domain/chat';
-import type { ChatAction, ChatReply, ClinicalField } from './models';
+import type { ChatAction, ChatReply, ChatRequest, ChatTurn, ClinicalField } from './models';
 
 // La comprobación es de tipos: si el backend de SIMIQ3D agrega o quita una
 // acción del chat y se regeneró simiq3d.d.ts, esta prueba deja de compilar hasta
@@ -15,5 +17,7 @@ describe('tipos generados de la API', () => {
     expectTypeOf<ChatAction>().toEqualTypeOf<DomainChatAction>();
     expectTypeOf<ClinicalField>().toEqualTypeOf<DomainClinicalField>();
     expectTypeOf<ChatReply>().toEqualTypeOf<DomainChatReply>();
+    expectTypeOf<ChatRequest>().toEqualTypeOf<DomainChatRequest>();
+    expectTypeOf<ChatTurn>().toEqualTypeOf<DomainChatTurn>();
   });
 });
