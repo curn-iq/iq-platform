@@ -1,0 +1,85 @@
+<nav class="index" [class.open]="open()" aria-label="Catálogo de instrumental">
+  <button
+    type="button"
+    class="toggle"
+    aria-controls="instrument-index-body"
+    [attr.aria-expanded]="open()"
+    (click)="open.set(!open())"
+  >
+    <span>{{ label() }}</span>
+    <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true">
+      <path
+        d="M2.5 4.5L6 8l3.5-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+  <div class="body" id="instrument-index-body">
+    <div class="fixed">
+      <div role="search">
+        <app-search-field
+          size="compact"
+          label="Buscar por nombre o alias"
+          placeholder="Nombre o alias"
+          [(value)]="query"
+        />
+      </div>
+      <button type="button" class="new" (click)="requestNew()">
+        <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M8 3v10M3 8h10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        Nuevo instrumento
+      </button>
+      <p class="legend">Cifra junto a cada instrumento: técnicas en que va</p>
+    </div>
+    @for (group of groups(); track group.category) {
+      <section>
+        <h2>
+          {{ group.category
+          }}<span class="count" title="Instrumentos">{{ group.items.length }}</span>
+        </h2>
+        <ul>
+          @for (item of group.items; track item.id) {
+            <li>
+              <a
+                [routerLink]="['/gestion/instrumental', item.id]"
+                [attr.aria-current]="item.id === selectedId() ? 'page' : null"
+                (click)="pick()"
+              >
+                <span class="name">
+                  @for (segment of item.segments; track $index) {
+                    @if (segment.match) {
+                      <mark>{{ segment.text }}</mark>
+                    } @else {
+                      {{ segment.text }}
+                    }
+                  }
+                </span>
+                <span class="count" title="Técnicas en que va">{{ item.techniques || '' }}</span>
+                @if (item.viaAlias; as alias) {
+                  <small class="via-alias">también «{{ alias }}»</small>
+                }
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    } @empty {
+      @if (loading()) {
+        <p class="none loading" aria-busy="true">Cargando…</p>
+      } @else {
+        <p class="none" aria-live="polite">Ningún instrumento con ese nombre o alias.</p>
+      }
+    }
+  </div>
+</nav>

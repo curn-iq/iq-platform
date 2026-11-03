@@ -14,14 +14,18 @@
   scrollbar-width: none;
 }
 
-a {
+.tab {
   position: relative;
   padding: 10px 0 12px;
+  border: 0;
+  background: none;
   color: var(--color-text-subtle);
+  font: inherit;
   font-size: 16px;
   font-weight: 550;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
   transition: color 0.2s var(--ease-fade);
 
   &:hover {
@@ -42,6 +46,41 @@ a {
   margin-left: 7px;
   vertical-align: -1px;
   color: var(--color-text-subtle);
+}
+
+// Una cifra junto al nombre (en la revisión, los cambios de la sección) o una nota en texto
+.count {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 8px;
+  padding: 0 6px;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 1px;
+}
+
+.note {
+  margin-left: 8px;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 // La raya activa se desliza bajo la elegida

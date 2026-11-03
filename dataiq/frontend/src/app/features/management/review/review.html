@@ -1,0 +1,117 @@
+@if (notFound()) {
+  <app-not-found />
+} @else {
+  <section
+    class="page"
+    aria-labelledby="review-title"
+    [attr.aria-busy]="diff() || reviewable() === false || failed() ? null : 'true'"
+  >
+    <a class="route" routerLink="/gestion/revision">
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d="M10 3.5L5.5 8l4.5 4.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Por revisar
+    </a>
+
+    @if (failed()) {
+      <h1 id="review-title" class="plain">Revisar versión</h1>
+      <div class="notice" role="status">
+        <p>No se pudo cargar la versión.</p>
+        <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+      </div>
+    } @else if (reviewable() === false) {
+      <h1 id="review-title">{{ proposal()?.summary?.technique }}</h1>
+      <div class="notice" role="status">
+        @if (own()) {
+          <p>Esta versión es tuya: lo propio no se revisa, se publica desde el editor.</p>
+          <a
+            app-button
+            variant="soft"
+            [routerLink]="['/gestion/editor', proposal()?.summary?.id, firstStep]"
+            >Abrir en el editor</a
+          >
+        } @else {
+          <p>Esta versión ya no está en revisión.</p>
+          <a app-button variant="soft" routerLink="/gestion/revision">Volver a Por revisar</a>
+        }
+      </div>
+    } @else if (diff(); as diff) {
+      @if (proposal(); as proposal) {
+        <header class="head">
+          <div>
+            <h1 id="review-title">{{ proposal.summary.technique }}</h1>
+            <p class="meta">
+              <b>Versión {{ proposal.summary.number }}</b>
+              · {{ proposal.summary.number > 1 ? 'edición de la publicada' : 'técnica nueva' }} ·
+              enviada por <b>{{ proposal.summary.author }}</b> el {{ sentOn() }}
+            </p>
+          </div>
+          <app-review-decision [version]="proposal.summary" (conflict)="recheck()" />
+        </header>
+
+        <app-tabs
+          label="Secciones de la versión"
+          [tabs]="tabs()"
+          [current]="section()"
+          (chosen)="chooseSection($event)"
+        />
+
+        <div
+          class="sheet"
+          role="tabpanel"
+          [id]="'panel-' + section()"
+          [attr.aria-labelledby]="'tab-' + section()"
+        >
+          @switch (section()) {
+            @case ('clinical') {
+              <app-review-clinical
+                [rows]="diff.clinical"
+                [publishedLabel]="publishedLabel()"
+                [proposedLabel]="proposedLabel()"
+                (commentRequested)="comments.compose($event)"
+              />
+            }
+            @case ('instrumental') {
+              <app-review-instrumental [diff]="diff.instrumental" [isNew]="diff.isNew" />
+            }
+            @case ('mayo') {
+              <app-review-table
+                [diff]="diff.mayo"
+                [zoneName]="zones.mayo"
+                [publishedLabel]="publishedLabel() ?? ''"
+                [proposedLabel]="proposedLabel()"
+                [isNew]="diff.isNew"
+                section="mayo"
+                [commented]="comments.commentedMayo()"
+                (commentRequested)="comments.compose($event)"
+              />
+            }
+            @case ('reserve') {
+              <app-review-table
+                [diff]="diff.reserve"
+                [zoneName]="zones.reserve"
+                [publishedLabel]="publishedLabel() ?? ''"
+                [proposedLabel]="proposedLabel()"
+                [isNew]="diff.isNew"
+                section="reserve"
+                [commented]="comments.commentedReserve()"
+                (commentRequested)="comments.compose($event)"
+              />
+            }
+          }
+          <app-section-comments [section]="section()" />
+        </div>
+      }
+    } @else {
+      <h1 id="review-title" class="plain">Revisar versión</h1>
+      <p class="notice loading" aria-busy="true">Cargando…</p>
+    }
+  </section>
+}

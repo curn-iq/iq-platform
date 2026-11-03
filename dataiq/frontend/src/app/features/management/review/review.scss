@@ -1,0 +1,107 @@
+// Revisión de una versión: ver «Versiones por revisar (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.page {
+  padding: 40px var(--space-gutter) 104px;
+}
+
+p,
+h1 {
+  margin: 0;
+}
+
+.route {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+  font-weight: 550;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+h1 {
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.meta {
+  margin-top: 12px;
+  color: var(--color-text-subtle);
+  font-size: 16.5px;
+
+  b {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+}
+
+// El título y los botones de decisión; los paneles de decisión ocupan toda la fila de abajo
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  align-items: start;
+  gap: 16px 40px;
+}
+
+app-tabs {
+  --tabs-margin-block: 30px 24px;
+}
+
+.sheet {
+  animation: appear 0.4s var(--ease-enter);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ---------- Cargando, error y versión que ya no se revisa ----------
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding-top: 28px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+}

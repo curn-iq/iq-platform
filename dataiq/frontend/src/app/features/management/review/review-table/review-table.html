@@ -1,0 +1,119 @@
+@if (unchanged()) {
+  <p class="unchanged">
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="M3.5 8.5l3 3 6-6.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    Sin cambios frente a la versión publicada.
+  </p>
+}
+
+<div class="compare" [class.single]="single()">
+  @if (!single()) {
+    @if (diff().published; as published) {
+      <section class="side" [attr.aria-label]="zoneName() + ', ' + publishedLabel()">
+        <div
+          class="side-head"
+          [style.--aspect]="published.table ? published.table.columns / published.table.rows : 1"
+        >
+          <h3>{{ publishedLabel() }}</h3>
+          <span>La que ven hoy los estudiantes</span>
+        </div>
+        @if (published.table; as table) {
+          <div class="stage" [style.--aspect]="table.columns / table.rows">
+            <app-table-diagram [table]="table" [(highlighted)]="active" />
+            <app-table-marks
+              side="published"
+              [columns]="table.columns"
+              [rows]="table.rows"
+              [changes]="changes()"
+              [active]="active()"
+            />
+          </div>
+        } @else {
+          <p class="blank">{{ blank(published.state) }}</p>
+        }
+      </section>
+    }
+  }
+
+  <section class="side" [attr.aria-label]="zoneName() + ', ' + proposedLabel()">
+    @if (!unchanged()) {
+      <div
+        class="side-head"
+        [style.--aspect]="
+          diff().proposed.table ? diff().proposed.table!.columns / diff().proposed.table!.rows : 1
+        "
+      >
+        <h3>{{ proposedLabel() }}</h3>
+        <span>La que se revisa</span>
+      </div>
+    }
+    @if (diff().proposed.table; as table) {
+      <!-- Tocar una pieza de la propuesta (o Intro con el foco en ella) comenta ese objeto -->
+      <div
+        class="stage"
+        [style.--aspect]="table.columns / table.rows"
+        (click)="commentPiece($event)"
+        (keydown.enter)="commentPiece($event)"
+      >
+        <app-table-diagram [table]="table" [(highlighted)]="active" />
+        <app-table-marks
+          side="proposed"
+          [columns]="table.columns"
+          [rows]="table.rows"
+          [changes]="single() ? [] : changes()"
+          [commented]="commentedCells()"
+          [active]="active()"
+        />
+      </div>
+    } @else {
+      <p class="blank">{{ blank(diff().proposed.state) }}</p>
+    }
+  </section>
+
+  @if (changes().length > 0) {
+    <section class="changes-col" aria-labelledby="changes-title">
+      <h3 id="changes-title">Cambios</h3>
+      <ul class="changes">
+        @for (change of changes(); track change.key) {
+          <li
+            class="change"
+            [class.whole]="change.number === null"
+            [class.active]="change.number !== null && change.number === active()"
+            [attr.tabindex]="change.number !== null ? 0 : null"
+            (mouseenter)="point(change.number)"
+            (mouseleave)="point(null)"
+            (focusin)="point(change.number)"
+            (focusout)="point(null)"
+          >
+            @if (change.number !== null) {
+              <b class="number">{{ change.number }}</b>
+            }
+            <div>
+              @if (change.name) {
+                <strong>{{ change.name }}</strong>
+              }
+              <span class="detail">{{ change.detail }}</span>
+              <button
+                app-comment-button
+                type="button"
+                [attr.aria-label]="'Comentar ' + (change.name || 'el cambio de la mesa')"
+                (click)="commentChange(change)"
+              >
+                Comentar
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+      <p class="help">Señalar un cambio lo levanta en las dos mesas.</p>
+    </section>
+  }
+</div>

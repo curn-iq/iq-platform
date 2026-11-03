@@ -1,0 +1,103 @@
+<section class="page" aria-labelledby="review-title">
+  <header class="head">
+    <h1 id="review-title">Por revisar</h1>
+    @if (loaded()) {
+      <p class="summary" aria-live="polite">{{ summary() }}</p>
+    }
+  </header>
+
+  <div class="filters">
+    <app-segmented-control
+      label="Qué mostrar"
+      [options]="options()"
+      [value]="view()"
+      (valueChange)="chooseView($event)"
+    />
+  </div>
+
+  @if (view() === 'pending') {
+    @if (failed()) {
+      <div class="notice" role="status">
+        <p>No se pudo cargar Por revisar.</p>
+        <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+      </div>
+    } @else if (!loaded()) {
+      <p class="notice loading" aria-busy="true">Cargando…</p>
+    } @else if (rows().length > 0) {
+      <ul class="queue" aria-label="Versiones por revisar">
+        @for (row of rows(); track row.id) {
+          <li class="item">
+            <div class="technique">
+              <p class="name">{{ row.technique }}</p>
+              <p class="meta">{{ row.specialty }} · Versión {{ row.number }}</p>
+            </div>
+            <div class="datum">
+              <p class="label">Autor</p>
+              <p>{{ row.author }}</p>
+            </div>
+            <div class="datum">
+              <p class="label">Enviada</p>
+              <p class="sent">{{ row.sent }}</p>
+            </div>
+            <p class="kind">{{ row.kindLabel }}</p>
+            <a
+              class="review"
+              [routerLink]="['/gestion/revision', row.id]"
+              [attr.aria-label]="'Revisar ' + row.technique"
+            >
+              Revisar
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M3 8h9M8.5 4L12.5 8l-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    @if (reviewedFailed()) {
+      <div class="notice" role="status">
+        <p>No se pudo cargar Revisadas por mí.</p>
+        <button app-button variant="soft" type="button" (click)="retryReviewed()">
+          Reintentar
+        </button>
+      </div>
+    } @else if (!reviewedLoaded()) {
+      <p class="notice loading" aria-busy="true">Cargando…</p>
+    } @else if (reviewedRows().length === 0) {
+      <p class="notice empty">Todavía no hay versiones revisadas.</p>
+    } @else {
+      <ul class="queue" aria-label="Versiones revisadas por mí">
+        @for (row of reviewedRows(); track row.id) {
+          <li class="item reviewed">
+            <div class="technique">
+              <p class="name">{{ row.technique }}</p>
+              <p class="meta">{{ row.specialty }} · Versión {{ row.number }}</p>
+            </div>
+            <div class="datum">
+              <p class="label">Autor</p>
+              <p>{{ row.author }}</p>
+            </div>
+            <div class="datum">
+              <p class="label">Revisada</p>
+              <p class="sent">{{ row.reviewed }}</p>
+            </div>
+            <div class="result">
+              <app-status-pill [kind]="row.result === 'returned' ? 'returned' : 'approved'" />
+              @if (row.reason) {
+                <p class="reason">{{ row.reason }}</p>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

@@ -6,6 +6,7 @@ import {
   effect,
   ElementRef,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,7 +27,9 @@ import { TechniqueClinical } from './technique-clinical/technique-clinical';
 import { TechniqueColumn } from './technique-column/technique-column';
 import { TechniqueEditAction } from './technique-edit-action/technique-edit-action';
 import { GatePreview, TechniqueGate } from './technique-gate/technique-gate';
+import { TechniqueInProgress } from './technique-in-progress';
 import { TechniqueInstrumental } from './technique-instrumental/technique-instrumental';
+import { TechniqueMoreActions } from './technique-more-actions/technique-more-actions';
 import { TechniqueTable } from './technique-table/technique-table';
 
 /**
@@ -88,8 +91,10 @@ const GATE_TEXTS: Record<string, { preview: GatePreview; title: string; text: st
     TechniqueEditAction,
     TechniqueGate,
     TechniqueInstrumental,
+    TechniqueMoreActions,
     TechniqueTable,
   ],
+  providers: [TechniqueInProgress],
   templateUrl: './technique.html',
   styleUrl: './technique.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -259,11 +264,32 @@ export class TechniqueDetail {
     if (this.session.loadFailed()) void this.session.load();
   }
 
+  // ---------- Archivar ----------
+
+  /**
+   * La técnica que se archivó en esta visita (Resuelto 21 de `dataiq/docs/checklist-frontend.md`): el
+   * detalle se queda con lo que ya tenía cargado, dice que está archivada y deja de ofrecer editarla,
+   * archivarla y abrirla en los módulos. No hay lista de archivadas: al volver a cargar, la técnica
+   * ya no existe para la API.
+   */
+  private readonly archivedId = signal<string | null>(null);
+  protected readonly archivedTechniqueId = this.archivedId.asReadonly();
+  protected readonly archived = computed(
+    () => this.archivedId() !== null && this.archivedId() === this.techniqueId(),
+  );
+  private readonly archivedNotice = viewChild<ElementRef<HTMLElement>>('archivedNotice');
+
+  protected onArchived(): void {
+    this.archivedId.set(this.techniqueId() ?? null);
+  }
+
   constructor() {
     effect(() => {
       this.navigated();
       const name = this.notFound() ? 'No encontrada' : this.technique()?.name;
       if (name) this.title.setTitle(`${name} · ${APP_NAME}`);
     });
+    // El aviso de «Técnica archivada» recibe el foco al aparecer: el botón que se tocó ya no está
+    effect(() => this.archivedNotice()?.nativeElement.focus());
   }
 }

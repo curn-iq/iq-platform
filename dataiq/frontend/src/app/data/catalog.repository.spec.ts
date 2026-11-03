@@ -1,4 +1,5 @@
 import { HttpTestingController } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CatalogRepository } from './catalog.repository';
 import { provideRepositoryTesting, TEST_API_BASE } from './testing';
@@ -19,6 +20,22 @@ describe('CatalogRepository', () => {
     TestBed.runInInjectionContext(() => repository.full());
     TestBed.tick();
     http.expectOne(`${TEST_API_BASE}/catalog/full`).flush({});
+  });
+
+  it('full usa la caché del navegador, y con `cache` la salta', () => {
+    const mode = signal<RequestCache>('default');
+    TestBed.runInInjectionContext(() => repository.full(() => mode()));
+    TestBed.tick();
+    const first = http.expectOne(`${TEST_API_BASE}/catalog/full`);
+    expect(first.request.cache).toBe('default');
+    first.flush({ instruments: [] });
+
+    // El modo es parte de la petición: cambiarlo la pide de nuevo, saltándose la caché
+    mode.set('reload');
+    TestBed.tick();
+    const second = http.expectOne(`${TEST_API_BASE}/catalog/full`);
+    expect(second.request.cache).toBe('reload');
+    second.flush({ instruments: [] });
   });
 
   it('instruments pide /instruments', () => {

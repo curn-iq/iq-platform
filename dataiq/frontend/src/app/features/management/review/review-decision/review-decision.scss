@@ -1,0 +1,111 @@
+// Devolver y aprobar: ver «Versiones por revisar (página)» en DESIGN.md.
+
+// Sin caja propia: los botones y los paneles se acomodan en la cuadrícula de la cabecera
+:host {
+  display: contents;
+}
+
+p,
+h2,
+ul {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-self: end;
+}
+
+// El panel ocupa el ancho de la cabecera, bajo el título y los botones
+.panel {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  max-width: 760px;
+  padding: 20px 22px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-soft);
+  animation: drop 0.35s var(--ease-enter);
+
+  h2 {
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  > p {
+    color: var(--color-text-muted);
+    font-size: 15.5px;
+  }
+}
+
+.summary {
+  margin: 14px 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+
+  li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .none {
+    color: var(--color-text-subtle);
+  }
+}
+
+app-textarea-field {
+  margin-top: 4px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .actions {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .actions {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+
+  .panel {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}

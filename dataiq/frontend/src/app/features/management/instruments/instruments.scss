@@ -1,0 +1,52 @@
+// Catálogo de instrumental: la ventana de DataIQ a pantalla completa, como el detalle de técnica. Ver
+// «Catálogo de instrumental (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: var(--size-technique-column) minmax(0, 1fr);
+  align-content: start;
+  min-height: calc(100svh - var(--size-navbar));
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entry {
+  min-width: 0;
+}
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 40px clamp(24px, 3vw, 48px);
+  color: var(--color-text-muted);
+  font-size: 16px;
+
+  p {
+    margin: 0;
+  }
+
+  &.loading {
+    color: var(--color-text-subtle);
+  }
+}
+
+@media (max-width: 1100px) {
+  .app {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .notice {
+    margin: 28px var(--space-gutter);
+  }
+}

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { PendingReviews } from '../../core/pending-reviews/pending-reviews';
 import { SessionService } from '../../core/session/session.service';
 import { ROLE_LABELS } from '../../shared/role-labels';
 import { Button } from '../../shared/ui/button/button';
@@ -36,6 +37,7 @@ export class MobileMenu {
   protected readonly specialties = inject(SpecialtiesNav);
   protected readonly session = inject(SessionService);
   protected readonly signOut = inject(SignOut);
+  private readonly pending = inject(PendingReviews);
 
   protected readonly specialtyLinks = computed(() =>
     this.specialties.entries().map((specialty) => ({
@@ -50,13 +52,19 @@ export class MobileMenu {
     const role = this.session.role();
     return role ? ROLE_LABELS[role] : '';
   });
+  /** Los accesos del rol, cada uno con su cifra (`null` si no lleva o aún no se sabe). */
   protected readonly links = computed(() => {
     const role = this.session.role();
-    return role ? managementLinks(role) : [];
+    return (role ? managementLinks(role) : []).map((link) => ({
+      ...link,
+      count: link.counter === 'pending_reviews' ? this.pending.count() : null,
+    }));
   });
 
   constructor() {
     this.specialties.retry();
+    // El menú se crea al abrirse: cada vez que se abre, la cifra se pide de nuevo
+    this.pending.refresh();
   }
 
   /** Cierra la sesión y el menú; `SignOut` lleva al inicio si salió. */

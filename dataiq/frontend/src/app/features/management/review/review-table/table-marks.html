@@ -1,0 +1,47 @@
+<svg [attr.viewBox]="'0 0 ' + width() + ' ' + height()" aria-hidden="true">
+  @for (mark of marks(); track mark.key) {
+    @switch (mark.kind) {
+      @case ('origin') {
+        <rect
+          class="origin"
+          [class.active]="isActive(mark)"
+          [attr.x]="mark.x"
+          [attr.y]="mark.y"
+          [attr.width]="size"
+          [attr.height]="size"
+          rx="10"
+        />
+      }
+      @case ('commented') {
+        <rect
+          class="commented"
+          [attr.x]="mark.x"
+          [attr.y]="mark.y"
+          [attr.width]="size"
+          [attr.height]="size"
+          rx="10"
+        />
+      }
+      @case ('destination') {
+        <rect
+          class="destination"
+          [class.active]="isActive(mark)"
+          [attr.x]="mark.x"
+          [attr.y]="mark.y"
+          [attr.width]="size"
+          [attr.height]="size"
+          rx="10"
+        />
+      }
+      @default {
+        <path
+          class="path"
+          [class.active]="isActive(mark)"
+          [attr.d]="mark.d"
+          [style.stroke-dasharray]="mark.length"
+          [style.--length]="mark.length"
+        />
+      }
+    }
+  }
+</svg>

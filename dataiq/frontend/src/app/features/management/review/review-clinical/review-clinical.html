@@ -1,0 +1,36 @@
+<dl class="fields" [class.single]="publishedLabel() === null">
+  <div class="head" aria-hidden="true">
+    <span>Campo</span>
+    @if (publishedLabel(); as label) {
+      <span>{{ label }}</span>
+    }
+    <span>{{ proposedLabel() }}</span>
+    <span></span>
+  </div>
+  @for (row of rows(); track row.key) {
+    <div class="field" [class.changed]="row.change !== null">
+      <dt>{{ row.label }}</dt>
+      @if (publishedLabel() !== null) {
+        <dd [attr.data-label]="'Publicada'" [class.empty]="row.published === ''">
+          <span class="sr-only">Publicada: </span>{{ row.published || 'Sin dato' }}
+        </dd>
+      }
+      <dd class="proposed" [attr.data-label]="'Propuesta'" [class.empty]="row.proposed === ''">
+        @if (row.change; as change) {
+          <span class="tag">{{ tags[change] }}</span>
+        }
+        <span class="sr-only">Propuesta: </span>{{ row.proposed || 'Sin dato' }}
+      </dd>
+      @if (row.change !== null) {
+        <button
+          app-comment-button
+          type="button"
+          [attr.aria-label]="'Comentar ' + row.label"
+          (click)="comment(row)"
+        >
+          Comentar
+        </button>
+      }
+    </div>
+  }
+</dl>

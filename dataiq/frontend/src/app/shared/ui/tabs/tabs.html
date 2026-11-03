@@ -1,45 +1,36 @@
 <div #list class="tabs" role="tablist" [attr.aria-label]="label()">
   @for (tab of tabs(); track tab.key; let index = $index) {
-    <a
-      #tab
-      role="tab"
-      [id]="'tab-' + tab.key"
-      [routerLink]="tab.link"
-      [queryParamsHandling]="tab.queryParamsHandling"
-      [attr.aria-selected]="index === currentIndex()"
-      [attr.aria-controls]="'panel-' + tab.key"
-      [attr.tabindex]="index === currentIndex() ? 0 : -1"
-      (keydown)="select($event, index)"
-    >
-      {{ tab.label }}
-      @if (tab.locked) {
-        <svg
-          class="lock"
-          width="13"
-          height="13"
-          viewBox="0 0 16 16"
-          role="img"
-          aria-label="Requiere cuenta"
-        >
-          <rect
-            x="3.5"
-            y="7"
-            width="9"
-            height="7"
-            rx="1.6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-          />
-          <path
-            d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-          />
-        </svg>
-      }
-    </a>
+    @if (tab.link) {
+      <a
+        #tabElement
+        class="tab"
+        role="tab"
+        [id]="'tab-' + tab.key"
+        [routerLink]="tab.link"
+        [queryParamsHandling]="tab.queryParamsHandling"
+        [attr.aria-selected]="index === currentIndex()"
+        [attr.aria-controls]="'panel-' + tab.key"
+        [attr.tabindex]="index === currentIndex() ? 0 : -1"
+        (keydown)="select($event, index)"
+      >
+        <ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ tab }" />
+      </a>
+    } @else {
+      <button
+        #tabElement
+        class="tab"
+        type="button"
+        role="tab"
+        [id]="'tab-' + tab.key"
+        [attr.aria-selected]="index === currentIndex()"
+        [attr.aria-controls]="'panel-' + tab.key"
+        [attr.tabindex]="index === currentIndex() ? 0 : -1"
+        (click)="chosen.emit(tab.key)"
+        (keydown)="select($event, index)"
+      >
+        <ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ tab }" />
+      </button>
+    }
   }
   <span
     class="line"
@@ -49,3 +40,41 @@
     [style.transform]="'translateX(' + lineLeft() + 'px)'"
   ></span>
 </div>
+
+<!-- Lo que lleva cada pestaña: su texto, el candado, y su cifra o su nota -->
+<ng-template #content let-tab="tab">
+  {{ tab.label }}
+  @if (tab.locked) {
+    <svg
+      class="lock"
+      width="13"
+      height="13"
+      viewBox="0 0 16 16"
+      role="img"
+      aria-label="Requiere cuenta"
+    >
+      <rect
+        x="3.5"
+        y="7"
+        width="9"
+        height="7"
+        rx="1.6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+      />
+      <path
+        d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+      />
+    </svg>
+  }
+  @if (tab.count; as count) {
+    <span class="count" aria-hidden="true">{{ count.value }}</span>
+    <span class="sr-only">{{ count.label }}</span>
+  } @else if (tab.note) {
+    <span class="note">{{ tab.note }}</span>
+  }
+</ng-template>

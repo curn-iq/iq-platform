@@ -1,0 +1,36 @@
+<section class="where" aria-labelledby="where-title">
+  <div class="head">
+    <h2 id="where-title">Dónde va</h2>
+    <p>Cada técnica publicada, con la celda que ocupa en su mesa</p>
+  </div>
+  @for (group of groups(); track group.specialty) {
+    <div class="group">
+      <h3>{{ group.specialty }}</h3>
+      <ul class="uses">
+        @for (row of group.rows; track $index) {
+          <li class="use" [class.wide]="row.placement.table.columns > 10">
+            <a [routerLink]="['/tecnicas', row.placement.techniqueId, row.tab]" class="data">
+              <strong>{{ row.placement.technique }}</strong>
+              <span>
+                {{ row.placement.table.name }}
+                @if (row.placement.item.legendNumber !== null) {
+                  · n.° {{ row.placement.item.legendNumber }}
+                }
+              </span>
+            </a>
+            <app-table-miniature
+              [table]="row.placement.table"
+              [item]="row.placement.item"
+              [index]="row.turn"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+  } @empty {
+    <p class="none">
+      Todavía no está en ninguna mesa cargada. Puede estar en el listado de instrumental de alguna
+      técnica.
+    </p>
+  }
+</section>

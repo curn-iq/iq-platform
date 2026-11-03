@@ -25,6 +25,11 @@ export class TechniqueColumn {
   readonly currentId = input<string>();
   /** El slug de la pestaña abierta, que conservan los enlaces. */
   readonly tab = input.required<string>();
+  /**
+   * La técnica que se archivó en esta visita: la lista no se vuelve a pedir, así que se marca
+   * «Archivada» mientras la página siga abierta (Resuelto 21 de `dataiq/docs/checklist-frontend.md`).
+   */
+  readonly archivedId = input<string | null>(null);
 
   private readonly repository = inject(TechniquesRepository);
   private readonly techniquesResource = this.repository.list();
@@ -65,6 +70,8 @@ export class TechniqueColumn {
   /** Lo que dice el selector de celular: «Cirugía general · Tiroidectomía». */
   protected readonly currentLabel = computed(() => {
     const current = this.techniques().find((technique) => technique.id === this.currentId());
-    return current ? `${current.specialty} · ${current.name}` : 'Técnicas';
+    if (!current) return 'Técnicas';
+    const label = `${current.specialty} · ${current.name}`;
+    return current.id === this.archivedId() ? `${label} · archivada` : label;
   });
 }

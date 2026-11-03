@@ -49,8 +49,11 @@
         [routerLink]="link.route"
         routerLinkActive
         ariaCurrentWhenActive="page"
-        >{{ link.label }}</a
-      >
+        >{{ link.label }}
+        @if (link.count !== null) {
+          <span class="count">{{ link.count }}</span>
+        }
+      </a>
     }
     <button
       app-button

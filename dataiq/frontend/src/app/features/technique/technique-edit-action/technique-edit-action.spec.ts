@@ -4,6 +4,7 @@ import { provideRouter, Router } from '@angular/router';
 import { SessionService } from '../../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../../data/testing';
 import type { Role } from '../../../domain/role';
+import { TechniqueInProgress } from '../technique-in-progress';
 import { TechniqueEditAction } from './technique-edit-action';
 
 const TECHNIQUE = '0192f3a0-0000-7000-8000-0000000000aa';
@@ -45,7 +46,9 @@ describe('TechniqueEditAction', () => {
 
   /** Abre el botón con esa sesión (`null` es sin sesión). Sin `answer`, la lista de versiones queda pendiente. */
   async function mount(role: Role | null, answer?: object[] | 'fail'): Promise<void> {
-    TestBed.configureTestingModule({ providers: [provideRepositoryTesting(), provideRouter([])] });
+    TestBed.configureTestingModule({
+      providers: [provideRepositoryTesting(), provideRouter([]), TechniqueInProgress],
+    });
     http = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
     vi.spyOn(router, 'navigate').mockResolvedValue(true);

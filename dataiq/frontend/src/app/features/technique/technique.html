@@ -2,7 +2,11 @@
   <app-not-found />
 } @else {
   <div class="app">
-    <app-technique-column [currentId]="techniqueId()" [tab]="tab()!.slug" />
+    <app-technique-column
+      [currentId]="techniqueId()"
+      [tab]="tab()!.slug"
+      [archivedId]="archivedTechniqueId()"
+    />
     <article
       #panel
       class="panel"
@@ -15,6 +19,21 @@
           @if (technique(); as technique) {
             <h1 id="technique-name">{{ technique.name }}</h1>
             <p>{{ technique.specialty }}</p>
+            @if (archived()) {
+              <p #archivedNotice class="archived" role="status" tabindex="-1">
+                <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
+                  <path
+                    d="M2.8 4.2h12.4v2.6H2.8zM3.8 6.8v6.4a1.2 1.2 0 0 0 1.2 1.2h8a1.2 1.2 0 0 0 1.2-1.2V6.8M7.2 9.6h3.6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Técnica archivada. Ya no está en el catálogo.
+              </p>
+            }
           } @else if (techniqueFailed()) {
             <h1 id="technique-name">No se pudo cargar la técnica</h1>
           } @else {
@@ -24,24 +43,33 @@
           }
         </div>
         @if (actions(); as actions) {
-          <div class="actions">
-            <app-technique-edit-action [techniqueId]="techniqueId()!" />
-            @for (action of actions.items; track action.module) {
-              @if (actions.external) {
-                <a app-button [variant]="action.variant" [href]="action.href"
-                  >{{ action.label }} <small>{{ action.module }}</small></a
-                >
-              } @else {
-                <a
-                  app-button
-                  routerLink="/cuenta/crear"
-                  [variant]="action.variant"
-                  [queryParams]="{ volver: actions.returnTo }"
-                  >{{ action.label }} <small>{{ action.module }}</small></a
-                >
+          @if (!archived()) {
+            <div class="actions">
+              <app-technique-edit-action [techniqueId]="techniqueId()!" />
+              @if (technique(); as technique) {
+                <app-technique-more-actions
+                  [techniqueId]="techniqueId()!"
+                  [techniqueName]="technique.name"
+                  (archived)="onArchived()"
+                />
               }
-            }
-          </div>
+              @for (action of actions.items; track action.module) {
+                @if (actions.external) {
+                  <a app-button [variant]="action.variant" [href]="action.href"
+                    >{{ action.label }} <small>{{ action.module }}</small></a
+                  >
+                } @else {
+                  <a
+                    app-button
+                    routerLink="/cuenta/crear"
+                    [variant]="action.variant"
+                    [queryParams]="{ volver: actions.returnTo }"
+                    >{{ action.label }} <small>{{ action.module }}</small></a
+                  >
+                }
+              }
+            </div>
+          }
         }
       </header>
       <app-tabs label="Contenido de la técnica" [tabs]="tabItems()" [current]="tab()!.slug" />

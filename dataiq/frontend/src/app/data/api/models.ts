@@ -20,6 +20,7 @@ export type ZoneLayout = Schemas['ZoneLayoutOut'];
 
 export type VersionSummary = Schemas['VersionSummaryOut'];
 export type VersionDetail = Schemas['VersionDetailOut'];
+export type VersionRejections = Schemas['VersionRejectionsOut'];
 export type VersionContent = Schemas['ContentIn'];
 
 export type FullCatalog = Schemas['FullCatalogOut'];

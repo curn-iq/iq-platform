@@ -35,10 +35,14 @@
             <li>
               <a
                 [routerLink]="['/tecnicas', technique.id, tab()]"
+                [class.is-archived]="technique.id === archivedId()"
                 [attr.aria-current]="technique.id === currentId() ? 'page' : null"
                 (click)="open.set(false)"
-                >{{ technique.name }}</a
-              >
+                >{{ technique.name }}
+                @if (technique.id === archivedId()) {
+                  <span class="archived">Archivada</span>
+                }
+              </a>
             </li>
           }
         </ul>

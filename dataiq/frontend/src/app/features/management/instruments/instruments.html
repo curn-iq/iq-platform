@@ -1,0 +1,38 @@
+<div class="app">
+  <app-instrument-index
+    [groups]="groups()"
+    [selectedId]="selectedId()"
+    [label]="indexLabel()"
+    [loading]="!loaded() && !failed()"
+    [(query)]="query"
+    (chosen)="backToReading()"
+    (newRequested)="mode.set('new')"
+  />
+  <div class="entry" [attr.aria-busy]="!loaded() && !failed() ? 'true' : null" aria-live="polite">
+    @if (notFound()) {
+      <app-not-found />
+    } @else if (failed()) {
+      <div class="notice">
+        <p>No se pudo cargar el catálogo.</p>
+        <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+      </div>
+    } @else if (!loaded()) {
+      <p class="notice loading">Cargando…</p>
+    } @else if (mode() === 'new' || entry()) {
+      <app-instrument-entry
+        [entry]="mode() === 'new' ? null : (entry() ?? null)"
+        [mode]="mode()"
+        [placements]="entryPlacements()"
+        [specialties]="specialties()"
+        [categories]="categories()"
+        [instruments]="instruments()"
+        [saving]="saving()"
+        (editRequested)="mode.set($event)"
+        (cancelled)="backToReading()"
+        (saved)="save($event)"
+      />
+    } @else {
+      <p class="notice">Todavía no hay instrumental en el catálogo.</p>
+    }
+  </div>
+</div>

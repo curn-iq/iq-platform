@@ -1,0 +1,67 @@
+@if (visible()) {
+  <button
+    #trigger
+    type="button"
+    class="trigger"
+    aria-label="Más acciones"
+    aria-controls="technique-more-actions-panel"
+    [attr.aria-expanded]="open()"
+    (click)="toggle()"
+  >
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <circle cx="4" cy="9" r="1.6" fill="currentColor" />
+      <circle cx="9" cy="9" r="1.6" fill="currentColor" />
+      <circle cx="14" cy="9" r="1.6" fill="currentColor" />
+    </svg>
+  </button>
+
+  @if (open()) {
+    <div class="panel" id="technique-more-actions-panel">
+      @if (!confirming()) {
+        <button
+          type="button"
+          class="item"
+          [attr.aria-disabled]="blocked() ? 'true' : null"
+          (click)="askToArchive()"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path
+              d="M2.8 4.2h12.4v2.6H2.8zM3.8 6.8v6.4a1.2 1.2 0 0 0 1.2 1.2h8a1.2 1.2 0 0 0 1.2-1.2V6.8M7.2 9.6h3.6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>
+            Archivar técnica
+            @if (blocked()) {
+              <small>No se puede mientras tenga una versión en curso.</small>
+            }
+          </span>
+        </button>
+      } @else {
+        <div class="confirm">
+          <p>
+            Archivar <b>{{ techniqueName() }}</b
+            >. Deja de verse en el catálogo, en SIVRI y en SIMIQ3D; sus versiones quedan en el
+            historial.
+          </p>
+          <div class="buttons">
+            <button
+              #confirmButton
+              app-button
+              type="button"
+              [attr.aria-busy]="archiving()"
+              (click)="archive()"
+            >
+              {{ archiving() ? 'Archivando…' : 'Archivar' }}
+            </button>
+            <button app-button variant="soft" type="button" (click)="cancel()">Cancelar</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}

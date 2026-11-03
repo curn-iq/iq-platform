@@ -1,4 +1,4 @@
-import { CanMatchFn, ResolveFn, Routes } from '@angular/router';
+import { CanMatchFn, ResolveFn, Routes, UrlMatcher } from '@angular/router';
 import { guestGuard, roleGuard } from './core/session/session.guards';
 import { accountModeOf } from './domain/account-entry';
 import { DEFAULT_TECHNIQUE_TAB } from './domain/technique-tabs';
@@ -14,6 +14,18 @@ const accountMatch: CanMatchFn = (_route, segments) =>
   accountModeOf(segments[1]?.path) !== undefined;
 const accountTitle: ResolveFn<string> = (route) =>
   accountModeOf(route.paramMap.get('modo')) === 'register' ? 'Crear cuenta' : 'Ingresar';
+
+/**
+ * `/gestion/instrumental` y `/gestion/instrumental/:id` son una sola ruta con un `id` opcional: pasar de un
+ * instrumento a otro no vuelve a crear la pantalla ni a pedir el catálogo.
+ */
+export const instrumentsMatch: UrlMatcher = (segments) => {
+  const [management, instruments, id, ...rest] = segments;
+  if (management?.path !== 'gestion' || instruments?.path !== 'instrumental' || rest.length > 0) {
+    return null;
+  }
+  return id ? { consumed: segments, posParams: { id } } : { consumed: segments };
+};
 
 const contributor = roleGuard('contributor');
 const reviewer = roleGuard('reviewer');
@@ -68,7 +80,8 @@ export const routes: Routes = [
     path: 'gestion/revision',
     title: 'Por revisar',
     canActivate: [reviewer],
-    loadComponent: () => import('./features/management/review/review').then((m) => m.Review),
+    loadComponent: () =>
+      import('./features/management/review/review-list/review-list').then((m) => m.ReviewList),
   },
   {
     path: 'gestion/revision/:versionId',
@@ -77,14 +90,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/management/review/review').then((m) => m.Review),
   },
   {
-    path: 'gestion/instrumental',
-    title: 'Instrumental',
-    canActivate: [reviewer],
-    loadComponent: () =>
-      import('./features/management/instruments/instruments').then((m) => m.Instruments),
-  },
-  {
-    path: 'gestion/instrumental/:id',
+    matcher: instrumentsMatch,
     title: 'Instrumental',
     canActivate: [reviewer],
     loadComponent: () =>

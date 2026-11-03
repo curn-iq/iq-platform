@@ -163,6 +163,27 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
       la lista se vuelve larga de leer; con `limit` y `offset` opcionales no
       rompe nada. Mis borradores no la pide así (observación de
       Juan en el PR #55, 2026-11-02)
+12. [x] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
+    (asignado por Juan el 2026-11-02; hallazgo de la revisión de la fase 7
+    del frontend)
+    - **Por qué:** la pantalla de revisión compara una edición con la versión
+      publicada de su técnica. Para encontrarla pide
+      `GET /versions?state=published`, que trae las publicadas de todo el
+      catálogo, y la busca por `technique_id` en el navegador
+      (`features/management/review/review.ts`). Esa respuesta crece con el
+      catálogo y es una petición más antes de `GET /versions/{id}`, así que
+      la revisión tarda más en cargar a medida que hay más técnicas.
+    - **Qué falta:** un parámetro `technique_id` en `GET /versions` que
+      filtre en la consulta, combinable con `state` y con los mismos permisos
+      (un revisor ve las de todos), con `Cache-Control` y `ETag`, su prueba,
+      su documentación en Swagger y los tipos del frontend regenerados
+      (`npm run api:types`).
+    - **Hecho en el PR #62:** `GET /versions?technique_id=…` filtra en la
+      consulta y se combina con `state`, `mine`, `reviewed_by_me` e
+      `include`, con los mismos permisos, `Cache-Control` y `ETag`; un id que
+      no es UUID responde 422. La pantalla de revisión ya pide
+      `GET /versions?state=published&technique_id=…` (fase 7 de
+      [`checklist-frontend.md`](checklist-frontend.md))
 
 ## Hallazgos de seguridad pendientes
 

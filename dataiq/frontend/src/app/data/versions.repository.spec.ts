@@ -48,6 +48,18 @@ describe('VersionsRepository', () => {
       request.flush([]);
     });
 
+    it('manda la técnica como `technique_id`', () => {
+      TestBed.runInInjectionContext(() =>
+        repository.list(() => ({ state: ['published'], techniqueId: 't-1' })),
+      );
+      TestBed.tick();
+
+      const request = http.expectOne((r) => r.url === `${TEST_API_BASE}/versions`);
+      expect(request.request.params.get('technique_id')).toBe('t-1');
+      expect(request.request.params.getAll('state')).toEqual(['published']);
+      request.flush([]);
+    });
+
     it('omite una lista de estados vacía', () => {
       TestBed.runInInjectionContext(() => repository.list(() => ({ state: [] })));
       TestBed.tick();
@@ -125,6 +137,36 @@ describe('VersionsRepository', () => {
       request.flush([]);
     });
   });
+
+  describe('listWithRejections', () => {
+    it('pide la lista con `include=rejections` y los mismos filtros, sin el contenido', async () => {
+      const resource = TestBed.runInInjectionContext(() =>
+        repository.listWithRejections(() => ({ reviewedByMe: true })),
+      );
+      TestBed.tick();
+
+      const request = http.expectOne((r) => r.url === `${TEST_API_BASE}/versions`);
+      expect(request.request.params.get('include')).toBe('rejections');
+      expect(request.request.params.get('reviewed_by_me')).toBe('true');
+      request.flush([{ summary: { id: 'v-1' }, rejections: [] }]);
+      await Promise.resolve();
+      TestBed.tick();
+
+      expect(resource.value()).toEqual([{ summary: { id: 'v-1' }, rejections: [] }]);
+    });
+
+    it('un filtro indefinido no pide nada hasta que haya filtro', () => {
+      const filter = signal<VersionsFilter | undefined>(undefined);
+      TestBed.runInInjectionContext(() => repository.listWithRejections(filter));
+      TestBed.tick();
+      http.expectNone(() => true);
+
+      filter.set({ reviewedByMe: true });
+      TestBed.tick();
+      http.expectOne((r) => r.params.get('include') === 'rejections').flush([]);
+    });
+  });
+
   describe('escrituras', () => {
     it('update reemplaza el contenido con PUT', () => {
       let result: unknown;

@@ -182,6 +182,53 @@ describe('MobileMenu', () => {
       ]);
     });
 
+    describe('la cifra de «Por revisar»', () => {
+      const isList = (r: { url: string }) => r.url === `${TEST_API_BASE}/versions`;
+      const inReview = (id: string, createdBy: string) => ({
+        id,
+        technique_id: `t-${id}`,
+        technique: `Técnica ${id}`,
+        specialty: 'Cirugía general',
+        number: 2,
+        state: 'in_review',
+        created_by: createdBy,
+        author: 'Daniela Ortiz',
+        updated_at: '2026-10-01T09:00:00',
+      });
+      const counts = () =>
+        Array.from(actions()!.querySelectorAll('a')).map(
+          (a) => a.querySelector('.count')?.textContent?.trim() ?? null,
+        );
+
+      it('un revisor ve cuántas versiones de otras esperan, aunque la cuenta llegue con el menú abierto', async () => {
+        await loadSession('reviewer');
+
+        const request = http.expectOne(isList);
+        expect(request.request.params.getAll('state')).toEqual(['in_review']);
+        request.flush([inReview('a', 'u-autor'), inReview('b', 'u-1'), inReview('c', 'u-otro')]);
+        // Sin `whenStable`: las especialidades del menú siguen pendientes
+        await Promise.resolve();
+        TestBed.tick();
+        fixture.detectChanges();
+
+        expect(counts()).toEqual([null, '2', null]);
+      });
+
+      it('hasta que llega la respuesta no pone ninguna', async () => {
+        await loadSession('reviewer');
+
+        expect(counts()).toEqual([null, null, null]);
+        http.expectOne(isList).flush([]);
+      });
+
+      it('un colaborador no la pide', async () => {
+        await loadSession('contributor');
+
+        http.expectNone(isList);
+        expect(counts()).toEqual([null]);
+      });
+    });
+
     describe('cerrar sesión', () => {
       const exit = () => actions()?.querySelector<HTMLButtonElement>('button.exit') ?? null;
 

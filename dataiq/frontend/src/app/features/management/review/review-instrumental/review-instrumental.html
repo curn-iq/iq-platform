@@ -1,0 +1,34 @@
+@if (unchanged()) {
+  <p class="unchanged">
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="M3.5 8.5l3 3 6-6.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    Sin cambios frente a la versión publicada.
+  </p>
+} @else if (diff().changes.length > 0) {
+  <ul class="changes" aria-label="Cambios del instrumental">
+    @for (change of diff().changes; track $index) {
+      <li [attr.data-kind]="change.kind">
+        <span class="kind">{{ labels[change.kind] }}</span>
+        <strong>{{ change.name }}</strong>
+      </li>
+    }
+  </ul>
+}
+
+@if (diff().objects.length > 0) {
+  <ul class="objects" aria-label="Instrumental de la propuesta">
+    @for (name of diff().objects; track $index) {
+      <li>{{ name }}</li>
+    }
+  </ul>
+} @else {
+  <p class="none">Todavía no hay instrumental.</p>
+}

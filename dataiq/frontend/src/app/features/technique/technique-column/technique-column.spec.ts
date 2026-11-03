@@ -197,4 +197,53 @@ describe('TechniqueColumn', () => {
       expect(toggle().getAttribute('aria-expanded')).toBe('false');
     });
   });
+
+  describe('una técnica recién archivada', () => {
+    const archivedPill = (link: HTMLAnchorElement) => link.querySelector('.archived');
+
+    it('se marca «Archivada» y se atenúa, y las demás no', async () => {
+      await mount('t-2');
+      fixture.componentRef.setInput('archivedId', 't-2');
+      await respond();
+
+      const marked = links().filter((link) => archivedPill(link));
+      expect(marked.map((link) => link.getAttribute('href'))).toEqual([
+        '/tecnicas/t-2/datos-clinicos',
+      ]);
+      expect(marked[0].querySelector('.archived')!.textContent!.trim()).toBe('Archivada');
+      expect(marked[0].classList.contains('is-archived')).toBe(true);
+      expect(links().filter((link) => link.classList.contains('is-archived'))).toHaveLength(1);
+    });
+
+    it('sigue siendo un enlace a su detalle', async () => {
+      await mount('t-2');
+      fixture.componentRef.setInput('archivedId', 't-2');
+      await respond();
+
+      expect(links()[1].getAttribute('href')).toBe('/tecnicas/t-2/datos-clinicos');
+    });
+
+    it('el selector de celular suma « · archivada»', async () => {
+      await mount('t-2');
+      fixture.componentRef.setInput('archivedId', 't-2');
+      await respond();
+
+      expect(toggle().textContent!.trim()).toBe('Cirugía general · Tiroidectomía · archivada');
+    });
+
+    it('si la archivada es otra técnica, el selector no cambia', async () => {
+      await mount('t-2');
+      fixture.componentRef.setInput('archivedId', 't-1');
+      await respond();
+
+      expect(toggle().textContent!.trim()).toBe('Cirugía general · Tiroidectomía');
+    });
+
+    it('sin ninguna archivada no hay pastilla', async () => {
+      await mount('t-2');
+      await respond();
+
+      expect(root.querySelector('.archived')).toBeNull();
+    });
+  });
 });

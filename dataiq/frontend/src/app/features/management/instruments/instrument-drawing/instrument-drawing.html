@@ -1,0 +1,13 @@
+@if (parts(); as parts) {
+  <svg
+    viewBox="-20 -6 40 114"
+    aria-hidden="true"
+    [style.--steel-fill]="'url(#' + steelId + ')'"
+    [style.--blade-fill]="'url(#' + bladeId + ')'"
+  >
+    <defs app-steel-gradients [steelId]="steelId" [bladeId]="bladeId" />
+    <g transform="scale(1.15 1)">
+      <g app-drawing-parts [parts]="parts" />
+    </g>
+  </svg>
+}

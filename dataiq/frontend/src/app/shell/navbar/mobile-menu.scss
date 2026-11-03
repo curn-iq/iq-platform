@@ -114,3 +114,15 @@ a.framed {
     color: var(--color-accent-strong);
   }
 }
+
+// La cifra de un acceso (hoy, las versiones que esperan revisión)
+.count {
+  color: var(--color-text-subtle);
+  font-size: 14px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+
+a.framed[aria-current='page'] .count {
+  color: inherit;
+}

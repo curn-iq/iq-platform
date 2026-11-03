@@ -5,10 +5,9 @@ import { Router, RouterLink } from '@angular/router';
 import { describeApiError } from '../../../core/http/error-message';
 import { SessionService } from '../../../core/session/session.service';
 import { TechniquesRepository } from '../../../data/techniques.repository';
-import { VersionsRepository } from '../../../data/versions.repository';
 import { editAction } from '../../../domain/edit-action';
 import { FIRST_EDITOR_STEP } from '../../../domain/editor-steps';
-import { hasAtLeast } from '../../../domain/role';
+import { TechniqueInProgress } from '../technique-in-progress';
 
 /** Lo que dice el botón si la API no explica el 409. */
 const IN_PROGRESS_FALLBACK = 'La técnica ya tiene una versión en curso';
@@ -39,20 +38,8 @@ export class TechniqueEditAction {
   private readonly session = inject(SessionService);
   private readonly techniques = inject(TechniquesRepository);
 
-  private readonly allowed = computed(() => {
-    const role = this.session.role();
-    return role !== null && hasAtLeast(role, 'contributor');
-  });
-  private readonly inProgress = inject(VersionsRepository).list(() =>
-    this.allowed() ? { state: ['draft', 'in_review'] } : undefined,
-  );
-
-  /** Se sabe qué hay en curso, o no se pudo saber. */
-  private readonly known = computed(
-    () =>
-      this.inProgress.hasValue() ||
-      (!this.inProgress.isLoading() && this.inProgress.error() !== undefined),
-  );
+  // Las versiones en curso las pide `TechniqueDetail` una sola vez: «Archivar técnica» usa las mismas
+  private readonly inProgress = inject(TechniqueInProgress);
 
   /**
    * Lo que ofrece el botón, o `undefined` si no corresponde o aún no se sabe. Sin la cuenta no se sabe si
@@ -60,10 +47,9 @@ export class TechniqueEditAction {
    */
   protected readonly action = computed(() => {
     const account = this.session.account();
-    if (!this.allowed() || !this.known() || !account) return undefined;
+    if (!this.inProgress.allowed() || !this.inProgress.known() || !account) return undefined;
     const id = this.techniqueId();
-    const versions = this.inProgress.hasValue() ? (this.inProgress.value() ?? []) : [];
-    const version = versions.find((item) => item.technique_id === id);
+    const version = this.inProgress.versions().find((item) => item.technique_id === id);
     return editAction(version, account.id);
   });
 

@@ -1,0 +1,171 @@
+<form class="entry" [class.editing]="editing()" novalidate (submit)="submit($event)">
+  <nav class="route" aria-label="Ruta">
+    Instrumental
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+      <path
+        d="M4.5 2.5L8 6l-3.5 3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    @if (editsAll()) {
+      <span class="category-select">
+        <app-select-field
+          label="Categoría"
+          placeholder="Elegir categoría"
+          [options]="categoryOptions()"
+          [value]="draft().categoryId"
+          (valueChange)="patch({ categoryId: $event })"
+        />
+      </span>
+    } @else {
+      {{ entry()?.category }}
+    }
+  </nav>
+
+  <header class="head">
+    <div class="titles">
+      @if (editsAll()) {
+        <label class="sr-only" for="instrument-name">Nombre canónico</label>
+        <input
+          #nameField
+          id="instrument-name"
+          class="name-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Nombre canónico"
+          [value]="draft().name"
+          (input)="onName($event)"
+        />
+        @if (nameOwner(); as owner) {
+          <p class="duplicate" role="alert">
+            {{ duplicateText(owner) }}
+            <a [routerLink]="['/gestion/instrumental', owner.id]">Abrir esa entrada</a>
+          </p>
+        }
+      } @else {
+        <h1>{{ entry()?.name }}</h1>
+      }
+      <p class="summary">{{ summary() }}</p>
+    </div>
+    @if (!editing()) {
+      <button type="button" class="edit" (click)="editRequested.emit('edit')">
+        <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M10.5 2.5l3 3-8 8H2.5v-3z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Editar esta entrada
+      </button>
+    }
+  </header>
+
+  <div class="body" [class.with-drawing]="hasDrawing()">
+    <div class="blocks">
+      <section class="block">
+        @if (editing()) {
+          <app-textarea-field
+            label="Descripción"
+            placeholder="Qué es y para qué se usa, en una o dos frases."
+            [value]="draft().description"
+            (valueChange)="patch({ description: $event })"
+          />
+          <p class="help">Es la que se muestra al tocar la pieza en 3D.</p>
+          @if (draft().description.trim() !== '') {
+            <app-text-field
+              label="Fuente de la descripción"
+              [badge]="sourceMissing() ? 'Falta' : ''"
+              [value]="draft().source"
+              (valueChange)="patch({ source: $event })"
+            />
+            <p class="help">De dónde sale: un enlace o un libro.</p>
+          }
+        } @else {
+          <h2>Descripción</h2>
+          @if (entry()?.description; as description) {
+            <p class="description">{{ description }}</p>
+            @if (entry()?.description_source; as source) {
+              <p class="source">Fuente: {{ source }}</p>
+            }
+          } @else {
+            <p class="no-description">
+              Sin descripción todavía. Es la que se muestra al tocar la pieza en 3D.
+              <button type="button" (click)="editRequested.emit('description')">
+                Escribir descripción
+              </button>
+            </p>
+          }
+        }
+      </section>
+
+      <section class="block">
+        @if (editsAll()) {
+          <app-chip-list
+            label="También se escribe así"
+            inputLabel="Agregar alias"
+            [names]="draft().aliases"
+            (added)="addAlias($event)"
+            (removed)="removeAlias($event)"
+          />
+          <p class="help">Como aparece en las fichas; así se reconoce al cargar técnicas.</p>
+          @if (aliasOwner(); as owner) {
+            <p class="duplicate" role="alert">
+              {{ duplicateText(owner) }}
+              <a [routerLink]="['/gestion/instrumental', owner.id]">Abrir esa entrada</a>
+            </p>
+          }
+        } @else {
+          <h2>También se escribe así</h2>
+          @if (entry()?.aliases?.length) {
+            <p class="aliases">
+              @for (alias of entry()!.aliases; track $index) {
+                <span>{{ alias }}</span>
+              }
+            </p>
+          } @else {
+            <p class="nothing">Sin otros nombres en las fichas.</p>
+          }
+        }
+      </section>
+    </div>
+    @if (hasDrawing()) {
+      <app-instrument-drawing class="drawing" [name]="entry()!.name" />
+    }
+  </div>
+
+  <div class="where" [class.dimmed]="editing()">
+    <app-where-it-goes [placements]="placements()" [specialties]="specialties()" />
+  </div>
+
+  @if (editing()) {
+    <div class="save-bar">
+      <p class="impact">
+        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.7" />
+          <path
+            d="M10 6v5M10 13.6v.4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>{{ impact() }}</span>
+      </p>
+      <div class="buttons">
+        <button app-button variant="soft" type="button" (click)="cancelled.emit()">Cancelar</button>
+        <button app-button type="submit" [disabled]="!savable() || saving()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  }
+</form>

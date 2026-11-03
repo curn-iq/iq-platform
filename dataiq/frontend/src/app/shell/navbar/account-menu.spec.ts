@@ -1,7 +1,8 @@
 import { HttpTestingController } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { SessionService } from '../../core/session/session.service';
 import type { Account } from '../../data/api/models';
 import type { Role } from '../../domain/role';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
@@ -96,6 +97,83 @@ describe('AccountMenu', () => {
       'Instrumental',
       'Usuarios y roles',
     ]);
+  });
+
+  describe('la cifra de «Por revisar»', () => {
+    const inReview = (id: string, createdBy: string) => ({
+      id,
+      technique_id: `t-${id}`,
+      technique: `Técnica ${id}`,
+      specialty: 'Cirugía general',
+      number: 2,
+      state: 'in_review',
+      created_by: createdBy,
+      author: 'Daniela Ortiz',
+      updated_at: '2026-10-01T09:00:00',
+    });
+    const isList = (r: { url: string }) => r.url === `${TEST_API_BASE}/versions`;
+    const counts = () =>
+      Array.from(root().querySelectorAll('.links a')).map(
+        (a) => a.querySelector('.count')?.textContent?.trim() ?? null,
+      );
+
+    /**
+     * Abre el panel con una cuenta que la sesión también conoce, como en la aplicación. No espera a
+     * que la aplicación quede estable: la petición de la cifra sigue pendiente hasta que la prueba
+     * la responde.
+     */
+    async function openSignedIn(role: Role): Promise<HttpTestingController> {
+      const account: Account = { id: 'u-1', name: 'Laura Pérez', email: 'l@correo.com', role };
+      TestBed.overrideProvider(SessionService, {
+        useValue: { account: signal(account), role: signal(role) },
+      });
+      fixture = TestBed.createComponent(AccountMenu);
+      fixture.componentRef.setInput('account', account);
+      await settle();
+      return TestBed.inject(HttpTestingController);
+    }
+
+    async function settle(): Promise<void> {
+      for (let i = 0; i < 3; i++) {
+        await Promise.resolve();
+        TestBed.tick();
+      }
+      fixture.detectChanges();
+    }
+
+    it('pide las versiones en revisión al abrirse y cuenta las de otras personas', async () => {
+      const http = await openSignedIn('reviewer');
+
+      const request = http.expectOne(isList);
+      expect(request.request.params.getAll('state')).toEqual(['in_review']);
+      request.flush([inReview('a', 'u-autor'), inReview('b', 'u-1'), inReview('c', 'u-otro')]);
+      await settle();
+
+      expect(counts()).toEqual([null, '2', null]);
+    });
+
+    it('hasta que llega la respuesta no pone ninguna: no se sabe', async () => {
+      const http = await openSignedIn('reviewer');
+
+      expect(counts()).toEqual([null, null, null]);
+      http.expectOne(isList).flush([]);
+    });
+
+    it('si nadie espera, dice 0', async () => {
+      const http = await openSignedIn('admin');
+
+      http.expectOne(isList).flush([]);
+      await settle();
+
+      expect(counts()).toEqual([null, '0', null, null]);
+    });
+
+    it('un colaborador no la pide ni la ve', async () => {
+      const http = await openSignedIn('contributor');
+
+      http.expectNone(isList);
+      expect(counts()).toEqual([null]);
+    });
   });
 
   it('marca el acceso de la página actual, también en una subruta', async () => {
