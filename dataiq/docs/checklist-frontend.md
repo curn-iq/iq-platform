@@ -111,6 +111,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Aprobar y publicar (409 si otro revisor ya decidió) y Devolver (Resuelto 60): los comentarios por sección y por objeto, y la nota general, se juntan en el `reason`, una línea por comentario (Resuelto 18)
 - [x] Archivar técnica desde «Más acciones» del detalle (Resuelto 61) (409 con una versión en curso). Al archivar, el detalle se queda con el aviso «Técnica archivada…» y sin los módulos; no hay lista de archivadas (Resuelto 21)
 - [x] Catálogo de instrumental (Resuelto 62): índice por categoría, búsqueda por nombre o alias, «Dónde va» (calculado con `GET /catalog/full`, Resuelto 19), crear y editar en su sitio, alias incluidos (el `PATCH` reemplaza la lista); la descripción siempre con su fuente (`description_source`; sin ella la API responde 422)
+- [ ] La revisión pide la versión publicada de su técnica con `GET /versions?state=published&technique_id=…` y no la lista de todas las publicadas, cuando el filtro de la pieza 12 de [`checklist-backend.md`](checklist-backend.md) entre a `main`
 
 ### Fase 8 — Gestión del admin
 

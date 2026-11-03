@@ -7,6 +7,7 @@ from app.domain.chat import (
     Vocabulary,
     answer,
 )
+from app.domain.names import asked_action
 from tests.sample import (
     ALLIS,
     CATALOG,
@@ -267,3 +268,47 @@ def test_an_object_without_number_does_not_say_none():
     assert "None" not in where.reply and "n.º" not in where.reply
     assert "None" not in listed.reply
     assert "- Pinza Kelly" in listed.reply
+
+
+def test_the_action_comes_from_what_the_question_asks():
+    assert asked_action("¿Qué es la Kelly?", with_instrument=True) == (
+        ChatAction.describe_instrument,
+        None,
+    )
+    assert asked_action("Háblame de la Allis", with_instrument=True)[0] == (
+        ChatAction.describe_instrument
+    )
+    assert asked_action("¿Dónde va la Kelly?", with_instrument=True)[0] == (
+        ChatAction.highlight_instrument
+    )
+    assert asked_action("Complicaciones de la mastectomía", False) == (
+        ChatAction.show_clinical_data,
+        ClinicalField.complications,
+    )
+    assert asked_action("Dame el instrumental", False)[0] == (
+        ChatAction.list_instruments
+    )
+    assert asked_action("Muéstrame la mastectomía", False)[0] == (
+        ChatAction.show_technique
+    )
+    assert asked_action("¿Qué es la hemicolectomía derecha?", False) == (
+        ChatAction.show_clinical_data,
+        ClinicalField.description,
+    )
+    assert asked_action("¿Qué es lo que va arriba a la derecha?", False)[0] == (
+        ChatAction.show_technique
+    )
+    assert asked_action("¿Cuándo se indica una hemicolectomía?", False) == (
+        ChatAction.show_clinical_data,
+        ClinicalField.indications,
+    )
+
+
+def test_comparing_or_counting_is_not_asking_for_the_list():
+    for question in (
+        "¿Qué instrumentos comparten la mastectomía y la tiroidectomía?",
+        "¿Cuántos instrumentos lleva la colecistectomía?",
+    ):
+        assert asked_action(question, with_instrument=False)[0] == (
+            ChatAction.show_technique
+        )

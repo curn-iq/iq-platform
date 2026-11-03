@@ -150,6 +150,12 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     - **Después:** Mis borradores la usa en lugar de `getMany` (fase 6 de
       [`checklist-frontend.md`](checklist-frontend.md)). Los tipos del
       frontend ya se regeneraron con la ruta (`npm run api:types`)
+    - [ ] Limitar `reviewed_by_me=true&include=content` antes de que una
+      pantalla la use (la revisión de la fase 7, por ejemplo): sin `state`, un
+      revisor recibe el contenido completo de todo lo que aprobó o rechazó,
+      también lo reemplazado, y la lista no tiene límite. Se limita con
+      `state` o con paginación. Mis borradores no la pide así (observación de
+      Juan en el PR #55, 2026-11-02)
 12. [ ] Filtro por técnica en `GET /versions`. A cargo de Mauricio Lugo
     (asignado por Juan el 2026-11-02; hallazgo de la revisión de la fase 7
     del frontend)
@@ -168,7 +174,8 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
     - **Después:** la pantalla de revisión pide
       `GET /versions?state=published&technique_id=…` en lugar de la lista
       completa (fase 7 de [`checklist-frontend.md`](checklist-frontend.md)).
-      Se hace en otro PR, después de que el del backend entre a `main`
+      Va en el PR de la fase 7 del frontend, después de que el del backend
+      entre a `main`
 
 ## Hallazgos de seguridad pendientes
 

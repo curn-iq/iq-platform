@@ -23,8 +23,10 @@ from app.domain.chat import ChatAction, Reply, Vocabulary, the
 from app.domain.grounding import unsupported
 from app.domain.guards import before_the_model
 from app.domain.names import (
+    asked_action,
     asks_to_describe,
     contains,
+    instrument_in,
     instruments_in,
     technique_in,
 )
@@ -304,6 +306,9 @@ class OllamaAgent:
             return await self._fall_back(question, catalog, open_technique_id)
         if scene is None:
             scene = _implied_scene(text, question, results, catalog, open_technique_id)
+        elif scene.instrument is None:
+            # Abrió la técnica sin el instrumento por el que se preguntó
+            scene = _asked_in(scene.technique, question, catalog) or scene
         if did_you_mean:
             return Reply(
                 ChatAction.clarify,
@@ -313,17 +318,41 @@ class OllamaAgent:
             )
         options = _follow_ups(results, scene)
         if scene is None:
+            # «¿Qué es la tijera de Mayo?» sin técnica: la ficha es la del instrumento
+            described = _described_instrument(question, catalog)
+            if described:
+                return Reply(
+                    ChatAction.describe_instrument,
+                    text,
+                    instrument_id=described.id,
+                    options=options,
+                    answered_by=self.name,
+                )
             return Reply(
                 ChatAction.answer, text, options=options, answered_by=self.name
             )
+        # Lo que hace el visor sale de la pregunta, con la misma regla de las
+        # plantillas: el modelo escribe el texto, no decide si se describe, si se
+        # muestra un dato clínico o la lista (names.asked_action)
+        if scene.instrument and not instruments_in(
+            question, Vocabulary.from_catalog(catalog)
+        ):
+            about_technique, _ = asked_action(question, with_instrument=False)
+            if about_technique in (
+                ChatAction.list_instruments,
+                ChatAction.show_clinical_data,
+            ):
+                # Pidió la lista o un dato de la técnica: la pieza que nombra la
+                # respuesta no se señala
+                scene = tools.Scene(scene.technique)
         instrument = scene.instrument
+        action, field = asked_action(question, with_instrument=instrument is not None)
         return Reply(
-            ChatAction.highlight_instrument
-            if instrument
-            else ChatAction.show_technique,
+            action,
             text,
             technique_id=scene.technique.id,
             instrument_id=instrument.id if instrument else None,
+            field=field,
             options=options,
             answered_by=self.name,
         )
@@ -491,12 +520,30 @@ def _implied_scene(
     if technique is None:
         return None
     vocabulary = Vocabulary.from_catalog(catalog)
-    asked = instruments_in(question, vocabulary)
-    for name in asked or instruments_in(text, vocabulary)[:1]:
+    if instruments_in(question, vocabulary):
+        return _asked_in(technique, question, catalog) or tools.Scene(technique)
+    for name in instruments_in(text, vocabulary)[:1]:
         instrument = find_instrument(catalog, name)
         if instrument and item_with(technique, instrument.id):
             return tools.Scene(technique, instrument)
     return tools.Scene(technique)
+
+
+def _asked_in(technique, question: str, catalog: Catalog) -> tools.Scene | None:
+    """La técnica con el instrumento por el que se preguntó, si va en su mesa."""
+    for name in instruments_in(question, Vocabulary.from_catalog(catalog)):
+        instrument = find_instrument(catalog, name)
+        if instrument and item_with(technique, instrument.id):
+            return tools.Scene(technique, instrument)
+    return None
+
+
+def _described_instrument(question: str, catalog: Catalog):
+    """El instrumento que la pregunta pide describir («¿qué es la Kelly?»), si hay."""
+    if not asks_to_describe(question):
+        return None
+    name = instrument_in(question, Vocabulary.from_catalog(catalog))
+    return find_instrument(catalog, name) if name else None
 
 
 def _follow_ups(results: list[dict], scene: tools.Scene | None) -> tuple[str, ...]:

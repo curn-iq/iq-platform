@@ -121,9 +121,10 @@ NUMBERS = {
     12: ("doce",),
 }
 
-# Las acciones que abren su técnica en el visor; solo highlight_instrument
-# resalta. answer, clarify y no_answer no cambian la escena (contrato de
-# POST /chat, en el README del backend).
+# Las acciones que señalan su instrumento (describir, además, abre la ficha) y
+# las que abren su técnica en el visor. answer, clarify y no_answer no cambian
+# la escena (contrato de POST /chat, en el README del backend).
+HIGHLIGHTS = {ChatAction.highlight_instrument, ChatAction.describe_instrument}
 OPENS = {
     ChatAction.show_technique,
     ChatAction.highlight_instrument,
@@ -261,6 +262,13 @@ def _instruments(technique: Technique, catalog: Catalog) -> list[Instrument]:
     return [i for i in catalog.instruments if i.id in ids]
 
 
+def _clinical_field(field: str) -> ClinicalField:
+    """El dato que muestra la respuesta: anestesia y posición van juntas."""
+    if field in ("anesthesia", "patient_position"):
+        return ClinicalField.anesthesia_position
+    return ClinicalField(field)
+
+
 def _field_text(technique: Technique, field: str) -> str | None:
     if field == "anesthesia":
         return technique.anesthesia
@@ -313,9 +321,8 @@ def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
     other = find_technique(catalog, q.other_technique)
     text = reply.reply
     opened = reply.technique_id if reply.action in OPENS else None
-    highlighted = (
-        reply.instrument_id if reply.action == ChatAction.highlight_instrument else None
-    )
+    # Describir también señala la pieza en el visor, además de abrir su ficha
+    highlighted = reply.instrument_id if reply.action in HIGHLIGHTS else None
     match q.expects:
         case "mostrar":
             if opened == t.id:
@@ -337,15 +344,33 @@ def score(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, str]:
                 return True, ""
             return False, "ni pregunta en cuál técnica ni nombra todas"
         case "describir":
-            if _covers(text, i.description) or _covers_a_sentence(text, i.description):
-                return True, ""
-            return False, "no trae la descripción de DataIQ"
+            if not (
+                _covers(text, i.description) or _covers_a_sentence(text, i.description)
+            ):
+                return False, "no trae la descripción de DataIQ"
+            if (reply.action, reply.instrument_id) != (
+                ChatAction.describe_instrument,
+                i.id,
+            ):
+                return False, "el visor no abre la ficha del instrumento"
+            return True, ""
         case "dato":
-            if _covers(text, _field_text(t, q.field)):
-                return True, ""
-            return False, "no trae el dato de DataIQ"
+            if not _covers(text, _field_text(t, q.field)):
+                return False, "no trae el dato de DataIQ"
+            if (reply.action, opened, reply.field) != (
+                ChatAction.show_clinical_data,
+                t.id,
+                _clinical_field(q.field),
+            ):
+                return False, "la acción no es ese dato clínico de la técnica"
+            return True, ""
         case "listar":
-            return _all_named(text, _instruments(t, catalog))
+            named, reason = _all_named(text, _instruments(t, catalog))
+            if not named:
+                return False, reason
+            if (reply.action, opened) != (ChatAction.list_instruments, t.id):
+                return False, "el visor no muestra la lista de la técnica"
+            return True, ""
         case "contar_objetos":
             n = len(t.mayo_items())
             return (True, "") if _says_number(text, n) else (False, f"no dice {n}")
