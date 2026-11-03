@@ -1,6 +1,7 @@
-# Frontend de DataIQ: build y pruebas en cada PR, y que los tipos de la API
-# (src/app/data/api/schema.d.ts) coincidan con el backend. El despliegue llega
-# en la fase 9 (dataiq/docs/checklist-frontend.md).
+# Frontend de DataIQ (con el shell): build y pruebas en cada PR, y que los
+# tipos de la API (src/app/data/api/schema.d.ts) coincidan con el backend. En
+# main, el despliegue a Vercel (producción): dataiq/frontend/README.md,
+# «Despliegue».
 
 name: DataIQ frontend
 
@@ -13,6 +14,13 @@ on:
       - "docs/privacidad.md"
       # Un cambio de rutas o esquemas del backend obliga a regenerar los tipos
       - "dataiq/backend/app/**"
+      - ".github/workflows/dataiq-frontend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "dataiq/frontend/**"
+      - "shared/design/**"
+      - "docs/privacidad.md"
       - ".github/workflows/dataiq-frontend.yml"
 
 permissions:
@@ -59,3 +67,36 @@ jobs:
             echo "::error::schema.d.ts no coincide con el backend: correr 'npm run api:types' en dataiq/frontend y subir el archivo"
             exit 1
           }
+
+  deploy:
+    name: Despliegue en Vercel (producción)
+    needs: [test, api-types]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Un despliegue a la vez: si llegan dos pushes seguidos, el segundo espera
+    concurrency: vercel-produccion-dataiq-frontend
+    env:
+      # No son secretos: identifican la cuenta y el proyecto de Vercel
+      VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
+      VERCEL_PROJECT_ID: prj_fPY7pjGBtWRUrFBCo6F7aMBMVlT9
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: dataiq/frontend/package-lock.json
+      - run: npm ci
+      - run: npx ng build
+      # Se publica lo construido, con vercel.json (rutas y encabezados) al lado.
+      # Vercel no lo construye: el build lee ../../shared/design/ y
+      # ../../docs/privacidad.md, que están fuera de esta carpeta.
+      - name: Carpeta que se publica
+        run: |
+          mkdir -p "$RUNNER_TEMP/deploy"
+          cp -r dist/dataiq/browser/. "$RUNNER_TEMP/deploy/"
+          cp vercel.json "$RUNNER_TEMP/deploy/"
+      # El plan Hobby no conecta repos de una organización de GitHub: por eso
+      # se despliega con el CLI y un token
+      - working-directory: ${{ runner.temp }}/deploy
+        run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
