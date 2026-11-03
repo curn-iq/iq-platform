@@ -50,6 +50,10 @@ async def list_versions(
     state: Annotated[list[VersionState] | None, Query()] = None,
     mine: bool = False,
     reviewed_by_me: bool = False,
+    technique_id: Annotated[
+        UUID | None,
+        Query(description="Solo las versiones de esa técnica"),
+    ] = None,
     include: Annotated[
         Literal["content"] | None,
         Query(
@@ -63,7 +67,9 @@ async def list_versions(
     suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
     `include=content`, cada una con su contenido y sus rechazos, en la misma
-    respuesta: así Mis borradores no pide cada versión por separado."""
+    respuesta: así Mis borradores no pide cada versión por separado. Con
+    `technique_id`, solo las de esa técnica: la revisión busca así la publicada
+    de la técnica que se edita, sin traer las de todo el catálogo."""
     require_role(account.role, Role.contributor)
     if reviewed_by_me:
         require_role(account.role, Role.reviewer)
@@ -74,14 +80,20 @@ async def list_versions(
         reviewed_by = None
     if include == "content":
         details = await versions.list_details(
-            states, created_by=created_by, reviewed_by=reviewed_by
+            states,
+            created_by=created_by,
+            reviewed_by=reviewed_by,
+            technique_id=technique_id,
         )
         body = version_details.dump_json(
             [VersionDetailOut.model_validate(v) for v in details]
         )
     else:
         found = await versions.list_all(
-            states, created_by=created_by, reviewed_by=reviewed_by
+            states,
+            created_by=created_by,
+            reviewed_by=reviewed_by,
+            technique_id=technique_id,
         )
         body = version_list.dump_json(
             [VersionSummaryOut.model_validate(v) for v in found]
