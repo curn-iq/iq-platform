@@ -76,39 +76,113 @@ instrumento: [`models/README.md`](models/README.md).
 
 ## Chat
 
-Decidido por Mauricio el 2026-10-15:
+Decidido por Mauricio el 2026-10-15. El reparto entre el modelo y DataIQ lo
+cambió Mauricio el 2026-11-03, después de probar el chat en producción.
 
-- **Un agente que consulta DataIQ** (*tool calling*, cambio decidido por
-  Mauricio el 2026-10-27). El modelo no responde con lo que sabe: tiene
-  consultas sobre el catálogo (ver las técnicas, buscar un instrumento y en qué
-  mesas va, comparar dos mesas, mostrar algo en el visor), decide cuáles usar y
-  en cuántos pasos, y redacta la respuesta con lo que devolvieron. Así responde
-  preguntas que nadie programó («¿en cuántas técnicas se usa la Allis?», «¿qué
-  lleva la tiroidectomía que no lleve la colecistectomía?»). Antes, el modelo
-  solo elegía una de seis acciones y el texto salía de plantillas: eso no
-  justificaba usar IA, porque para cada tipo de pregunta nuevo había que
-  programar una acción.
-- **Riesgo aceptado: el texto lo redacta el modelo**, y un modelo puede
-  inventar. Se controla así:
-  - el modelo solo ve lo que devuelven las consultas;
-  - antes de responder, el backend verifica el texto: cada técnica, cada
-    instrumento, cada número y cada ubicación («arriba a la derecha») tiene que
-    estar en esos resultados; rechaza las generalizaciones falsas («en todas va
-    en el mismo lugar») y cualquier mención de filas, columnas o celdas;
-  - si no pasa la verificación, si no consultó nada o si no termina en seis
-    pasos, responden las plantillas de antes, que solo usan datos de DataIQ;
-  - lo que se ve en 3D sale de la consulta del visor (`show_in_3d`), con ids
-    reales. Si el modelo no la usó, el visor abre la técnica abierta (o la
-    única que nombra la respuesta) y resalta el instrumento por el que se
-    preguntó, si va en esa mesa; solo si la pregunta no nombra ninguno, el
-    primero que nombra la respuesta. Siempre con ids de DataIQ: la respuesta
-    nombra también a los vecinos («junto a la Kelly Adson»), y resaltar uno de
-    ellos señalaría otro instrumento.
+- **El modelo entiende y DataIQ responde.** El modelo de lenguaje lee la
+  pregunta, con la técnica abierta en el visor y las preguntas anteriores de la
+  conversación, y la convierte en una lista de **pedidos** (*tool calling*:
+  varios en un mismo turno si la pregunta pide varias cosas). El backend
+  resuelve cada pedido con los datos de DataIQ y su plantilla, y la respuesta
+  une los resultados en el orden en que se pidieron. El modelo no redacta el
+  texto que lee el estudiante.
 
-  La verificación compara nombres y números, no el sentido de las frases:
-  una afirmación falsa escrita solo con palabras puede pasar. Por eso la
-  evaluación mide las respuestas inventadas (ver «Cómo se evalúa») y el
-  registro guarda qué respondió el modelo y qué las plantillas.
+  | Pedido | Ejemplo | Qué responde |
+  |---|---|---|
+  | `locate` | «¿Dónde va la Kelly?» | La zona de la mesa, lo que tiene al lado y el número del diagrama |
+  | `describe` | «¿Qué es la tijera de Mayo?» | La descripción del instrumento |
+  | `clinical_data` | «Indicaciones de la mastectomía» | Un dato clínico: para qué sirve, indicaciones, complicaciones, o anestesia y posición |
+  | `list_instruments` | «¿Qué lleva la mesa de la mastectomía?» | La mesa de Mayo completa, por número |
+  | `show_technique` | «Muéstrame la colecistectomía» | Abre la técnica en el visor |
+  | `find_instrument` | «¿En qué técnicas va la Allis?» | Las técnicas donde va, con el total |
+  | `compare` | «¿Qué lleva la tiroidectomía que no lleve la colecistectomía?» | Lo que comparten, lo que lleva solo la primera o en qué se diferencian |
+  | `rank` | «¿Qué técnica lleva más objetos?» | Las técnicas por número de objetos en la mesa |
+  | `out_of_scope` | «Tiempos quirúrgicos de la mastectomía», «la cesárea» | Qué no tiene SIMIQ3D y qué sí (ver abajo) |
+  | `greeting` | «Hola», «¿Qué puedes hacer?» | Qué hace el chat, con preguntas de ejemplo |
+
+  Si un nombre no alcanza para saber de qué se habla («el bisturí» en una mesa
+  que lleva varios, un nombre parecido a otro), la respuesta pregunta cuál, con
+  cada opción, en vez de adivinar.
+
+- **Por qué así.** Las guías de quienes desarrollan los modelos de lenguaje
+  separan entender de responder:
+  - OpenAI usa el modelo para lo que las reglas fijas no resuelven, como
+    interpretar lenguaje natural y conversar, y deja las reglas fijas
+    (listas, expresiones regulares) para amenazas conocidas
+    ([*A practical guide to building agents*](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)).
+  - Anthropic recomienda la solución más simple que funcione y describe dos
+    patrones que encajan aquí: clasificar la entrada y mandarla a quien la
+    resuelve (*routing*), y partir la tarea en partes independientes
+    (*sectioning*)
+    ([*Building effective agents*](https://www.anthropic.com/engineering/building-effective-agents)).
+    Para reducir lo inventado, recomienda restringir al modelo a la
+    información que se le da
+    ([*Reduce hallucinations*](https://platform.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations)).
+  - Rasa CALM usa el modelo para entender a la persona y ejecuta la lógica
+    del negocio de forma determinista, con respuestas de plantillas
+    ([*Thinking CALMly*](https://rasa.com/docs/rasa-pro/building-assistants/thinking-calmly)).
+
+  Antes era al revés: expresiones regulares decidían qué se preguntaba y el
+  modelo redactaba. En una conversación en producción del 2026-11-02, el
+  modelo respondió 4 de 10 preguntas y las reglas fijas las otras 6, con una
+  sola cosa por mensaje, aunque se pidieran varias.
+- **Respuestas cooperativas.** Si una parte de la pregunta está fuera de
+  alcance, se responde el resto, y una línea al final dice qué no tiene
+  SIMIQ3D y qué sí. Nunca queda «sin respuesta» una pregunta que tenía algo
+  que responder. Es el principio cooperativo de Grice, en el que se basan las
+  guías de conversación de Google: decir de menos es tan poco cooperativo
+  como decir de más
+  ([*Learn about conversation*](https://developers.google.com/assistant/conversation-design/learn-about-conversation)).
+  Microsoft pide degradar el servicio con gracia cuando el sistema no está
+  seguro, y mostrar desde el inicio qué puede hacer
+  ([guías 10 y 1 de interacción humano-IA](https://www.microsoft.com/en-us/haxtoolkit/library/pattern/)):
+  eso es el pedido `saludo`.
+- **Lo que queda fuera, a propósito,** con su respuesta definida:
+  - los tiempos quirúrgicos y el orden en que se usa el instrumental, que
+    DataIQ no tiene;
+  - las preguntas clínicas que DataIQ no trae (dosis, diagnósticos,
+    tratamientos);
+  - las técnicas de otras especialidades y las que DataIQ no tiene;
+  - la conversación libre, fuera del saludo.
+- **Contexto.** Para entender un seguimiento («¿y para qué sirve?», «¿y en la
+  tiroidectomía?»), el modelo recibe las preguntas anteriores como turnos de
+  la conversación, cada una con los pedidos que salieron de ella. `POST /chat`
+  devuelve los pedidos de cada respuesta, y el frontend los manda de vuelta
+  con las preguntas siguientes; el backend no guarda la conversación. Con un
+  resumen en el contexto («la respuesta anterior habló de la Kelly Adson»), el
+  modelo se quedaba con la técnica abierta en el visor; con los turnos, no.
+- **El visor muestra una sola cosa.** Si la respuesta tiene varios pedidos, la
+  escena es la del más visual (ubicar, listar o mostrar) y el texto cubre el
+  resto.
+- **Qué cambia respecto al 2026-10-27.** Ese día el modelo pasó a redactar la
+  respuesta, porque elegir una de seis acciones, con el texto de plantillas,
+  no justificaba usar IA. Ahora el modelo hace lo que sí la justifica según
+  OpenAI: interpretar lenguaje natural, varias intenciones en un mensaje y el
+  contexto de la conversación. Deja de redactar, que es donde estaba el riesgo
+  de inventar: el texto sale de DataIQ. Lo que se pierde: una pregunta que no
+  encaja en ningún pedido se responde como fuera de alcance, aunque el modelo
+  hubiera podido contestarla con las consultas. El registro anónimo muestra
+  cuáles aparecen, para agregar pedidos.
+- **Riesgo aceptado: el modelo puede entender mal** (elegir otro pedido u otra
+  técnica), y la respuesta sería verdadera pero de otra pregunta. Se controla
+  así, como recomienda OpenAI con protecciones en capas sobre lo que devuelve
+  el modelo:
+  - cada nombre de un pedido se resuelve contra los nombres y alias de DataIQ;
+    si no está, o si nombra una familia con varios en la mesa, se aclara en
+    vez de adivinar;
+  - una técnica o un instrumento que no nombró la conversación, ni es la
+    técnica abierta, no cuenta: sin técnica abierta, el modelo ponía una de la
+    lista en «¿Dónde va la Kelly?», y la respuesta decía que no iba en ella;
+  - si el modelo dice que la pregunta no trata de estas técnicas, pero nombra
+    una de ellas o un instrumento de sus mesas, responden las reglas fijas;
+  - si la pregunta pide tiempos quirúrgicos, la respuesta siempre dice que
+    DataIQ no los tiene, aunque el modelo no lo haya marcado;
+  - el banco de preguntas mide si se eligieron los pedidos correctos, por tipo
+    de pregunta;
+  - si el Servidor PC2 está lento u ocupado, las reglas fijas interpretan la
+    pregunta como antes, con una sola cosa por mensaje, y la respuesta sale de
+    las mismas plantillas. Si está apagado, el chat queda no disponible y el
+    visor sigue funcionando.
 - **Dónde va cada cosa, dicho como en la práctica:** la cuadrícula de DataIQ
   es cómo se guarda el arreglo, no cómo se habla de él (la mesa real es un
   campo sin líneas). El chat ubica cada objeto por la zona de la mesa
@@ -120,12 +194,12 @@ Decidido por Mauricio el 2026-10-15:
 - **Errores de escritura:** si un nombre se parece mucho a una técnica o a un
   instrumento («masectomia», «pinza allys»), el chat no adivina: responde
   «¿Quizás quisiste decir…?» con la pregunta corregida como opción.
-- **Lo que se decide sin el modelo, se decide sin el modelo:** una técnica de
-  otra especialidad («la cesárea») o un instrumento nombrado por su familia en
-  una mesa que lleva varios («el bisturí» de la eventrorrafia) se responden con
-  reglas fijas, antes de preguntarle al modelo. Una técnica descrita sin
-  nombrarla («la cirugía para quitar la vesícula») se reconoce por las palabras
-  de su descripción en DataIQ que solo están en ella; si hay empate, no adivina.
+- **Los nombres se resuelven sin el modelo:** una técnica de otra especialidad
+  («la cesárea») o un instrumento nombrado por su familia en una mesa que lleva
+  varios («el bisturí» de la eventrorrafia) se reconocen al resolver los
+  nombres del pedido contra DataIQ. Una técnica descrita sin nombrarla («la
+  cirugía para quitar la vesícula») se reconoce por las palabras de su
+  descripción en DataIQ que solo están en ella; si hay empate, no adivina.
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB
   de RAM), con una dirección HTTPS fija de Tailscale Funnel, como el Servidor
@@ -238,9 +312,10 @@ técnica del chat; lo demás está en
   1. **Exactitud del chat:** porcentaje de preguntas respondidas
      correctamente, sobre el banco y sobre el registro de las sesiones de
      evaluación (las preguntas de cada sesión se separan por su fecha y hora,
-     con `chat_log exportar --desde --hasta`); aparte, las respuestas
-     inventadas (meta: ninguna) y cuántas respondió el modelo y cuántas las
-     plantillas de respaldo.
+     con `chat_log exportar --desde --hasta`), por tipo de pregunta (una
+     sola cosa, varias, con una parte fuera de alcance, seguimiento, saludo);
+     aparte, las preguntas que se entendieron mal y cuántas interpretó el
+     modelo y cuántas las reglas fijas de respaldo.
   2. **Tiempo de respuesta:** desde la pregunta hasta que se ve la escena.
   3. La **Escala de Usabilidad del Sistema (SUS)** y el cuestionario de
      pertinencia de la prueba piloto, que el Formato 115 aplica a todo el

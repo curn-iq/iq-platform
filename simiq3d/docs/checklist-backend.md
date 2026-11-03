@@ -74,6 +74,60 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
   clínico con su campo, lista o técnica. El banco califica también la acción
   en «describir», «dato» y «listar»
 
+### El modelo entiende y DataIQ responde
+
+Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
+
+- [x] Comprobar que Qwen3-VL 8B, en Ollama, pide varias consultas en un mismo
+  turno y elige bien entre los pedidos, con las preguntas de la conversación
+  del 2026-11-02, antes de cambiar el agente. Probado el 2026-11-03 en local,
+  con 17 preguntas (las 9 de esa conversación y 8 de otros tipos): con las
+  instrucciones ajustadas, 15 eligieron bien sus pedidos, entre ellas
+  «Dime todo sobre la mastectomía, indicaciones, complicaciones, anestesia y
+  posición, instrumental de la mesa y tiempo quirúrgico», que salió con sus
+  cinco pedidos en un turno. Mediana de 1,7 s por pregunta y máximo de 8,4 s.
+  Fallaron los dos seguimientos, con la conversación como resumen; con la
+  pregunta anterior como turno de la conversación, los 5 seguimientos probados
+  salieron bien. Son preguntas de desarrollo: la medida es el banco
+- [x] Los pedidos como consultas del modelo (`locate`, `describe`,
+  `clinical_data`, `list_instruments`, `show_technique`, `find_instrument`,
+  `compare`, `rank`, `out_of_scope`, `greeting`), cada uno con su plantilla;
+  «el bisturí» o un nombre parecido piden aclarar en vez de adivinar
+- [x] La respuesta une los pedidos en orden; la escena es la del pedido más
+  visual
+- [x] Respuesta parcial: lo que está fuera de alcance va en una línea al final,
+  con lo que sí hay
+- [x] Lo que pide el modelo se valida contra la conversación: una técnica o un
+  instrumento que nadie nombró no cuenta, un «fuera de alcance» que nombra algo
+  de DataIQ pasa a las reglas fijas, y los tiempos quirúrgicos siempre llevan
+  su nota. En el banco, sin técnica abierta, el modelo ponía una técnica de la
+  lista en «¿Dónde va la Kelly?»
+- [x] Contexto: `POST /chat` devuelve los pedidos de cada respuesta y recibe
+  hasta 3 preguntas anteriores con sus pedidos, que van al modelo como turnos
+  de la conversación
+- [x] Respaldo: si el Servidor PC2 está lento u ocupado, las reglas fijas
+  interpretan la pregunta y responden las mismas plantillas; «sin tiempos
+  quirúrgicos» ya no bloquea la pregunta
+- [x] Sin la verificación del texto del modelo (`grounding.py`) ni las
+  consultas que el modelo ya no hace
+- [x] Banco: 21 preguntas de tipos nuevos (varias cosas, una parte fuera de
+  alcance, negación, saludo, seguimiento con la pregunta anterior), con las de
+  la conversación del 2026-11-02. Corrido en local con Qwen3-VL 8B el
+  2026-11-03, antes y después del cambio:
+
+  | | Antes | Después |
+  |---|---|---|
+  | Las 117 de antes | 117 | 117 |
+  | Las 21 nuevas | 5 | 20 |
+  | Total | 122/138 (88,4 %) | 137/138 (99,3 %) |
+  | Mediana por pregunta | 4,3 s | 1,4 s |
+
+  Falla «Bueno pero dime lo demás sin tiempo quirúrgico», que supone que la
+  pregunta anterior quedó sin responder. El 99,3 % es sobre el banco con que se
+  ajustó el chat
+- [x] Documentación: el README del backend («Cómo responde el chat»), el
+  contrato de `POST /chat` y `.claude/rules/simiq3d.md`
+
 ## Modelos 3D
 
 - [x] `GET /models` con `Cache-Control` y `ETag`

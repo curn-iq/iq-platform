@@ -744,7 +744,7 @@ El chat es el panel lateral de un banco de trabajo, no una conversación en burb
 - **Divisor:** 6px `superficie` con filete a la izquierda y cursor de redimensionar; al pasar, al enfocar o al arrastrar aparece en el centro un asa de 3 × 32px en `filete-2`. Se arrastra o se mueve con las flechas (24px por pulsación), entre 300 y 560px.
 - **Celular:** el campo queda fijo abajo (`superficie` al 94 % con desenfoque de 10px, como la barra fija del editor) y encima lleva el botón «Historial» (34px, `fondo`, 9px de radio, ícono de líneas y 13.5px 600 `tinta-2`) y la última respuesta en un bloque `fondo` de 12px con «SIMIQ3D:» en `tinta` 650, que al tocarse abre el historial. El historial es el mismo panel, de hasta 380px (88vw), que entra desde la izquierda (`.45s expo`) sobre un velo y se cierra con su botón de 36px.
 
-**The DataIQ Responde Rule.** El texto de cada respuesta lo redacta el agente del chat con lo que consultó en DataIQ, y el backend lo verifica antes de enviarlo; si no pasa, responden las plantillas, que solo usan datos de DataIQ ([`simiq3d/README.md`](simiq3d/README.md), «Chat»). Lo que muestra el visor sale de los ids de la respuesta, nunca del texto. Una ubicación se dice como en la práctica: la zona de la mesa, lo que tiene al lado y el número del diagrama de IQ, nunca filas, columnas ni celdas, porque la mesa real no tiene cuadrícula. Lo que no está en DataIQ se dice, con opciones para seguir, sin inventar.
+**The DataIQ Responde Rule.** El modelo del chat solo entiende la pregunta y la convierte en pedidos; el texto de cada respuesta lo arman las plantillas con datos de DataIQ ([`simiq3d/README.md`](simiq3d/README.md), «Chat»). Lo que muestra el visor sale de los ids de la respuesta, nunca del texto. Una ubicación se dice como en la práctica: la zona de la mesa, lo que tiene al lado y el número del diagrama de IQ, nunca filas, columnas ni celdas, porque la mesa real no tiene cuadrícula. Lo que no está en DataIQ se dice, con opciones para seguir, sin inventar.
 
 ### Lienzo de SIMIQ3D
 Todo lo que flota sobre la escena es interfaz plana del sistema; la escena es lo único con cuerpo.
@@ -837,4 +837,4 @@ Curvas propias: `expo` (`cubic-bezier(.16,1,.3,1)`) para entradas, desplazamient
 - **Don't** volver a texturas artesanales o rústicas.
 - **Don't** usar Three.js fuera de las escenas 3D de SIMIQ3D ni sin versión fija.
 - **Don't** activar sombras en tiempo real en la escena 3D; las sombras de contacto van dibujadas.
-- **Don't** dejar que el modelo del chat redacte respuestas; elige una acción y el texto sale de plantillas con datos de DataIQ.
+- **Don't** dejar que el modelo del chat redacte respuestas; convierte la pregunta en pedidos y el texto sale de plantillas con datos de DataIQ.

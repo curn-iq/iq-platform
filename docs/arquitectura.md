@@ -21,10 +21,11 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
   cuadros por segundo de la cámara al **backend de SIVRI**, que reconoce el
   instrumental y valida la mesa.
 - El **frontend de SIMIQ3D** (Angular y Three.js) envía la pregunta del chat a
-  su **backend**. El backend pide el catálogo a DataIQ y deja que el **modelo
-  de lenguaje** lo consulte (técnicas, instrumentos, comparar mesas) y redacte
-  la respuesta; antes de enviarla verifica que cada nombre, número y ubicación
-  esté en lo consultado, y guarda el registro de la conversación en su base.
+  su **backend**, con las anteriores de la conversación. El backend pide el
+  catálogo a DataIQ; el **modelo de lenguaje** convierte la pregunta en
+  pedidos (dónde va un instrumento, un dato clínico, la mesa…), y el backend
+  responde cada uno con datos de DataIQ y guarda el registro de la
+  conversación en su base.
   Con la respuesta, el frontend lee la mesa directo de la **API de DataIQ** y
   arma la escena.
 
