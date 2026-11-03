@@ -79,12 +79,15 @@ class SQLAlchemyVersionRepository:
         states: Iterable[VersionState],
         created_by: UUID | None = None,
         reviewed_by: UUID | None = None,
+        technique_id: UUID | None = None,
     ) -> list[VersionSummary]:
         query = (
             self._summary_query()
             .where(TechniqueVersion.state.in_(list(states)))
             .order_by(TechniqueVersion.updated_at.desc())
         )
+        if technique_id is not None:
+            query = query.where(TechniqueVersion.technique_id == technique_id)
         if created_by is not None:
             query = query.where(TechniqueVersion.created_by == created_by)
         if reviewed_by is not None:
@@ -112,9 +115,15 @@ class SQLAlchemyVersionRepository:
         states: Iterable[VersionState],
         created_by: UUID | None = None,
         reviewed_by: UUID | None = None,
+        technique_id: UUID | None = None,
     ) -> list[VersionDetail]:
         return await self._details(
-            await self.list_all(states, created_by=created_by, reviewed_by=reviewed_by)
+            await self.list_all(
+                states,
+                created_by=created_by,
+                reviewed_by=reviewed_by,
+                technique_id=technique_id,
+            )
         )
 
     async def get(self, version_id: UUID) -> VersionDetail | None:

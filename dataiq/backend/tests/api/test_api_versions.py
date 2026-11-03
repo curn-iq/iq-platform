@@ -585,3 +585,48 @@ async def test_include_content_asks_the_same_queries_for_one_version_or_many(
         await edit(client, contributor, version["id"], content(zone, instrument))
 
     assert await queries_for_the_list() == with_one
+
+
+@pytest.mark.anyio
+async def test_technique_id_brings_only_the_versions_of_that_technique(
+    session, client, contributor, reviewer, specialty
+):
+    other = await save_user(session, "Otra", "otra@prueba.com", Role.contributor)
+    edited = await create_technique(client, reviewer, specialty, "Editada")
+    await action(client, reviewer, edited["id"], "publish")
+    untouched = await create_technique(client, reviewer, specialty, "Sin editar")
+    await action(client, reviewer, untouched["id"], "publish")
+    draft = await client.post(
+        f"/techniques/{edited['technique_id']}/versions",
+        headers=auth_headers(contributor),
+    )
+    assert draft.status_code == 201, draft.text
+    technique = edited["technique_id"]
+
+    published = await client.get(
+        f"/versions?state=published&technique_id={technique}",
+        headers=auth_headers(reviewer),
+    )
+    with_content = await client.get(
+        f"/versions?state=published&technique_id={technique}&include=content",
+        headers=auth_headers(reviewer),
+    )
+    in_progress = await client.get(
+        f"/versions?technique_id={technique}", headers=auth_headers(reviewer)
+    )
+    as_author = await client.get(
+        f"/versions?technique_id={technique}", headers=auth_headers(contributor)
+    )
+    as_other = await client.get(
+        f"/versions?technique_id={technique}", headers=auth_headers(other)
+    )
+
+    assert published.status_code == 200
+    assert [v["id"] for v in published.json()] == [edited["id"]]
+    assert published.headers["cache-control"] == "private, max-age=0"
+    assert "etag" in published.headers
+    assert [v["summary"]["id"] for v in with_content.json()] == [edited["id"]]
+    # Sin estado, las en curso de esa técnica; un colaborador, solo las suyas
+    assert [v["id"] for v in in_progress.json()] == [draft.json()["summary"]["id"]]
+    assert [v["id"] for v in as_author.json()] == [draft.json()["summary"]["id"]]
+    assert as_other.json() == []

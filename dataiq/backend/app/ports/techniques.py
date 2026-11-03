@@ -26,6 +26,7 @@ class VersionRepository(Protocol):
         states: Iterable[VersionState],
         created_by: UUID | None = None,
         reviewed_by: UUID | None = None,
+        technique_id: UUID | None = None,
     ) -> list[VersionSummary]: ...
 
     async def list_details(
@@ -33,6 +34,7 @@ class VersionRepository(Protocol):
         states: Iterable[VersionState],
         created_by: UUID | None = None,
         reviewed_by: UUID | None = None,
+        technique_id: UUID | None = None,
     ) -> list[VersionDetail]: ...
 
     async def get_summary(self, version_id: UUID) -> VersionSummary | None: ...

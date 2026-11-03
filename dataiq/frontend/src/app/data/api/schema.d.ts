@@ -125,7 +125,9 @@ export interface paths {
          *     suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
          *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
          *     `include=content`, cada una con su contenido y sus rechazos, en la misma
-         *     respuesta: así Mis borradores no pide cada versión por separado.
+         *     respuesta: así Mis borradores no pide cada versión por separado. Con
+         *     `technique_id`, solo las de esa técnica: la revisión busca así la publicada
+         *     de la técnica que se edita, sin traer las de todo el catálogo.
          */
         get: operations["list_versions_versions_get"];
         put?: never;
@@ -1317,6 +1319,8 @@ export interface operations {
                 state?: components["schemas"]["VersionState"][] | null;
                 mine?: boolean;
                 reviewed_by_me?: boolean;
+                /** @description Solo las versiones de esa técnica */
+                technique_id?: string | null;
                 /** @description Con `content`, cada versión trae su contenido y sus rechazos, como `GET /versions/{id}` */
                 include?: "content" | null;
             };
