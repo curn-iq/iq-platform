@@ -483,8 +483,10 @@ export interface paths {
         };
         /**
          * List Users
-         * @description Todas las cuentas con su rol, cuándo se registraron y qué versión de la
-         *     política aceptaron. Solo admin.
+         * @description Todas las cuentas con su rol, cuándo se registraron, qué versión de la
+         *     política aceptaron y su actividad en DataIQ (sus versiones en borrador,
+         *     devueltas y en revisión, las técnicas que publicó y lo que revisó). Solo
+         *     admin.
          */
         get: operations["list_users_users_get"];
         put?: never;
@@ -532,6 +534,37 @@ export interface components {
             /** Email */
             email: string;
             role: components["schemas"]["Role"];
+        };
+        /**
+         * ActivityOut
+         * @description Lo que la cuenta hizo en DataIQ.
+         */
+        ActivityOut: {
+            /**
+             * Drafts
+             * @description Sus versiones en borrador, devueltas incluidas
+             */
+            drafts: number;
+            /**
+             * Returned
+             * @description De esos borradores, los que tienen alguna devolución
+             */
+            returned: number;
+            /**
+             * In Review
+             * @description Sus versiones enviadas a revisión
+             */
+            in_review: number;
+            /**
+             * Published Techniques
+             * @description Técnicas con una versión suya que llegó a publicarse, aunque ya esté reemplazada o archivada
+             */
+            published_techniques: number;
+            /**
+             * Reviewed
+             * @description Versiones de otras personas que aprobó o devolvió
+             */
+            reviewed: number;
         };
         /** Body_issue_token_auth_token_post */
         Body_issue_token_auth_token_post: {
@@ -1038,6 +1071,7 @@ export interface components {
             policy_accepted_at: string;
             /** Policy Version */
             policy_version: string;
+            activity: components["schemas"]["ActivityOut"];
         };
         /** ValidationError */
         ValidationError: {

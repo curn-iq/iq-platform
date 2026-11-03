@@ -40,6 +40,24 @@ class Account:
 
 
 @dataclass(frozen=True)
+class Activity:
+    """Lo que una cuenta hizo en DataIQ, para la ficha del admin («4 versiones en
+    curso · 1 devuelta», «2 versiones revisadas · 1 técnica publicada»)."""
+
+    # Sus versiones en borrador, devueltas incluidas
+    drafts: int = 0
+    # De esos borradores, los que tienen alguna devolución
+    returned: int = 0
+    # Sus versiones enviadas a revisión
+    in_review: int = 0
+    # Técnicas con una versión suya que llegó a publicarse (aunque ya esté
+    # reemplazada o archivada)
+    published_techniques: int = 0
+    # Versiones de otras personas que aprobó o devolvió
+    reviewed: int = 0
+
+
+@dataclass(frozen=True)
 class UserRecord:
     """La ficha de una cuenta para el admin: incluye la prueba de que aceptó la
     política de datos (Decreto 1377 de 2013, art. 8)."""
@@ -51,6 +69,7 @@ class UserRecord:
     created_at: datetime
     policy_accepted_at: datetime
     policy_version: str
+    activity: Activity = Activity()
 
 
 class Suppression(StrEnum):
