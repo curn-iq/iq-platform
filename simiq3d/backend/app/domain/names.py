@@ -61,13 +61,32 @@ def canonical(text: str) -> str:
     return " ".join(_NUMBER_MARK.sub("", normalize(text)).split())
 
 
+# Formas cortas que son palabras comunes en una pregunta («el instrumental de la
+# mesa», «la cirugía abdominal»): con todo el catálogo de DataIQ, un nombre
+# como «Instrumental» o «Separador abdominal» las volvía instrumentos.
+COMMON_WORDS = {
+    "instrumental",
+    "abdominal",
+    "largo",
+    "mediano",
+    "laparoscopica",
+    "laparoscopico",
+    "energia",
+    "campo",
+    "uterina",
+    "vesical",
+    "cistica",
+    "reductor",
+}
+
+
 def instrument_keys(name: str, aliases: tuple[str, ...] = ()) -> set[str]:
     """Cómo se puede nombrar un instrumento: su nombre o un alias, sin «pinza
     de» («la Kelly») y sin «de bisturí» («el mango 7», «la hoja 15»)."""
     names = {canonical(n) for n in (name, *aliases)}
     keys = names | {GENERIC.sub("", n) for n in names}
     keys |= {n.replace(" de bisturi", "") for n in names}
-    return {k for k in keys if k}
+    return {k for k in keys if k and k not in COMMON_WORDS}
 
 
 def contains(text: str, key: str) -> bool:
@@ -85,25 +104,31 @@ def technique_in(text: str, vocabulary: Vocabulary) -> str | None:
     return None
 
 
-def instruments_in(text: str, vocabulary: Vocabulary) -> list[str]:
-    """Los instrumentos que nombra el texto, en el orden en que aparecen. Donde
-    dos nombres empiezan igual, cuenta el más largo: «Kelly Adson» no es además
-    la Kelly. «mesa de Mayo» no es la Tijera de Mayo."""
-    text = canonical(text).replace("mesa de mayo", "")
+def instruments_at(text: str, vocabulary: Vocabulary) -> list[tuple[int, str]]:
+    """Dónde nombra el texto cada instrumento (la posición en el texto canónico)
+    y cuál, en orden. Donde dos nombres empiezan igual, cuenta el más largo:
+    «Kelly Adson» no es además la Kelly. «mesa de Mayo» no es la Tijera de
+    Mayo."""
+    text = canonical(text).replace("mesa de mayo", "mesa ** ****")
     found: list[tuple[int, int, str]] = []
     for name, aliases in vocabulary.instruments.items():
         for key in instrument_keys(name, aliases):
             for match in re.finditer(rf"(?<!\w){re.escape(key)}(?!\w)", text):
                 found.append((match.start(), match.end(), name))
-    names: list[str] = []
+    at: list[tuple[int, str]] = []
     taken_until = -1
     for start, end, name in sorted(found, key=lambda m: (m[0], m[0] - m[1])):
         if start < taken_until:
             continue
         taken_until = end
-        if name not in names:
-            names.append(name)
-    return names
+        at.append((start, name))
+    return at
+
+
+def instruments_in(text: str, vocabulary: Vocabulary) -> list[str]:
+    """Los instrumentos que nombra el texto, en el orden en que aparecen, una vez
+    cada uno (ver instruments_at)."""
+    return list(dict.fromkeys(name for _, name in instruments_at(text, vocabulary)))
 
 
 def instrument_in(text: str, vocabulary: Vocabulary) -> str | None:

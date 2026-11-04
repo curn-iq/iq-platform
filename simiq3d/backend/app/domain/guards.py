@@ -8,6 +8,8 @@ from uuid import UUID
 from app.domain import tools
 from app.domain.catalog import (
     Catalog,
+    Instrument,
+    TableItem,
     Technique,
     find_technique,
     in_scope,
@@ -114,14 +116,15 @@ def before_the_model(
     return which_of_the_family(catalog, technique, question)
 
 
-def which_of_the_family(
+def family_members(
     catalog: Catalog, technique: Technique, text: str
-) -> Reply | None:
+) -> list[tuple[TableItem, Instrument]]:
     """Si el texto nombra un instrumento por su familia («el bisturí», «la
-    pinza») y esa mesa lleva varios, pregunta cuál, con cada uno como opción."""
+    pinza»), los objetos de esa mesa que son de la familia, cada uno con el
+    instrumento por el que se pregunta, en orden del diagrama."""
     family = _FAMILY.search(canonical(text))
     if family is None:
-        return None
+        return []
     # Un objeto por opción: el mango y su hoja son uno solo («el bisturí»).
     word = family.group(1)
     by_id = {i.id: i for i in scope_instruments(catalog)}
@@ -134,9 +137,18 @@ def which_of_the_family(
             # primero del objeto («el bisturí» es el mango con su hoja).
             first = [i for i in matching if canonical(i.name).startswith(word)]
             options.append((item, (first or members)[0]))
+    options.sort(key=lambda o: o[0].legend_number or 99)
+    return options
+
+
+def which_of_the_family(
+    catalog: Catalog, technique: Technique, text: str
+) -> Reply | None:
+    """Si el texto nombra un instrumento por su familia («el bisturí», «la
+    pinza») y esa mesa lleva varios, pregunta cuál, con cada uno como opción."""
+    options = family_members(catalog, technique, text)
     if len(options) < 2:
         return None
-    options.sort(key=lambda o: o[0].legend_number or 99)
     listed = "; ".join(
         f"n.º {item.legend_number}, {item.name}" if item.legend_number else item.name
         for item, _ in options
