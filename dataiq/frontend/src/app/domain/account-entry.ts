@@ -27,11 +27,13 @@ export function greeting(mode: AccountMode, hour: number): string {
   return hour < 19 ? 'Buenas tardes.' : 'Buenas noches.';
 }
 
-const TECHNIQUE_ROUTE = /^\/tecnicas\/([^/?#]+)(?:[/?#]|$)/;
+/** Una técnica del detalle (`/tecnicas/:id/…`) o su mesa en SIMIQ3D (`/simiq3d/tecnicas/:id`). */
+const TECHNIQUE_ROUTE = /^(?:\/simiq3d)?\/tecnicas\/([^/?#]+)(?:[/?#]|$)/;
 
 /**
- * El id de la técnica a la que se iba (`?volver=/tecnicas/:id/…`), o `undefined` si la
- * ruta no es de una técnica o su id no puede serlo: un id imposible ni se pide a la API.
+ * El id de la técnica a la que se iba (`?volver=/tecnicas/:id/…`, o `/simiq3d/tecnicas/:id` si se
+ * iba a verla en 3D), o `undefined` si la ruta no es de una técnica o su id no puede serlo: un id
+ * imposible ni se pide a la API.
  */
 export function techniqueIdOfReturnUrl(returnUrl: string | null | undefined): string | undefined {
   const id = returnUrl ? TECHNIQUE_ROUTE.exec(returnUrl)?.[1] : undefined;

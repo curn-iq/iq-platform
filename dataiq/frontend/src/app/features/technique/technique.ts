@@ -196,18 +196,15 @@ export class TechniqueDetail {
   /**
    * «Ver en 3D» y «Comprobar con la cámara», en toda técnica (si el módulo no cubre una, su propia
    * pantalla lo dice, Resuelto 17). Con sesión llevan al módulo, con navegación completa; sin ella,
-   * a crear la cuenta, con la pestaña a la que volver. Hasta que se sabe si hay sesión no se
-   * muestran, para no llevar a quien sí la tiene a la cuenta.
+   * a crear la cuenta, que después lleva al mismo módulo (`?volver=`, Resuelto 65). Hasta que se
+   * sabe si hay sesión no se muestran, para no llevar a quien sí la tiene a la cuenta.
    */
   protected readonly actions = computed(() => {
     const id = this.techniqueId();
     const tab = this.tab();
     if (!id || !tab || !this.session.loaded()) return undefined;
-    const module = this.session.isLoggedIn()
-      ? { external: true as const }
-      : { external: false as const, returnTo: `/tecnicas/${id}/${tab.slug}` };
     return {
-      ...module,
+      external: this.session.isLoggedIn(),
       items: [
         {
           label: 'Ver en 3D',

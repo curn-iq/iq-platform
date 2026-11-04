@@ -63,7 +63,7 @@
                     app-button
                     routerLink="/cuenta/crear"
                     [variant]="action.variant"
-                    [queryParams]="{ volver: actions.returnTo }"
+                    [queryParams]="{ volver: action.href }"
                     >{{ action.label }} <small>{{ action.module }}</small></a
                   >
                 }

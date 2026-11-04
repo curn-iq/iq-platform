@@ -45,6 +45,13 @@ describe('techniqueIdOfReturnUrl', () => {
     expect(techniqueIdOfReturnUrl(`/tecnicas/${ID}/mesa-de-mayo?x=1#a`)).toBe(ID);
   });
 
+  it('también de su mesa en SIMIQ3D, adonde lleva «Ver en 3D»', () => {
+    expect(techniqueIdOfReturnUrl(`/simiq3d/tecnicas/${ID}`)).toBe(ID);
+    expect(techniqueIdOfReturnUrl('/simiq3d/')).toBeUndefined();
+    expect(techniqueIdOfReturnUrl('/sivri/')).toBeUndefined();
+    expect(techniqueIdOfReturnUrl(`/sivri/tecnicas/${ID}`)).toBeUndefined();
+  });
+
   it('el catálogo y otras rutas no son una técnica', () => {
     expect(techniqueIdOfReturnUrl('/tecnicas')).toBeUndefined();
     expect(techniqueIdOfReturnUrl('/tecnicas?especialidad=e-1')).toBeUndefined();

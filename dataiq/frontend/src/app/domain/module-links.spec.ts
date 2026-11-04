@@ -1,4 +1,4 @@
-import { SIVRI_URL, simiq3dTechniqueUrl } from './module-links';
+import { isModuleUrl, SIVRI_URL, simiq3dTechniqueUrl } from './module-links';
 
 describe('module-links', () => {
   it('«Ver en 3D» lleva a la técnica en SIMIQ3D', () => {
@@ -14,4 +14,18 @@ describe('module-links', () => {
   it('«Comprobar con la cámara» lleva a SIVRI, sin la técnica', () => {
     expect(SIVRI_URL).toBe('/sivri/');
   });
+
+  it.each([
+    '/simiq3d',
+    '/simiq3d/',
+    '/simiq3d/tecnicas/abc',
+    '/simiq3d?x=1',
+    '/sivri/',
+    '/sivri#a',
+  ])('%s es de un módulo', (url) => expect(isModuleUrl(url)).toBe(true));
+
+  it.each(['/tecnicas/abc', '/simiq3dx', '/sivrix/', '/otra/simiq3d/', 'simiq3d/', '/'])(
+    '%s no es de un módulo',
+    (url) => expect(isModuleUrl(url)).toBe(false),
+  );
 });
