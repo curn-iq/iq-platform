@@ -131,6 +131,9 @@ producción el chat por pedidos).
   | Dosis de medicamentos | Una cifra con su unidad (mg, ml, UI…) | Que el chat no da dosis: las indica el equipo médico |
   | Filas, columnas o celdas | Las palabras | Nada: la frase sale |
 
+  Además, si el modelo propone mover las piezas en el visor, la frase se cambia
+  por lo que hace SIMIQ3D: la mesa se mira y se consulta.
+
   Si la pregunta pide la mesa por tiempos quirúrgicos, el modelo además recibe
   un aviso antes de escribir. Lo que el modelo diga de una técnica que DataIQ no
   tiene no se puede revisar contra nada: el prompt le prohíbe decir qué lleva
