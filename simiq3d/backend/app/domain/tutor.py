@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from app.domain.catalog import (
     Catalog,
     Instrument,
+    TableItem,
     Technique,
     in_scope,
     item_with,
@@ -303,13 +304,45 @@ def _technique_lines(technique: Technique, open_: bool) -> list[str]:
     ]
 
 
-def _table_lines(technique: Technique) -> list[str]:
-    """La mesa de Mayo, objeto por objeto: su número del diagrama, su zona y los
-    números de los que tiene al lado (así se ubica en una mesa real)."""
+# La frase de una descripción que dice para qué sirve el instrumento.
+_PURPOSE = re.compile(
+    r"\b(?:sirve|sirven|se usa|se emplea|se utiliza|aparece como|es para|"
+    r"para (?:pinzar|cortar|sujetar|tomar|separar|disecar|incidir|suturar|"
+    r"tomar|retraer|sostener|el|la|los|las))\b",
+    re.IGNORECASE,
+)
+_SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])")
+
+
+def purpose(description: str | None) -> str | None:
+    """Para qué sirve el instrumento, según su descripción en DataIQ: la frase
+    que lo dice o, si ninguna, la primera."""
+    if not description:
+        return None
+    sentences = _SENTENCE.split(description.strip())
+    return next((x for x in sentences if _PURPOSE.search(x)), sentences[0])
+
+
+def _item_purpose(item: TableItem, catalog: Catalog) -> str | None:
+    by_id = {i.id: i for i in catalog.instruments}
+    for instrument_id in item.instrument_ids:
+        found = by_id.get(instrument_id)
+        said = purpose(found.description) if found else None
+        if said:
+            return said
+    return None
+
+
+def _table_lines(technique: Technique, catalog: Catalog) -> list[str]:
+    """La mesa de Mayo, objeto por objeto: su número del diagrama, su zona, los
+    números de los que tiene al lado (así se ubica en una mesa real) y para qué
+    sirve según DataIQ (sin eso, el modelo le inventaba la función a cada pieza:
+    «la Allis hace la hemostasia», producción, 2026-11-03)."""
     items = sorted(technique.mayo_items(), key=lambda i: i.legend_number or 99)
     lines = [
         f"Mesa de Mayo de {technique.name}: {len(items)} objetos. Cada uno con su "
-        "número del diagrama de IQ, su zona y los números que tiene al lado:"
+        "número del diagrama de IQ, su zona, los números que tiene al lado y "
+        "para qué sirve:"
     ]
     for item in items:
         number = f"{item.legend_number}." if item.legend_number else "-"
@@ -318,7 +351,10 @@ def _table_lines(technique: Technique) -> list[str]:
             str(n.legend_number) for n in neighbors(technique, item) if n.legend_number
         ]
         beside = f"; al lado de {', '.join(near)}" if near else ""
-        lines.append(f"{number} {item.name}: {zone}{beside}")
+        use = _item_purpose(item, catalog)
+        lines.append(
+            f"{number} {item.name}: {zone}{beside}{f' — {use}' if use else ''}"
+        )
     return lines
 
 
@@ -401,7 +437,7 @@ def data_of(focus: Focus, question: str, catalog: Catalog, scene: Scene) -> str:
         # Con una sola técnica, su mesa va siempre: sin ella, en un seguimiento
         # («dime lo demás») el modelo inventaba la mesa (banco, 2026-11-03).
         if len(techniques) == 1 or table_asked:
-            lines += _table_lines(technique)
+            lines += _table_lines(technique, catalog)
         blocks.append("\n".join(lines))
     if len(techniques) >= 2:
         blocks.append(

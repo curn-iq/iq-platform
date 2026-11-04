@@ -237,3 +237,28 @@ def test_the_table_of_the_only_technique_always_goes_with_the_data():
     data = data_of(focus, question, CATALOG, s)
 
     assert "Mesa de Mayo de Colecistectomía: 4 objetos." in data
+
+
+def test_each_piece_of_the_table_says_what_it_is_for():
+    focus, s = scene("¿Qué lleva la mesa de la colecistectomía?")
+
+    data = data_of(focus, "¿Qué lleva la mesa de la colecistectomía?", CATALOG, s)
+
+    assert (
+        "4. Tijera de Mayo: en el centro; al lado de 7, 10 — Tijera recta para "
+        "cortar tejidos." in data
+    )
+
+
+def test_the_purpose_is_the_sentence_that_says_it():
+    from app.domain.tutor import purpose
+
+    text = (
+        "Pinza curva de 22 cm. Sus mandíbulas son estriadas. Sirve para pinzar vasos."
+    )
+    assert purpose(text) == "Sirve para pinzar vasos."
+    assert (
+        purpose("Pinza curva de 22 cm. Mandíbulas estriadas.")
+        == "Pinza curva de 22 cm."
+    )
+    assert purpose(None) is None
