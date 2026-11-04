@@ -29,7 +29,7 @@ Fuentes:
 | Alcance | Shell + DataIQ en una sola app. El shell queda aislado en `app/shell/` para poder separarlo si algún día hace falta |
 | Idioma | Código en inglés, como el backend y la API. Interfaz, documentación y URL en español |
 | Renderizado | SPA sin SSR, desplegada como sitio estático en Vercel |
-| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuesto del código inicial en `angular.json`: aviso a los 300 KB y error a los 500 KB, como SIMIQ3D (principio «Liviano» de `PRODUCT.md`) |
+| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuestos en `angular.json` (principio «Liviano» de `PRODUCT.md`; el motivo de las cifras, en Resuelto 64 de la [checklist](../docs/checklist-frontend.md)): el código inicial avisa a los 380 KB y falla a los 500 KB; el estilo de cada componente avisa a los 8 KB y falla a los 12 KB |
 | Estado | Servicios con signals por funcionalidad. Sin NgRx |
 | Lecturas | `httpResource` / `resource` (estables desde 22.0) |
 | Formularios | Signal Forms (estables desde 22.0) |
