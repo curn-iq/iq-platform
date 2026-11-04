@@ -32,6 +32,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/chat/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask Streamed
+         * @description Como `POST /chat`, pero la respuesta llega a medida que se escribe, una
+         *     línea JSON por evento: `start` (lo que hace el visor, sin texto), cada
+         *     `text` (una parte ya revisada, que se agrega a lo mostrado) y `end` (la
+         *     respuesta completa, que reemplaza lo mostrado). Los errores antes de
+         *     empezar son los de `POST /chat`. Con un motor que no escribe por partes
+         *     (las plantillas), llegan los tres eventos juntos.
+         */
+        post: operations["ask_streamed_chat_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/models": {
         parameters: {
             query?: never;
@@ -147,6 +172,98 @@ export interface components {
             topic?: components["schemas"]["Topic"] | null;
         };
         /**
+         * ChatStreamEnd
+         * @description El último evento: la respuesta completa, que reemplaza lo mostrado.
+         */
+        ChatStreamEnd: {
+            action: components["schemas"]["ChatAction"];
+            /** Technique Id */
+            technique_id: string | null;
+            /** Instrument Id */
+            instrument_id: string | null;
+            field: components["schemas"]["ClinicalField"] | null;
+            /**
+             * Reply
+             * @description El texto de la respuesta, con Markdown sencillo (negrita y listas)
+             */
+            reply: string;
+            /**
+             * Generated
+             * @description Si el texto lo escribió el modelo de IA (con los datos de DataIQ); si no, salió de DataIQ tal cual
+             */
+            generated: boolean;
+            /**
+             * Options
+             * @description Preguntas que se pueden mandar tal cual
+             */
+            options: string[];
+            /**
+             * Requests
+             * @description Lo que se entendió de la pregunta: va de vuelta en `previous` con la siguiente
+             */
+            requests: components["schemas"]["ChatRequest"][];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "end";
+        };
+        /**
+         * ChatStreamEvent
+         * @description Una línea de `POST /chat/stream`, según su `type`.
+         */
+        ChatStreamEvent: components["schemas"]["ChatStreamStart"] | components["schemas"]["ChatStreamText"] | components["schemas"]["ChatStreamEnd"];
+        /**
+         * ChatStreamStart
+         * @description El primer evento de `POST /chat/stream`: lo que hace el visor, sin texto.
+         */
+        ChatStreamStart: {
+            action: components["schemas"]["ChatAction"];
+            /** Technique Id */
+            technique_id: string | null;
+            /** Instrument Id */
+            instrument_id: string | null;
+            field: components["schemas"]["ClinicalField"] | null;
+            /**
+             * Reply
+             * @description El texto de la respuesta, con Markdown sencillo (negrita y listas)
+             */
+            reply: string;
+            /**
+             * Generated
+             * @description Si el texto lo escribió el modelo de IA (con los datos de DataIQ); si no, salió de DataIQ tal cual
+             */
+            generated: boolean;
+            /**
+             * Options
+             * @description Preguntas que se pueden mandar tal cual
+             */
+            options: string[];
+            /**
+             * Requests
+             * @description Lo que se entendió de la pregunta: va de vuelta en `previous` con la siguiente
+             */
+            requests: components["schemas"]["ChatRequest"][];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "start";
+        };
+        /**
+         * ChatStreamText
+         * @description Una parte del texto, ya revisada, que se agrega a lo mostrado.
+         */
+        ChatStreamText: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "text";
+            /** Text */
+            text: string;
+        };
+        /**
          * ClinicalField
          * @description Los datos clínicos de una técnica que el chat sabe mostrar.
          * @enum {string}
@@ -242,6 +359,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_streamed_chat_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatIn"];
+            };
+        };
+        responses: {
+            /** @description Una línea JSON por evento (NDJSON): `start`, cada `text` y `end` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/x-ndjson": components["schemas"]["ChatStreamEvent"];
+                    "application/json": components["schemas"]["ChatStreamEvent"];
                 };
             };
             /** @description Validation Error */

@@ -23,3 +23,4 @@ export type ChatTurn = Simiq3dSchemas['PreviousTurn'];
 export type ChatAction = Simiq3dSchemas['ChatAction'];
 export type ClinicalField = Simiq3dSchemas['ClinicalField'];
 export type ModelFile = Simiq3dSchemas['ModelFileOut'];
+export type ChatStreamEvent = Simiq3dSchemas['ChatStreamEvent'];

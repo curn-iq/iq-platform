@@ -22,3 +22,20 @@ export function provideRepositoryTesting(
     { provide: SIMIQ3D_API, useValue: TEST_SIMIQ3D },
   ];
 }
+
+/**
+ * Una respuesta del chat como la manda `POST /chat/stream`: `start` sin texto, el texto
+ * en las partes dadas (o entero) y `end` con la respuesta completa.
+ */
+export function streamed<T extends { reply: string }>(
+  reply: T,
+  parts: string[] = [reply.reply],
+): string {
+  return [
+    { ...reply, type: 'start', reply: '' },
+    ...parts.map((text) => ({ type: 'text', text })),
+    { ...reply, type: 'end' },
+  ]
+    .map((event) => JSON.stringify(event))
+    .join('\n');
+}

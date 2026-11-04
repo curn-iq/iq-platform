@@ -21,7 +21,7 @@
       <h2>Elige una técnica para verla en 3D</h2>
     </div>
   } @else {
-    @if (busy()) {
+    @if (waiting()) {
       <button type="button" class="last waiting" (click)="openHistory.emit()">
         <b>SIMIQ3D:</b> <app-typing />
       </button>

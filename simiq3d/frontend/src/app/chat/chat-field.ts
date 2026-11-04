@@ -30,6 +30,8 @@ export class ChatField {
    * puntos van en lugar de la última respuesta.
    */
   readonly busy = input(false);
+  /** Todavía no llega ni una frase: en celular, los tres puntos en lugar de la última respuesta. */
+  readonly waiting = input(false);
   /** En celular, la última respuesta encima del campo, con sus opciones. */
   readonly last = input<{ text: string; options: readonly string[] } | null>(null);
   /** La última respuesta no se repite con el historial o la ficha abiertos. */

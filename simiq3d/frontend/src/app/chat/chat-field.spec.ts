@@ -47,14 +47,25 @@ describe('ChatField', () => {
     expect(waiting.asked).toEqual([]);
   });
 
-  it('mientras espera, los tres puntos van en lugar de la última respuesta', async () => {
+  it('mientras no llega ni una frase, los tres puntos van en lugar de la última respuesta', async () => {
     const fixture = TestBed.createComponent(ChatField);
     fixture.componentRef.setInput('last', { text: 'La Pinza Kelly es el número 9.', options: [] });
     fixture.componentRef.setInput('busy', true);
+    fixture.componentRef.setInput('waiting', true);
     await fixture.whenStable();
     const last = (fixture.nativeElement as HTMLElement).querySelector('.last');
     expect(last?.querySelector('[aria-label="SIMIQ3D está respondiendo"]')).not.toBeNull();
     expect(last?.textContent).not.toContain('La Pinza Kelly es el número 9.');
+  });
+
+  it('mientras se escribe la respuesta, se ve lo escrito y no se envía otra', async () => {
+    const fixture = TestBed.createComponent(ChatField);
+    fixture.componentRef.setInput('last', { text: 'La Pinza Kelly', options: [] });
+    fixture.componentRef.setInput('busy', true);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('.last')?.textContent).toContain('La Pinza Kelly');
+    expect(element.querySelector<HTMLButtonElement>('.send')?.disabled).toBe(true);
   });
 
   it('admite hasta 500 caracteres, como la API', async () => {
