@@ -261,8 +261,13 @@ Acordado por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
   mesas que DataIQ no tiene (la apendicectomía, la cesárea): la revisión
   cambia ahora lo que se dice que llevan, y su lista, por «SIMIQ3D no tiene la
   mesa de Mayo de esa técnica…»; en las 10 filas de esas fallas, 8/10
-- [ ] Probar en producción: el tiempo hasta la primera frase, pasando por
-  Vercel y Tailscale Funnel
+- [x] Probado en producción el 2026-11-04, con la cuenta de prueba, por
+  `/api/simiq3d/chat/stream` (el rewrite de Vercel y Tailscale Funnel) y el
+  filtro reiniciado: el visor cambia a los 0,4 s (1,7 s en la primera
+  pregunta, que despierta las funciones de Vercel), la primera frase llega a
+  los 3 a 6 s y la respuesta termina a los 6 a 22 s, en 4 a 20 partes; lo
+  mostrado por partes es igual a la respuesta final. Vercel no acumula la
+  respuesta
 
 ## Modelos 3D
 
