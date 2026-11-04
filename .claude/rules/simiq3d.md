@@ -14,17 +14,17 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
   la misma para todas, y todos los instrumentos apuntan igual.
 - **SIMIQ3D no es evaluación:** explora y consulta. Practicar con puntaje es
   función de SIVRI.
-- **El modelo entiende y DataIQ responde:** el modelo de lenguaje (Ollama en
-  el Servidor PC2) solo convierte la pregunta en pedidos (`TOOLS` del agente,
-  `app/domain/requests.py`); cada pedido se responde con las plantillas de
-  `app/domain/chat.py`, con datos de DataIQ. Después el modelo redacta la
-  respuesta solo con esos datos (`app/domain/writing.py`), y el texto se
-  verifica antes de mostrarlo; si no pasa o tarda, se muestra lo armado. Lo que
-  pide el modelo se valida contra las palabras de la conversación (`as_said`,
-  `contradicted`). Si el Servidor PC2 está lento,
-  responden las reglas fijas (`adapters/outbound/language/fake.py`). Un tipo
-  de pregunta nuevo es un pedido nuevo con su plantilla y sus preguntas en
-  `eval/banco.csv`.
+- **El tutor conversa y DataIQ manda en la mesa:** el código decide de qué se
+  habla, qué datos de DataIQ recibe el modelo y qué hace el visor
+  (`app/domain/focus.py`, `app/domain/tutor.py`); el modelo de lenguaje (Ollama
+  en el Servidor PC2) escribe la respuesta en una llamada y puede explicar con
+  conocimiento general lo que DataIQ no trae. Cada frase se revisa contra los
+  límites duros (`app/domain/review.py`): la mesa de Mayo según DataIQ, nada de
+  ordenar o agrupar por tiempos quirúrgicos, ni dosis, ni cuadrícula; la que
+  cruza uno se cambia por el dato de DataIQ, nunca se descarta en silencio. Sin
+  el modelo, la respuesta lo dice y muestra lo de DataIQ. Un límite nuevo va en
+  `review.py` con sus preguntas en `eval/banco.csv` (columna `limite`). El chat
+  por pedidos (`CHAT_ENGINE=pedidos`) queda solo para comparar.
 - **Nunca hablarle al estudiante de filas, columnas ni celdas:** la mesa real
   no tiene cuadrícula. Se dice la zona de la mesa («arriba a la derecha»), lo
   que tiene al lado y el número del diagrama de IQ.

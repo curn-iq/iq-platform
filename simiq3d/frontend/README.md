@@ -130,13 +130,20 @@ Contrato de `POST /api/simiq3d/chat` (el porqué de cada cosa, en
 - **Se envía** `{"question": "…", "technique_id": "<id>" | null, "previous":
   […]}`: la pregunta; la técnica abierta en el visor, si hay una, para que «¿y
   dónde va la Kelly?» se entienda en esa técnica; y las 3 últimas preguntas
-  respondidas, cada una con los `requests` que devolvió su respuesta, para que
-  «¿y para qué sirve?» se entienda por lo que se preguntó antes. Las guarda la
-  conversación (`explore/conversation.service.ts`), solo mientras la página
-  está abierta.
+  respondidas, cada una con los `requests` y el texto (`reply`) de su
+  respuesta, para que «¿y para qué sirve?» se entienda por lo que se preguntó
+  antes. Las guarda la conversación (`explore/conversation.service.ts`), solo
+  mientras la página está abierta.
 - **Se recibe** `action`, `technique_id`, `instrument_id`, `field`, `reply`
-  (el texto), `options` (preguntas que se pueden volver a enviar tal cual) y
-  `requests` (lo que se entendió de la pregunta; el visor no lo usa).
+  (el texto), `generated` (si lo escribió el modelo de IA), `options`
+  (preguntas que se pueden volver a enviar tal cual) y `requests` (de qué se
+  habló; el visor no lo usa).
+- **El texto viene en Markdown sencillo:** párrafos, `**negrita**` y listas
+  con «- » o «1. ». `chat/rich-text.ts` lo convierte en datos (párrafos,
+  listas y tramos en negrita) y la plantilla los dibuja, sin `innerHTML`: el
+  texto nunca se interpreta como HTML. En celular, la última respuesta encima
+  del campo va sin marcas (`plainText`). Bajo una respuesta con `generated`
+  va la línea de fuentes («Línea de fuentes» en `DESIGN.md`).
 
 Lo que hace el visor con cada `action`; los ids son de DataIQ y el visor
 nunca saca nada del texto:
@@ -148,7 +155,7 @@ nunca saca nada del texto:
 | `describe_instrument` | Lo mismo, y abre la ficha del instrumento |
 | `show_clinical_data` | Abre la mesa; el dato (`field`: `description`, `indications`, `complications` o `anesthesia_position`) va en el texto |
 | `list_instruments` | Abre la mesa y, bajo el texto, la lista numerada de sus objetos, que señala cada pieza al tocarla |
-| `answer` | Nada: es una respuesta solo en texto («¿en cuántas técnicas va la Allis?») |
+| `answer` | Nada: es una respuesta solo en texto («¿en cuántas técnicas va la Allis?», «¿qué es la hemostasia?») |
 | `clarify` | Nada: pide precisar y ofrece las opciones |
 | `no_answer` | Nada: lo dice, con las opciones para seguir |
 
@@ -218,8 +225,10 @@ Los de DataIQ, como en su frontend: un 401 lleva al ingreso del shell. Del
 chat (`POST /chat`), además:
 
 - **503 «El chat no está disponible»** (el Servidor PC2 está apagado o no
-  responde): el chat se muestra «no disponible» y el visor sigue funcionando;
-  las técnicas se pueden abrir desde la lista.
+  responde, con las reglas fijas o el chat por pedidos): el chat se muestra
+  «no disponible» y el visor sigue funcionando; las técnicas se pueden abrir
+  desde la lista. El tutor no lo usa: su respuesta dice que el modelo no está
+  disponible y muestra lo que DataIQ tiene.
 - **503 «DataIQ no responde»**: el backend no pudo pedir el catálogo; se dice
   y se puede volver a preguntar.
 - **429**: el tope de preguntas seguidas por cuenta, que protege al Servidor

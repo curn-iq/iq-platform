@@ -108,17 +108,24 @@ fuentes propias.
   una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
   Se elige con el mismo banco de preguntas, para comparar la exactitud y la
   fidelidad de lo que redacta (`chat_bank --fidelidad`).
-- **Verificar el sentido de cada frase en vivo,** no solo nombres y números:
-  un juez que revise cada frase redactada contra sus datos antes de
+- **Verificar el sentido de cada frase en vivo,** no solo los límites duros:
+  un juez que revise cada frase del tutor contra sus datos antes de
   mostrarla, como el que hoy mide el banco. Suma una llamada al modelo por
   respuesta; con un modelo mayor o un servicio de detección de contenido sin
   respaldo (los de Microsoft y Google son pagos), cabe en el tiempo de
   espera (decidido por Mauricio el 2026-11-03, [`simiq3d/README.md`](../simiq3d/README.md),
-  «La redacción»).
-- **Mostrar la respuesta mientras se escribe** (*streaming*): el texto se
-  verifica entero antes de mostrarlo, y por eso hoy se espera a que termine.
-  Mostrarlo por partes exige verificar cada frase al llegar y retirar la que
-  no pase.
+  «Chat»).
+- **Mostrar la respuesta mientras se escribe** (*streaming*), frase por frase,
+  cada una ya revisada, y el visor y la mesa antes que el texto. Hace falta que
+  el filtro del Servidor PC2 deje pasar el streaming de Ollama (hoy lo apaga),
+  que el backend envíe eventos y que el frontend los lea, y probar antes que
+  Vercel no acumule la respuesta entera (acordado por Mauricio el 2026-11-03).
+- **Un juez distinto del modelo del chat** para el banco de preguntas: el mismo
+  modelo puede preferir lo que él escribe. Solo con un servicio gratis y sin
+  tarjeta de crédito ([`docs/arquitectura.md`](arquitectura.md)).
+- **Guardar respuestas revisadas por IQ** de las preguntas frecuentes, atadas
+  a la versión del catálogo (su `ETag`), para responderlas al instante y que se
+  invaliden solas cuando DataIQ cambie.
 - **Usarlo sin conexión** (PWA con service worker): precargar la app y los
   modelos, e instalarla en el celular. En el MVP basta la caché HTTP, que
   guarda la app y los modelos después de la primera visita; el chat necesita
