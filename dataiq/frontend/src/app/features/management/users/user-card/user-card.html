@@ -3,7 +3,8 @@
 <header class="head">
   <app-avatar size="large" [name]="person().name" />
   <div>
-    <h2>{{ person().name }}</h2>
+    <!-- Recibe el foco al abrirse la ficha desde el buscador o bajo el tablero -->
+    <h2 tabindex="-1">{{ person().name }}</h2>
     <!-- Si no cabe, el correo se parte antes de la arroba y no a media palabra -->
     <p class="email">{{ email().local }}<wbr />{{ email().domain }}</p>
   </div>

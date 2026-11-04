@@ -6,6 +6,9 @@
   (valueChange)="onQuery($event)"
 />
 
+<!-- Cuántos resultados hay, para el lector de pantalla: existe antes de que cambie -->
+<p class="sr-only" aria-live="polite">{{ status() }}</p>
+
 @if (open()) {
   <ul class="results" aria-label="Resultados de la búsqueda">
     @for (row of rows(); track row.person.id) {
@@ -36,7 +39,7 @@
         </button>
       </li>
     } @empty {
-      <li class="none">Nadie con ese nombre o correo.</li>
+      <li class="none">{{ noMatch }}</li>
     }
     @if (more() > 0) {
       <li class="none">Hay {{ more() }} más. Escribir más para afinar.</li>

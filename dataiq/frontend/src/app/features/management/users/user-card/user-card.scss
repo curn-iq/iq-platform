@@ -36,6 +36,11 @@ p {
     line-height: 1.2;
     letter-spacing: -0.02em;
     overflow-wrap: anywhere;
+
+    // Recibe el foco solo para que no se pierda: no es un control
+    &:focus {
+      outline: none;
+    }
   }
 }
 

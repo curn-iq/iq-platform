@@ -14,7 +14,7 @@
   } @else if (!loaded()) {
     <p class="notice loading" aria-busy="true">Cargando…</p>
   } @else {
-    <app-user-search class="search" [people]="people()" (chosen)="select($event)" />
+    <app-user-search class="search" [people]="people()" (chosen)="select($event, 'search')" />
 
     <div class="board">
       <div class="columns">
@@ -31,7 +31,7 @@
         }
       </div>
 
-      <aside #cardPanel class="card" [class.empty]="!selected()" aria-live="polite">
+      <aside #cardPanel class="card" [class.empty]="!selected()">
         @if (selected(); as person) {
           <app-user-card [person]="person" (changed)="roleChanged($event)" (back)="backToList()" />
         } @else {

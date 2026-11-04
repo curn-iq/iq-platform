@@ -233,6 +233,34 @@ describe('Users', () => {
       ]);
     });
 
+    it('«Hoy» y «Ayer» siguen la fecha al elegir a otra persona pasada la medianoche', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(2026, 9, 7, 23, 50));
+      await choose('Valentina Ruiz');
+      expect(text(card()!.querySelector('.data dd'))).toBe('Hoy');
+
+      vi.setSystemTime(new Date(2026, 9, 8, 0, 10));
+      await choose('Sebastián Mora');
+      expect(text(card()!.querySelector('.data dd'))).toBe('6 oct 2026');
+      await choose('Valentina Ruiz');
+      expect(text(card()!.querySelector('.data dd'))).toBe('Ayer');
+    });
+
+    it('elegida desde su fila, el foco se queda en la fila', async () => {
+      const row = column('Revisores').querySelector<HTMLButtonElement>('button[app-person-row]')!;
+      row.focus();
+      row.click();
+      await settle();
+
+      expect(text(card()!.querySelector('h2'))).toBe('Laura Pérez');
+      expect(document.activeElement).toBe(row);
+    });
+
+    it('la ficha no se anuncia entera al cambiar: no es una región viva', async () => {
+      await choose('Laura Pérez');
+      expect(root.querySelector('aside.card')!.hasAttribute('aria-live')).toBe(false);
+    });
+
     it('sin actividad lo dice', async () => {
       await choose('Andrés Gómez');
       expect(text(card()!.querySelector('.data dd:last-of-type'))).toBe('Sin actividad en DataIQ');
@@ -344,13 +372,73 @@ describe('Users', () => {
       expect(root.querySelector('app-user-search .results')).toBeNull();
     });
 
-    it('Escape cierra los resultados sin borrar lo escrito', async () => {
+    it('elegir un resultado lleva el foco al nombre de la ficha, porque el resultado desaparece', async () => {
       await type(input(), 'laura');
-      input().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      const result = root.querySelector<HTMLButtonElement>('app-user-search .results button')!;
+      result.focus();
+      result.click();
       await settle();
 
+      expect(document.activeElement).toBe(card()!.querySelector('h2'));
+    });
+
+    it('Escape cierra los resultados sin borrar lo escrito', async () => {
+      await type(input(), 'laura');
+      // Chromium y WebKit vacían un campo de búsqueda con Escape si no se les impide
+      const escape = new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      });
+      input().dispatchEvent(escape);
+      await settle();
+
+      expect(escape.defaultPrevented).toBe(true);
       expect(root.querySelector('app-user-search .results')).toBeNull();
       expect(input().value).toBe('laura');
+    });
+
+    it('las flechas recorren los resultados y vuelven al campo', async () => {
+      const resultButtons = () =>
+        Array.from(root.querySelectorAll<HTMLButtonElement>('app-user-search .results button'));
+      const press = async (key: string) => {
+        (document.activeElement as HTMLElement).dispatchEvent(
+          new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
+        );
+        await settle();
+      };
+      await type(input(), 'correo');
+      input().focus();
+
+      await press('ArrowDown');
+      expect(document.activeElement).toBe(resultButtons()[0]);
+      await press('ArrowDown');
+      expect(document.activeElement).toBe(resultButtons()[1]);
+      await press('ArrowUp');
+      await press('ArrowUp');
+      expect(document.activeElement).toBe(input());
+
+      // Escape desde un resultado cierra y devuelve el foco al campo
+      await press('ArrowDown');
+      await press('Escape');
+      expect(root.querySelector('app-user-search .results')).toBeNull();
+      expect(document.activeElement).toBe(input());
+
+      // y la flecha abajo lo vuelve a abrir
+      await press('ArrowDown');
+      expect(root.querySelector('app-user-search .results')).not.toBeNull();
+    });
+
+    it('anuncia cuántos resultados hay', async () => {
+      const status = () => text(root.querySelector('app-user-search [aria-live]'));
+      expect(status()).toBe('');
+
+      await type(input(), 'correo');
+      expect(status()).toBe('11 resultados');
+      await type(input(), 'laura');
+      expect(status()).toBe('1 resultado');
+      await type(input(), 'zzz');
+      expect(status()).toBe('Nadie con ese nombre o correo.');
     });
 
     it('un clic fuera cierra los resultados', async () => {
@@ -359,6 +447,65 @@ describe('Users', () => {
       await settle();
 
       expect(root.querySelector('app-user-search .results')).toBeNull();
+    });
+  });
+
+  describe('la ficha bajo el tablero (≤ 1100 px)', () => {
+    let scrolled: Element[];
+
+    beforeEach(async () => {
+      scrolled = [];
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query.includes('max-width: 1100px'),
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }));
+      // jsdom no desplaza: se anota a dónde se pidió bajar
+      Element.prototype.scrollIntoView = function (this: Element) {
+        scrolled.push(this);
+      };
+      await open(USERS);
+    });
+
+    afterEach(() => {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    });
+
+    const back = () =>
+      Array.from(card()!.querySelectorAll<HTMLButtonElement>('button')).find(
+        (b) => text(b) === 'Volver a la lista',
+      )!;
+
+    it('elegir a alguien baja hasta la ficha y le pasa el foco', async () => {
+      await choose('Laura Pérez');
+
+      expect(scrolled).toEqual([root.querySelector('aside.card')]);
+      expect(document.activeElement).toBe(card()!.querySelector('h2'));
+    });
+
+    it('«Volver a la lista» vuelve a la fila de la persona elegida', async () => {
+      await choose('Laura Pérez');
+      back().click();
+      await settle();
+
+      const row = root.querySelector('button[app-person-row][aria-pressed="true"]');
+      expect(text(row?.querySelector('.name'))).toBe('Laura Pérez');
+      expect(scrolled.at(-1)).toBe(row);
+      expect(document.activeElement).toBe(row);
+    });
+
+    it('de alguien sin fila en el tablero, «Volver a la lista» vuelve al buscador general', async () => {
+      // Tomás Vargas es usuario y no está entre los cinco más recientes
+      const input = root.querySelector<HTMLInputElement>('app-user-search input')!;
+      await type(input, 'tomas');
+      root.querySelector<HTMLButtonElement>('app-user-search .results button')!.click();
+      await settle();
+      expect(root.querySelector('button[app-person-row][aria-pressed="true"]')).toBeNull();
+
+      back().click();
+      await settle();
+      expect(scrolled.at(-1)).toBe(input);
+      expect(document.activeElement).toBe(input);
     });
   });
 
@@ -567,6 +714,39 @@ describe('Users', () => {
       vi.advanceTimersByTime(1200);
       await settle();
       expect(column('Usuarios').querySelector('button[app-person-row].arrived')).toBeNull();
+    });
+
+    it('el lavado de un cambio anterior no le corta el suyo al siguiente', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+      const change = async (name: string, index: number, label: string, role: Role) => {
+        await choose(name);
+        roleButton(label).click();
+        await settle();
+        applyButton().click();
+        await settle();
+        http
+          .expectOne(`${TEST_API_BASE}/users/${USERS[index].id}/role`)
+          .flush({ ...USERS[index], role });
+        await settle();
+        vi.advanceTimersByTime(280);
+        await settle();
+      };
+      const arrived = () =>
+        text(root.querySelector('button[app-person-row].arrived .name')) ?? null;
+
+      // Daniela llega a Usuarios y, antes de que se apague su lavado, llega Andrés
+      await change('Daniela Ortiz', 3, 'Usuario', 'user');
+      await change('Andrés Gómez', 4, 'Usuario', 'user');
+      expect(arrived()).toBe('Andrés Gómez');
+
+      // Se cumple el plazo del lavado de Daniela: el de Andrés sigue
+      vi.advanceTimersByTime(920);
+      await settle();
+      expect(arrived()).toBe('Andrés Gómez');
+
+      vi.advanceTimersByTime(280);
+      await settle();
+      expect(arrived()).toBeNull();
     });
   });
 });

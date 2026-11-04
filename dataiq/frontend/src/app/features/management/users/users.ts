@@ -10,6 +10,7 @@ import {
   linkedSignal,
   signal,
   viewChild,
+  type WritableSignal,
 } from '@angular/core';
 import { hasFailed } from '../../../data/resource-state';
 import { UsersRepository } from '../../../data/users.repository';
@@ -81,28 +82,38 @@ export class Users {
     inject(DestroyRef).onDestroy(() => this.timers.forEach(clearTimeout));
   }
 
-  protected select(person: Person): void {
+  /**
+   * Abre la ficha de `person`. Donde la ficha queda bajo el tablero, la página baja hasta ella. El
+   * foco pasa al nombre de la ficha cuando el botón que se tocó desaparece (un resultado del
+   * buscador general) o queda lejos (bajo el tablero); elegida desde una fila a lo ancho, el foco
+   * se queda en la fila para seguir recorriendo el tablero.
+   */
+  protected select(person: Person, from: 'board' | 'search' = 'board'): void {
     this.selectedId.set(person.id);
-    // Donde la ficha queda bajo el tablero, la página baja hasta ella
-    if (this.narrow()) {
-      afterNextRender(
-        () =>
-          this.cardPanel()?.nativeElement.scrollIntoView({
-            block: 'start',
-            behavior: this.reducedMotion() ? 'auto' : 'smooth',
-          }),
-        { injector: this.injector },
-      );
-    }
+    const narrow = this.narrow();
+    if (!narrow && from === 'board') return;
+    afterNextRender(
+      () => {
+        const panel = this.cardPanel()?.nativeElement;
+        if (narrow) panel?.scrollIntoView({ block: 'start', behavior: this.scrollBehavior() });
+        panel?.querySelector<HTMLElement>('app-user-card h2')?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
-  /** «Volver a la lista»: devuelve la vista a la fila de la persona elegida. */
+  /**
+   * «Volver a la lista»: devuelve la vista y el foco a la fila de la persona elegida. Si no tiene
+   * fila en el tablero (un usuario que no es reciente, elegido con el buscador general), vuelve al
+   * buscador general.
+   */
   protected backToList(): void {
-    const row = this.host.nativeElement.querySelector<HTMLElement>(
-      'button[app-person-row][aria-pressed="true"]',
-    );
-    row?.scrollIntoView({ block: 'center', behavior: this.reducedMotion() ? 'auto' : 'smooth' });
-    row?.focus({ preventScroll: true });
+    const host = this.host.nativeElement;
+    const target =
+      host.querySelector<HTMLElement>('button[app-person-row][aria-pressed="true"]') ??
+      host.querySelector<HTMLElement>('app-user-search input');
+    target?.scrollIntoView({ block: 'center', behavior: this.scrollBehavior() });
+    target?.focus({ preventScroll: true });
   }
 
   /**
@@ -118,9 +129,10 @@ export class Users {
         else next.delete(updated.id);
         return next;
       });
-      this.leavingId.set(null);
+      // Si entretanto empezó otro cambio, no se le corta su salida ni su lavado
+      this.clearIf(this.leavingId, updated.id);
       this.arrivedId.set(updated.id);
-      this.later(() => this.arrivedId.set(null), ARRIVE_MS);
+      this.later(() => this.clearIf(this.arrivedId, updated.id), ARRIVE_MS);
     };
 
     if (this.reducedMotion()) {
@@ -133,6 +145,15 @@ export class Users {
 
   protected retry(): void {
     this.resource.reload();
+  }
+
+  private scrollBehavior(): ScrollBehavior {
+    return this.reducedMotion() ? 'auto' : 'smooth';
+  }
+
+  /** Vacía `id` solo si sigue siendo el de esa cuenta. */
+  private clearIf(id: WritableSignal<string | null>, value: string): void {
+    if (id() === value) id.set(null);
   }
 
   private later(action: () => void, ms: number): void {

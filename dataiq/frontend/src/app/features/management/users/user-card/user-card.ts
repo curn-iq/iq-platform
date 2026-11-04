@@ -65,7 +65,14 @@ export class UserCard {
   private readonly users = inject(UsersRepository);
   private readonly notices = inject(NoticeService);
   private readonly session = inject(SessionService);
-  private readonly now = new Date();
+  /**
+   * Hoy, tomado de nuevo con cada cuenta: la ficha sigue abierta al elegir a otra persona, y con la
+   * pantalla abierta pasada la medianoche «Hoy» y «Ayer» no deben quedarse en el día anterior.
+   */
+  private readonly now = computed(() => {
+    this.person();
+    return new Date();
+  });
 
   protected readonly roleOptions = ROLE_OPTIONS;
   protected readonly roleLabels = ROLE_LABELS;
@@ -109,11 +116,11 @@ export class UserCard {
   protected readonly email = computed(() => splitEmail(this.person().email));
 
   protected readonly registered = computed(() =>
-    formatPersonDate(new Date(this.person().created_at), this.now),
+    formatPersonDate(new Date(this.person().created_at), this.now()),
   );
   protected readonly policy = computed(() => {
     const { policy_version, policy_accepted_at } = this.person();
-    return `Aceptó la versión ${policy_version} el ${formatPersonDate(new Date(policy_accepted_at), this.now)}`;
+    return `Aceptó la versión ${policy_version} el ${formatPersonDate(new Date(policy_accepted_at), this.now())}`;
   });
   protected readonly activity = computed(() => activityLine(this.person().activity));
 
