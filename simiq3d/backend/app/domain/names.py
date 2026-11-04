@@ -161,9 +161,9 @@ def asks_for_list(text: str) -> bool:
 def asked_action(
     question: str, with_instrument: bool
 ) -> tuple[ChatAction, ClinicalField | None]:
-    """Qué hace el visor con la respuesta, según lo que pide la pregunta. Es la
-    misma regla para las plantillas y para el modelo: el modelo redacta el texto,
-    pero la acción no sale de lo que él decida. Con un instrumento, describirlo si
+    """Qué hace el visor con la respuesta de las reglas fijas, según lo que pide
+    la pregunta (el tutor lo decide en `app/domain/tutor.py`, `scene_of`). Con un
+    instrumento, describirlo si
     pregunta qué es (abre su ficha) o, si no, señalarlo; sin él, el dato clínico
     que nombra, el instrumental si lo pide o, si no, la técnica."""
     if with_instrument:

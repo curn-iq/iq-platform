@@ -37,15 +37,6 @@ class ChatAction(StrEnum):
     no_answer = "no_answer"
 
 
-class Comparison(StrEnum):
-    """Qué se pregunta al comparar dos mesas de Mayo."""
-
-    shared = "shared"
-    # Lo que lleva la primera técnica y no la segunda.
-    only_first = "only_first"
-    differences = "differences"
-
-
 class ClinicalField(StrEnum):
     """Los datos clínicos de una técnica que el chat sabe mostrar."""
 
@@ -94,8 +85,9 @@ class Choice:
 
 @dataclass(frozen=True)
 class Reply:
-    """La respuesta del chat. El texto sale de plantillas con datos de DataIQ; las
-    opciones son preguntas que el frontend puede volver a mandar tal cual."""
+    """La respuesta del chat: lo que hace el visor (con ids de DataIQ), el texto
+    (del tutor o de las plantillas) y las opciones, preguntas que el frontend
+    puede volver a mandar tal cual."""
 
     action: ChatAction
     reply: str
@@ -343,87 +335,6 @@ def _no_answer(catalog: Catalog) -> Reply:
         ChatAction.no_answer,
         OUT_OF_SCOPE,
         options=tuple(t.name for t in in_scope(catalog)),
-    )
-
-
-def _names(instruments: list[Instrument]) -> str:
-    return _join([_the(i.name) for i in sorted(instruments, key=lambda i: i.name)])
-
-
-def where_it_goes(catalog: Catalog, instrument: Instrument) -> Reply:
-    """En qué mesas de Mayo va un instrumento, con el total."""
-    techniques = [t for t in in_scope(catalog) if item_with(t, instrument.id)]
-    the_name = _the(instrument.name, start=True)
-    if not techniques:
-        text = f"{the_name} no va en ninguna mesa de Mayo de Cirugía General."
-    elif len(techniques) == 1:
-        text = f"{the_name} va en 1 mesa de Mayo: {techniques[0].name}."
-    else:
-        names = _join([t.name for t in techniques])
-        text = f"{the_name} va en {len(techniques)} mesas de Mayo: {names}."
-    return Reply(
-        ChatAction.answer,
-        text,
-        instrument_id=instrument.id,
-        options=tuple(
-            f"{question_where(instrument.name)} en {t.name}?" for t in techniques
-        ),
-    )
-
-
-def _instruments_of(catalog: Catalog, technique: Technique) -> list[Instrument]:
-    ids = {i for item in technique.mayo_items() for i in item.instrument_ids}
-    return [i for i in catalog.instruments if i.id in ids]
-
-
-def compare(
-    catalog: Catalog, first: Technique, second: Technique, what: Comparison
-) -> Reply:
-    """Qué instrumental comparten dos mesas de Mayo, o cuál lleva solo una. Dice
-    solo lo que se pregunta: la lista completa no responde qué comparten."""
-    mine = _instruments_of(catalog, first)
-    theirs = _instruments_of(catalog, second)
-    mine_ids, their_ids = {i.id for i in mine}, {i.id for i in theirs}
-    shared = [i for i in mine if i.id in their_ids]
-    only_mine = [i for i in mine if i.id not in their_ids]
-    only_theirs = [i for i in theirs if i.id not in mine_ids]
-    a, b = first.name, second.name
-    if what == Comparison.shared:
-        text = (
-            f"Las mesas de Mayo de {a} y {b} comparten {len(shared)}: {_names(shared)}."
-            if shared
-            else f"Las mesas de Mayo de {a} y {b} no comparten instrumental."
-        )
-    elif what == Comparison.only_first:
-        text = (
-            f"Solo la mesa de Mayo de {a}, y no la de {b}, lleva {len(only_mine)}: "
-            f"{_names(only_mine)}."
-            if only_mine
-            else f"Todo lo de la mesa de Mayo de {a} está también en la de {b}."
-        )
-    else:
-        parts = [
-            f"Solo en {name}: {_names(only)}."
-            for name, only in ((a, only_mine), (b, only_theirs))
-            if only
-        ]
-        text = " ".join(parts) or f"Las mesas de Mayo de {a} y {b} llevan lo mismo."
-    return Reply(
-        ChatAction.answer,
-        text,
-        options=(f"Instrumental de la mesa de {a}", f"Instrumental de la mesa de {b}"),
-    )
-
-
-def by_objects(catalog: Catalog) -> Reply:
-    """Las técnicas, de la que lleva más objetos en la mesa de Mayo a la que
-    lleva menos."""
-    ranked = sorted(in_scope(catalog), key=lambda t: -len(t.mayo_items()))
-    listed = _join([f"{t.name} ({len(t.mayo_items())})" for t in ranked])
-    return Reply(
-        ChatAction.answer,
-        f"Objetos en la mesa de Mayo, de más a menos: {listed}.",
-        options=(f"Instrumental de la mesa de {ranked[0].name}",) if ranked else (),
     )
 
 

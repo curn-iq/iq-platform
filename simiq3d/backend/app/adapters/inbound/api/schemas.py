@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel, StringConstraints
 
-from app.domain.chat import ChatAction, ClinicalField, Comparison
+from app.domain.chat import ChatAction, ClinicalField
 from app.domain.requests import RequestKind, Topic
 
 Question = Annotated[
@@ -15,8 +15,8 @@ Name = Annotated[
 
 
 class ChatRequest(BaseModel):
-    """Un pedido: lo que se entendió de una parte de la pregunta (README de
-    SIMIQ3D, «Chat»)."""
+    """Un pedido: de qué trató la respuesta, para entender un seguimiento
+    (README de SIMIQ3D, «Chat»)."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -24,8 +24,6 @@ class ChatRequest(BaseModel):
     technique: Name | None = None
     instrument: Name | None = None
     field: ClinicalField | None = None
-    other_technique: Name | None = None
-    comparison: Comparison | None = None
     topic: Topic | None = None
 
 

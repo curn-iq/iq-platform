@@ -55,8 +55,7 @@ se corre desde `simiq3d/backend`.
    ```
 
    Sin eso responde el motor de plantillas (`LANGUAGE_MODEL=fake`), que no
-   necesita el modelo. Con el modelo responde el tutor; `CHAT_ENGINE=pedidos`
-   usa el chat anterior, para compararlos.
+   necesita el modelo. Con el modelo responde el tutor.
 
 Pruebas y estilo:
 
@@ -106,8 +105,8 @@ entonces de dónde sale cada cosa.
 | `highlight_instrument` | Abre la técnica y resalta el instrumento (`instrument_id`) |
 | `show_clinical_data`, `list_instruments`, `describe_instrument` | Abre la técnica, si viene; el texto trae el dato |
 | `answer` | Nada: es una respuesta en texto («¿en cuántas técnicas…?») |
-| `clarify` | Nada: pide precisar (en qué técnica, o «¿Quizás quisiste decir…?»); las `options` son las preguntas para elegir. Solo con las reglas fijas o los pedidos |
-| `no_answer` | Nada: la pregunta no trata de estas técnicas. Solo con las reglas fijas o los pedidos |
+| `clarify` | Nada: pide precisar (en qué técnica, o «¿Quizás quisiste decir…?»); las `options` son las preguntas para elegir. Solo con las reglas fijas |
+| `no_answer` | Nada: la pregunta no trata de estas técnicas. Solo con las reglas fijas |
 
 `options` son preguntas que se pueden mandar tal cual como la siguiente.
 `requests` dicen de qué se habló (ver «Cómo responde el chat»): el frontend
@@ -169,10 +168,7 @@ El diseño y su porqué: [`../README.md`](../README.md), «Chat».
    de responder a mitad del streaming, lo mostrado queda con la nota `CUT`.
 7. Con `LANGUAGE_MODEL=fake` responden las **reglas fijas**
    (`adapters/outbound/language/fake.py`): una sola cosa por mensaje, con las
-   plantillas de `app/domain/chat.py`. Con `CHAT_ENGINE=pedidos`, el chat
-   anterior (`adapters/outbound/language/ollama.py`): el modelo convierte la
-   pregunta en pedidos (`app/domain/requests.py`) y redacta con lo que
-   armaron las plantillas (`app/domain/writing.py`).
+   plantillas de `app/domain/chat.py`.
 
 ## Producción
 
@@ -197,8 +193,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
   | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
   | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
-  | `CHAT_ENGINE`, `LLM_TEMPERATURE` | `tutor`, `0.3` (los valores por defecto) |
-  | `LLM_WRITE`, `LLM_WRITE_DEADLINE` | `true`, `20` (los valores por defecto; solo con `CHAT_ENGINE=pedidos`) |
+  | `LLM_TEMPERATURE` | `0.3` (el valor por defecto) |
 
   Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
   carpeta.
@@ -256,7 +251,7 @@ separados por «;», cada uno con alternativas separadas por «|», en minúscul
 y sin tildes (`mastectom;medic`).
 
 `chat_bank` hace cada pregunta como la ruta del chat (corrector y motor), con
-el motor de `LANGUAGE_MODEL` y `CHAT_ENGINE`, pero sin HTTP: no gasta el tope
+el motor de `LANGUAGE_MODEL`, pero sin HTTP: no gasta el tope
 de preguntas ni escribe en el registro. El banco guarda nombres, no datos: lo
 que se compara (número de objetos, datos clínicos, descripciones) sale del
 catálogo de DataIQ al correr, y si un nombre ya no está en DataIQ, no corre.
@@ -301,7 +296,7 @@ exactitud total, por `espera` y por tipo; la recuperación (si el código
 encontró la técnica y el instrumento de cada fila, sin el modelo); cuántas
 respuestas cambió la revisión del tutor; los tokens que leyó y escribió el
 modelo (mediana); quién respondió (el tutor, con segunda oportunidad o sin el
-modelo, los pedidos, las plantillas o el corrector) y el tiempo por pregunta; `--salida` guarda cada
+modelo, las plantillas o el corrector) y el tiempo por pregunta; `--salida` guarda cada
 respuesta con su calificación y su motivo, para revisarla a mano. La
 calificación compara nombres, números y palabras, no el sentido: una respuesta
 que la calificación da por buena puede tener una afirmación falsa, y por eso se
@@ -311,11 +306,11 @@ revisa el detalle.
 
 ```
 app/
-├── domain/         catálogo, tutor (foco, datos, visor, revisión), chat (plantillas), pedidos, nombres y reglas fijas
+├── domain/         catálogo, tutor (foco, datos, visor, revisión), chat (plantillas), pedidos (de qué se habló), nombres y reglas fijas
 ├── ports/          contratos: catálogo, motor del chat, sesión, mapeo, registro
 ├── adapters/
 │   ├── inbound/    API (rutas, sesión, esquemas) y comandos
-│   └── outbound/   DataIQ, Ollama (tutor y pedidos) y plantillas, PostgreSQL, JWKS
+│   └── outbound/   DataIQ, el tutor (Ollama) y las plantillas, PostgreSQL, JWKS
 ├── config.py
 └── main.py
 eval/               banco de preguntas del chat

@@ -2,19 +2,12 @@ from dataclasses import replace
 
 from app.domain import tools
 from app.domain.catalog import Catalog
-from app.domain.requests import Request, RequestKind, respond
-from tests.sample import CATALOG, COLECISTECTOMIA, MASTECTOMIA
-
-
-def test_an_unknown_name_returns_suggestions_instead_of_guessing():
-    result = tools.resolve_instrument(CATALOG, "pinza alis")
-
-    assert "error" in result
-    assert result["quizas"][0] == "Pinza de Allis"
+from app.domain.chat import ChatAction, Choice, answer
+from tests.sample import CATALOG, CESAREA, COLECISTECTOMIA, MASTECTOMIA
 
 
 def test_a_technique_is_found_by_what_its_description_says():
-    found = tools.resolve_technique(CATALOG, "la cirugía para quitar la vesícula")
+    found = tools.technique_described(CATALOG, "la cirugía para quitar la vesícula")
 
     assert found == COLECISTECTOMIA
 
@@ -28,27 +21,9 @@ def test_instrument_names_in_a_description_do_not_point_to_a_technique():
     assert tools.technique_described(catalog, "la Kelly") is None
 
 
-def test_a_technique_of_another_specialty_is_out_of_scope():
-    result = tools.resolve_technique(CATALOG, "cesárea")
-
-    assert result["fuera_de_alcance"] is True
-    assert "Cesárea es una técnica de Ginecología" in result["error"]
-    assert "quizas" not in result
-
-
-def test_only_a_misspelling_gets_suggestions():
-    unknown = tools.resolve_technique(CATALOG, "apendicectomía")
-    misspelled = tools.resolve_technique(CATALOG, "colecistetomia")
-
-    assert unknown["fuera_de_alcance"] is True
-    assert "quizas" not in unknown
-    assert misspelled["quizas"] == ["Colecistectomía"]
-
-
-def test_a_technique_asked_as_an_instrument_is_said_to_be_a_technique():
-    result = tools.resolve_instrument(CATALOG, "mastectomía")
-
-    assert result["error"] == "«mastectomía» es una técnica, no un instrumento"
+def test_a_technique_of_another_specialty_is_found_apart():
+    assert tools.out_of_scope_technique(CATALOG, "¿Qué lleva la cesárea?") == CESAREA
+    assert tools.out_of_scope_technique(CATALOG, "¿Qué es la mastectomía?") is None
 
 
 def test_a_short_word_matches_the_beginning_of_a_description_word():
@@ -70,11 +45,10 @@ def test_an_object_without_position_or_number_does_not_break_the_answer():
         techniques=(technique, *CATALOG.techniques[1:]), instruments=CATALOG.instruments
     )
 
-    reply = respond(
-        [Request(RequestKind.locate, "Colecistectomía", "Kelly")], catalog, None
+    reply = answer(
+        Choice(ChatAction.highlight_instrument, "Colecistectomía", "Pinza Kelly"),
+        catalog,
+        None,
     )
 
-    assert reply.reply == (
-        "La Pinza Kelly va en la mesa de Mayo de Colecistectomía, pero DataIQ "
-        "todavía no tiene su posición."
-    )
+    assert "DataIQ todavía no tiene su posición" in reply.reply

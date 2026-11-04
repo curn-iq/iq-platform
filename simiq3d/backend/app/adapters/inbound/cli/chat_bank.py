@@ -5,10 +5,10 @@
 
 Lee `eval/banco.csv`: cada fila es una pregunta (con la técnica abierta en el
 visor, si la hay) y lo que el chat debe hacer con ella (`espera`). Hace cada
-pregunta como la ruta del chat (corrector, agente y plantillas), sin pasar por
-HTTP: no gasta el tope de preguntas ni escribe en el registro de
-conversaciones. El motor es el de `LANGUAGE_MODEL`: con `ollama`, el modelo del
-Servidor PC2.
+pregunta como la ruta del chat (el corrector y el motor), sin pasar por HTTP:
+no gasta el tope de preguntas ni escribe en el registro de conversaciones. El
+motor es el de `LANGUAGE_MODEL`: con `ollama`, el tutor con el modelo del
+Servidor PC2; si no, las plantillas.
 
 El banco guarda nombres, no datos: el número del diagrama, los conteos, los
 datos clínicos y las descripciones con que se compara cada respuesta salen del
@@ -612,7 +612,7 @@ def _score_expected(q: Question, reply: Reply, catalog: Catalog) -> tuple[bool, 
             if (reply.action, opened) != (ChatAction.list_instruments, t.id):
                 return False, "el visor no muestra la lista de la técnica"
             # Con el tutor la lista va bajo la respuesta (la dibuja el frontend
-            # con la acción); el texto armado la traía escrita.
+            # con la acción); las plantillas la traen escrita.
             if reply.generated:
                 return True, ""
             return _all_named(text, _instruments(t, catalog))
@@ -684,7 +684,8 @@ async def ask(
     previous: tuple[Turn, ...] = ()
     if q.previous:
         # El seguimiento llega como en el frontend: con la pregunta anterior y
-        # los pedidos que devolvió su respuesta. Esa no se califica ni se cronometra.
+        # los pedidos y el texto de su respuesta. Esa no se califica ni se
+        # cronometra.
         try:
             before = await engine.reply(q.previous, catalog, open_id)
         except ModelUnavailable:
@@ -734,27 +735,21 @@ async def run(
 
 
 def who(reply: Reply | None) -> str:
-    """Quién armó la respuesta, agrupado para el informe: el corrector, el
-    modelo, las plantillas como motor o las plantillas como respaldo del
-    modelo."""
+    """Quién armó la respuesta, agrupado para el informe: el corrector, las
+    plantillas o el tutor (con segunda oportunidad, o sin el modelo, que no
+    respondió a tiempo)."""
     if reply is None:
         return "sin respuesta"
     by = reply.answered_by
     if by == "corrector":
         return "corrector"
     if by.startswith(TemplateChat.name):
-        return "respaldo" if "respaldo" in by else TemplateChat.name
-    # El modelo entendió, pero la redacción no pasó la verificación o tardó
-    if "texto de plantillas" in by:
-        return "modelo, texto armado"
-    # El tutor: sin el modelo (no respondió a tiempo), o con segunda oportunidad
+        return TemplateChat.name
     if "sin modelo" in by or "sin texto" in by:
         return "tutor, sin modelo"
     if "segunda oportunidad" in by:
         return "tutor, segunda vez"
-    if "(tutor)" in by:
-        return "tutor"
-    return "modelo"
+    return "tutor"
 
 
 def recovered(q: Question, catalog: Catalog) -> bool | None:

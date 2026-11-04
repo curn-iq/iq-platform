@@ -162,12 +162,7 @@ def _named(question: str, catalog: Catalog, open_technique: Technique | None) ->
 
 def _turn_text(turn: Turn) -> str:
     """La pregunta anterior con los nombres de lo que se entendió de ella."""
-    names = [
-        n
-        for r in turn.requests
-        for n in (r.technique, r.instrument, r.other_technique)
-        if n
-    ]
+    names = [n for r in turn.requests for n in (r.technique, r.instrument) if n]
     return " ".join([turn.question, *names])
 
 

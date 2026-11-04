@@ -54,9 +54,8 @@ class FakeModel:
 
 class TemplateChat:
     """El chat sin modelo de lenguaje: FakeModel elige la acción y las plantillas
-    del dominio arman la respuesta. Es el motor por defecto (para desarrollar sin
-    el Servidor PC2) y el respaldo del agente cuando su respuesta no pasa la
-    verificación."""
+    del dominio arman la respuesta. Es el motor por defecto, para desarrollar y
+    probar sin el Servidor PC2 (LANGUAGE_MODEL=fake)."""
 
     name = "plantillas"
 
