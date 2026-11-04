@@ -100,8 +100,6 @@ async def test_the_chat_answers_with_the_action_and_dataiq_text(api, bearer, cat
                 "technique": "Colecistectomía",
                 "instrument": "Pinza Kelly",
                 "field": None,
-                "other_technique": None,
-                "comparison": None,
                 "topic": None,
             }
         ],

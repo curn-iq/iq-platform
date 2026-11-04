@@ -156,8 +156,8 @@ export interface components {
         };
         /**
          * ChatRequest
-         * @description Un pedido: lo que se entendió de una parte de la pregunta (README de
-         *     SIMIQ3D, «Chat»).
+         * @description Un pedido: de qué trató la respuesta, para entender un seguimiento
+         *     (README de SIMIQ3D, «Chat»).
          */
         ChatRequest: {
             kind: components["schemas"]["RequestKind"];
@@ -166,9 +166,6 @@ export interface components {
             /** Instrument */
             instrument?: string | null;
             field?: components["schemas"]["ClinicalField"] | null;
-            /** Other Technique */
-            other_technique?: string | null;
-            comparison?: components["schemas"]["Comparison"] | null;
             topic?: components["schemas"]["Topic"] | null;
         };
         /**
@@ -269,12 +266,6 @@ export interface components {
          * @enum {string}
          */
         ClinicalField: "description" | "indications" | "complications" | "anesthesia_position";
-        /**
-         * Comparison
-         * @description Qué se pregunta al comparar dos mesas de Mayo.
-         * @enum {string}
-         */
-        Comparison: "shared" | "only_first" | "differences";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -308,15 +299,17 @@ export interface components {
         };
         /**
          * RequestKind
+         * @description De qué trató la respuesta: dónde va un instrumento, qué es, un dato
+         *     clínico, la mesa o la técnica; o una técnica que SIMIQ3D no muestra.
          * @enum {string}
          */
-        RequestKind: "locate" | "describe" | "clinical_data" | "list_instruments" | "show_technique" | "find_instrument" | "compare" | "rank" | "out_of_scope" | "greeting";
+        RequestKind: "locate" | "describe" | "clinical_data" | "list_instruments" | "show_technique" | "out_of_scope";
         /**
          * Topic
-         * @description Lo que DataIQ no tiene, en una pregunta fuera de alcance.
+         * @description Lo que SIMIQ3D no muestra, en un pedido fuera de alcance.
          * @enum {string}
          */
-        Topic: "surgical_times" | "missing_clinical_data" | "other_technique" | "other";
+        Topic: "other_technique";
         /** ValidationError */
         ValidationError: {
             /** Location */

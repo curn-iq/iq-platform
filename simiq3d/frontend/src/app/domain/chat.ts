@@ -16,31 +16,20 @@ export type ChatAction =
 /** El dato clínico de una técnica que trae la respuesta (`ClinicalField` del backend). */
 export type ClinicalField = 'description' | 'indications' | 'complications' | 'anesthesia_position';
 
-/** Los tipos de pedido en que el chat convierte una pregunta (`RequestKind` del backend). */
+/** De qué trató una respuesta del chat (`RequestKind` del backend). */
 export type RequestKind =
-  | 'locate'
-  | 'describe'
-  | 'clinical_data'
-  | 'list_instruments'
-  | 'show_technique'
-  | 'find_instrument'
-  | 'compare'
-  | 'rank'
-  | 'out_of_scope'
-  | 'greeting';
+  'locate' | 'describe' | 'clinical_data' | 'list_instruments' | 'show_technique' | 'out_of_scope';
 
 /**
- * Un pedido: lo que el chat entendió de una parte de la pregunta (`ChatRequest`). El
- * visor no lo usa; va de vuelta con la siguiente pregunta, para entender un seguimiento.
+ * Un pedido: de qué trató la respuesta (`ChatRequest`). El visor no lo usa; va de
+ * vuelta con la siguiente pregunta, para entender un seguimiento.
  */
 export interface ChatRequest {
   kind: RequestKind;
   technique?: string | null;
   instrument?: string | null;
   field?: ClinicalField | null;
-  other_technique?: string | null;
-  comparison?: 'shared' | 'only_first' | 'differences' | null;
-  topic?: 'surgical_times' | 'missing_clinical_data' | 'other_technique' | 'other' | null;
+  topic?: 'other_technique' | null;
 }
 
 /** La respuesta de `POST /chat` (`ChatOut`): la acción, sus ids, el texto y las opciones. */

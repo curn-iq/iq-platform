@@ -263,14 +263,12 @@ def test_who_answered_is_grouped():
     assert who(None) == "sin respuesta"
     assert who(Reply(ChatAction.clarify, "…", answered_by="corrector")) == "corrector"
     assert who(Reply(ChatAction.answer, "…", answered_by="plantillas")) == "plantillas"
-    backup = "plantillas (respaldo de qwen3-vl:8b-instruct)"
-    assert who(Reply(ChatAction.answer, "…", answered_by=backup)) == "respaldo"
-    model = "qwen3-vl:8b-instruct"
-    assert who(Reply(ChatAction.answer, "…", answered_by=model)) == "modelo"
-    built = f"{model} (texto de plantillas)"
-    assert who(Reply(ChatAction.answer, "…", answered_by=built)) == (
-        "modelo, texto armado"
-    )
+    tutor = "qwen3-vl:8b-instruct (tutor)"
+    assert who(Reply(ChatAction.answer, "…", answered_by=tutor)) == "tutor"
+    late = f"{tutor}, sin modelo"
+    assert who(Reply(ChatAction.answer, "…", answered_by=late)) == "tutor, sin modelo"
+    again = f"{tutor}, segunda oportunidad"
+    assert who(Reply(ChatAction.answer, "…", answered_by=again)) == "tutor, segunda vez"
 
 
 def test_the_judge_reads_the_sentences_without_the_table():

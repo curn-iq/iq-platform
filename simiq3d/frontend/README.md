@@ -233,7 +233,7 @@ Los de DataIQ, como en su frontend: un 401 lleva al ingreso del shell. Del
 chat (`POST /chat`), además:
 
 - **503 «El chat no está disponible»** (el Servidor PC2 está apagado o no
-  responde, con las reglas fijas o el chat por pedidos): el chat se muestra
+  responde, con un motor que no lo resuelve él mismo): el chat se muestra
   «no disponible» y el visor sigue funcionando; las técnicas se pueden abrir
   desde la lista. El tutor no lo usa: su respuesta dice que el modelo no está
   disponible y muestra lo que DataIQ tiene.
