@@ -197,7 +197,7 @@ mismo día decidió que el modelo redacte la respuesta con los datos de DataIQ.
     preguntas con el mismo modelo como juez, como en el cookbook de OpenAI
     ([*Developing hallucination guardrails*](https://developers.openai.com/cookbook/examples/developing_hallucination_guardrails)).
   - **Respaldo:** si el texto no pasa la verificación, o si redactarlo tarda
-    más de `LLM_WRITE_DEADLINE` (12 segundos), se muestra la respuesta armada
+    más de `LLM_WRITE_DEADLINE` (20 segundos), se muestra la respuesta armada
     con las plantillas, que es correcta. Cada llamada tiene además un tope de
     largo (`max_tokens`): un modelo que se repite no espera hasta el límite de
     tiempo. Es degradar con gracia hacia otra

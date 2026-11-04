@@ -143,7 +143,7 @@ redacción»).
   tiempos quirúrgicos u orden de uso, explicaciones y relleno, datos omitidos,
   lo que DataIQ no tiene dicho y nada más dado por faltante, y el largo
 - [x] Respaldo: lo armado si no pasa o si tarda más de `LLM_WRITE_DEADLINE`
-  (12 s); tope de `max_tokens` en las dos llamadas; las aclaraciones y las
+  (20 s); tope de `max_tokens` en las dos llamadas; las aclaraciones y las
   negativas no se redactan; `LLM_WRITE=false` la apaga
 - [x] «No va en esta mesa» dice dónde sí va, con la pregunta para verlo ahí
 - [x] `compare` con el ejemplo de «qué lleva X que no lleve Y»
@@ -167,6 +167,10 @@ redacción»).
   es el mismo modelo y se equivoca: en una respuesta no respondió frase por
   frase. Falla la misma pregunta que sin redacción («dime lo demás sin tiempo
   quirúrgico»)
+- [x] Tope de la redacción en 20 s (2026-11-03): en producción, «Dime todo
+  sobre la mastectomía…» pasaba de 12 s y se mostraba lo armado; en el MVP se
+  acepta esperar más (decidido por Mauricio). El log dice también cuándo la
+  redacción no terminó a tiempo, como cuando no pasa la verificación
 - [ ] Probar en producción, con el Servidor PC2: el tiempo de punta a punta
 
 ## Modelos 3D

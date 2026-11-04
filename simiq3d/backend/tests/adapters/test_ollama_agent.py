@@ -237,7 +237,7 @@ async def test_the_call_waits_at_most_the_deadline():
     await _agent_with(handle, timeout=60, deadline=5).reply("Hola", CATALOG, None)
 
     # Entender espera hasta LLM_DEADLINE, y redactar, hasta LLM_WRITE_DEADLINE.
-    assert timeouts == [5, 12]
+    assert timeouts == [5, 20]
 
 
 @pytest.mark.anyio

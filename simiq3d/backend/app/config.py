@@ -47,7 +47,10 @@ class Config(BaseSettings):
     # llamada), y cuánto puede tardar: pasado ese tiempo, o si el texto no pasa
     # la verificación, se muestra la respuesta armada por las plantillas.
     llm_write: bool = True
-    llm_write_deadline: float = 12
+    # 20 s: una respuesta larga («dime todo sobre la mastectomía…») tardaba más de
+    # 12 en producción; en el MVP se acepta esperar (decidido por Mauricio el
+    # 2026-11-03).
+    llm_write_deadline: float = 20
 
     # Tope de preguntas por cuenta: cuántas en cuántos segundos. Se cuenta con
     # el id de la cuenta cifrado con esta clave (HMAC), aparte del registro
