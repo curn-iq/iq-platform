@@ -228,8 +228,9 @@ producción el chat por pedidos).
   comunes («vesícula» por el Separador vesical). Las reglas fijas (`LANGUAGE_MODEL=fake`) responden «¿Quizás
   quisiste decir…?» con la pregunta corregida.
 
-- **El chat por pedidos** sigue en el código (`CHAT_ENGINE=pedidos`), para
-  compararlo con el tutor en el banco de preguntas.
+- **El chat por pedidos** se quitó del código el 2026-11-04, una vez que el
+  tutor quedó en producción (#71 a #75); su diseño y sus mediciones están en
+  los PR #68 a #70 y en la checklist del backend.
 
 - **Modelo local y abierto, con [Ollama](https://ollama.com)**, en el
   **Servidor PC2**: un PC de escritorio con GPU (AMD RX 6600 XT de 8 GB, 32 GB

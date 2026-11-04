@@ -26,8 +26,9 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
   `POST /chat/stream`: cada frase sale apenas se revisa (`Reviewer`), así que
   un límite nuevo tiene que poder decidirse con la frase y las anteriores, no
   con las que vienen. Un límite nuevo va en
-  `review.py` con sus preguntas en `eval/banco.csv` (columna `limite`). El chat
-  por pedidos (`CHAT_ENGINE=pedidos`) queda solo para comparar.
+  `review.py` con sus preguntas en `eval/banco.csv` (columna `limite`). Sin el
+  Servidor PC2 (`LANGUAGE_MODEL=fake`) responden las reglas fijas con sus
+  plantillas, para desarrollar.
 - **Nunca hablarle al estudiante de filas, columnas ni celdas:** la mesa real
   no tiene cuadrícula. Se dice la zona de la mesa («arriba a la derecha»), lo
   que tiene al lado y el número del diagrama de IQ.

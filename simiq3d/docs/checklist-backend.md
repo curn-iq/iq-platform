@@ -269,6 +269,19 @@ Acordado por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
   mostrado por partes es igual a la respuesta final. Vercel no acumula la
   respuesta
 
+### Quitar el chat por pedidos
+
+Una vez que el tutor quedó en producción (#71 a #75).
+
+- [x] Fuera el agente por pedidos (`adapters/outbound/language/ollama.py`), la
+  redacción con verificación (`app/domain/writing.py`), lo que solo ellos
+  usaban de `app/domain/requests.py`, `app/domain/tools.py` y
+  `app/domain/chat.py`, y `CHAT_ENGINE`, `LLM_WRITE` y `LLM_WRITE_DEADLINE`
+- [x] El contrato de `POST /chat` sin lo que solo producían los pedidos
+  (`compare`, `rank`, `find_instrument`, `greeting`, `other_technique`,
+  `comparison`); el frontend con los tipos al día
+- [ ] Probar en producción después del despliegue
+
 ## Modelos 3D
 
 - [x] `GET /models` con `Cache-Control` y `ETag`
