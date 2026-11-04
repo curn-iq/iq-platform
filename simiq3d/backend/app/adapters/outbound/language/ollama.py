@@ -202,7 +202,7 @@ class OllamaAgent:
         deadline: float = 30,
         transport: httpx.AsyncBaseTransport | None = None,
         write: bool = True,
-        write_deadline: float = 12,
+        write_deadline: float = 20,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/v1/chat/completions"
         # Tiempo máximo de cada llamada: pasado ese tiempo responden las
@@ -266,6 +266,9 @@ class OllamaAgent:
                 messages(question, plan), None, self._write_wait, MAX_TOKENS_WRITING
             )
         except _Busy, ModelUnavailable:
+            # Como el rechazo de la verificación, queda en el log: si no, un
+            # texto armado por tiempo no se distingue de uno que no pasó.
+            logger.warning("La redacción no terminó a tiempo o el modelo no respondió")
             return as_built
         text = (message.get("content") or "").strip()
         problems = unsupported(text, plan, question, catalog)

@@ -184,7 +184,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
   | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
   | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
-  | `LLM_WRITE`, `LLM_WRITE_DEADLINE` | `true`, `12` (los valores por defecto) |
+  | `LLM_WRITE`, `LLM_WRITE_DEADLINE` | `true`, `20` (los valores por defecto) |
 
   Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
   carpeta.
