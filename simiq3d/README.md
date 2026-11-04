@@ -91,8 +91,10 @@ producción el chat por pedidos).
      por las palabras de su descripción en DataIQ que solo están en ella.
   2. **Trae de DataIQ solo eso** (`data_of`, en `app/domain/tutor.py`): de cada
      técnica, sus datos clínicos y la mesa de Mayo objeto por objeto (número
-     del diagrama, zona y vecinos; sin la mesa, en un seguimiento como «dime lo
-     demás», el modelo la inventaba); de cada
+     del diagrama, zona, vecinos y para qué sirve, la frase de su descripción en
+     DataIQ que lo dice; sin la mesa, en un seguimiento como «dime lo demás», el
+     modelo la inventaba, y sin para qué sirve cada pieza, le inventaba la
+     función: «la Allis hace la hemostasia»); de cada
      instrumento, su descripción y en qué mesas va y dónde; de dos técnicas, lo
      que llevan las dos y cada una; de una técnica de otra especialidad, sus
      datos y que SIMIQ3D no muestra su mesa. Lo que DataIQ no tiene va dicho
@@ -111,11 +113,11 @@ producción el chat por pedidos).
      para contextos largos
      ([*Long context prompting tips*](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/long-context-tips)).
      Escribe en Markdown sencillo (negrita y listas), con temperatura 0,3.
-  5. **Se revisa frase por frase** (`app/domain/review.py`): la frase que cruza
-     un límite duro se quita y en su lugar va el dato de DataIQ o una nota de lo
-     que DataIQ no tiene; el resto queda como lo escribió el modelo. Si la
-     revisión quita más de la mitad de la respuesta, el modelo tiene una
-     segunda oportunidad, con lo que estuvo mal.
+  5. **Se revisa frase por frase, a medida que llega** (`app/domain/review.py`):
+     la frase que cruza un límite duro se quita y en su lugar va el dato de
+     DataIQ o una nota de lo que DataIQ no tiene; el resto queda como lo
+     escribió el modelo. Cada frase se muestra apenas se revisa (ver «La
+     respuesta a medida que se escribe»).
   6. **Sin el modelo** (el Servidor PC2 apagado, ocupado o pasado el tope de
      `LLM_DEADLINE`), la respuesta lo dice y muestra lo que DataIQ tiene de lo
      que se nombró. Es lo único con forma fija, porque sin el modelo no hay
@@ -126,7 +128,7 @@ producción el chat por pedidos).
 
   | Límite | Cómo se revisa | Qué queda en su lugar |
   |---|---|---|
-  | La mesa de Mayo: un instrumento que no va en esa mesa, un objeto con número que DataIQ no tiene, o el número del diagrama, la zona o cuántos objetos lleva, distintos de DataIQ | Las frases que ubican una pieza o cuentan objetos, contra DataIQ (también una lista numerada, una zona con sus números y lo que se dice de la pieza de la pregunta en cada mesa que se nombra) | Dónde va de verdad, como lo dice DataIQ |
+  | La mesa de Mayo: un instrumento que no va en esa mesa, un objeto con número que DataIQ no tiene, el número del diagrama, la zona o cuántos objetos lleva, distintos de DataIQ, o qué lleva una mesa que SIMIQ3D no tiene (la apendicectomía, la cesárea) | Las frases que ubican una pieza o cuentan objetos, contra DataIQ (también una lista numerada, una zona con sus números y lo que se dice de la pieza de la pregunta en cada mesa que se nombra) | Dónde va de verdad, como lo dice DataIQ |
   | Ordenar o agrupar la mesa por tiempos quirúrgicos u orden de uso | Las frases que ordenan («se usa primero») o que ubican o agrupan piezas por un tiempo («instrumental de diéresis:»). Explicar qué es un tiempo sí se puede | Que DataIQ no tiene los tiempos ni el orden de uso, solo dónde va cada pieza |
   | Dosis de medicamentos | Una cifra con su unidad (mg, ml, UI…) | Que el chat no da dosis: las indica el equipo médico |
   | Filas, columnas o celdas | Las palabras | Nada: la frase sale |
@@ -190,9 +192,28 @@ producción el chat por pedidos).
   revisa IQ. Un modelo mayor, si el proyecto se financia, reduce el riesgo
   ([`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md)).
 
-- **Sin mostrar el texto mientras se escribe:** cada frase se revisa antes de
-  mostrarse. Mostrarlo frase por frase, ya revisada, está en
-  [`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md).
+- **La respuesta a medida que se escribe** (*streaming*, acordado por Mauricio
+  el 2026-11-03 y hecho el 2026-11-04). A 24 tokens por segundo, una respuesta
+  tarda de 8 a 19 s en escribirse; Nielsen pone en 10 s el límite para que la
+  atención no se vaya, y con una espera más larga pide mostrar avance
+  ([*Response Times: The 3 Important Limits*](https://www.nngroup.com/articles/response-times-3-important-limits/)).
+  Por eso `POST /chat/stream` manda, una línea JSON por evento:
+  1. **`start`**, apenas el código decide de qué se habla: lo que hace el
+     visor y las preguntas sugeridas. El visor se mueve antes de que el modelo
+     empiece a escribir.
+  2. **`text`**, cada frase ya revisada, a medida que el modelo la termina: la
+     revisión espera a que empiece la siguiente para saber que la anterior está
+     completa, así que nunca se muestra algo que después se quite.
+  3. **`end`**, la respuesta completa, que reemplaza lo mostrado y va al
+     registro.
+
+  Sin segunda oportunidad en el streaming (decidido por Mauricio el
+  2026-11-04): lo ya mostrado no se borra, y pasaba en 3 de 153 preguntas del
+  banco; la revisión ya cambia cada frase por el dato real. Si el modelo deja
+  de responder a mitad, lo mostrado queda con una nota que lo dice. `POST
+  /chat`, que responde todo junto y sí da la segunda oportunidad, queda para el
+  banco de preguntas. Si algo en el camino (Vercel, Tailscale Funnel) llegara a
+  juntar la respuesta, el frontend la recibe entera, como antes.
 
 - **Dónde va cada cosa, dicho como en la práctica:** la cuadrícula de DataIQ
   es cómo se guarda el arreglo, no cómo se habla de él (la mesa real es un
@@ -220,7 +241,8 @@ producción el chat por pedidos).
   muestra lo que DataIQ tiene; el visor y las técnicas siguen funcionando.
 - **Funnel expone un filtro con clave, no Ollama**, que no tiene
   autenticación propia: el filtro exige una clave secreta que solo conoce el
-  backend (variable de entorno secreta de su proyecto en Vercel).
+  backend (variable de entorno secreta de su proyecto en Vercel), y reenvía
+  las partes de la respuesta de Ollama a medida que llegan.
 - **Intercambiable:** el backend habla con el modelo por un puerto
   (arquitectura hexagonal), con la API compatible con OpenAI que da Ollama.
   Pasar el modelo a otro equipo, o a una API en la nube, es cambiar la

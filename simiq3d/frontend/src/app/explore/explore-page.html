@@ -8,7 +8,7 @@
   <app-chat-history
     class="chat"
     [messages]="conversation.messages()"
-    [pending]="conversation.pending()"
+    [pending]="conversation.waiting()"
     [notice]="conversation.notice()"
     [suggestions]="welcome() ? [] : suggestions()"
     [initials]="initials()"
@@ -27,6 +27,7 @@
     [empty]="welcome()"
     [techniques]="covered()"
     [busy]="conversation.pending()"
+    [waiting]="conversation.waiting()"
     [last]="lastReply()"
     [showLast]="!historyOpen() && !cardOpen()"
     (choose)="open($event)"

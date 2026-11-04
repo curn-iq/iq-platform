@@ -1,7 +1,7 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, RootModel, StringConstraints
 
 from app.domain.chat import ChatAction, ClinicalField, Comparison
 from app.domain.requests import RequestKind, Topic
@@ -75,6 +75,33 @@ class ChatOut(OutModel):
         description="Lo que se entendió de la pregunta: va de vuelta en "
         "`previous` con la siguiente"
     )
+
+
+class ChatStreamStart(ChatOut):
+    """El primer evento de `POST /chat/stream`: lo que hace el visor, sin texto."""
+
+    type: Literal["start"]
+
+
+class ChatStreamText(BaseModel):
+    """Una parte del texto, ya revisada, que se agrega a lo mostrado."""
+
+    type: Literal["text"]
+    text: str
+
+
+class ChatStreamEnd(ChatOut):
+    """El último evento: la respuesta completa, que reemplaza lo mostrado."""
+
+    type: Literal["end"]
+
+
+class ChatStreamEvent(RootModel):
+    """Una línea de `POST /chat/stream`, según su `type`."""
+
+    root: Annotated[
+        ChatStreamStart | ChatStreamText | ChatStreamEnd, Field(discriminator="type")
+    ]
 
 
 class ModelFileOut(OutModel):

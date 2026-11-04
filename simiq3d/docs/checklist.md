@@ -38,6 +38,7 @@ porqué están en el [README](../README.md).
   GLB de cada instrumento y la tabla de medidas, en el repo
 - [x] Ollama en el Servidor PC2 con la GPU (RX 6600 XT al 100 %) y como servicio
 - [x] Tailscale Funnel con el filtro con clave (solo el filtro queda publicado)
+- [x] El filtro deja pasar la respuesta de Ollama a medida que se escribe
 - [x] Servidor PC2 sin suspensión por inactividad
 - [x] Modelo de lenguaje del MVP: Qwen3-VL 8B instruct (probados Qwen2.5 7B y
   Qwen3-VL 8B)

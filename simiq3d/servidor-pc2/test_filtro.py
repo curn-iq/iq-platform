@@ -16,13 +16,23 @@ KEY = "k" * 40
 CHAT = {"model": "qwen3-vl:8b-instruct", "messages": [{"role": "user", "content": "Hola"}]}
 
 
+PARTS = [b'data: {"choices":[{"delta":{"content":"Ho"}}]}\n\n', b"data: [DONE]\n\n"]
+
+
 class FakeOllama:
     def __init__(self) -> None:
         self.bodies: list[dict] = []
 
     def transport(self) -> httpx.MockTransport:
         def handle(request: httpx.Request) -> httpx.Response:
-            self.bodies.append(json.loads(request.content))
+            body = json.loads(request.content)
+            self.bodies.append(body)
+            if body["stream"]:
+                return httpx.Response(
+                    200,
+                    headers={"content-type": "text/event-stream"},
+                    stream=httpx.ByteStream(b"".join(PARTS)),
+                )
             return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
 
         return httpx.MockTransport(handle)
@@ -125,6 +135,45 @@ async def test_when_it_is_full_it_says_busy_at_once():
         release.set()
         assert (await first).status_code == 200
     assert second.status_code == 429
+
+
+@pytest.mark.anyio
+async def test_a_streamed_chat_passes_its_parts_as_they_come(client, ollama):
+    response = await client.post(
+        "/v1/chat/completions",
+        json=CHAT | {"stream": True},
+        headers={"Authorization": f"Bearer {KEY}"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.content == b"".join(PARTS)
+    assert ollama.bodies[0]["stream"] is True
+
+
+@pytest.mark.anyio
+async def test_a_streamed_chat_keeps_its_place_until_it_ends():
+    release = asyncio.Event()
+
+    class Waiting(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            await release.wait()
+            return httpx.Response(200, stream=httpx.ByteStream(b"data: [DONE]\n\n"))
+
+    app = create_app(KEY, {"qwen3-vl:8b-instruct"}, "http://ollama", Waiting(), at_once=1)
+    headers = {"Authorization": f"Bearer {KEY}"}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://pc2"
+    ) as c:
+        streamed = CHAT | {"stream": True}
+        first = asyncio.create_task(c.post("/v1/chat/completions", json=streamed, headers=headers))
+        await asyncio.sleep(0.05)
+        second = await c.post("/v1/chat/completions", json=streamed, headers=headers)
+        release.set()
+        assert (await first).status_code == 200
+        third = await c.post("/v1/chat/completions", json=streamed, headers=headers)
+    assert second.status_code == 429
+    assert third.status_code == 200
 
 
 def test_a_short_key_is_refused():

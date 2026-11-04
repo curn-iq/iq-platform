@@ -119,11 +119,6 @@ fuentes propias.
   respaldo (los de Microsoft y Google son pagos), cabe en el tiempo de
   espera (decidido por Mauricio el 2026-11-03, [`simiq3d/README.md`](../simiq3d/README.md),
   «Chat»).
-- **Mostrar la respuesta mientras se escribe** (*streaming*), frase por frase,
-  cada una ya revisada, y el visor y la mesa antes que el texto. Hace falta que
-  el filtro del Servidor PC2 deje pasar el streaming de Ollama (hoy lo apaga),
-  que el backend envíe eventos y que el frontend los lea, y probar antes que
-  Vercel no acumule la respuesta entera (acordado por Mauricio el 2026-11-03).
 - **Un juez distinto del modelo del chat** para el banco de preguntas: el mismo
   modelo puede preferir lo que él escribe. Solo con un servicio gratis y sin
   tarjeta de crédito ([`docs/arquitectura.md`](arquitectura.md)).

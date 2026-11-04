@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
@@ -382,3 +384,115 @@ async def test_the_previous_reply_text_reaches_the_engine(api, bearer):
 
     [turn] = SpellingEngine.previous
     assert turn.reply == "Es una pinza hemostática."
+
+
+def lines_of(response_) -> list[dict]:
+    import json
+
+    return [json.loads(line) for line in response_.text.splitlines() if line]
+
+
+class StreamingEngine:
+    """Un motor que escribe por partes, como el tutor."""
+
+    name = "por partes"
+    fixes_spelling = True
+
+    async def reply(self, *args):
+        raise AssertionError("con streaming no se llama a reply")
+
+    async def stream(self, question, catalog, open_technique_id, previous=()):
+        from app.domain.chat import Reply
+        from app.ports.chat import ReplyEnd, ReplyStart, ReplyText
+
+        start = Reply(
+            ChatAction.highlight_instrument,
+            "",
+            technique_id=COLECISTECTOMIA.id,
+            instrument_id=KELLY.id,
+        )
+        yield ReplyStart(start)
+        yield ReplyText("La **Kelly** es hemostática.")
+        yield ReplyText(" Va en el centro.")
+        yield ReplyEnd(
+            replace(
+                start,
+                reply="La **Kelly** es hemostática. Va en el centro.",
+                generated=True,
+                answered_by="por partes",
+            )
+        )
+
+
+@pytest.mark.anyio
+async def test_streamed_the_viewer_comes_first_then_the_text_then_the_whole(
+    api, bearer, session
+):
+    app.dependency_overrides[get_chat_engine] = StreamingEngine
+    app.dependency_overrides[get_chat_log] = lambda: SQLAlchemyChatLogRepository(
+        session
+    )
+
+    response_ = await api.post(
+        "/chat/stream", json={"question": "¿Dónde va la Kelly?"}, headers=bearer
+    )
+
+    assert response_.status_code == 200
+    assert response_.headers["content-type"].startswith("application/x-ndjson")
+    assert response_.headers["cache-control"] == "no-store"
+    start, *texts, end = lines_of(response_)
+    assert (start["type"], start["action"], start["reply"]) == (
+        "start",
+        "highlight_instrument",
+        "",
+    )
+    assert [t["text"] for t in texts] == [
+        "La **Kelly** es hemostática.",
+        " Va en el centro.",
+    ]
+    assert (end["type"], end["generated"]) == ("end", True)
+    assert end["reply"] == "La **Kelly** es hemostática. Va en el centro."
+    [entry] = await SQLAlchemyChatLogRepository(session).list_all()
+    assert entry.language_model == "por partes"
+
+
+@pytest.mark.anyio
+async def test_streamed_with_an_engine_that_does_not_stream_it_comes_at_once(
+    api, bearer
+):
+    response_ = await api.post(
+        "/chat/stream",
+        json={
+            "question": "¿Dónde va la Kelly?",
+            "technique_id": str(COLECISTECTOMIA.id),
+        },
+        headers=bearer,
+    )
+
+    start, text, end = lines_of(response_)
+    assert (start["type"], text["type"], end["type"]) == ("start", "text", "end")
+    assert start["reply"] == ""
+    assert text["text"] == end["reply"]
+    assert end["action"] == "highlight_instrument"
+
+
+@pytest.mark.anyio
+async def test_streamed_the_errors_come_before_starting(api, bearer):
+    app.dependency_overrides[get_chat_quota] = FullQuota
+    app.dependency_overrides[get_chat_engine] = StreamingEngine
+
+    response_ = await api.post(
+        "/chat/stream", json={"question": "¿Dónde va la Kelly?"}, headers=bearer
+    )
+
+    assert response_.status_code == 429
+
+
+@pytest.mark.anyio
+async def test_streamed_a_misspelled_name_gets_a_did_you_mean(api, bearer):
+    response_ = await api.post(
+        "/chat/stream", json={"question": "¿Dónde va la kely?"}, headers=bearer
+    )
+
+    *_, end = lines_of(response_)
+    assert end["action"] == "clarify"

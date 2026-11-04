@@ -1,3 +1,5 @@
+import pytest
+
 from app.domain.review import NO_DOSES, NO_TIMES, review, wrong_zone, zone_of
 from tests.sample import CATALOG, COLECISTECTOMIA, KELLY, MASTECTOMIA
 
@@ -244,3 +246,74 @@ def test_proposing_to_move_the_pieces_is_replaced():
     reviewed = check("Si quieres, puedes moverlos en el visor 3D. Bien.")
 
     assert reviewed.text == f"{NO_MOVING} Bien."
+
+
+STREAMED = [
+    "La **Pinza Kelly** es hemostática. Va en el centro (n.º 4 del diagrama).",
+    "Va así:\n\n1. Tijera de Mayo\n2. Pinza Kelly\n\n"
+    "- **Arriba a la izquierda**: 5 y 10.",
+    "El instrumental de diéresis de esta mesa es:\n\n- Tijera de Mayo\n- Pinza Kelly"
+    "\n\nLo demás es general. La Kelly se usa primero. Después se usa la Allis.",
+    "Se usan 2 mg/kg de lidocaína. Lo decide el anestesiólogo.\n\n\n\nFin.",
+    "- **Pinza Kelly** (obj. 10) va en el centro.\n"
+    "La Pinza Lahey va arriba en la mesa.",
+]
+
+
+@pytest.mark.parametrize("text", STREAMED)
+@pytest.mark.parametrize("size", [1, 3, 7, 1000])
+def test_reviewing_as_it_comes_shows_the_same_as_reviewing_it_whole(text, size):
+    from app.domain.review import Reviewer
+
+    whole = check(text)
+    reviewer = Reviewer(CATALOG, COLECISTECTOMIA, "Colecistectomía", "")
+    shown = [reviewer.feed(text[i : i + size]) for i in range(0, len(text), size)]
+    shown.append(reviewer.finish())
+
+    assert "".join(shown).strip() == whole.text
+    assert reviewer.result().problems == whole.problems
+
+
+def test_a_sentence_is_shown_as_soon_as_the_next_one_starts():
+    from app.domain.review import Reviewer
+
+    reviewer = Reviewer(CATALOG, COLECISTECTOMIA, "", "")
+
+    assert reviewer.feed("La Kelly es hemostática.") == ""
+    assert reviewer.feed(" Sirve") == "La Kelly es hemostática."
+    assert reviewer.feed(" para pinzar.") == ""
+    assert reviewer.finish() == " Sirve para pinzar."
+
+
+def test_what_a_table_that_dataiq_does_not_have_carries_is_replaced():
+    from app.domain.review import NO_TABLE
+
+    text = (
+        "La apendicectomía no está en SIMIQ3D. En general, su mesa de Mayo suele "
+        "incluir la Pinza de Allis, la Pinza Kelly y la Tijera de Mayo."
+    )
+
+    reviewed = check(text, table=None)
+
+    assert reviewed.text == f"La apendicectomía no está en SIMIQ3D. {NO_TABLE}"
+
+
+def test_a_list_of_what_a_table_that_simiq3d_lacks_carries_is_replaced():
+    from app.domain.review import NO_TABLE
+
+    text = (
+        "La cesárea es de Ginecología.\n\nEn general, una mesa de Mayo para cesárea "
+        "incluye:\n- **Pinza de Allis**\n- **Pinza Kelly**\n\n¿Te ayudo con otra?"
+    )
+
+    reviewed = check(text, table=None)
+
+    assert reviewed.text == (
+        f"La cesárea es de Ginecología.\n\n{NO_TABLE}\n\n¿Te ayudo con otra?"
+    )
+
+
+def test_the_list_of_the_open_table_is_not_foreign():
+    reviewed = check("La mesa de esta técnica lleva:\n- Pinza Kelly\n- Tijera de Mayo")
+
+    assert reviewed.problems == ()

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Protocol
 from uuid import UUID
 
@@ -25,3 +26,30 @@ class ChatEngine(Protocol):
 
 class ModelUnavailable(Exception):
     """El modelo de lenguaje (Servidor PC2) no respondió."""
+
+
+# --- Una respuesta que se muestra a medida que se escribe (POST /chat/stream) ---
+
+
+@dataclass(frozen=True)
+class ReplyStart:
+    """Lo primero: lo que hace el visor y las preguntas sugeridas, sin texto."""
+
+    reply: Reply
+
+
+@dataclass(frozen=True)
+class ReplyText:
+    """Una parte del texto, ya revisada: se agrega a lo que ya se mostró."""
+
+    text: str
+
+
+@dataclass(frozen=True)
+class ReplyEnd:
+    """La respuesta completa, que reemplaza lo mostrado y va al registro."""
+
+    reply: Reply
+
+
+ReplyEvent = ReplyStart | ReplyText | ReplyEnd

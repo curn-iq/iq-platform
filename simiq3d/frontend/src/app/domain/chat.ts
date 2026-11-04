@@ -66,6 +66,18 @@ export interface ChatTurn {
   reply: string;
 }
 
+/**
+ * Un evento de `POST /chat/stream`: `start` trae lo que hace el visor (sin texto),
+ * `text` una parte ya revisada que se agrega y `end` la respuesta completa.
+ */
+export type ChatStreamEvent =
+  | Flat<{ type: 'start' } & ChatReply>
+  | { type: 'text'; text: string }
+  | Flat<{ type: 'end' } & ChatReply>;
+
+/** Un solo objeto con las propiedades de una intersección (para comparar tipos). */
+type Flat<T> = { [K in keyof T]: T[K] };
+
 /** Un mensaje de la conversación: la pregunta de la persona o la respuesta de SIMIQ3D. */
 export type ChatMessage =
   { id: number; from: 'person'; text: string } | { id: number; from: 'simiq3d'; reply: ChatReply };

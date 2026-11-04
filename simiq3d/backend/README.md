@@ -72,7 +72,8 @@ DataIQ y un Ollama falsos: no necesitan nada más corriendo.
 
 | Ruta | Qué hace | Pide cuenta |
 |---|---|---|
-| `POST /chat` | Responde una pregunta | Sí (y `X-IQ-Client` si llega con cookie) |
+| `POST /chat` | Responde una pregunta, todo junto | Sí (y `X-IQ-Client` si llega con cookie) |
+| `POST /chat/stream` | Lo mismo, a medida que se escribe (NDJSON) | Sí (y `X-IQ-Client` si llega con cookie) |
 | `GET /models` | Qué GLB dibuja cada instrumento (`instrument_id`, `model_file`), con `ETag` | Sí |
 | `GET /health` | Si la API está arriba | No |
 
@@ -116,6 +117,14 @@ defecto, 30 cada 10 minutos: «Espera unos minutos»); `503` si DataIQ no
 responde. Si el Servidor PC2 no responde, no hay error: el tutor dice que el
 modelo no está disponible y muestra lo que DataIQ tiene de lo que se nombró.
 
+`POST /chat/stream` recibe lo mismo y responde `application/x-ndjson`, una
+línea JSON por evento: `{"type": "start", …}` con los campos de `ChatOut` y
+`reply` vacío (lo que hace el visor), cada `{"type": "text", "text": "…"}` (una
+parte ya revisada, que se agrega a lo mostrado, con sus espacios y saltos de
+línea) y `{"type": "end", …}` con la respuesta completa. Los errores antes de
+empezar (`401`, `429`, `503` de DataIQ) son los de `POST /chat`. Con las
+plantillas, los tres eventos llegan juntos.
+
 ## Cómo responde el chat
 
 El diseño y su porqué: [`../README.md`](../README.md), «Chat».
@@ -138,7 +147,11 @@ El diseño y su porqué: [`../README.md`](../README.md), «Chat».
    pregunta no nombra nada de DataIQ y puede no ser del tema) y la pregunta.
 4. **Una llamada al modelo**, con temperatura `LLM_TEMPERATURE` (0,3) y un tope
    de `MAX_TOKENS` (350) o `MAX_TOKENS_LONG` (600, para comparar, la mesa
-   entera o «todo»), y de `LLM_DEADLINE` segundos.
+   entera o «todo»), y de `LLM_DEADLINE` segundos para la respuesta entera.
+   Con `POST /chat/stream` (`TutorAgent.stream`) la llamada lleva `"stream":
+   true` y cada parte pasa por la revisión al llegar (`Reviewer`, la misma de
+   `review` pero por partes); si el filtro respondiera sin streaming, el texto
+   llega entero.
 5. **La revisión** (`app/domain/review.py`, `review`): frase por frase (y cada
    elemento de una lista), los límites duros: la mesa de Mayo contra DataIQ
    (que el instrumento vaya en esa mesa, su número del diagrama y su zona dichos
@@ -147,12 +160,13 @@ El diseño y su porqué: [`../README.md`](../README.md), «Chat».
    nombra, un objeto con número que DataIQ no tiene, cuántos objetos), ordenar
    o agrupar por tiempos quirúrgicos,
    dosis y cuadrícula. La frase sale y entra el dato de DataIQ o la nota, una
-   vez cada uno. Si sale más de la mitad, una segunda llamada con lo que
-   estuvo mal (`retry_messages`), solo si la primera tardó menos de
-   `RETRY_IF_UNDER` (12 s). El log dice cuántas frases cambió y de qué límite,
-   sin el texto.
+   vez cada uno. Solo en `POST /chat`: si sale más de la mitad, una segunda
+   llamada con lo que estuvo mal (`retry_messages`), si la primera tardó menos
+   de `RETRY_IF_UNDER` (12 s). El log dice cuántas frases cambió y de qué
+   límite, sin el texto.
 6. **Sin el modelo** (apagado, 429 del filtro o pasado `LLM_DEADLINE`):
-   `without_model` dice que no está disponible y muestra lo de DataIQ.
+   `without_model` dice que no está disponible y muestra lo de DataIQ. Si deja
+   de responder a mitad del streaming, lo mostrado queda con la nota `CUT`.
 7. Con `LANGUAGE_MODEL=fake` responden las **reglas fijas**
    (`adapters/outbound/language/fake.py`): una sola cosa por mensaje, con las
    plantillas de `app/domain/chat.py`. Con `CHAT_ENGINE=pedidos`, el chat

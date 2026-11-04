@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { provideRepositoryTesting, TEST_DATAIQ, TEST_SIMIQ3D } from '../data/testing';
+import { provideRepositoryTesting, streamed, TEST_DATAIQ, TEST_SIMIQ3D } from '../data/testing';
 import { MOBILE_QUERY } from '../shared/media-query';
 import { ExplorePage } from './explore-page';
 
@@ -120,21 +120,24 @@ describe('ExplorePage', () => {
     area.dispatchEvent(new Event('input'));
     area.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
 
-    const request = TestBed.inject(HttpTestingController).expectOne(`${TEST_SIMIQ3D}/chat`);
+    const request = TestBed.inject(HttpTestingController).expectOne(`${TEST_SIMIQ3D}/chat/stream`);
     expect(request.request.body).toEqual({
       question: '¿Qué es la Kelly?',
       technique_id: 't-1',
       previous: [],
     });
-    request.flush({
-      action: 'describe_instrument',
-      technique_id: 't-1',
-      instrument_id: 'i-kelly',
-      field: null,
-      reply: 'La Pinza Kelly es una pinza hemostática.',
-      options: [],
-      requests: [{ kind: 'describe', instrument: 'Kelly' }],
-    });
+    request.flush(
+      streamed({
+        action: 'describe_instrument',
+        technique_id: 't-1',
+        instrument_id: 'i-kelly',
+        field: null,
+        reply: 'La Pinza Kelly es una pinza hemostática.',
+        options: [],
+        requests: [{ kind: 'describe', instrument: 'Kelly' }],
+        generated: true,
+      }),
+    );
     await new Promise((resolve) => setTimeout(resolve));
     TestBed.tick();
 
