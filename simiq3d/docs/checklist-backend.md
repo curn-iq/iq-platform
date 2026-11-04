@@ -280,7 +280,10 @@ Una vez que el tutor quedó en producción (#71 a #75).
 - [x] El contrato de `POST /chat` sin lo que solo producían los pedidos
   (`compare`, `rank`, `find_instrument`, `greeting`, `other_technique`,
   `comparison`); el frontend con los tipos al día
-- [ ] Probar en producción después del despliegue
+- [x] Probado en producción el 2026-11-04 (#76), con la cuenta de prueba: qué
+  es la Kelly (abre su ficha), el seguimiento «¿y dónde va en la mastectomía?»
+  con los pedidos de la anterior (la señala, n.º 9), una técnica de otra
+  especialidad (la cesárea) y `POST /chat` sin streaming
 
 ## Modelos 3D
 
