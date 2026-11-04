@@ -18,8 +18,12 @@ la vez; por defecto 2), OLLAMA_URL (por defecto http://127.0.0.1:11434),
 FILTRO_PUERTO (por defecto 11435).
 
 Si ya está atendiendo FILTRO_SIMULTANEAS, responde 429 al momento en vez de
-hacer fila: el backend responde entonces con sus plantillas, y nadie espera
-minutos a que la GPU se desocupe.
+hacer fila: el backend responde entonces con lo que tiene DataIQ, y nadie
+espera minutos a que la GPU se desocupe.
+
+Con `"stream": true` (el chat de SIMIQ3D, para mostrar la respuesta frase por
+frase) reenvía las partes de Ollama a medida que llegan; el lugar se ocupa
+hasta que termina la respuesta.
 """
 
 import asyncio
@@ -31,7 +35,7 @@ import httpx
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Route
 
 MAX_BYTES = 256 * 1024
@@ -65,9 +69,12 @@ def create_app(
             return JSONResponse({"error": "JSON no válido"}, status_code=400)
         if not isinstance(data, dict) or data.get("model") not in models:
             return JSONResponse({"error": "Modelo no permitido"}, status_code=403)
-        data["stream"] = False
+        stream = data.get("stream") is True
+        data["stream"] = stream
         if slots.locked():
             return JSONResponse({"error": "Servidor ocupado"}, status_code=429)
+        if stream:
+            return await _streamed(data)
         async with slots, httpx.AsyncClient(transport=transport, timeout=180) as client:
             try:
                 answer = await client.post(f"{ollama_url}/v1/chat/completions", json=data)
@@ -77,6 +84,36 @@ def create_app(
             answer.content,
             status_code=answer.status_code,
             media_type="application/json",
+        )
+
+    async def _streamed(data: dict) -> Response:
+        """Las partes de la respuesta de Ollama, a medida que llegan. El lugar
+        y la conexión se sueltan cuando termina, o si el backend se va."""
+        await slots.acquire()
+        client = httpx.AsyncClient(transport=transport, timeout=180)
+        try:
+            upstream = await client.send(
+                client.build_request("POST", f"{ollama_url}/v1/chat/completions", json=data),
+                stream=True,
+            )
+        except httpx.HTTPError:
+            await client.aclose()
+            slots.release()
+            return JSONResponse({"error": "Ollama no responde"}, status_code=502)
+
+        async def parts():
+            try:
+                async for chunk in upstream.aiter_raw():
+                    yield chunk
+            finally:
+                await upstream.aclose()
+                await client.aclose()
+                slots.release()
+
+        return StreamingResponse(
+            parts(),
+            status_code=upstream.status_code,
+            media_type=upstream.headers.get("content-type", "text/event-stream"),
         )
 
     return Starlette(
