@@ -141,4 +141,52 @@ describe('SegmentedControl', () => {
     await fixture.whenStable();
     expect(plate.classList.contains('ready')).toBe(true);
   });
+
+  describe('con el estuche observado', () => {
+    let resized: () => void;
+    let disconnect: ReturnType<typeof vi.fn>;
+    let width = 100;
+
+    beforeEach(() => {
+      disconnect = vi.fn();
+      // jsdom no trae ResizeObserver ni mide: este guarda el aviso para dispararlo a mano
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: () => void) {
+            resized = callback;
+          }
+          observe(): void {}
+          disconnect = disconnect;
+        },
+      );
+      vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(() => width);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+      width = 100;
+    });
+
+    it('la placa se vuelve a medir cuando cambia el ancho del estuche, sin cambiar la ventana', async () => {
+      const fixture = TestBed.createComponent(FillHost);
+      await fixture.whenStable();
+      const plate = fixture.nativeElement.querySelector('.plate') as HTMLElement;
+      expect(plate.style.width).toBe('100px');
+
+      // Con fill, los botones se angostan cuando se angosta el estuche
+      width = 80;
+      resized();
+      await fixture.whenStable();
+      expect(plate.style.width).toBe('80px');
+    });
+
+    it('deja de observar al destruirse', async () => {
+      const fixture = TestBed.createComponent(FillHost);
+      await fixture.whenStable();
+      fixture.destroy();
+      expect(disconnect).toHaveBeenCalled();
+    });
+  });
 });
