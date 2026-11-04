@@ -25,6 +25,13 @@ from app.domain.requests import Turn
 
 # «¿Y la Allis?», «¿y en la tiroidectomía?»: sigue hablando de lo anterior.
 _FOLLOW_UP = re.compile(r"^\W*(?:y|e|tambien|entonces|pero|ahora)\b")
+# «¿Cómo se usa en la colecistectomía?», «¿cuándo usarla?»: habla de usar algo sin
+# nombrarlo, así que es lo de la pregunta anterior. «¿Para qué sirve la
+# colecistectomía?» no: ahí lo que sirve es la técnica.
+_USE = re.compile(
+    r"\b(?:como|cuando|donde|para que)\s+se\s+(?:usa|utiliza|emplea|coloca|pone)\b"
+    r"|\b(?:usarla|usarlo|utilizarla|utilizarlo)\b"
+)
 # «Esta técnica», «su mesa», «aquí»: la técnica abierta en el visor.
 _THIS = re.compile(
     r"\b(?:esta|esa|la misma)\s+(?:tecnica|cirugia|mesa|operacion|intervencion)\b"
@@ -196,7 +203,8 @@ def focus_of(
             carried=True,
             family=before.family,
         )
-    if _FOLLOW_UP.search(normalize(question)):
+    said = normalize(question)
+    if _FOLLOW_UP.search(said) or (not focus.instruments and _USE.search(said)):
         return Focus(
             techniques=focus.techniques or before.techniques,
             instruments=focus.instruments or before.instruments,

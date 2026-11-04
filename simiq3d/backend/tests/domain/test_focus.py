@@ -99,3 +99,20 @@ def test_the_first_word_of_a_name_is_enough():
         TIROIDECTOMIA,
         COLECISTECTOMIA,
     ]
+
+
+def test_asking_how_it_is_used_in_a_technique_keeps_the_previous_instrument():
+    previous = (Turn("Háblame de la pinza Kelly"),)
+
+    focus = focus_of("¿Cómo se usa en la colecistectomía?", CATALOG, None, previous)
+
+    assert focus.techniques == (COLECISTECTOMIA,)
+    assert focus.instruments == (KELLY,)
+
+
+def test_what_a_technique_is_for_does_not_keep_the_previous_instrument():
+    previous = (Turn("Háblame de la pinza Kelly"),)
+
+    focus = focus_of("¿Para qué sirve la colecistectomía?", CATALOG, None, previous)
+
+    assert focus.instruments == ()
