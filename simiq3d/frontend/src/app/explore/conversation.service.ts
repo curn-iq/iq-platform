@@ -46,7 +46,7 @@ export class ConversationService {
     try {
       const reply = await firstValueFrom(this.simiq3d.ask(text, techniqueId, this.turns));
       this.push({ id: this.nextId++, from: 'simiq3d', reply });
-      const turn = { question: text, requests: reply.requests ?? [] };
+      const turn = { question: text, requests: reply.requests ?? [], reply: reply.reply };
       this.turns = [...this.turns, turn].slice(-PREVIOUS_TURNS);
       this.notice.set(null);
       this.scene.set(sceneFor(reply));

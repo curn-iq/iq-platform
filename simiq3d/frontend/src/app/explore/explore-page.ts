@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ChatField } from '../chat/chat-field';
 import { ChatHistory, ChatNames } from '../chat/chat-history';
+import { plainText } from '../chat/rich-text';
 import { SessionService } from '../core/session/session.service';
 import { DataIQRepository } from '../data/dataiq.repository';
 import { toMayoTable } from '../data/mayo-table';
@@ -165,7 +166,7 @@ export class ExplorePage {
       .reverse()
       .find((message) => message.from === 'simiq3d');
     return last?.from === 'simiq3d'
-      ? { text: last.reply.reply, options: last.reply.options }
+      ? { text: plainText(last.reply.reply), options: last.reply.options }
       : null;
   });
 

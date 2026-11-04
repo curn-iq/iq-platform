@@ -49,17 +49,21 @@ export interface ChatReply {
   technique_id: string | null;
   instrument_id: string | null;
   field: ClinicalField | null;
+  /** El texto, con Markdown sencillo (negrita y listas). */
   reply: string;
+  /** Si lo escribió el modelo de IA con los datos de DataIQ (lleva la línea de fuentes). */
+  generated: boolean;
   /** Preguntas que se pueden volver a enviar tal cual. */
   options: string[];
   /** Lo que se entendió de la pregunta. */
   requests: ChatRequest[];
 }
 
-/** Una pregunta anterior con los pedidos de su respuesta (`PreviousTurn`). */
+/** Una pregunta anterior con los pedidos y el texto de su respuesta (`PreviousTurn`). */
 export interface ChatTurn {
   question: string;
   requests: ChatRequest[];
+  reply: string;
 }
 
 /** Un mensaje de la conversación: la pregunta de la persona o la respuesta de SIMIQ3D. */

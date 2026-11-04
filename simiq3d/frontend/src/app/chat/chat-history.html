@@ -28,7 +28,7 @@
     } @else {
       <li class="message">
         <span class="who"><i aria-hidden="true">S</i>SIMIQ3D</span>
-        <p class="text">{{ message.reply.reply }}</p>
+        <app-rich-text class="text" [text]="message.reply.reply" />
         @if (listFor(message); as pieces) {
           @if (pieces.length) {
             <app-piece-list [items]="pieces" (choose)="choose.emit($event)" />
@@ -67,6 +67,9 @@
             }
             <span>{{ chip.label }}</span>
           </span>
+        }
+        @if (message.reply.generated) {
+          <p class="sources">{{ sources }}</p>
         }
         @if (message.reply.options.length) {
           <div class="options">
