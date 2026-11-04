@@ -1,4 +1,4 @@
-import { formatDay, formatEdited } from './edited-date';
+import { formatDay, formatEdited, isYesterday } from './edited-date';
 
 // Hora local: las fechas se arman con `new Date(año, mes, día, hora, minuto)`.
 const NOW = new Date(2026, 10, 1, 15, 30); // 1 de noviembre de 2026
@@ -58,5 +58,18 @@ describe('formatDay', () => {
 
   it('de otro año suma el año', () => {
     expect(formatDay(new Date(2025, 11, 24), NOW)).toBe('24 dic 2025');
+  });
+});
+
+describe('isYesterday', () => {
+  it('es el día de calendario anterior, no las últimas 24 horas', () => {
+    expect(isYesterday(new Date(2026, 9, 31, 23, 59), new Date(2026, 10, 1, 0, 5))).toBe(true);
+    expect(isYesterday(new Date(2026, 9, 31, 0, 0), NOW)).toBe(true);
+    expect(isYesterday(new Date(2026, 10, 1, 0, 0), NOW)).toBe(false);
+    expect(isYesterday(new Date(2026, 9, 30, 23, 59), NOW)).toBe(false);
+  });
+
+  it('cruza el cambio de año', () => {
+    expect(isYesterday(new Date(2026, 11, 31, 20, 0), new Date(2027, 0, 1, 9, 0))).toBe(true);
   });
 });

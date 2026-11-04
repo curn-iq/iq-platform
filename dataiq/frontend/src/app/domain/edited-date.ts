@@ -1,11 +1,30 @@
-const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+export const MONTHS = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
+];
 
-function sameDay(a: Date, b: Date): boolean {
+/** Si las dos fechas caen en el mismo día de calendario (hora local). */
+export function sameDay(a: Date, b: Date): boolean {
   return (
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+/** Si `date` cae en el día de calendario anterior al de `now` (hora local). */
+export function isYesterday(date: Date, now: Date): boolean {
+  return sameDay(date, new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
 }
 
 /**
@@ -27,6 +46,5 @@ export function formatEdited(date: Date, now: Date): string {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `Hoy, ${hours}:${minutes}`;
   }
-  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-  return sameDay(date, yesterday) ? 'Ayer' : formatDay(date, now);
+  return isYesterday(date, now) ? 'Ayer' : formatDay(date, now);
 }

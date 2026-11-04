@@ -4,3 +4,6 @@ diseno/** linguist-documentation
 .impeccable/** linguist-documentation
 # Plantilla de Alembic para crear migraciones: no es código escrito a mano.
 dataiq/backend/migraciones/script.py.mako linguist-generated
+# Los Markdown son siempre texto: un retorno de carro suelto no los vuelve binarios para Git, que
+# así sigue guardándolos con LF aunque se editen en Windows.
+*.md text

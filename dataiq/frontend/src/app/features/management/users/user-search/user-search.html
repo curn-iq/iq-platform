@@ -1,0 +1,48 @@
+<app-search-field
+  size="medium"
+  label="Buscar a cualquier persona por nombre o correo"
+  placeholder="Buscar por nombre o correo"
+  [value]="query()"
+  (valueChange)="onQuery($event)"
+/>
+
+<!-- Cuántos resultados hay, para el lector de pantalla: existe antes de que cambie -->
+<p class="sr-only" aria-live="polite">{{ status() }}</p>
+
+@if (open()) {
+  <ul class="results" aria-label="Resultados de la búsqueda">
+    @for (row of rows(); track row.person.id) {
+      <li>
+        <button type="button" (click)="choose(row.person)">
+          <app-avatar [name]="row.person.name" />
+          <span class="text">
+            <span class="name">
+              @for (segment of row.name; track $index) {
+                @if (segment.match) {
+                  <mark>{{ segment.text }}</mark>
+                } @else {
+                  <span>{{ segment.text }}</span>
+                }
+              }
+            </span>
+            <span class="mail">
+              @for (segment of row.email; track $index) {
+                @if (segment.match) {
+                  <mark>{{ segment.text }}</mark>
+                } @else {
+                  <span>{{ segment.text }}</span>
+                }
+              }
+            </span>
+          </span>
+          <span class="role">{{ row.role }}</span>
+        </button>
+      </li>
+    } @empty {
+      <li class="none">{{ noMatch }}</li>
+    }
+    @if (more() > 0) {
+      <li class="none">Hay {{ more() }} más. Escribir más para afinar.</li>
+    }
+  </ul>
+}

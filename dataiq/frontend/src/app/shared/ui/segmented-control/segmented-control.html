@@ -1,4 +1,4 @@
-<div class="group" role="group" [attr.aria-label]="label()">
+<div #group class="group" role="group" [attr.aria-label]="label()">
   <span
     class="plate"
     aria-hidden="true"
@@ -10,6 +10,7 @@
     <button
       #button
       type="button"
+      [disabled]="disabled()"
       [attr.aria-pressed]="option.key === value()"
       (click)="choose(option.key)"
     >

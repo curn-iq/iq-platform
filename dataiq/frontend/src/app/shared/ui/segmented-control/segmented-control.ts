@@ -4,12 +4,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   Injector,
   input,
   model,
   signal,
+  viewChild,
   viewChildren,
 } from '@angular/core';
 
@@ -26,23 +28,42 @@ export interface SegmentOption {
  * expo`). Cada botón lleva `aria-pressed` y su cifra en tabulares. En celular (≤ 760 px)
  * pasa a chips de 40 px que se desplazan, el elegido lleno en `marca`. La opción elegida es
  * `value`, con `[(value)]`.
+ *
+ * La placa se vuelve a medir cuando cambia el ancho del estuche, no solo el de la ventana: con
+ * `fill` los botones miden una fracción del ancho que les dan, y ese ancho cambia también sin
+ * redimensionar la ventana (al aparecer la barra de desplazamiento, por ejemplo).
  */
 @Component({
   selector: 'app-segmented-control',
   templateUrl: './segmented-control.html',
   styleUrl: './segmented-control.scss',
-  host: { '(window:resize)': 'measure()' },
+  host: {
+    '(window:resize)': 'measure()',
+    '[class.fill]': 'fill()',
+    '[class.disabled]': 'disabled()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SegmentedControl {
   /** Lo que dice el grupo para quien no lo ve. */
   readonly label = input.required<string>();
+  /**
+   * Ocupa todo el ancho que le dan, con las opciones iguales, sobre `fondo` y sin filete, y no
+   * pasa a chips en celular: el selector de rol de la ficha de Usuarios y roles.
+   */
+  readonly fill = input(false);
+  /**
+   * No deja elegir otra opción: los botones se deshabilitan y el control se atenúa al 60 %. Es el
+   * selector de rol de la cuenta propia en Usuarios y roles.
+   */
+  readonly disabled = input(false);
   readonly options = input.required<readonly SegmentOption[]>();
   /** El `key` de la opción elegida. */
   readonly value = model.required<string>();
 
   private readonly injector = inject(Injector);
   private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('button');
+  private readonly group = viewChild.required<ElementRef<HTMLElement>>('group');
 
   private readonly selectedIndex = computed(() =>
     this.options().findIndex((option) => option.key === this.value()),
@@ -62,9 +83,15 @@ export class SegmentedControl {
       this.buttons();
       this.place();
     });
+    const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       // El ancho de cada botón cambia cuando la tipografía termina de cargar
       document.fonts?.ready.then(() => this.measure());
+      // y cuando cambia el ancho del estuche; sin ResizeObserver queda el aviso de la ventana
+      if (typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(() => this.measure());
+      observer.observe(this.group().nativeElement);
+      destroyRef.onDestroy(() => observer.disconnect());
     });
   }
 

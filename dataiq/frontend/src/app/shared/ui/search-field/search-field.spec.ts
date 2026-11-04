@@ -20,6 +20,12 @@ class Host {
 })
 class CompactHost {}
 
+@Component({
+  imports: [SearchField],
+  template: '<app-search-field label="Buscar" size="medium" />',
+})
+class MediumHost {}
+
 describe('SearchField', () => {
   async function mount() {
     const fixture = TestBed.createComponent(Host);
@@ -50,6 +56,14 @@ describe('SearchField', () => {
     const compact = TestBed.createComponent(CompactHost);
     await compact.whenStable();
     expect(compact.nativeElement.querySelector('app-search-field').classList).toContain('compact');
+  });
+
+  it('el mediano se pide con size="medium"', async () => {
+    const medium = TestBed.createComponent(MediumHost);
+    await medium.whenStable();
+    const host = medium.nativeElement.querySelector('app-search-field');
+    expect(host.classList).toContain('medium');
+    expect(host.classList).not.toContain('compact');
   });
 
   it('cada campo tiene su propio id', async () => {

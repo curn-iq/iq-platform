@@ -1,0 +1,67 @@
+<ng-template #list let-people>
+  <ul class="people">
+    @for (person of people; track person.id) {
+      <li>
+        <button
+          app-person-row
+          [person]="person"
+          [selected]="person.id === selectedId()"
+          [arrived]="person.id === arrivedId()"
+          [leaving]="person.id === leavingId()"
+          (click)="chosen.emit(person)"
+        ></button>
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<section [attr.aria-labelledby]="'column-' + role()">
+  <h2 [id]="'column-' + role()">
+    {{ title() }}
+    @if (!isUsers()) {
+      <span class="count">{{ members().length }}</span>
+    }
+  </h2>
+  <p class="capability">{{ capability() }}</p>
+
+  @if (isUsers()) {
+    <p class="total">{{ members().length }}</p>
+    <p class="total-label">
+      {{ members().length === 1 ? 'cuenta con rol Usuario' : 'cuentas con rol Usuario' }}
+    </p>
+    <app-search-field
+      class="search"
+      size="compact"
+      label="Buscar un usuario"
+      placeholder="Buscar un usuario"
+      [(value)]="query"
+    />
+
+    @if (searching()) {
+      @if (found().shown.length > 0) {
+        <p class="sub">Coincidencias</p>
+        <ng-container
+          [ngTemplateOutlet]="list"
+          [ngTemplateOutletContext]="{ $implicit: found().shown }"
+        />
+        @if (found().more > 0) {
+          <p class="more">Hay {{ found().more }} más. Escribir más para afinar.</p>
+        }
+      } @else {
+        <p class="none">Ningún usuario con ese nombre o correo.</p>
+      }
+    } @else {
+      @if (justChanged().length > 0) {
+        <p class="sub">Rol cambiado ahora</p>
+        <ng-container
+          [ngTemplateOutlet]="list"
+          [ngTemplateOutletContext]="{ $implicit: justChanged() }"
+        />
+      }
+      <p class="sub">Registrados recientemente</p>
+      <ng-container [ngTemplateOutlet]="list" [ngTemplateOutletContext]="{ $implicit: recent() }" />
+    }
+  } @else {
+    <ng-container [ngTemplateOutlet]="list" [ngTemplateOutletContext]="{ $implicit: members() }" />
+  }
+</section>

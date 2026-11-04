@@ -18,3 +18,9 @@
   height: 44px;
   font-size: 15px;
 }
+
+:host([data-size='large']) {
+  width: 52px;
+  height: 52px;
+  font-size: 17px;
+}

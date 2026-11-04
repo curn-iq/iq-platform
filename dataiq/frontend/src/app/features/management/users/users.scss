@@ -1,0 +1,128 @@
+// Usuarios y roles: ver «Usuarios y roles (página)» en DESIGN.md.
+
+:host {
+  display: block;
+}
+
+.page {
+  padding: 48px var(--space-gutter) 104px;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.summary {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: 16.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+// ---------- Cargando y error ----------
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 22px 0 0;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---------- El buscador y el tablero ----------
+
+.search {
+  margin: 26px 0 22px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 8.6fr) minmax(300px, 3.4fr);
+  gap: 28px;
+  align-items: start;
+}
+
+// Cuatro columnas regladas por filete bajo una cabecera de 2 px en `tinta`
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 2px solid var(--color-text);
+
+  app-role-column + app-role-column {
+    padding-left: 16px;
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+// La ficha se queda fija al desplazar
+.card {
+  position: sticky;
+  top: calc(var(--size-navbar) + 16px);
+  scroll-margin-top: calc(var(--size-navbar) + 16px);
+  padding: 22px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+// ---------- Pantallas angostas ----------
+
+// La ficha baja debajo del tablero; sin nadie elegido no hay nada que mostrar
+@media (max-width: 1100px) {
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card {
+    position: static;
+
+    &.empty {
+      display: none;
+    }
+  }
+
+  .columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 8px;
+
+    app-role-column:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding-top: 32px;
+  }
+
+  .head h1 {
+    font-size: 30px;
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+
+    app-role-column + app-role-column {
+      padding-left: 0;
+      border-top: 1px solid var(--color-border);
+      border-left: 0;
+    }
+  }
+}

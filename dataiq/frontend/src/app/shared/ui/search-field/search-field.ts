@@ -18,12 +18,18 @@ let nextId = 0;
  *
  * `size="compact"` es el de la columna de técnicas del detalle: 42 px, sobre `fondo`,
  * 10 px de radio y filete de 1 px, con la lupa de 16 px.
+ *
+ * `size="medium"` es el de «Usuarios y roles (página)»: 52 px, 12 px de radio y filete de 1 px
+ * en `filete-2`, con la lupa de 18 px. El ancho lo pone quien lo use.
  */
 @Component({
   selector: 'app-search-field',
   templateUrl: './search-field.html',
   styleUrl: './search-field.scss',
-  host: { '[class.compact]': "size() === 'compact'" },
+  host: {
+    '[class.compact]': "size() === 'compact'",
+    '[class.medium]': "size() === 'medium'",
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchField {
@@ -31,7 +37,7 @@ export class SearchField {
   readonly label = input.required<string>();
   readonly placeholder = input('');
   readonly value = model('');
-  readonly size = input<'large' | 'compact'>('large');
+  readonly size = input<'large' | 'medium' | 'compact'>('large');
 
   protected readonly id = `search-field-${nextId++}`;
 

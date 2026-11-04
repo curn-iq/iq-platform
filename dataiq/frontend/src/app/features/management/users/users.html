@@ -1,0 +1,43 @@
+<section class="page" aria-labelledby="users-title">
+  <header class="head">
+    <h1 id="users-title">Usuarios y roles</h1>
+    @if (loaded()) {
+      <p class="summary" aria-live="polite">{{ summary() }}</p>
+    }
+  </header>
+
+  @if (failed()) {
+    <div class="notice" role="status">
+      <p>No se pudo cargar Usuarios y roles.</p>
+      <button app-button variant="soft" type="button" (click)="retry()">Reintentar</button>
+    </div>
+  } @else if (!loaded()) {
+    <p class="notice loading" aria-busy="true">Cargando…</p>
+  } @else {
+    <app-user-search class="search" [people]="people()" (chosen)="select($event, 'search')" />
+
+    <div class="board">
+      <div class="columns">
+        @for (role of roles; track role) {
+          <app-role-column
+            [role]="role"
+            [people]="people()"
+            [selectedId]="selectedId()"
+            [arrivedId]="arrivedId()"
+            [leavingId]="leavingId()"
+            [justChangedIds]="justChanged()"
+            (chosen)="select($event)"
+          />
+        }
+      </div>
+
+      <aside #cardPanel class="card" [class.empty]="!selected()">
+        @if (selected(); as person) {
+          <app-user-card [person]="person" (changed)="roleChanged($event)" (back)="backToList()" />
+        } @else {
+          <p class="hint">Elegir a una persona para ver su ficha y cambiar su rol.</p>
+        }
+      </aside>
+    </div>
+  }
+</section>
