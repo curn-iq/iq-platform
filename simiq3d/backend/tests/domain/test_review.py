@@ -189,3 +189,20 @@ def test_a_number_in_brackets_after_a_piece_is_its_diagram_number():
 def test_the_scalpel_or_the_dissecting_forceps_are_not_invented():
     assert check("- **Bisturí** (n.º 1)").problems == ()
     assert check("Las pinzas de Allis (n.º 5) van juntas.").problems == ()
+
+
+def test_the_neighbours_after_a_zone_are_not_in_that_zone():
+    near = check("- Arriba a la izquierda: la Pinza de Allis, junto a la Pinza Kelly.")
+
+    assert near.problems == ()
+
+
+def test_a_technique_name_is_not_a_zone():
+    from app.domain.review import _without_techniques
+    from tests.sample import CATALOG as catalog
+
+    assert zone_of(_without_techniques("mastectomia: arriba", catalog)) == (
+        "arriba",
+        None,
+    )
+    assert "mastectomia" not in _without_techniques("en la mastectomia", catalog)

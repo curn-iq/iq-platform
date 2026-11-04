@@ -321,7 +321,8 @@ def _zone_numbers(sentence: str, ctx: _Context) -> list[Problem]:
     línea queda con los que sí, y el que no, con su zona."""
     table = ctx.table
     head, _, rest = sentence.partition(":")
-    if table is None or not rest or zone_of(normalize(head)) == (None, None):
+    zone_head = _without_techniques(normalize(head), ctx.catalog)
+    if table is None or not rest or zone_of(zone_head) == (None, None):
         return []
     by_number = {i.legend_number: i for i in table.mayo_items() if i.legend_number}
     right, wrong = [], []
@@ -330,7 +331,7 @@ def _zone_numbers(sentence: str, ctx: _Context) -> list[Problem]:
         zone = place(table, item) if item else None
         if zone is None:
             continue
-        (wrong if wrong_zone(normalize(head), zone) else right).append((number, item))
+        (wrong if wrong_zone(zone_head, zone) else right).append((number, item))
     if not wrong:
         return []
     facts = [f"{head.strip()}: {_and([n for n, _ in right])}."] if right else []
@@ -351,8 +352,9 @@ def _zone_names(
     y la Kelly»): cada pieza tiene que ir en esa zona. Si alguna no va, la línea
     queda con las que sí, y la que no, con su zona."""
     head, _, rest = sentence.partition(":")
-    zone_head = normalize(head)
-    if not rest or zone_of(zone_head) == (None, None):
+    zone_head = _without_techniques(normalize(head), ctx.catalog)
+    # «… junto a la Rochester»: las vecinas no son de esa zona.
+    if not rest or zone_of(zone_head) == (None, None) or _NEAR.search(normalize(rest)):
         return []
     named = [i for _, _, i in _spans(normalize(rest), in_table)]
     # «La Kelly va en el centro: …» ubica a la Kelly, no a la lista.
@@ -377,6 +379,17 @@ def _zone_names(
             " ".join(facts),
         )
     ]
+
+
+_NEAR = re.compile(r"\b(?:junto|al lado|cerca|vecin\w*)\b")
+
+
+def _without_techniques(said: str, catalog: Catalog) -> str:
+    """El texto sin los nombres de las técnicas: «Hemicolectomía derecha» no es
+    una zona."""
+    for technique in catalog.techniques:
+        said = said.replace(normalize(technique.name), " ")
+    return said
 
 
 def _capital(text: str) -> str:
