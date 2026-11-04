@@ -224,7 +224,14 @@ ChatGPT y Claude al mismo prompt.
   preguntas que había cambiado, 15/16 (la que falla nombra piezas de más al
   comparar). El tutor tarda el doble que los pedidos (mediana de 7,7 s contra
   3,6 s), porque escribe la respuesta entera en una llamada más larga
-- [ ] Probar en producción, con el Servidor PC2
+- [x] Probado en producción el 2026-11-03, con la cuenta de prueba: las 8
+  preguntas de los estudiantes (saludo, mastectomía, Kelly y sus seguimientos,
+  ordenar la mesa, salud personal, diferencias) respondieron conversando, con
+  la acción del visor esperada, en 7 a 19 s de punta a punta (Vercel y
+  Tailscale Funnel suman a lo medido en local). Lo que mostró se corrigió
+  después: la zona dicha como «superior», «central» o «inferior» y la de varias
+  piezas a la vez no se revisaban, «(obj. 8)» partía la frase, y el modelo
+  proponía mover las piezas en el visor, que SIMIQ3D no permite
 
 ## Modelos 3D
 

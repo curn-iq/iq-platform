@@ -37,6 +37,12 @@ NO_DOSES = (
 )
 
 _GRID = re.compile(r"\b(?:fila|columna|celda)s?\b")
+# SIMIQ3D no deja mover las piezas: el modelo lo proponía igual.
+_MOVE = re.compile(
+    r"\b(?:puedes|podras|podes|intenta|prueba a)\s+(?:\w+\s+)?"
+    r"(?:mover\w*|reorganiz\w*|arrastr\w*|reacomod\w*|reubic\w*)"
+)
+NO_MOVING = "En SIMIQ3D la mesa se mira y se consulta: sus piezas no se mueven."
 # Una dosis: una cifra con su unidad («50 mg», «1 mg/kg», «2 ml»).
 _DOSE = re.compile(
     r"\b\d+(?:[.,]\d+)?\s*(?:mg|mcg|µg|μg|g|ml|cc|ui|u\.i\.|unidades|meq)"
@@ -58,6 +64,7 @@ _ORDER = re.compile(
 _TIMES = re.compile(
     r"\btiempos?\s+(?:quirurgicos?|operatorios?)\b"
     r"|\b(?:dieresis|hemostasia|sintesis)\b"
+    r"|\b(?:fase|tiempo|etapa)\s+de\s+(?:exposicion|separacion|corte|cierre)\b"
     r"|\b(?:esta|esa|cada|la\s+misma)\s+(?:fase|etapa)\b"
 )
 # Ubicar una pieza en la mesa, no solo nombrar la mesa: «se usa en la diéresis»
@@ -104,7 +111,12 @@ _RELATIVE = re.compile(
     r"\b(?:arriba|abajo|izquierda|derecha)\s+(?:de|del)\s+(?!la\s+mesa)"
 )
 _LIST_MARK = re.compile(r"^(\s*(?:(?:[-*•]|\d+[.)])\s+)+)")
-_SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[¿¡«\"(*A-ZÁÉÍÓÚÑ0-9])")
+# Después de «obj.», «n.» o «aprox.» no termina la frase, ni antes de una cifra
+# («(obj. 8)»).
+_SENTENCE_END = re.compile(
+    r"(?<!\bobj\.)(?<!\bn\.)(?<!\bno\.)(?<!\bnro\.)(?<!\baprox\.)"
+    r"(?<=[.!?])\s+(?=[¿¡«\"(*A-ZÁÉÍÓÚÑ])"
+)
 
 
 @dataclass(frozen=True)
@@ -163,12 +175,23 @@ def _location(catalog: Catalog, instrument: Instrument, technique: Technique) ->
     ).reply
 
 
+_ZONE_SYNONYMS = {
+    "superior": "arriba",
+    "inferior": "abajo",
+    "central": "centro",
+    "medio": "centro",
+}
+
+
 def zone_of(said: str) -> tuple[str | None, str | None]:
     """La zona que dice un texto, como (vertical, horizontal): «arriba a la
     derecha» es (arriba, derecha); «en el centro», (centro, centro); «abajo, al
     centro», (abajo, centro). None en lo que no dice. Una zona dicha respecto de
     otra pieza («a la derecha de la Kelly») no cuenta."""
     said = _RELATIVE.sub(" ", said)
+    # «Zona superior», «central», «inferior»: lo mismo dicho de otra forma.
+    for synonym, word in _ZONE_SYNONYMS.items():
+        said = re.sub(rf"\b{synonym}\b", word, said)
     words = set(re.findall(r"\b(?:arriba|abajo|izquierda|derecha|centro)\b", said))
     side = next((w for w in ("izquierda", "derecha") if w in words), None)
     level = next((w for w in ("arriba", "abajo") if w in words), None)
@@ -312,6 +335,34 @@ def _placement_problems(
     zone = place(table, item)
     if zone and wrong_zone(after, zone):
         return [Problem("mesa", f"{first.name} va {zone} de la mesa", fact)]
+    return _together(said, ctx, table, spans)
+
+
+# «La Rochester y la Allis están arriba a la izquierda»: la zona es de todas.
+_PLURAL = re.compile(r"\b(?:estan|van|se ubican|se encuentran|quedan|se colocan)\b")
+
+
+def _together(said: str, ctx: _Context, table: Technique, spans: list) -> list:
+    """Varias piezas con un verbo en plural y una zona después de la última:
+    cada una tiene que ir en esa zona."""
+    pieces = list(dict.fromkeys(i for _, _, i in spans))
+    if len(pieces) < 2:
+        return []
+    after = said[spans[-1][1] :]
+    plural = _PLURAL.search(after)
+    if not plural or zone_of(after[plural.end() :]) == (None, None):
+        return []
+    zone_text = after[plural.end() :]
+    for piece in pieces:
+        zone = place(table, item_with(table, piece.id))
+        if zone and wrong_zone(zone_text, zone):
+            return [
+                Problem(
+                    "mesa",
+                    f"{piece.name} va {zone} de la mesa",
+                    _location(ctx.catalog, piece, table),
+                )
+            ]
     return []
 
 
@@ -522,6 +573,8 @@ def problems_in(
         problems.append(Problem("cuadricula", "habla de filas, columnas o celdas"))
     if _DOSE.search(sentence):
         problems.append(Problem("dosis", "da una dosis", NO_DOSES))
+    if _MOVE.search(said):
+        problems.append(Problem("app", "propone mover las piezas", NO_MOVING))
     by_name = {i.name for i in ctx.catalog.instruments}
     several = (
         len([n for n in dict.fromkeys(_names(sentence, ctx.catalog)) if n in by_name])

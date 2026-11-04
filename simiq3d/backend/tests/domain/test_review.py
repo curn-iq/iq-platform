@@ -206,3 +206,41 @@ def test_a_technique_name_is_not_a_zone():
         None,
     )
     assert "mastectomia" not in _without_techniques("en la mastectomia", catalog)
+
+
+def test_upper_central_and_lower_are_zones_too():
+    assert zone_of("zona superior derecha") == ("arriba", "derecha")
+    assert zone_of("zona central") == ("centro", "centro")
+    reviewed = check("- **Zona superior izquierda**: Pinza de Allis y Pinza Kelly.")
+    assert reviewed.problems[0].detail == "Pinza Kelly va en el centro"
+
+
+def test_grouping_by_the_exposure_phase_is_caught():
+    reviewed = check(
+        "La Kelly y la Allis van en el centro: se usan en la fase de exposición."
+    )
+
+    assert reviewed.text == NO_TIMES
+
+
+def test_an_abbreviation_does_not_end_the_sentence():
+    reviewed = check("- **Pinza Kelly** (obj. 10) va en el centro.")
+
+    assert reviewed.text == "- **Pinza Kelly** (obj. 10) va en el centro."
+
+
+def test_a_zone_said_of_several_pieces_is_checked_for_each():
+    reviewed = check("La Pinza Kelly y la Pinza de Allis están en el centro.")
+
+    assert (
+        reviewed.problems[0].detail
+        == "Pinza de Allis va arriba a la izquierda de la mesa"
+    )
+
+
+def test_proposing_to_move_the_pieces_is_replaced():
+    from app.domain.review import NO_MOVING
+
+    reviewed = check("Si quieres, puedes moverlos en el visor 3D. Bien.")
+
+    assert reviewed.text == f"{NO_MOVING} Bien."
