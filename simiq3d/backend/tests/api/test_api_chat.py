@@ -82,6 +82,7 @@ async def test_the_chat_answers_with_the_action_and_dataiq_text(api, bearer, cat
     assert response_.status_code == 200
     assert response_.json() == {
         "action": "highlight_instrument",
+        "generated": False,
         "technique_id": str(COLECISTECTOMIA.id),
         "instrument_id": str(KELLY.id),
         "field": None,
@@ -340,3 +341,44 @@ async def test_the_spelling_suggestion_does_not_use_the_quota(api, bearer):
 
     assert response_.status_code == 200
     assert response_.json()["action"] == "clarify"
+
+
+class SpellingEngine:
+    """Un motor que corrige los nombres él mismo, como el tutor."""
+
+    name = "corrige"
+    fixes_spelling = True
+    asked: list[str] = []
+
+    async def reply(self, question, catalog, open_technique_id, previous=()):
+        SpellingEngine.asked.append(question)
+        SpellingEngine.previous = previous
+        return await TemplateChat().reply("¿Dónde va la Kelly?", catalog, None)
+
+
+@pytest.mark.anyio
+async def test_an_engine_that_fixes_names_gets_the_question_as_written(api, bearer):
+    app.dependency_overrides[get_chat_engine] = SpellingEngine
+
+    response_ = await api.post(
+        "/chat", json={"question": "¿Dónde va la kely?"}, headers=bearer
+    )
+
+    assert response_.status_code == 200
+    assert SpellingEngine.asked[-1] == "¿Dónde va la kely?"
+    assert "Quizás" not in response_.json()["reply"]
+
+
+@pytest.mark.anyio
+async def test_the_previous_reply_text_reaches_the_engine(api, bearer):
+    app.dependency_overrides[get_chat_engine] = SpellingEngine
+    previous = {"question": "¿Qué es la Kelly?", "reply": "Es una pinza hemostática."}
+
+    await api.post(
+        "/chat",
+        json={"question": "¿Y cuándo se usa?", "previous": [previous]},
+        headers=bearer,
+    )
+
+    [turn] = SpellingEngine.previous
+    assert turn.reply == "Es una pinza hemostática."

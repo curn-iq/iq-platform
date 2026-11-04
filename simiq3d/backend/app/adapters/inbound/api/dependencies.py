@@ -9,8 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.inbound.api.session import session_token
 from app.adapters.outbound.dataiq.catalog import DataIQCatalogSource
-from app.adapters.outbound.language.fake import TemplateChat
-from app.adapters.outbound.language.ollama import OllamaAgent
+from app.adapters.outbound.language.engines import chat_engine
 from app.adapters.outbound.persistence.database import SessionLocal
 from app.adapters.outbound.persistence.repositories.chat_log import (
     SQLAlchemyChatLogRepository,
@@ -99,19 +98,8 @@ Catalogs = Annotated[CatalogSource, Depends(get_catalog_source)]
 
 # --- Motor del chat ---------------------------------------------------------
 
-_chat_engine: ChatEngine = (
-    OllamaAgent(
-        config.llm_url,
-        config.llm_model,
-        config.llm_api_key,
-        config.llm_timeout,
-        config.llm_deadline,
-        write=config.llm_write,
-        write_deadline=config.llm_write_deadline,
-    )
-    if config.language_model == "ollama"
-    else TemplateChat()
-)
+
+_chat_engine: ChatEngine = chat_engine(config)
 
 
 def get_chat_engine() -> ChatEngine:

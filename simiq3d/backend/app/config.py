@@ -35,17 +35,28 @@ class Config(BaseSettings):
     # Quién elige la acción del chat: "fake" (reglas por palabras clave, para
     # desarrollar sin Ollama) u "ollama" (el modelo del Servidor PC2).
     language_model: Literal["fake", "ollama"] = "fake"
+    # Con Ollama, qué chat: "tutor" (el modelo conversa con los datos de DataIQ,
+    # decidido por Mauricio el 2026-11-03) o "pedidos" (el anterior: el modelo
+    # convierte la pregunta en pedidos y responden las plantillas). El anterior
+    # queda mientras se comparan con el banco de preguntas.
+    chat_engine: Literal["tutor", "pedidos"] = "tutor"
+    # Qué tan variado escribe el tutor: 0 repite siempre lo mismo; 0,3 deja
+    # conversar sin inventar más (a medir con el banco).
+    llm_temperature: float = 0.3
     # Dirección del filtro con clave del Servidor PC2 (Tailscale Funnel); en local,
     # Ollama directo. La clave solo la tiene este backend.
     llm_url: str = "http://127.0.0.1:11434"
     llm_model: str = "qwen3-vl:8b-instruct"
     llm_api_key: str = ""
     llm_timeout: float = 60
-    # Tiempo máximo para entender la pregunta (la primera llamada al modelo).
+    # Tiempo máximo de cada llamada al modelo: con los pedidos, para entender
+    # la pregunta; con el tutor, para escribir la respuesta. Pasado ese tiempo,
+    # el tutor responde con lo que DataIQ tiene de lo que se nombró.
     llm_deadline: float = 30
-    # Si el modelo redacta la respuesta con los datos de DataIQ (la segunda
-    # llamada), y cuánto puede tardar: pasado ese tiempo, o si el texto no pasa
-    # la verificación, se muestra la respuesta armada por las plantillas.
+    # Con los pedidos: si el modelo redacta la respuesta con los datos de
+    # DataIQ (la segunda llamada), y cuánto puede tardar: pasado ese tiempo, o
+    # si el texto no pasa la verificación, se muestra la respuesta armada por
+    # las plantillas.
     llm_write: bool = True
     # 20 s: una respuesta larga («dime todo sobre la mastectomía…») tardaba más de
     # 12 en producción; en el MVP se acepta esperar (decidido por Mauricio el
