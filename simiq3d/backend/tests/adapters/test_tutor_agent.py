@@ -11,13 +11,41 @@ from app.domain.review import NO_TIMES
 from tests.sample import CATALOG, COLECISTECTOMIA, KELLY
 
 
+class Parts(httpx.AsyncByteStream):
+    """El texto como lo manda Ollama en streaming, de a cuatro caracteres; con
+    `cut`, la conexión se corta a la mitad."""
+
+    def __init__(self, text: str, cut: bool) -> None:
+        self.text = text
+        self.cut = cut
+
+    async def __aiter__(self):
+        half = len(self.text) // 2
+        for i in range(0, len(self.text), 4):
+            if self.cut and i >= half:
+                raise httpx.ReadError("se cortó")
+            delta = {"choices": [{"delta": {"content": self.text[i : i + 4]}}]}
+            yield f"data: {json.dumps(delta)}\n\n".encode()
+        yield b"data: [DONE]\n\n"
+
+
 class ScriptedTutor:
     """Hace de Ollama: responde cada llamada con el texto siguiente de `texts`."""
 
-    def __init__(self, *texts: str, status: int = 200, fail: bool = False) -> None:
+    def __init__(
+        self,
+        *texts: str,
+        status: int = 200,
+        fail: bool = False,
+        streams: bool = True,
+        cut: bool = False,
+    ) -> None:
         self.texts = list(texts)
         self.status = status
         self.fail = fail
+        # Si el filtro deja pasar el streaming, y si se corta a mitad.
+        self.streams = streams
+        self.cut = cut
         self.bodies: list[dict] = []
 
     def agent(self) -> TutorAgent:
@@ -28,6 +56,13 @@ class ScriptedTutor:
             if self.status != 200:
                 return httpx.Response(self.status)
             text = self.texts.pop(0) if self.texts else ""
+            body = json.loads(request.content)
+            if body.get("stream") and self.streams:
+                return httpx.Response(
+                    200,
+                    headers={"content-type": "text/event-stream"},
+                    stream=Parts(text, self.cut),
+                )
             message = {"role": "assistant", "content": text}
             return httpx.Response(200, json={"choices": [{"message": message}]})
 
@@ -134,3 +169,65 @@ async def test_without_the_model_it_says_so_and_shows_dataiq(ollama):
     assert "Tijera recta para cortar tejidos." in reply.reply
     assert not reply.generated
     assert reply.action == ChatAction.describe_instrument
+
+
+async def events_of(agent, question, open_id=None):
+    return [e async for e in agent.stream(question, CATALOG, open_id)]
+
+
+@pytest.mark.anyio
+async def test_streamed_the_viewer_comes_first_and_each_sentence_reviewed():
+    from app.ports.chat import ReplyEnd, ReplyStart, ReplyText
+
+    ollama = ScriptedTutor(
+        "La **Pinza Kelly** es hemostática. Va en el centro. La Kelly se usa primero."
+    )
+
+    events = await events_of(ollama.agent(), "¿Dónde va la Kelly?", COLECISTECTOMIA.id)
+
+    start, *texts, end = events
+    assert isinstance(start, ReplyStart) and start.reply.reply == ""
+    assert (start.reply.action, start.reply.instrument_id) == (
+        ChatAction.highlight_instrument,
+        KELLY.id,
+    )
+    assert all(isinstance(t, ReplyText) for t in texts) and len(texts) >= 2
+    assert isinstance(end, ReplyEnd) and end.reply.generated
+    assert "".join(t.text for t in texts).strip() == end.reply.reply
+    assert end.reply.reply.endswith(NO_TIMES)
+    assert ollama.bodies[0]["stream"] is True
+
+
+@pytest.mark.anyio
+async def test_streamed_with_a_filter_that_does_not_stream_it_comes_at_once():
+    ollama = ScriptedTutor("Es hemostática. Va en el centro.", streams=False)
+
+    *_, end = await events_of(ollama.agent(), "¿Qué es la Kelly?")
+
+    assert end.reply.reply == "Es hemostática. Va en el centro."
+
+
+@pytest.mark.anyio
+async def test_streamed_a_cut_keeps_what_was_shown_and_says_so():
+    from app.adapters.outbound.language.tutor import CUT
+
+    text = "Primera frase completa. Segunda frase completa. Tercera frase completa."
+    ollama = ScriptedTutor(text, cut=True)
+
+    *_, end = await events_of(ollama.agent(), "¿Qué es la Kelly?")
+
+    assert end.reply.reply == f"Primera frase completa.\n\n{CUT}"
+    assert "a medias" in end.reply.answered_by
+
+
+@pytest.mark.anyio
+async def test_streamed_without_the_model_it_says_so_and_shows_dataiq():
+    from app.ports.chat import ReplyEnd, ReplyStart
+
+    events = await events_of(
+        ScriptedTutor(fail=True).agent(), "¿Qué es la Tijera de Mayo?"
+    )
+
+    assert [type(e) for e in events] == [ReplyStart, ReplyEnd]
+    assert events[-1].reply.reply.startswith("El modelo de IA no está disponible")
+    assert not events[-1].reply.generated

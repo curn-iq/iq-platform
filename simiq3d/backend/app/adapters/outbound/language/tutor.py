@@ -1,17 +1,20 @@
+import json
 import logging
 import time
-from dataclasses import replace
+from collections.abc import AsyncIterator
+from dataclasses import dataclass, replace
 from uuid import UUID
 
 import httpx
 
-from app.domain.catalog import Catalog
+from app.domain.catalog import Catalog, Instrument, Technique
 from app.domain.chat import Reply, Vocabulary
-from app.domain.focus import focus_of
+from app.domain.focus import Focus, focus_of
 from app.domain.names import suggest_spelling
 from app.domain.requests import Turn
-from app.domain.review import review
+from app.domain.review import Reviewed, Reviewer, review
 from app.domain.tutor import (
+    Scene,
     data_of,
     max_tokens,
     messages,
@@ -20,7 +23,13 @@ from app.domain.tutor import (
     scene_of,
     without_model,
 )
-from app.ports.chat import ModelUnavailable
+from app.ports.chat import (
+    ModelUnavailable,
+    ReplyEnd,
+    ReplyEvent,
+    ReplyStart,
+    ReplyText,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +41,28 @@ MAX_TURNS = 3
 RETRY_IF_UNDER = 12.0
 
 
+# Si el modelo deja de responder a mitad de la respuesta (streaming), lo que ya
+# se mostró queda, con esta nota.
+CUT = "(El modelo dejó de responder y la respuesta quedó a medias.)"
+
+
 class _Busy(Exception):
     """El modelo tardó demasiado o el Servidor PC2 está lleno (429)."""
+
+
+@dataclass(frozen=True)
+class _Plan:
+    """Lo que el código decide antes de llamar al modelo."""
+
+    asked: str
+    focus: Focus
+    scene: Scene
+    data: str
+    base: Reply
+    prompt: list[dict]
+    tokens: int
+    table: Technique | None
+    subject: Instrument | None
 
 
 class TutorAgent:
@@ -78,6 +107,70 @@ class TutorAgent:
         open_technique_id: UUID | None,
         previous: tuple[Turn, ...] = (),
     ) -> Reply:
+        plan = self._plan(question, catalog, open_technique_id, previous)
+        started = time.perf_counter()
+        try:
+            text = await self._ask(plan.prompt, plan.tokens)
+        except _Busy, ModelUnavailable:
+            # Sin la pregunta en el log (docs/privacidad.md).
+            logger.warning("El tutor no respondió a tiempo o el modelo no está")
+            return self._without_model(plan, catalog, "sin modelo")
+        checked = self._review(text, plan, catalog)
+        answered_by = self.name
+        if checked.mostly_removed and time.perf_counter() - started < RETRY_IF_UNDER:
+            details = [p.detail for p in checked.problems]
+            try:
+                again = await self._ask(
+                    retry_messages(plan.prompt, text, details), plan.tokens
+                )
+            except _Busy, ModelUnavailable:
+                again = ""
+            second = self._review(again, plan, catalog) if again else None
+            if second and second.text and second.removed <= checked.removed:
+                checked, answered_by = second, f"{self.name}, segunda oportunidad"
+        return self._written(plan, catalog, checked, answered_by)
+
+    async def stream(
+        self,
+        question: str,
+        catalog: Catalog,
+        open_technique_id: UUID | None,
+        previous: tuple[Turn, ...] = (),
+    ) -> AsyncIterator[ReplyEvent]:
+        """Como `reply`, pero a medida que se escribe: primero lo que hace el
+        visor, después cada frase ya revisada y al final la respuesta completa.
+        Sin segunda oportunidad: lo que ya se mostró no se borra (decidido por
+        Mauricio el 2026-11-04)."""
+        plan = self._plan(question, catalog, open_technique_id, previous)
+        yield ReplyStart(plan.base)
+        reviewer = Reviewer(catalog, plan.table, plan.data, plan.asked, plan.subject)
+        try:
+            async for part in self._ask_streamed(plan.prompt, plan.tokens):
+                shown = reviewer.feed(part)
+                if shown:
+                    yield ReplyText(shown)
+            shown = reviewer.finish()
+            if shown:
+                yield ReplyText(shown)
+        except _Busy, ModelUnavailable:
+            logger.warning("El tutor no respondió a tiempo o el modelo no está")
+            if not reviewer.text:
+                yield ReplyEnd(self._without_model(plan, catalog, "sin modelo"))
+                return
+            # Lo mostrado queda; la frase a medias, no.
+            yield ReplyText(f"\n\n{CUT}")
+            cut = replace(reviewer.result(), text=f"{reviewer.text}\n\n{CUT}")
+            yield ReplyEnd(self._written(plan, catalog, cut, f"{self.name}, a medias"))
+            return
+        yield ReplyEnd(self._written(plan, catalog, reviewer.result(), self.name))
+
+    def _plan(
+        self,
+        question: str,
+        catalog: Catalog,
+        open_technique_id: UUID | None,
+        previous: tuple[Turn, ...],
+    ) -> _Plan:
         # Con los nombres de las mesas del MVP: con todo el instrumental,
         # «vesícula» se corregía a «vesical» (Separador vesical).
         asked = suggest_spelling(question, Vocabulary.from_catalog(catalog)) or question
@@ -94,36 +187,33 @@ class TutorAgent:
             options=scene.options,
             requests=requests_of(focus, scene),
         )
-        prompt = messages(asked, data, scene, previous, not focus.empty)
-        tokens = max_tokens(focus, asked, scene)
-        table = scene.technique or focus.table()
-        started = time.perf_counter()
-        try:
-            text = await self._ask(prompt, tokens)
-        except _Busy, ModelUnavailable:
-            # Sin la pregunta en el log (docs/privacidad.md).
-            logger.warning("El tutor no respondió a tiempo o el modelo no está")
-            return replace(
-                base,
-                reply=without_model(focus, asked, catalog, scene),
-                answered_by=f"{self.name}, sin modelo",
-            )
-        subject = scene.instrument or (
-            focus.instruments[0] if len(focus.instruments) == 1 else None
+        return _Plan(
+            asked=asked,
+            focus=focus,
+            scene=scene,
+            data=data,
+            base=base,
+            prompt=messages(asked, data, scene, previous, not focus.empty),
+            tokens=max_tokens(focus, asked, scene),
+            table=scene.technique or focus.table(),
+            subject=scene.instrument
+            or (focus.instruments[0] if len(focus.instruments) == 1 else None),
         )
-        checked = review(text, catalog, table, data, asked, subject)
-        answered_by = self.name
-        if checked.mostly_removed and time.perf_counter() - started < RETRY_IF_UNDER:
-            details = [p.detail for p in checked.problems]
-            try:
-                again = await self._ask(retry_messages(prompt, text, details), tokens)
-            except _Busy, ModelUnavailable:
-                again = ""
-            second = (
-                review(again, catalog, table, data, asked, subject) if again else None
-            )
-            if second and second.text and second.removed <= checked.removed:
-                checked, answered_by = second, f"{self.name}, segunda oportunidad"
+
+    @staticmethod
+    def _review(text: str, plan: _Plan, catalog: Catalog) -> Reviewed:
+        return review(text, catalog, plan.table, plan.data, plan.asked, plan.subject)
+
+    def _without_model(self, plan: _Plan, catalog: Catalog, why: str) -> Reply:
+        return replace(
+            plan.base,
+            reply=without_model(plan.focus, plan.asked, catalog, plan.scene),
+            answered_by=f"{self.name}, {why}",
+        )
+
+    def _written(
+        self, plan: _Plan, catalog: Catalog, checked: Reviewed, answered_by: str
+    ) -> Reply:
         if checked.problems:
             # Solo el tipo de límite y nombres de DataIQ, nunca el texto.
             logger.warning(
@@ -133,19 +223,69 @@ class TutorAgent:
                 sorted({p.kind for p in checked.problems}),
             )
         if not checked.text:
-            return replace(
-                base,
-                reply=without_model(focus, asked, catalog, scene),
-                answered_by=f"{self.name}, sin texto",
-            )
+            return self._without_model(plan, catalog, "sin texto")
         return replace(
-            base,
+            plan.base,
             reply=checked.text,
             answered_by=answered_by,
-            sources=data,
+            sources=plan.data,
             generated=True,
             repairs=tuple(p.detail for p in checked.problems),
         )
+
+    async def _ask_streamed(
+        self, prompt: list[dict], tokens: int
+    ) -> AsyncIterator[str]:
+        """Las partes del texto a medida que el modelo las escribe. Si el
+        filtro responde sin streaming (JSON), el texto entero de una vez."""
+        body = {
+            "model": self._model,
+            "temperature": self._temperature,
+            "top_p": 0.8,
+            "messages": prompt,
+            "max_tokens": tokens,
+            "stream": True,
+        }
+        started = time.perf_counter()
+        try:
+            async with (
+                httpx.AsyncClient(transport=self._transport) as client,
+                client.stream(
+                    "POST",
+                    self._url,
+                    json=body,
+                    headers=self._headers,
+                    timeout=self._wait,
+                ) as response,
+            ):
+                if response.status_code == 429:
+                    raise _Busy()  # el filtro del Servidor PC2 está lleno
+                if response.status_code >= 400:
+                    raise ModelUnavailable(f"HTTP {response.status_code}")
+                if "event-stream" not in response.headers.get("content-type", ""):
+                    answer = json.loads(await response.aread())
+                    yield answer["choices"][0]["message"].get("content") or ""
+                    return
+                async for line in response.aiter_lines():
+                    # El tope es para la respuesta entera, no para cada parte.
+                    if time.perf_counter() - started > self._wait:
+                        raise _Busy()
+                    if not line.startswith("data:"):
+                        continue
+                    payload = line.removeprefix("data:").strip()
+                    if payload == "[DONE]":
+                        return
+                    part = json.loads(payload)
+                    choices = part.get("choices") or [{}]
+                    text = (choices[0].get("delta") or {}).get("content")
+                    if text:
+                        yield text
+        except httpx.TimeoutException as error:
+            raise _Busy() from error
+        except httpx.HTTPError as error:
+            raise ModelUnavailable(str(error)) from error
+        except (ValueError, KeyError, IndexError) as error:
+            raise ModelUnavailable(str(error)) from error
 
     async def _ask(self, prompt: list[dict], tokens: int) -> str:
         body = {
