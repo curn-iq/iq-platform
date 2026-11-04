@@ -29,6 +29,20 @@ class FillHost {
   options = OPTIONS;
 }
 
+@Component({
+  imports: [SegmentedControl],
+  template: `<app-segmented-control
+    label="Rol"
+    [options]="options"
+    [disabled]="true"
+    [(value)]="value"
+  />`,
+})
+class DisabledHost {
+  options = OPTIONS;
+  value = signal('all');
+}
+
 const text = (button: HTMLElement) => button.textContent!.replace(/\s+/g, ' ').trim();
 
 describe('SegmentedControl', () => {
@@ -99,6 +113,23 @@ describe('SegmentedControl', () => {
     const filled = TestBed.createComponent(FillHost);
     await filled.whenStable();
     expect(filled.nativeElement.querySelector('app-segmented-control').classList).toContain('fill');
+  });
+
+  it('deshabilitado, no deja elegir otra opción y se marca para atenuarlo', async () => {
+    const { root, buttons } = await mount();
+    expect(buttons().every((button) => !button.disabled)).toBe(true);
+    expect(root.querySelector('app-segmented-control')!.classList).not.toContain('disabled');
+
+    const disabled = TestBed.createComponent(DisabledHost);
+    await disabled.whenStable();
+    const host = disabled.nativeElement as HTMLElement;
+    const options = Array.from(host.querySelectorAll<HTMLButtonElement>('button'));
+
+    expect(host.querySelector('app-segmented-control')!.classList).toContain('disabled');
+    expect(options.every((button) => button.disabled)).toBe(true);
+    options[1].click();
+    await disabled.whenStable();
+    expect(disabled.componentInstance.value()).toBe('all');
   });
 
   it('la placa se coloca bajo la elegida y solo se anima después de colocarse', async () => {

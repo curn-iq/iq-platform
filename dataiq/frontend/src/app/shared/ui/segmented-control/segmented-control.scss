@@ -66,6 +66,25 @@ button[aria-pressed='true'] .count {
   }
 }
 
+// Deshabilitado: atenuado y sin respuesta al puntero
+:host(.disabled) {
+  .group {
+    opacity: 0.6;
+  }
+
+  button {
+    cursor: not-allowed;
+
+    &:hover {
+      color: var(--color-text-muted);
+    }
+
+    &[aria-pressed='true']:hover {
+      color: var(--color-accent-strong);
+    }
+  }
+}
+
 // A todo el ancho, sobre `fondo` y sin filete: el selector de rol de la ficha de Usuarios y roles.
 // Se queda así también en celular, donde la ficha no tiene un margen que tragarse
 :host(.fill) {

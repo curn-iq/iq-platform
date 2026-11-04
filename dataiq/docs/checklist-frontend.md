@@ -117,7 +117,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 ### Fase 8 — Gestión del admin
 
 - [x] Usuarios y roles: personas por rol, buscador, ficha con la fecha de registro, la política aceptada y la actividad en DataIQ (`activity`), cambio de rol confirmado (Resuelto 63)
-- [ ] La cuenta propia no cambia su rol (el backend responde 409)
+- [x] La cuenta propia no cambia su rol (el backend responde 409): el selector queda deshabilitado y la ficha dice por qué (Resuelto 63)
 - [ ] Sin suspender ni historial de roles en el MVP (`docs/despues-del-mvp.md`)
 - [ ] Revisar al final el peso del código (`npm run build`): el código inicial (354 kB tras la casilla del registro, con 300 kB de presupuesto) y los estilos que pasan de 4 kB (`hero-stage.scss`, `research.scss` y `catalog.scss`). Bajarlos, o subir el presupuesto con su motivo anotado aquí, antes de la fase 9
 

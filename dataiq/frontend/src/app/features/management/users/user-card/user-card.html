@@ -4,7 +4,8 @@
   <app-avatar size="large" [name]="person().name" />
   <div>
     <h2>{{ person().name }}</h2>
-    <p class="email">{{ person().email }}</p>
+    <!-- Si no cabe, el correo se parte antes de la arroba y no a media palabra -->
+    <p class="email">{{ email().local }}<wbr />{{ email().domain }}</p>
   </div>
 </header>
 
@@ -14,11 +15,16 @@
   <app-segmented-control
     label="Rol de la cuenta"
     [fill]="true"
+    [disabled]="isOwnAccount()"
     [options]="roleOptions"
     [value]="shownRole()"
     (valueChange)="propose($event)"
   />
 </div>
+
+@if (isOwnAccount()) {
+  <p class="note">No se puede cambiar el rol de la cuenta propia.</p>
+}
 
 @if (change(); as change) {
   <div class="confirm" role="group" aria-label="Confirmar el cambio de rol">

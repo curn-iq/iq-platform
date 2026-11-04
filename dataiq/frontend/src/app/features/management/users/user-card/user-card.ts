@@ -8,12 +8,14 @@ import {
   output,
 } from '@angular/core';
 import { NoticeService } from '../../../../core/notice/notice.service';
+import { SessionService } from '../../../../core/session/session.service';
 import { UsersRepository } from '../../../../data/users.repository';
 import { ROLES, type Role } from '../../../../domain/role';
 import {
   activityLine,
   describeRoleChange,
   formatPersonDate,
+  splitEmail,
   type Person,
 } from '../../../../domain/user-board';
 import { ROLE_LABELS } from '../../../../shared/role-labels';
@@ -42,6 +44,9 @@ const ROLE_OPTIONS: readonly SegmentOption[] = ROLES.map((role) => ({
  * habilitar el botón. Mientras va la petición el botón dice «Cambiando…» y la ficha no responde a
  * otro cambio. Con éxito avisa y entrega la cuenta actualizada con `changed`; con error avisa el
  * interceptor y el panel se queda. Suspender y el historial de roles no están en el MVP.
+ *
+ * **La cuenta propia** no cambia su rol: el selector queda deshabilitado y la ficha dice por qué
+ * (Resuelto 63).
  */
 @Component({
   selector: 'app-user-card',
@@ -59,6 +64,7 @@ export class UserCard {
 
   private readonly users = inject(UsersRepository);
   private readonly notices = inject(NoticeService);
+  private readonly session = inject(SessionService);
   private readonly now = new Date();
 
   protected readonly roleOptions = ROLE_OPTIONS;
@@ -80,6 +86,12 @@ export class UserCard {
     computation: () => false,
   });
 
+  /**
+   * Es la cuenta de quien está en la pantalla: su rol no se cambia desde aquí. La API también lo
+   * rechaza (409), para que la plataforma no se quede sin admin por error.
+   */
+  protected readonly isOwnAccount = computed(() => this.session.account()?.id === this.person().id);
+
   /** El rol que muestra el selector: el propuesto o, si no hay, el de la cuenta. */
   protected readonly shownRole = computed(() => this.proposed() ?? this.person().role);
 
@@ -94,6 +106,8 @@ export class UserCard {
     return change !== null && !this.busy() && (change.verification === null || this.verified());
   });
 
+  protected readonly email = computed(() => splitEmail(this.person().email));
+
   protected readonly registered = computed(() =>
     formatPersonDate(new Date(this.person().created_at), this.now),
   );
@@ -104,7 +118,7 @@ export class UserCard {
   protected readonly activity = computed(() => activityLine(this.person().activity));
 
   protected propose(key: string): void {
-    if (this.busy()) return;
+    if (this.busy() || this.isOwnAccount()) return;
     const role = ROLES.find((candidate) => candidate === key);
     // Elegir otra vez el rol de la cuenta es desistir
     this.proposed.set(role === undefined || role === this.person().role ? null : role);

@@ -1,7 +1,9 @@
 import { HttpTestingController } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoticeService } from '../../../core/notice/notice.service';
-import type { User } from '../../../data/api/models';
+import { SessionService } from '../../../core/session/session.service';
+import type { Account, User } from '../../../data/api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../../data/testing';
 import type { Role } from '../../../domain/role';
 import { Users } from './users';
@@ -49,6 +51,14 @@ const USERS: User[] = [
   user('Tomás Vargas', 'user', '2026-10-02T10:00:00'),
 ];
 
+/** La cuenta de la sesión: la primera de `USERS`. */
+const SIGNED_IN: Account = {
+  id: USERS[0].id,
+  name: USERS[0].name,
+  email: USERS[0].email,
+  role: 'admin',
+};
+
 describe('Users', () => {
   let http: HttpTestingController;
   let fixture: ComponentFixture<Users>;
@@ -79,7 +89,13 @@ describe('Users', () => {
 
   /** Abre la pantalla; si hay `users`, responde la lista. */
   async function open(users?: User[]): Promise<void> {
-    TestBed.configureTestingModule({ providers: [provideRepositoryTesting()] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRepositoryTesting(),
+        // Quien está en la pantalla es Mauricio, el primero de la lista
+        { provide: SessionService, useValue: { account: signal(SIGNED_IN) } },
+      ],
+    });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(Users);
     root = fixture.nativeElement;
@@ -241,6 +257,50 @@ describe('Users', () => {
     it('no ofrece suspender ni historial', async () => {
       await choose('Daniela Ortiz');
       expect(text(root)).not.toMatch(/suspend|historial|reactivar|demostración/i);
+    });
+  });
+
+  describe('la cuenta propia', () => {
+    beforeEach(async () => open(USERS));
+
+    const roleButtons = () =>
+      Array.from(card()!.querySelectorAll<HTMLButtonElement>('app-segmented-control button'));
+
+    it('no cambia su rol: el selector está deshabilitado y la ficha dice por qué', async () => {
+      await choose('Mauricio Lugo Granados');
+
+      expect(roleButtons().map((b) => text(b))).toEqual([
+        'Usuario',
+        'Colaborador',
+        'Revisor',
+        'Admin',
+      ]);
+      expect(roleButtons().every((b) => b.disabled)).toBe(true);
+      expect(card()!.querySelector('app-segmented-control')!.classList).toContain('disabled');
+      expect(text(card()!.querySelector('.note'))).toBe(
+        'No se puede cambiar el rol de la cuenta propia.',
+      );
+      expect(roleButton('Admin').getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('tocar otro rol no abre la confirmación ni pide nada', async () => {
+      await choose('Mauricio Lugo Granados');
+      roleButton('Colaborador').click();
+      await settle();
+
+      expect(confirm()).toBeNull();
+      expect(roleButton('Admin').getAttribute('aria-pressed')).toBe('true');
+      http.expectNone(`${TEST_API_BASE}/users/${USERS[0].id}/role`);
+    });
+
+    it('las demás cuentas, incluso otro admin, sí cambian de rol y no llevan la nota', async () => {
+      await choose('Juan Caraballo');
+
+      expect(roleButtons().some((b) => b.disabled)).toBe(false);
+      expect(card()!.querySelector('.note')).toBeNull();
+      roleButton('Revisor').click();
+      await settle();
+      expect(confirm()).not.toBeNull();
     });
   });
 

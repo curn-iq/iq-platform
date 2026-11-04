@@ -31,7 +31,11 @@ export interface SegmentOption {
   selector: 'app-segmented-control',
   templateUrl: './segmented-control.html',
   styleUrl: './segmented-control.scss',
-  host: { '(window:resize)': 'measure()', '[class.fill]': 'fill()' },
+  host: {
+    '(window:resize)': 'measure()',
+    '[class.fill]': 'fill()',
+    '[class.disabled]': 'disabled()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SegmentedControl {
@@ -42,6 +46,11 @@ export class SegmentedControl {
    * pasa a chips en celular: el selector de rol de la ficha de Usuarios y roles.
    */
   readonly fill = input(false);
+  /**
+   * No deja elegir otra opción: los botones se deshabilitan y el control se atenúa al 60 %. Es el
+   * selector de rol de la cuenta propia en Usuarios y roles.
+   */
+  readonly disabled = input(false);
   readonly options = input.required<readonly SegmentOption[]>();
   /** El `key` de la opción elegida. */
   readonly value = model.required<string>();
