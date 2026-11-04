@@ -1,4 +1,5 @@
-import { MONTHS, sameDay } from './edited-date';
+import { isYesterday, MONTHS, sameDay } from './edited-date';
+import { plural } from './plural';
 import { ROLES, type Role } from './role';
 import { plain } from './technique-search';
 
@@ -64,8 +65,31 @@ export const RECENT_USERS = 5;
 /** Cuántos resultados muestra una búsqueda antes de pedir que se afine. */
 export const MAX_SEARCH_RESULTS = 8;
 
+/** El nombre y el correo de una cuenta sin tildes ni mayúsculas, para ordenar y buscar. */
+interface PlainKeys {
+  name: string;
+  email: string;
+}
+
+/**
+ * Las claves de cada cuenta, calculadas una sola vez: las cuentas no se modifican (un cambio de rol
+ * las reemplaza), así que ordenar o buscar otra vez no vuelve a normalizar cada nombre.
+ */
+const plainKeys = new WeakMap<Person, PlainKeys>();
+
+function keysOf(person: Person): PlainKeys {
+  let keys = plainKeys.get(person);
+  if (keys === undefined) {
+    keys = { name: plain(person.name), email: plain(person.email) };
+    plainKeys.set(person, keys);
+  }
+  return keys;
+}
+
+const spanish = new Intl.Collator('es');
+
 function byName(a: Person, b: Person): number {
-  return plain(a.name).localeCompare(plain(b.name), 'es') || a.email.localeCompare(b.email);
+  return spanish.compare(keysOf(a).name, keysOf(b).name) || a.email.localeCompare(b.email);
 }
 
 /** Las cuentas de un rol, por nombre (sin tildes ni mayúsculas). */
@@ -88,9 +112,8 @@ export function recentUsers(
 /** «3 admin · 2 revisores · 2 colaboradores · 86 usuarios»; con una sola, en singular. */
 export function summaryLine(people: readonly Person[]): string {
   return BOARD_ROLES.map((role) => {
-    const count = people.filter((person) => person.role === role).length;
     const [one, many] = SUMMARY_NAMES[role];
-    return `${count} ${count === 1 ? one : many}`;
+    return plural(people.filter((person) => person.role === role).length, one, many);
   }).join(' · ');
 }
 
@@ -115,7 +138,10 @@ export function searchPeople(
   if (needle === '') return { shown: [], more: 0 };
   const found = people
     .filter((person) => role === null || person.role === role)
-    .filter((person) => plain(person.name).includes(needle) || plain(person.email).includes(needle))
+    .filter((person) => {
+      const keys = keysOf(person);
+      return keys.name.includes(needle) || keys.email.includes(needle);
+    })
     .sort(byName);
   return { shown: found.slice(0, limit), more: Math.max(0, found.length - limit) };
 }
@@ -142,13 +168,8 @@ export function replacePerson(people: readonly Person[], updated: Person): Perso
  */
 export function formatPersonDate(date: Date, now: Date): string {
   if (sameDay(date, now)) return 'Hoy';
-  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-  if (sameDay(date, yesterday)) return 'Ayer';
+  if (isYesterday(date, now)) return 'Ayer';
   return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-function count(n: number, one: string, many: string): string {
-  return `${n} ${n === 1 ? one : many}`;
 }
 
 /**
@@ -158,16 +179,16 @@ function count(n: number, one: string, many: string): string {
  */
 export function activityLine(activity: PersonActivity): string {
   const parts = [
-    activity.drafts > 0 ? count(activity.drafts, 'borrador', 'borradores') : '',
-    activity.returned > 0 ? count(activity.returned, 'devuelta', 'devueltas') : '',
+    activity.drafts > 0 ? plural(activity.drafts, 'borrador', 'borradores') : '',
+    activity.returned > 0 ? plural(activity.returned, 'devuelta', 'devueltas') : '',
     activity.in_review > 0
-      ? count(activity.in_review, 'versión en revisión', 'versiones en revisión')
+      ? plural(activity.in_review, 'versión en revisión', 'versiones en revisión')
       : '',
     activity.published_techniques > 0
-      ? count(activity.published_techniques, 'técnica publicada', 'técnicas publicadas')
+      ? plural(activity.published_techniques, 'técnica publicada', 'técnicas publicadas')
       : '',
     activity.reviewed > 0
-      ? count(activity.reviewed, 'versión revisada', 'versiones revisadas')
+      ? plural(activity.reviewed, 'versión revisada', 'versiones revisadas')
       : '',
   ].filter((part) => part !== '');
   return parts.length > 0 ? parts.join(' · ') : 'Sin actividad en DataIQ';

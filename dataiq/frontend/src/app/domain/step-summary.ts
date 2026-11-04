@@ -1,3 +1,4 @@
+import { plural } from './plural';
 import type { ProgressStatus, VersionProgress } from './version-progress';
 
 /** Lo que dice la marca de un paso: el avance de su sección y, en el último, el candado o la flecha. */
@@ -21,10 +22,6 @@ const STATE_NAMES: Readonly<Record<StepMark, string>> = {
   locked: 'bloqueado',
   ready: 'listo',
 };
-
-function plural(count: number, one: string, many: string): string {
-  return count === 1 ? `1 ${one}` : `${count} ${many}`;
-}
 
 /**
  * Lo que dicen los cinco pasos del editor, a partir del avance de la versión (`versionProgress`).

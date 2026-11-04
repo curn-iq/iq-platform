@@ -22,6 +22,11 @@ export function sameDay(a: Date, b: Date): boolean {
   );
 }
 
+/** Si `date` cae en el día de calendario anterior al de `now` (hora local). */
+export function isYesterday(date: Date, now: Date): boolean {
+  return sameDay(date, new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+}
+
 /**
  * El día y el mes abreviado («3 oct»), con el año si no es el de `now` («3 oct 2025»). Va
  * en hora local y sin `Intl`, para que no cambie con el navegador.
@@ -41,6 +46,5 @@ export function formatEdited(date: Date, now: Date): string {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `Hoy, ${hours}:${minutes}`;
   }
-  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-  return sameDay(date, yesterday) ? 'Ayer' : formatDay(date, now);
+  return isYesterday(date, now) ? 'Ayer' : formatDay(date, now);
 }
