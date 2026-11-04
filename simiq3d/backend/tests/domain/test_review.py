@@ -1,3 +1,5 @@
+import pytest
+
 from app.domain.review import NO_DOSES, NO_TIMES, review, wrong_zone, zone_of
 from tests.sample import CATALOG, COLECISTECTOMIA, KELLY, MASTECTOMIA
 
@@ -244,3 +246,40 @@ def test_proposing_to_move_the_pieces_is_replaced():
     reviewed = check("Si quieres, puedes moverlos en el visor 3D. Bien.")
 
     assert reviewed.text == f"{NO_MOVING} Bien."
+
+
+STREAMED = [
+    "La **Pinza Kelly** es hemostática. Va en el centro (n.º 4 del diagrama).",
+    "Va así:\n\n1. Tijera de Mayo\n2. Pinza Kelly\n\n"
+    "- **Arriba a la izquierda**: 5 y 10.",
+    "El instrumental de diéresis de esta mesa es:\n\n- Tijera de Mayo\n- Pinza Kelly"
+    "\n\nLo demás es general. La Kelly se usa primero. Después se usa la Allis.",
+    "Se usan 2 mg/kg de lidocaína. Lo decide el anestesiólogo.\n\n\n\nFin.",
+    "- **Pinza Kelly** (obj. 10) va en el centro.\n"
+    "La Pinza Lahey va arriba en la mesa.",
+]
+
+
+@pytest.mark.parametrize("text", STREAMED)
+@pytest.mark.parametrize("size", [1, 3, 7, 1000])
+def test_reviewing_as_it_comes_shows_the_same_as_reviewing_it_whole(text, size):
+    from app.domain.review import Reviewer
+
+    whole = check(text)
+    reviewer = Reviewer(CATALOG, COLECISTECTOMIA, "Colecistectomía", "")
+    shown = [reviewer.feed(text[i : i + size]) for i in range(0, len(text), size)]
+    shown.append(reviewer.finish())
+
+    assert "".join(shown).strip() == whole.text
+    assert reviewer.result().problems == whole.problems
+
+
+def test_a_sentence_is_shown_as_soon_as_the_next_one_starts():
+    from app.domain.review import Reviewer
+
+    reviewer = Reviewer(CATALOG, COLECISTECTOMIA, "", "")
+
+    assert reviewer.feed("La Kelly es hemostática.") == ""
+    assert reviewer.feed(" Sirve") == "La Kelly es hemostática."
+    assert reviewer.feed(" para pinzar.") == ""
+    assert reviewer.finish() == " Sirve para pinzar."

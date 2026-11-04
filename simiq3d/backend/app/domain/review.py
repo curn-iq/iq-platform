@@ -616,6 +616,139 @@ def _split(line: str) -> tuple[str, int | None, list[str]]:
     return prefix, int(number.group(1)) if number else None, sentences
 
 
+class Reviewer:
+    """La revisión a medida que llega el texto (*streaming*): `feed` recibe cada
+    parte que escribe el modelo y devuelve lo que ya se puede mostrar, frase
+    por frase, revisado; `finish`, lo que quedaba. Lo mostrado, unido, es el
+    mismo texto que da `review` con el texto entero."""
+
+    def __init__(
+        self,
+        catalog: Catalog,
+        table: Technique | None,
+        data: str,
+        question: str = "",
+        subject: Instrument | None = None,
+        source: str | None = None,
+    ) -> None:
+        self._catalog = catalog
+        self._ctx = _Context(catalog, table, _numbers(f"{data}\n{question}"), subject)
+        # El texto entero, si ya se tiene; si no, lo que ha llegado.
+        self._source = source
+        self._seen = ""
+        self._line = ""
+        self._started = False
+        self._done = 0
+        self._prefix = ""
+        self._listed: int | None = None
+        self._kept = 0
+        self._blank = 0
+        self._out: list[str] = []
+        self._facts: set[str] = set()
+        self._grouping = False
+        self.problems: list[Problem] = []
+        self.sentences = 0
+        self.removed = 0
+
+    def feed(self, part: str) -> str:
+        self._seen += part
+        self._line += part
+        shown = []
+        while "\n" in self._line:
+            line, self._line = self._line.split("\n", 1)
+            shown.append(self._close(line))
+        shown.append(self._advance(self._line, final=False))
+        return "".join(shown)
+
+    def finish(self) -> str:
+        shown = self._close(self._line) if self._line else ""
+        self._line = ""
+        return shown
+
+    def result(self) -> Reviewed:
+        return Reviewed(self.text, tuple(self.problems), self.sentences, self.removed)
+
+    @property
+    def text(self) -> str:
+        return "".join(self._out).strip()
+
+    def _close(self, line: str) -> str:
+        if not line.strip():
+            self._blank += 1
+            self._reset()
+            return ""
+        shown = self._advance(line, final=True)
+        self._reset()
+        return shown
+
+    def _reset(self) -> None:
+        self._started = False
+        self._done = 0
+        self._kept = 0
+
+    def _advance(self, line: str, final: bool) -> str:
+        """Revisa las frases de la línea que ya están completas (todas, si la
+        línea terminó)."""
+        prefix, listed, sentences = _split(line)
+        ready = sentences if final else sentences[:-1]
+        if not ready[self._done :]:
+            return ""
+        if not self._started:
+            self._started = True
+            self._prefix, self._listed = prefix, listed
+            if not prefix:
+                self._grouping = False
+        shown = []
+        for sentence in ready[self._done :]:
+            shown += [self._show(p) for p in self._check(sentence, self._done == 0)]
+            self._done += 1
+        return "".join(shown)
+
+    def _check(self, sentence: str, first: bool) -> list[str]:
+        """Lo que queda de la frase: ella misma o, si cruza un límite, el dato
+        o la nota que van en su lugar."""
+        self.sentences += 1
+        found = problems_in(sentence, self._ctx, self._listed if first else None)
+        numbers = [p for p in found if p.kind == "numero"]
+        if numbers:
+            self.problems += numbers
+            self._prefix = re.sub(r"\d+(?=[.)]\s*$)", numbers[0].fact, self._prefix)
+            found = [p for p in found if p.kind != "numero"]
+        said = normalize(sentence)
+        if not found and self._grouping and _names(sentence, self._catalog):
+            # Una pieza en la lista que sigue a «el instrumental de diéresis…:»
+            found = [_GROUPED]
+        if (
+            said.rstrip(" *").endswith(":")
+            and _TIMES.search(said)
+            and not re.search(r"\b(?:no|ni|sin)\b", said)
+        ):
+            self._grouping = True
+            found = found or [_GROUPED]
+        if not found:
+            return [sentence]
+        self.removed += 1
+        self.problems += found
+        source = self._source if self._source is not None else self._seen
+        kept = []
+        for p in found:
+            if p.fact and p.fact not in self._facts and p.fact not in source:
+                self._facts.add(p.fact)
+                kept.append(p.fact)
+        return kept
+
+    def _show(self, piece: str) -> str:
+        if self._kept == 0:
+            separator = "\n" * min(self._blank + 1, 2) if self._out else ""
+            shown = separator + self._prefix + piece
+            self._blank = 0
+        else:
+            shown = " " + piece
+        self._kept += 1
+        self._out.append(shown)
+        return shown
+
+
 def review(
     text: str,
     catalog: Catalog,
@@ -629,52 +762,10 @@ def review(
     de la que se habla si una frase no nombra otra; `data`, lo que tuvo el
     modelo (de ahí salen las cifras que puede decir); `subject`, el instrumento
     del que se habla."""
-    ctx = _Context(catalog, table, _numbers(f"{data}\n{question}"), subject)
-    out_lines: list[str] = []
-    problems: list[Problem] = []
-    facts_added: set[str] = set()
-    total = removed = 0
-    grouping = False
-    for line in text.strip().split("\n"):
-        if not line.strip():
-            out_lines.append("")
-            continue
-        prefix, listed, sentences = _split(line)
-        if not prefix:
-            grouping = False
-        kept: list[str] = []
-        for n, sentence in enumerate(sentences):
-            total += 1
-            found = problems_in(sentence, ctx, listed if n == 0 else None)
-            numbers = [p for p in found if p.kind == "numero"]
-            if numbers:
-                problems += numbers
-                prefix = re.sub(r"\d+(?=[.)]\s*$)", numbers[0].fact, prefix)
-                found = [p for p in found if p.kind != "numero"]
-            said = normalize(sentence)
-            if not found and grouping and _names(sentence, catalog):
-                # Una pieza en la lista que sigue a «el instrumental de diéresis…:»
-                found = [_GROUPED]
-            if (
-                said.rstrip(" *").endswith(":")
-                and _TIMES.search(said)
-                and not re.search(r"\b(?:no|ni|sin)\b", said)
-            ):
-                grouping = True
-                found = found or [_GROUPED]
-            if not found:
-                kept.append(sentence)
-                continue
-            removed += 1
-            problems += found
-            for p in found:
-                if p.fact and p.fact not in facts_added and p.fact not in text:
-                    facts_added.add(p.fact)
-                    kept.append(p.fact)
-        if kept:
-            out_lines.append(prefix + " ".join(kept))
-    repaired = re.sub(r"\n{3,}", "\n\n", "\n".join(out_lines)).strip()
-    return Reviewed(repaired, tuple(problems), total, removed)
+    reviewer = Reviewer(catalog, table, data, question, subject, source=text)
+    reviewer.feed(text.strip())
+    reviewer.finish()
+    return reviewer.result()
 
 
 def crossed(text: str, catalog: Catalog) -> set[str]:
