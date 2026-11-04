@@ -24,8 +24,9 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
   su **backend**, con las anteriores de la conversación. El backend pide el
   catálogo a DataIQ, decide de qué se habla y qué hace el visor, y le pasa al
   **modelo de lenguaje** los datos de DataIQ de eso; el modelo escribe la
-  respuesta conversando, el backend revisa cada frase contra DataIQ antes de
-  enviarla y guarda el registro de la conversación en su base.
+  respuesta conversando, y el backend revisa cada frase contra DataIQ y la
+  envía apenas está revisada (*streaming*), y guarda el registro de la
+  conversación en su base.
   Con la respuesta, el frontend lee la mesa directo de la **API de DataIQ** y
   arma la escena.
 

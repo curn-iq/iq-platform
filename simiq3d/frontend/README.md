@@ -124,7 +124,7 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
 
 ### El chat
 
-Contrato de `POST /api/simiq3d/chat` (el porqué de cada cosa, en
+Contrato de `POST /api/simiq3d/chat/stream` (el porqué de cada cosa, en
 [`../README.md`, «Chat»](../README.md#chat)):
 
 - **Se envía** `{"question": "…", "technique_id": "<id>" | null, "previous":
@@ -134,7 +134,15 @@ Contrato de `POST /api/simiq3d/chat` (el porqué de cada cosa, en
   respuesta, para que «¿y para qué sirve?» se entienda por lo que se preguntó
   antes. Las guarda la conversación (`explore/conversation.service.ts`), solo
   mientras la página está abierta.
-- **Se recibe** `action`, `technique_id`, `instrument_id`, `field`, `reply`
+- **Se recibe a medida que se escribe**, una línea JSON por evento
+  (`data/ndjson.ts` las lee de la respuesta como texto, con el progreso de
+  `HttpClient`): `start` (lo que hace el visor, sin texto), cada `text` (una
+  parte que se agrega) y `end` (la respuesta completa, que reemplaza lo
+  mostrado). Con `start` aparece el mensaje y cambia el visor; los tres puntos
+  siguen hasta la primera frase, y no se envía otra pregunta hasta `end`
+  (`ConversationService`: `waiting` y `pending`). Si la respuesta se corta, lo
+  escrito queda y el aviso lo dice. Cada evento con respuesta trae `action`,
+  `technique_id`, `instrument_id`, `field`, `reply`
   (el texto), `generated` (si lo escribió el modelo de IA), `options`
   (preguntas que se pueden volver a enviar tal cual) y `requests` (de qué se
   habló; el visor no lo usa).

@@ -233,6 +233,37 @@ ChatGPT y Claude al mismo prompt.
   piezas a la vez no se revisaban, «(obj. 8)» partía la frase, y el modelo
   proponía mover las piezas en el visor, que SIMIQ3D no permite
 
+### La respuesta a medida que se escribe
+
+Acordado por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
+
+- [x] Para qué sirve cada pieza de la mesa en los datos del modelo (la frase
+  de su descripción en DataIQ que lo dice): en producción, el 2026-11-03, el
+  tutor dijo que la Allis y la Moynihan hacían la hemostasia en la
+  colecistectomía
+- [x] El filtro del Servidor PC2 deja pasar `"stream": true`, con la misma
+  clave, el mismo tamaño máximo y el mismo tope de preguntas a la vez (el lugar
+  se ocupa hasta que termina)
+- [x] La revisión por partes (`Reviewer`): muestra cada frase al empezar la
+  siguiente, y lo mostrado es igual a revisar el texto entero (pruebas con
+  partes de 1, 3, 7 y 1000 caracteres)
+- [x] `POST /chat/stream` (NDJSON: `start`, `text`, `end`), con el registro al
+  terminar; sin segunda oportunidad (decidido por Mauricio el 2026-11-04); si
+  el modelo se corta a mitad, lo mostrado queda con una nota
+- [x] «¿Cómo se usa en la colecistectomía?» después de hablar de la Kelly sigue
+  hablando de la Kelly
+- [x] Probado en local, con el filtro de la rama y Qwen3-VL 8B: el visor
+  cambia a los 0,1 s, la primera frase llega a los 4 a 7 s y la respuesta
+  termina a los 10 a 17 s; lo mostrado por partes es igual a la respuesta final
+- [x] Banco con las descripciones (153 preguntas, en local): 143/153, como
+  las corridas de ayer (144 a 146); mediana de 9,3 s (7,7 s antes), porque
+  cada pregunta lleva unos 290 tokens más de datos. Dos fallas nuevas eran
+  mesas que DataIQ no tiene (la apendicectomía, la cesárea): la revisión
+  cambia ahora lo que se dice que llevan, y su lista, por «SIMIQ3D no tiene la
+  mesa de Mayo de esa técnica…»; en las 10 filas de esas fallas, 8/10
+- [ ] Probar en producción: el tiempo hasta la primera frase, pasando por
+  Vercel y Tailscale Funnel
+
 ## Modelos 3D
 
 - [x] `GET /models` con `Cache-Control` y `ETag`

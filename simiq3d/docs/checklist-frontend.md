@@ -83,6 +83,7 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 - [x] El texto del tutor con su Markdown sencillo (párrafos, negrita y listas) sin `innerHTML` (`chat/rich-text.ts`), y sin marcas en la última respuesta de celular
 - [x] La línea de fuentes bajo cada respuesta del modelo (`generated`) y el campo de pregunta con «Responde un modelo de IA con los datos de DataIQ»
 - [x] Mandar también el texto de cada respuesta anterior (`PreviousTurn.reply`), para que el tutor siga la conversación
+- [x] La respuesta a medida que se escribe (`POST /chat/stream`): el visor cambia con `start`, el texto crece con cada `text` y `end` deja la respuesta completa; los tres puntos hasta la primera frase y sin enviar otra hasta el final; si se corta, lo escrito queda y el aviso lo dice
 
 ### Fase 6 — Despliegue
 

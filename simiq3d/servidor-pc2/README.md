@@ -113,4 +113,13 @@ uv run --script test_filtro.py
 
 Comprueban que sin la clave no pase nada, que solo se acepte el modelo
 configurado, que no se publiquen las demás rutas de Ollama, que se rechacen
-las peticiones demasiado grandes y que, lleno, responda `429` sin hacer fila.
+las peticiones demasiado grandes, que, lleno, responda `429` sin hacer fila, y
+que con `"stream": true` pase las partes a medida que llegan y ocupe su lugar
+hasta que termine.
+
+El filtro corre desde esta carpeta del repo (`simiq3d-filtro.service`): un
+cambio en `filtro.py` se toma al reiniciarlo, con `main` al día:
+
+```sh
+systemctl --user restart simiq3d-filtro
+```

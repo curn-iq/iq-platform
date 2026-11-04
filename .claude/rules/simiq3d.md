@@ -22,7 +22,10 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
   límites duros (`app/domain/review.py`): la mesa de Mayo según DataIQ, nada de
   ordenar o agrupar por tiempos quirúrgicos, ni dosis, ni cuadrícula; la que
   cruza uno se cambia por el dato de DataIQ, nunca se descarta en silencio. Sin
-  el modelo, la respuesta lo dice y muestra lo de DataIQ. Un límite nuevo va en
+  el modelo, la respuesta lo dice y muestra lo de DataIQ. El frontend usa
+  `POST /chat/stream`: cada frase sale apenas se revisa (`Reviewer`), así que
+  un límite nuevo tiene que poder decidirse con la frase y las anteriores, no
+  con las que vienen. Un límite nuevo va en
   `review.py` con sus preguntas en `eval/banco.csv` (columna `limite`). El chat
   por pedidos (`CHAT_ENGINE=pedidos`) queda solo para comparar.
 - **Nunca hablarle al estudiante de filas, columnas ni celdas:** la mesa real
