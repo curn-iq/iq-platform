@@ -5,6 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { errorInterceptor } from '../../core/http/error.interceptor';
 import { NoticeService } from '../../core/notice/notice.service';
+import { FullNavigation } from '../../core/router/full-navigation';
 import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { AccountEntry } from './account';
@@ -37,6 +38,7 @@ describe('AccountEntry: ingresar', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRepositoryTesting(withInterceptors([errorInterceptor])),
+        { provide: FullNavigation, useValue: { assign: vi.fn() } },
         provideRouter([
           { path: 'cuenta/:modo', component: AccountEntry },
           { path: 'tecnicas', children: [{ path: '**', children: [] }] },
@@ -152,6 +154,24 @@ describe('AccountEntry: ingresar', () => {
 
       expect(router.url).toBe('/tecnicas');
     });
+
+    it.each([
+      ['la mesa de una técnica en SIMIQ3D', `/simiq3d/tecnicas/${ID}`],
+      ['SIVRI', '/sivri/'],
+    ])(
+      'si iba a %s, la pide al servidor (navegación completa): el router de esta app no la conoce',
+      async (_name, volver) => {
+        await open(`/cuenta/ingresar?volver=${encodeURIComponent(volver)}`);
+        await fill();
+        await submit();
+        loginRequest().flush(ACCOUNT);
+        await settle();
+
+        expect(TestBed.inject(FullNavigation).assign).toHaveBeenCalledExactlyOnceWith(volver);
+        expect(router.url).toMatch(/^\/cuenta\/ingresar\?/);
+        expect(TestBed.inject(SessionService).isLoggedIn()).toBe(true);
+      },
+    );
 
     it('vuelve también a una pantalla de gestión, con su consulta', async () => {
       await open(`/cuenta/ingresar?volver=${encodeURIComponent('/gestion/borradores?x=1')}`);

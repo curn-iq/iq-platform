@@ -17,7 +17,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { describeApiError } from '../../core/http/error-message';
 import { NoticeService } from '../../core/notice/notice.service';
-import { returnTarget, safeReturnUrl } from '../../core/session/login-path';
+import { safeReturnUrl } from '../../core/session/login-path';
+import { ReturnNavigation } from '../../core/session/return-navigation';
 import { SessionService } from '../../core/session/session.service';
 import { AuthRepository } from '../../data/auth.repository';
 import { TechniquesRepository } from '../../data/techniques.repository';
@@ -87,7 +88,7 @@ interface Layout {
 /**
  * Ingresar y Crear cuenta en una sola pantalla (`/cuenta/ingresar`, `/cuenta/crear`,
  * `cuenta.html`): la puerta del shell. A la izquierda, la técnica que se quería abrir
- * (`?volver=/tecnicas/:id/…`) con su contenido bloqueado, o, si se entró directo, un saludo
+ * (`?volver=/tecnicas/:id/…`, o su mesa en SIMIQ3D) con su contenido bloqueado, o, si se entró directo, un saludo
  * según la hora con su ilustración; a la derecha, las pestañas y el formulario. Sin
  * «Continuar con Google» ni «¿Olvidaste tu contraseña?» en el MVP (Resuelto 20).
  *
@@ -126,6 +127,7 @@ interface Layout {
 export class AccountEntry {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly returnNavigation = inject(ReturnNavigation);
   private readonly notices = inject(NoticeService);
   private readonly auth = inject(AuthRepository);
   private readonly session = inject(SessionService);
@@ -279,11 +281,15 @@ export class AccountEntry {
     await this.continueAfterSignIn();
   }
 
-  /** Ya hay sesión: a donde se iba (`?volver=`, solo si es de esta app y no de la cuenta) o al catálogo. */
+  /**
+   * Ya hay sesión: a donde se iba (`?volver=`, solo si es de este origen y no de la cuenta) o al
+   * catálogo. A SIMIQ3D o SIVRI se sale con navegación completa (`ReturnNavigation`).
+   */
   private async continueAfterSignIn(): Promise<void> {
     if (this.leaving) return;
     this.leaving = true;
-    await this.router.navigateByUrl(returnTarget(this.query().get('volver')));
+    const target = this.returnNavigation.resolve(this.query().get('volver'));
+    if (target) await this.router.navigateByUrl(target);
   }
 
   /**

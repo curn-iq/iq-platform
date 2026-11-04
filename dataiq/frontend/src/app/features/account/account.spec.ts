@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { NoticeService } from '../../core/notice/notice.service';
+import { FullNavigation } from '../../core/router/full-navigation';
 import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { AccountEntry } from './account';
@@ -32,6 +33,7 @@ describe('AccountEntry', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRepositoryTesting(),
+        { provide: FullNavigation, useValue: { assign: vi.fn() } },
         provideRouter([
           { path: 'cuenta/:modo', component: AccountEntry },
           { path: 'tecnicas', children: [{ path: '**', children: [] }] },
@@ -207,6 +209,14 @@ describe('AccountEntry', () => {
       expect(root.querySelector('.entry .aside')!.getAttribute('aria-busy')).toBe('false');
     });
 
+    it('también si iba a verla en 3D (`/simiq3d/tecnicas/:id`), sin mover las mitades', async () => {
+      await open(`/cuenta/crear?volver=${encodeURIComponent(`/simiq3d/tecnicas/${ID}`)}`);
+      await respondTechnique();
+
+      expect(text('.technique-name')).toBe('Tiroidectomía');
+      expect(root.querySelector('#entry-greeting')).toBeNull();
+    });
+
     it('muestra su ruta, su nombre y su especialidad', async () => {
       await open(`/cuenta/ingresar?volver=${BACK}`);
       await respondTechnique();
@@ -287,6 +297,33 @@ describe('AccountEntry', () => {
       await open(`/cuenta/ingresar?volver=${encodeURIComponent('/tecnicas/tiroidectomia')}`);
 
       expect(text('#entry-greeting')).toBeTruthy();
+    });
+  });
+
+  describe('si la sesión se confirma con la pantalla ya abierta', () => {
+    const ACCOUNT = { id: 'u-1', name: 'Ana Pérez', email: 'ana@example.com', role: 'user' };
+
+    async function confirmSession(): Promise<void> {
+      const loading = TestBed.inject(SessionService).load();
+      http.expectOne(`${TEST_API_BASE}/auth/me`).flush(ACCOUNT);
+      await loading;
+      await settle();
+    }
+
+    it('va a donde se iba, como guestGuard', async () => {
+      await open(`/cuenta/ingresar?volver=${BACK}`);
+      await respondTechnique();
+      await confirmSession();
+
+      expect(router.url).toBe(`/tecnicas/${ID}/instrumental`);
+      expect(TestBed.inject(FullNavigation).assign).not.toHaveBeenCalled();
+    });
+
+    it('a SIMIQ3D o SIVRI va con navegación completa', async () => {
+      await open(`/cuenta/ingresar?volver=${encodeURIComponent('/sivri/')}`);
+      await confirmSession();
+
+      expect(TestBed.inject(FullNavigation).assign).toHaveBeenCalledExactlyOnceWith('/sivri/');
     });
   });
 
@@ -554,6 +591,22 @@ describe('AccountEntry', () => {
         expect(router.url).toBe(`/tecnicas/${ID}/instrumental`);
         expect(TestBed.inject(SessionService).isLoggedIn()).toBe(true);
         expect(noticeTexts()).toEqual([]);
+      });
+
+      it('si iba a ver la técnica en 3D, va a SIMIQ3D con navegación completa', async () => {
+        const volver = `/simiq3d/tecnicas/${ID}`;
+        await open(`/cuenta/crear?volver=${encodeURIComponent(volver)}`);
+        await respondTechnique();
+        await fill();
+        await submit();
+
+        registerRequest().flush(ACCOUNT, { status: 201, statusText: 'Created' });
+        await settle();
+        loginRequest().flush(ACCOUNT);
+        await settle();
+
+        expect(TestBed.inject(FullNavigation).assign).toHaveBeenCalledExactlyOnceWith(volver);
+        expect(TestBed.inject(SessionService).isLoggedIn()).toBe(true);
       });
 
       it('si se entró directo, va al catálogo', async () => {

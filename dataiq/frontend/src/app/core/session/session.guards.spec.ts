@@ -6,6 +6,7 @@ import type { Account } from '../../data/api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { NoticeService } from '../notice/notice.service';
+import { FullNavigation } from '../router/full-navigation';
 import { guestGuard, roleGuard, sessionGuard } from './session.guards';
 import { SessionService } from './session.service';
 
@@ -26,11 +27,14 @@ describe('guards de sesión', () => {
   let session: SessionService;
   let http: HttpTestingController;
   let notices: NoticeService;
+  let assign: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    assign = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         provideRepositoryTesting(),
+        { provide: FullNavigation, useValue: { assign } },
         provideRouter([
           { path: '', component: Blank },
           { path: 'tecnicas', component: Blank },
@@ -264,6 +268,24 @@ describe('guards de sesión', () => {
       expect(router.url).toBe('/tecnicas/abc');
       expect(notices.notices()).toEqual([]);
     });
+
+    it.each([
+      ['la mesa de una técnica en SIMIQ3D', '/simiq3d/tecnicas/abc'],
+      ['SIVRI', '/sivri/'],
+    ])(
+      'si iba a %s, la pide al servidor (navegación completa), porque el router no la conoce',
+      async (_name, volver) => {
+        await loadSession('user');
+
+        const navigated = await router.navigateByUrl(
+          `/cuenta/ingresar?volver=${encodeURIComponent(volver)}`,
+        );
+
+        expect(navigated).toBe(false);
+        expect(assign).toHaveBeenCalledExactlyOnceWith(volver);
+        expect(notices.notices()).toEqual([]);
+      },
+    );
 
     it('si entró directo, va al catálogo', async () => {
       await loadSession('user');

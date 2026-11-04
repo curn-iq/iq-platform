@@ -531,15 +531,14 @@ describe('TechniqueDetail', () => {
       ]);
     });
 
-    it('sin sesión llevan a crear la cuenta, con la pestaña a la que volver', async () => {
+    it('sin sesión llevan a crear la cuenta, que después lleva al mismo módulo', async () => {
       await open(`/tecnicas/${ID}/instrumental`);
       await respond();
       await loadSession(false);
 
-      const volver = '?volver=%2Ftecnicas%2F' + ID + '%2Finstrumental';
       expect(actions()).toEqual([
-        ['Ver en 3D SIMIQ3D', '/cuenta/crear' + volver],
-        ['Comprobar con la cámara SIVRI', '/cuenta/crear' + volver],
+        ['Ver en 3D SIMIQ3D', '/cuenta/crear?volver=%2Fsimiq3d%2Ftecnicas%2F' + ID],
+        ['Comprobar con la cámara SIVRI', '/cuenta/crear?volver=%2Fsivri%2F'],
       ]);
     });
 

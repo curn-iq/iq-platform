@@ -4,7 +4,8 @@ import { map } from 'rxjs';
 import type { Role } from '../../domain/role';
 import { NO_PERMISSION } from '../http/error-message';
 import { NoticeService } from '../notice/notice.service';
-import { LOGIN_PATH, returnTarget } from './login-path';
+import { LOGIN_PATH } from './login-path';
+import { ReturnNavigation } from './return-navigation';
 import { SessionService } from './session.service';
 
 /** A ingresar, con la ruta a la que se iba en `?volver=`. */
@@ -55,7 +56,8 @@ export function roleGuard(minimum: Role): CanActivateFn {
 
 /**
  * Para ingresar y crear la cuenta: a quien ya se sabe que tiene sesión lo lleva a donde iba
- * (`?volver=`) o al catálogo, **sin ningún aviso** (decirle a una URL que ya hay una sesión sería
+ * (`?volver=`, también a SIMIQ3D o SIVRI, con navegación completa: `ReturnNavigation`) o al
+ * catálogo, **sin ningún aviso** (decirle a una URL que ya hay una sesión sería
  * dar información de más); quien quiera crear otra cuenta cierra antes la sesión desde «Mi cuenta».
  * **No espera** a `GET /auth/me`: el formulario es lo que necesita quien no tiene sesión y no se
  * deja en blanco por un servidor que tarda. Si la respuesta llega después y sí hay sesión, la
@@ -63,5 +65,5 @@ export function roleGuard(minimum: Role): CanActivateFn {
  */
 export const guestGuard: CanActivateFn = (route) =>
   inject(SessionService).isLoggedIn()
-    ? inject(Router).parseUrl(returnTarget(route.queryParamMap.get('volver')))
+    ? inject(ReturnNavigation).resolve(route.queryParamMap.get('volver'))
     : true;
