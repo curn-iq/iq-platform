@@ -21,6 +21,14 @@ class Host {
   value = signal('all');
 }
 
+@Component({
+  imports: [SegmentedControl],
+  template: `<app-segmented-control label="Rol" [options]="options" [fill]="true" value="all" />`,
+})
+class FillHost {
+  options = OPTIONS;
+}
+
 const text = (button: HTMLElement) => button.textContent!.replace(/\s+/g, ' ').trim();
 
 describe('SegmentedControl', () => {
@@ -82,6 +90,15 @@ describe('SegmentedControl', () => {
     await fixture.whenStable();
 
     expect(pressed()).toEqual(['Borradores 0']);
+  });
+
+  it('ocupa todo el ancho solo si se pide con fill', async () => {
+    const { root } = await mount();
+    expect(root.querySelector('app-segmented-control')!.classList).not.toContain('fill');
+
+    const filled = TestBed.createComponent(FillHost);
+    await filled.whenStable();
+    expect(filled.nativeElement.querySelector('app-segmented-control').classList).toContain('fill');
   });
 
   it('la placa se coloca bajo la elegida y solo se anima después de colocarse', async () => {

@@ -66,46 +66,65 @@ button[aria-pressed='true'] .count {
   }
 }
 
-// En celular: chips de 40 px que se desplazan, el elegido lleno en `marca`
-@media (max-width: 760px) {
-  :host {
-    display: block;
-    min-width: 0;
-  }
+// A todo el ancho, sobre `fondo` y sin filete: el selector de rol de la ficha de Usuarios y roles.
+// Se queda así también en celular, donde la ficha no tiene un margen que tragarse
+:host(.fill) {
+  display: block;
 
   .group {
-    display: flex;
-    gap: 8px;
-    padding: 0 var(--space-gutter);
-    margin-inline: calc(-1 * var(--space-gutter));
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     border: 0;
-    border-radius: 0;
-    background: none;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--space-gutter);
-    scrollbar-width: none;
-  }
-
-  .plate {
-    display: none;
+    background: var(--color-bg);
   }
 
   button {
-    flex: none;
-    height: 40px;
-    border-radius: var(--radius-pill);
-    box-shadow: inset 0 0 0 1px var(--color-border-strong);
-    scroll-snap-align: start;
-
-    &[aria-pressed='true'] {
-      background: var(--color-accent);
-      color: var(--color-surface);
-      box-shadow: none;
-    }
+    padding: 0 6px;
+    font-size: 14px;
   }
+}
 
-  button[aria-pressed='true'] .count {
-    color: var(--color-surface);
+// En celular: chips de 40 px que se desplazan, el elegido lleno en `marca`
+@media (max-width: 760px) {
+  :host(:not(.fill)) {
+    display: block;
+    min-width: 0;
+
+    .group {
+      display: flex;
+      gap: 8px;
+      padding: 0 var(--space-gutter);
+      margin-inline: calc(-1 * var(--space-gutter));
+      border: 0;
+      border-radius: 0;
+      background: none;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--space-gutter);
+      scrollbar-width: none;
+    }
+
+    .plate {
+      display: none;
+    }
+
+    button {
+      flex: none;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      box-shadow: inset 0 0 0 1px var(--color-border-strong);
+      scroll-snap-align: start;
+
+      &[aria-pressed='true'] {
+        background: var(--color-accent);
+        color: var(--color-surface);
+        box-shadow: none;
+      }
+    }
+
+    button[aria-pressed='true'] .count {
+      color: var(--color-surface);
+    }
   }
 }

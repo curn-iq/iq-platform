@@ -31,12 +31,17 @@ export interface SegmentOption {
   selector: 'app-segmented-control',
   templateUrl: './segmented-control.html',
   styleUrl: './segmented-control.scss',
-  host: { '(window:resize)': 'measure()' },
+  host: { '(window:resize)': 'measure()', '[class.fill]': 'fill()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SegmentedControl {
   /** Lo que dice el grupo para quien no lo ve. */
   readonly label = input.required<string>();
+  /**
+   * Ocupa todo el ancho que le dan, con las opciones iguales, sobre `fondo` y sin filete, y no
+   * pasa a chips en celular: el selector de rol de la ficha de Usuarios y roles.
+   */
+  readonly fill = input(false);
   readonly options = input.required<readonly SegmentOption[]>();
   /** El `key` de la opción elegida. */
   readonly value = model.required<string>();

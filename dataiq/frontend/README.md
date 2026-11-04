@@ -64,7 +64,8 @@ src/
     │                       filas de Mis borradores, fechas de edición, pasos del editor,
     │                       filas de Por revisar y de Revisadas por mí,
     │                       diferencia entre la publicada y la propuesta,
-    │                       índice, «Dónde va» y borrador del catálogo de instrumental
+    │                       índice, «Dónde va» y borrador del catálogo de instrumental,
+    │                       columnas, búsqueda, actividad y cambio de rol de Usuarios y roles
     ├── data/
     │   ├── api/            tipos generados del OpenAPI
     │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
@@ -321,6 +322,16 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **`WhereItGoes`** (`where-it-goes/`): las técnicas publicadas en que va el instrumento, por especialidad, con su mesa en miniatura (`app-table-miniature`) y un enlace a esa mesa. **`InstrumentDrawing`** (`instrument-drawing/`) dibuja el instrumento en acero si tiene dibujo propio.
 - **Guardar:** `PATCH /instruments/{id}` con solo lo que cambió. Crear es `POST /instruments` y, si trae alias, un `PATCH` aparte, porque el `POST` no los recibe.
 - **La lógica es pura** (`domain/instrument-catalog.ts`, con pruebas): `placementIndex()`, `indexGroups()`, `ownerOf()`, `canSave()`, `toCreate()`, `toUpdate()` y los textos de la barra y de los avisos.
+
+### Usuarios y roles (`features/management/users/`)
+
+`/gestion/usuarios` (Resuelto 63 de la [checklist](../docs/checklist-frontend.md)), solo para el admin. Pide `GET /users` una vez, con todas las cuentas (cada una con su registro, la política aceptada y su `activity`), y cambiar un rol (`PATCH /users/{id}/role`) reemplaza esa cuenta en la lista sin volver a pedirla. Suspender y el historial de roles no están en el MVP (`docs/despues-del-mvp.md`).
+
+- **`Users`** (la pantalla) guarda las cuentas (un `linkedSignal` del recurso: «Reintentar» las repone), la persona elegida (no va en la URL) y las que llegaron a Usuarios durante la visita. Coordina la animación del cambio de rol: la fila sale de su columna (280 ms), la cuenta se reemplaza y entra en la nueva con el lavado `marca-claro` (1,2 s); con movimiento reducido el cambio es inmediato. Donde la ficha queda bajo el tablero (≤ 1100 px), elegir a alguien baja la página hasta ella.
+- **`RoleColumn`** (`role-column/`): una columna por rol. Usuarios son muchos, así que su columna lleva la cifra, su buscador (busca solo entre los usuarios y muestra las coincidencias en la misma columna), «Rol cambiado ahora» y «Registrados recientemente». **`PersonRow`** (`person-row/`) es la fila: un `button` con avatar, nombre y correo, del que solo se recorta la parte local.
+- **`UserSearch`** (`user-search/`): el buscador general, de 52 px (`app-search-field` con `size="medium"`), con su desplegable de resultados (hasta 8, con el tramo que coincide en `<mark>`). Se cierra con Escape y con un clic fuera, sin borrar lo escrito.
+- **`UserCard`** (`user-card/`): la ficha. El selector de rol es `app-segmented-control` con `fill`; elegir otro rol abre la confirmación en la misma ficha, con la casilla de verificación que piden Revisor y Admin. Mientras va la petición el selector queda `inert` y el botón dice «Cambiando…». Con éxito avisa con `NoticeService` y entrega la cuenta actualizada (`changed`); con error avisa el interceptor y la confirmación se queda.
+- **La lógica es pura** (`domain/user-board.ts`, con pruebas): `peopleWithRole()`, `recentUsers()`, `summaryLine()`, `searchPeople()` (sin tildes, con tope), `splitEmail()`, `replacePerson()`, `formatPersonDate()`, `activityLine()` y `describeRoleChange()` (lo que dice la confirmación y qué verificación pide). `domain/` define su propia `Person` con los campos de `UserOut` que usa: no importa los tipos de la API.
 
 ### Glosario (interfaz → código y API)
 

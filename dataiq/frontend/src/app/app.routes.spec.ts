@@ -60,10 +60,10 @@ describe('rutas', () => {
   });
 
   afterEach(() => {
-    // El inicio, el detalle, Mis borradores y el catálogo de instrumental piden sus listas al abrirse;
-    // a estas pruebas no les importa su respuesta
+    // El inicio, el detalle, Mis borradores, el catálogo de instrumental y Usuarios y roles piden sus
+    // listas al abrirse; a estas pruebas no les importa su respuesta
     http.match(({ url }) =>
-      /\/(techniques(\/[^/]+)?|specialties|versions(\/[^/]+)?|catalog\/full)$/.test(url),
+      /\/(techniques(\/[^/]+)?|specialties|versions(\/[^/]+)?|catalog\/full|users)$/.test(url),
     );
     http.verify();
   });

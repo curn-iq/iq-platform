@@ -1,0 +1,52 @@
+<button type="button" class="back" (click)="back.emit()">Volver a la lista</button>
+
+<header class="head">
+  <app-avatar size="large" [name]="person().name" />
+  <div>
+    <h2>{{ person().name }}</h2>
+    <p class="email">{{ person().email }}</p>
+  </div>
+</header>
+
+<h3>Rol</h3>
+<!-- Mientras va la petición el selector no responde -->
+<div [attr.inert]="busy() ? '' : null">
+  <app-segmented-control
+    label="Rol de la cuenta"
+    [fill]="true"
+    [options]="roleOptions"
+    [value]="shownRole()"
+    (valueChange)="propose($event)"
+  />
+</div>
+
+@if (change(); as change) {
+  <div class="confirm" role="group" aria-label="Confirmar el cambio de rol">
+    <p>
+      Cambiar el rol de <strong>{{ person().name }}</strong> de {{ roleLabels[change.from] }} a
+      <strong>{{ roleLabels[change.to] }}</strong
+      >. {{ change.consequence }}
+    </p>
+    @if (change.verification; as verification) {
+      <app-checkbox-field [(checked)]="verified">{{ verification }}</app-checkbox-field>
+    }
+    <div class="actions">
+      <button app-button class="apply" type="button" [disabled]="!canApply()" (click)="apply()">
+        {{ busy() ? 'Cambiando…' : 'Cambiar a ' + roleLabels[change.to] }}
+      </button>
+      <button app-button variant="ghost" type="button" [disabled]="busy()" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+}
+
+<h3>Cuenta</h3>
+<dl class="data">
+  <dt>Registro</dt>
+  <dd>{{ registered() }}</dd>
+  <dt>Política de datos</dt>
+  <dd>{{ policy() }}</dd>
+  <dt>En DataIQ</dt>
+  <dd>{{ activity() }}</dd>
+</dl>
