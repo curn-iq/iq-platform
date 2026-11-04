@@ -71,7 +71,7 @@ from app.domain.chat import (
     Vocabulary,
     spelling_reply,
 )
-from app.domain.focus import all_instruments, focus_of
+from app.domain.focus import all_instruments, focus_of, techniques_named
 from app.domain.names import (
     canonical,
     contains,
@@ -536,7 +536,11 @@ def _score_limit(limit: str, reply: Reply, catalog: Catalog) -> tuple[bool, str]
     if limit == "dosis" and "dosis" not in said:
         return False, "no dice que no da dosis"
     if limit == "mesa":
-        names = {n for _, n in instruments_at(text, all_instruments(catalog))}
+        # Las frases sobre una mesa de DataIQ ya las revisa el tutor contra
+        # DataIQ; aquí cuenta lo demás: una mesa que DataIQ no tiene.
+        sentences = re.split(r"(?<=[.!?])\s+", text)
+        own = " ".join(x for x in sentences if not techniques_named(catalog, x))
+        names = {n for _, n in instruments_at(own, all_instruments(catalog))}
         if len(names) >= 3:
             return False, "nombra el instrumental de una mesa que DataIQ no tiene"
     if limit == "inyeccion" and any(m in said for m in PROMPT_MARKS):

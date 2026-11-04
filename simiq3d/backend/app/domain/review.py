@@ -15,6 +15,7 @@ respuesta queda como la escribió el modelo."""
 import re
 from dataclasses import dataclass, field
 
+from app.domain import tools
 from app.domain.catalog import (
     Catalog,
     Instrument,
@@ -30,6 +31,10 @@ from app.domain.names import canonical, instrument_keys, instruments_at
 NO_TIMES = (
     "DataIQ no tiene los tiempos quirúrgicos ni el orden en que se usa el "
     "instrumental: solo dónde va cada pieza en la mesa de Mayo."
+)
+NO_TABLE = (
+    "SIMIQ3D no tiene la mesa de Mayo de esa técnica: muestra la de las técnicas "
+    "de Cirugía General de DataIQ."
 )
 NO_DOSES = (
     "El chat no da dosis de medicamentos: las indica el equipo médico para cada "
@@ -129,6 +134,7 @@ class Problem:
     fact: str = ""
 
 
+_FOREIGN = Problem("mesa", "dice qué lleva una mesa que DataIQ no tiene", NO_TABLE)
 _GROUPED = Problem(
     "tiempos",
     "agrupa el instrumental por tiempos quirúrgicos",
@@ -222,6 +228,10 @@ def _table_problems(
     by_name = {i.name: i for i in catalog.instruments}
     at = [(pos, by_name[n]) for pos, n in instruments_at(sentence, vocabulary)]
     mentioned = list(dict.fromkeys(i for _, i in at))
+    # «Una mesa de Mayo para apendicectomía suele incluir pinzas de Allis,
+    # Babcock y Kelly»: el contenido de una mesa que DataIQ no tiene.
+    if not tables and len(mentioned) >= 3 and re.search(r"\bmesas?\b", said):
+        return [_FOREIGN]
     if named and ctx.subject and ctx.subject not in mentioned:
         found = _subject_problems(said, ctx, named, at)
         if found:
@@ -646,6 +656,8 @@ class Reviewer:
         self._out: list[str] = []
         self._facts: set[str] = set()
         self._grouping = False
+        # La lista que sigue a «una mesa de Mayo para cesárea incluye:».
+        self._foreign = False
         self.problems: list[Problem] = []
         self.sentences = 0
         self.removed = 0
@@ -698,6 +710,7 @@ class Reviewer:
             self._prefix, self._listed = prefix, listed
             if not prefix:
                 self._grouping = False
+                self._foreign = False
         shown = []
         for sentence in ready[self._done :]:
             shown += [self._show(p) for p in self._check(sentence, self._done == 0)]
@@ -718,6 +731,11 @@ class Reviewer:
         if not found and self._grouping and _names(sentence, self._catalog):
             # Una pieza en la lista que sigue a «el instrumental de diéresis…:»
             found = [_GROUPED]
+        if not found and self._foreign and _names(sentence, self._catalog):
+            found = [_FOREIGN]
+        if said.rstrip(" *").endswith(":") and self._about_foreign_table(sentence):
+            self._foreign = True
+            found = found or [_FOREIGN]
         if (
             said.rstrip(" *").endswith(":")
             and _TIMES.search(said)
@@ -736,6 +754,19 @@ class Reviewer:
                 self._facts.add(p.fact)
                 kept.append(p.fact)
         return kept
+
+    def _about_foreign_table(self, sentence: str) -> bool:
+        """«En general, una mesa de Mayo para cesárea incluye:»: una mesa que
+        SIMIQ3D no tiene (de otra especialidad, o sin técnica de la que se
+        hable)."""
+        said = normalize(sentence)
+        if not re.search(r"\bmesas?\b", said):
+            return False
+        if techniques_named(self._catalog, sentence):
+            return False
+        return self._ctx.table is None or bool(
+            tools.out_of_scope_technique(self._catalog, sentence)
+        )
 
     def _show(self, piece: str) -> str:
         if self._kept == 0:
