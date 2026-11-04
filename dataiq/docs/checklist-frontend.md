@@ -118,7 +118,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 
 - [x] Usuarios y roles: personas por rol, buscador, ficha con la fecha de registro, la política aceptada y la actividad en DataIQ (`activity`), cambio de rol confirmado (Resuelto 63)
 - [x] La cuenta propia no cambia su rol (el backend responde 409): el selector queda deshabilitado y la ficha dice por qué (Resuelto 63)
-- [ ] Sin suspender ni historial de roles en el MVP (`docs/despues-del-mvp.md`)
+- [x] Sin suspender ni historial de roles en el MVP (`docs/despues-del-mvp.md`): la pantalla no lleva el control de vistas, el historial, el botón ni la pastilla de suspender (Resuelto 63), y la API no tiene ruta para ninguno
 - [ ] Revisar al final el peso del código (`npm run build`): el código inicial (354 kB tras la casilla del registro, con 300 kB de presupuesto) y los estilos que pasan de 4 kB (`hero-stage.scss`, `research.scss` y `catalog.scss`). Bajarlos, o subir el presupuesto con su motivo anotado aquí, antes de la fase 9
 
 ### Fase 9 — Despliegue (Corte 3)

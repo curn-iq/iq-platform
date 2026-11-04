@@ -11,9 +11,13 @@ Salieron al diseñar las pantallas de Usuarios y roles y de Por revisar. Para
 el MVP no hacen falta: quien publica son pocas personas asignadas por el
 equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 
-- **Suspender una cuenta.** `Usuario` no tiene un estado para eso.
+- **Suspender una cuenta.** `Usuario` no tiene un estado para eso. El mockup
+  `usuarios.html` ya dibuja el botón, la pastilla «Suspendida» y el avatar de
+  pausa; la app no los lleva (Resuelto 63 de
+  [`checklist-frontend.md`](../dataiq/docs/checklist-frontend.md)).
 - **Historial de cambios de rol**: quién le cambió el rol a quién y cuándo.
-  Hoy no hay tabla para eso.
+  Hoy no hay tabla para eso. El mockup `usuarios.html` ya dibuja la vista
+  «Historial de cambios» y el historial de la ficha; la app no los lleva.
 - **«Revisando ahora»**: marcar que un revisor tiene abierta una versión (con
   quién y desde cuándo, y que expire) para que otro no la tome a la vez. En el
   MVP basta con que aprobar o rechazar fallen si otro revisor ya decidió la
