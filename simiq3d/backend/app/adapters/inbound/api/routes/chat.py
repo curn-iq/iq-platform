@@ -34,12 +34,13 @@ async def ask(
 ) -> ChatOut:
     """Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
     técnica abierta en el visor, si hay una, y `previous`, las preguntas
-    anteriores con los `requests` de su respuesta, para entender un seguimiento.
+    anteriores con los `requests` y el texto de su respuesta, para entender un
+    seguimiento.
 
-    Si un nombre parece mal escrito («masectomia»), responde «¿Quizás quisiste
-    decir…?» con la pregunta corregida como opción, sin suponer. Con
-    LANGUAGE_MODEL=ollama responde el agente del Servidor PC2 (ver
-    OllamaAgent); si no, las plantillas."""
+    Con LANGUAGE_MODEL=ollama responde el tutor del Servidor PC2 (TutorAgent),
+    que corrige solo los nombres mal escritos; si no, las plantillas, que ante
+    un nombre mal escrito («masectomia») responden «¿Quizás quisiste decir…?»
+    con la pregunta corregida como opción."""
     started = time.perf_counter()
     try:
         catalog = await catalogs.get(caller.token)
@@ -53,7 +54,13 @@ async def ask(
             "DataIQ no aceptó la sesión",
             headers={"WWW-Authenticate": "Bearer"},
         ) from error
-    corrected = suggest_spelling(body.question, Vocabulary.from_catalog(catalog))
+    # El tutor corrige los nombres él mismo, sin preguntar «¿Quizás…?».
+    fixes = getattr(engine, "fixes_spelling", False)
+    corrected = (
+        None
+        if fixes
+        else suggest_spelling(body.question, Vocabulary.from_catalog(catalog))
+    )
     if corrected:
         reply = replace(spelling_reply(corrected), answered_by="corrector")
     else:
@@ -69,6 +76,7 @@ async def ask(
                 Turn(
                     turn.question,
                     tuple(Request(**r.model_dump()) for r in turn.requests),
+                    turn.reply,
                 )
                 for turn in body.previous
             )

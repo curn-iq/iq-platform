@@ -173,6 +173,59 @@ redacción»).
   redacción no terminó a tiempo, como cuando no pasa la verificación
 - [ ] Probar en producción, con el Servidor PC2: el tiempo de punta a punta
 
+### El tutor
+
+Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»): el chat por
+pedidos no conversaba. El diseño salió de comparar las respuestas de Gemini,
+ChatGPT y Claude al mismo prompt.
+
+- [x] De qué se habla, sin el modelo (`app/domain/focus.py`): técnicas e
+  instrumentos nombrados (con todo el instrumental de DataIQ), la técnica
+  abierta, «esta técnica» y los seguimientos
+- [x] Los datos de DataIQ en texto, con lo que no tiene dicho, y la mesa de la
+  técnica de la que se habla; la acción del visor y las preguntas sugeridas
+  (`app/domain/tutor.py`)
+- [x] Una llamada al modelo con el prompt `TUTOR`, temperatura 0,3 y topes de
+  350 o 600 tokens; las preguntas anteriores con su respuesta
+- [x] La revisión frase por frase (`app/domain/review.py`): la mesa de Mayo
+  (instrumento, objeto inventado, número, zona, cuántos objetos), tiempos
+  quirúrgicos, dosis y cuadrícula; el número de una lista numerada se corrige
+  en su lugar
+- [x] Segunda oportunidad si la revisión quita más de la mitad; sin el modelo,
+  la respuesta lo dice y muestra lo de DataIQ
+- [x] El corrector arregla los nombres sin preguntar, con los nombres de las
+  mesas del MVP
+- [x] `POST /chat`: `generated` y `PreviousTurn.reply`; `CHAT_ENGINE` y
+  `LLM_TEMPERATURE`
+- [x] Banco: columnas `limite` y `puntos_clave`, 15 preguntas nuevas (las de
+  los estudiantes que dio Mauricio, conversar sin cambiar el visor y las que
+  prueban los límites) y 20 reetiquetadas (los nombres mal escritos se
+  responden; los tiempos quirúrgicos se califican por el límite); recuperación,
+  respuestas cambiadas por la revisión y tokens
+- [x] Banco con el tutor, en local con Qwen3-VL 8B el 2026-11-03 (153
+  preguntas). Cada corrida ajustó la revisión o los datos según las fallas:
+
+  | Corrida | Exactitud | Respuestas cambiadas por la revisión | Mediana | Máximo |
+  |---|---|---|---|---|
+  | Pedidos (el chat anterior), mismo banco | 139/153 | — | 3,6 s | 21,4 s |
+  | 1. Tutor inicial | 143/153 | 32 | 7,3 s | 25,7 s |
+  | 2. La mesa siempre en los datos, objetos inventados, zonas por mesa, corrector con los nombres del MVP | 146/153 | 28 | 7,7 s | 24,8 s |
+  | 3. Números de lista en su lugar, zona con sus piezas | 144/153 | 28 | 7,7 s | 24,7 s |
+
+  La recuperación (el código, sin el modelo) encuentra la técnica y el
+  instrumento de 126 de 127 preguntas. Lo que sigue fallando es del modelo: a
+  «¿cuál es la capital de Francia?», «25 por 4» o «un poema» responde aunque
+  el aviso diga que no es del tema (probadas dos redacciones del aviso); al
+  comparar dos mesas a veces nombra piezas de más; y «babkok» no se corrige.
+  La corrida 1 mostró por qué la mesa va siempre en los datos: en «dime lo
+  demás» el modelo inventó una mesa con «Cuchillo de sutura n.º 9». Después
+  de la corrida 3, la zona con sus piezas dejó de leer el nombre de una técnica
+  («Hemicolectomía derecha») como zona y de revisar las vecinas: en las 16
+  preguntas que había cambiado, 15/16 (la que falla nombra piezas de más al
+  comparar). El tutor tarda el doble que los pedidos (mediana de 7,7 s contra
+  3,6 s), porque escribe la respuesta entera en una llamada más larga
+- [ ] Probar en producción, con el Servidor PC2
+
 ## Modelos 3D
 
 - [x] `GET /models` con `Cache-Control` y `ETag`

@@ -114,6 +114,14 @@
   overflow-wrap: anywhere;
 }
 
+// La línea de fuentes bajo una respuesta del modelo: discreta, como el chip
+.sources {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
 .person .text {
   padding: 10px 14px;
   border-radius: 12px;

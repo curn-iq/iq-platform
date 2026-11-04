@@ -11,6 +11,7 @@ import {
 import { actionChip, ActionChip, ChatMessage } from '../domain/chat';
 import type { TableItem } from '../domain/mayo-table';
 import { PieceList } from './piece-list';
+import { RichText } from './rich-text';
 import { Typing } from './typing';
 
 /** Los nombres de DataIQ, por id, para el chip de cada respuesta. */
@@ -29,7 +30,7 @@ export interface ChatNames {
 @Component({
   selector: 'app-chat-history',
   templateUrl: './chat-history.html',
-  imports: [PieceList, Typing],
+  imports: [PieceList, RichText, Typing],
   styleUrl: './chat-history.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { role: 'complementary', 'aria-label': 'Chat de SIMIQ3D' },
@@ -54,6 +55,13 @@ export class ChatHistory {
   readonly close = output<void>();
 
   private readonly list = viewChild.required<ElementRef<HTMLElement>>('list');
+
+  /**
+   * Bajo cada respuesta que escribió el modelo: de dónde sale cada cosa y que
+   * puede equivocarse (pautas 1 y 2 de Microsoft HAX: qué hace y qué tan bien).
+   */
+  protected readonly sources =
+    'Mesa y técnica: DataIQ. Lo demás lo explica un modelo de IA y puede equivocarse.';
 
   protected readonly chips = computed(() => {
     const { techniques, instruments } = this.names();

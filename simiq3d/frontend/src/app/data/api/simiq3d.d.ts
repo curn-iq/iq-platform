@@ -17,12 +17,13 @@ export interface paths {
          * Ask
          * @description Responde la pregunta con datos del catálogo de DataIQ. `technique_id` es la
          *     técnica abierta en el visor, si hay una, y `previous`, las preguntas
-         *     anteriores con los `requests` de su respuesta, para entender un seguimiento.
+         *     anteriores con los `requests` y el texto de su respuesta, para entender un
+         *     seguimiento.
          *
-         *     Si un nombre parece mal escrito («masectomia»), responde «¿Quizás quisiste
-         *     decir…?» con la pregunta corregida como opción, sin suponer. Con
-         *     LANGUAGE_MODEL=ollama responde el agente del Servidor PC2 (ver
-         *     OllamaAgent); si no, las plantillas.
+         *     Con LANGUAGE_MODEL=ollama responde el tutor del Servidor PC2 (TutorAgent),
+         *     que corrige solo los nombres mal escritos; si no, las plantillas, que ante
+         *     un nombre mal escrito («masectomia») responden «¿Quizás quisiste decir…?»
+         *     con la pregunta corregida como opción.
          */
         post: operations["ask_chat_post"];
         delete?: never;
@@ -94,7 +95,7 @@ export interface components {
             technique_id?: string | null;
             /**
              * Previous
-             * @description Las preguntas anteriores de la conversación, de la más antigua a la más reciente, cada una con los `requests` que devolvió su respuesta. Sirven para entender un seguimiento; no se guardan.
+             * @description Las preguntas anteriores de la conversación, de la más antigua a la más reciente, cada una con los `requests` que devolvió su respuesta y su texto. Sirven para entender un seguimiento; no se guardan.
              * @default []
              */
             previous: components["schemas"]["PreviousTurn"][];
@@ -109,9 +110,14 @@ export interface components {
             field: components["schemas"]["ClinicalField"] | null;
             /**
              * Reply
-             * @description Texto armado con datos de DataIQ
+             * @description El texto de la respuesta, con Markdown sencillo (negrita y listas)
              */
             reply: string;
+            /**
+             * Generated
+             * @description Si el texto lo escribió el modelo de IA (con los datos de DataIQ); si no, salió de DataIQ tal cual
+             */
+            generated: boolean;
             /**
              * Options
              * @description Preguntas que se pueden mandar tal cual
@@ -176,6 +182,12 @@ export interface components {
              * @default []
              */
             requests: components["schemas"]["ChatRequest"][];
+            /**
+             * Reply
+             * @description El texto de la respuesta, para que el modelo siga la conversación
+             * @default
+             */
+            reply: string;
         };
         /**
          * RequestKind

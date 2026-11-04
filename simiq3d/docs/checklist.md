@@ -41,9 +41,10 @@ porqué están en el [README](../README.md).
 - [x] Servidor PC2 sin suspensión por inactividad
 - [x] Modelo de lenguaje del MVP: Qwen3-VL 8B instruct (probados Qwen2.5 7B y
   Qwen3-VL 8B)
-- [x] Backend: API, validación del JWT de DataIQ, chat (agente con verificación
-  y plantillas de respaldo), mapeo de modelos y registro de conversaciones, con
-  pruebas automatizadas; avance en [`checklist-backend.md`](checklist-backend.md)
+- [x] Backend: API, validación del JWT de DataIQ, chat (el tutor, con
+  revisión por frase y los datos de DataIQ como respaldo), mapeo de modelos y
+  registro de conversaciones, con pruebas automatizadas; avance en
+  [`checklist-backend.md`](checklist-backend.md)
 - [x] Visor 3D: la mesa armada con el arreglo publicado en DataIQ, cada modelo
   en su celda, y clic en un instrumento para ver su descripción; avance en
   [`checklist-frontend.md`](checklist-frontend.md)

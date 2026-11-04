@@ -111,6 +111,12 @@ class Reply:
     # Lo que tuvo el modelo para redactar el texto, si lo redactó: los datos de
     # DataIQ y su contexto. No va al frontend; con eso se mide su fidelidad.
     sources: str = ""
+    # Si el texto lo escribió el modelo de IA (el tutor): el frontend lo dice
+    # bajo la respuesta.
+    generated: bool = False
+    # Lo que la revisión del tutor cambió (`app/domain/review.py`): no va al
+    # frontend; lo cuenta el banco de preguntas.
+    repairs: tuple[str, ...] = ()
 
 
 OUT_OF_SCOPE = (

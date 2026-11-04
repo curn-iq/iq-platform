@@ -9,6 +9,7 @@ describe('ChatHistory', () => {
     instrument_id: 'i-kelly',
     field: null,
     reply: 'La Pinza Kelly es el número 9 de la mesa de Mayo de Mastectomía.',
+    generated: false,
     options: ['¿Qué es la Pinza Kelly?'],
     requests: [],
     ...overrides,
@@ -90,5 +91,20 @@ describe('ChatHistory', () => {
       messages: [{ id: 1, from: 'person', text: 'Hola' }],
     });
     expect(withMessages.element.querySelector('.suggestion')).toBeNull();
+  });
+
+  it('con el texto del modelo, muestra la negrita y de dónde sale cada cosa', async () => {
+    const written = reply({ reply: 'La **Pinza Kelly** es hemostática.', generated: true });
+    const messages: ChatMessage[] = [
+      { id: 1, from: 'simiq3d', reply: written },
+      { id: 2, from: 'simiq3d', reply: reply() },
+    ];
+    const { element } = await render({ messages });
+    const [model, dataiq] = Array.from(element.querySelectorAll('.message'));
+    expect(model.querySelector('strong')?.textContent).toBe('Pinza Kelly');
+    expect(model.querySelector('.sources')?.textContent).toContain(
+      'Lo demás lo explica un modelo de IA',
+    );
+    expect(dataiq.querySelector('.sources')).toBeNull();
   });
 });

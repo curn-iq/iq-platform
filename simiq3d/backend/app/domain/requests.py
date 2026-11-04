@@ -98,6 +98,9 @@ class Turn:
 
     question: str
     requests: tuple[Request, ...] = ()
+    # El texto de la respuesta, para que el modelo siga la conversación (lo usa
+    # el tutor, `app/domain/tutor.py`).
+    reply: str = ""
 
 
 def requests_of(reply: Reply, catalog: Catalog) -> tuple[Request, ...]:

@@ -32,6 +32,11 @@ class ChatRequest(BaseModel):
 class PreviousTurn(BaseModel):
     question: Question
     requests: list[ChatRequest] = Field(default=[], max_length=10)
+    reply: str = Field(
+        default="",
+        max_length=4000,
+        description="El texto de la respuesta, para que el modelo siga la conversación",
+    )
 
 
 class ChatIn(BaseModel):
@@ -44,7 +49,8 @@ class ChatIn(BaseModel):
         max_length=3,
         description="Las preguntas anteriores de la conversación, de la más "
         "antigua a la más reciente, cada una con los `requests` que devolvió su "
-        "respuesta. Sirven para entender un seguimiento; no se guardan.",
+        "respuesta y su texto. Sirven para entender un seguimiento; no se "
+        "guardan.",
     )
 
 
@@ -57,7 +63,13 @@ class ChatOut(OutModel):
     technique_id: UUID | None
     instrument_id: UUID | None
     field: ClinicalField | None
-    reply: str = Field(description="Texto armado con datos de DataIQ")
+    reply: str = Field(
+        description="El texto de la respuesta, con Markdown sencillo (negrita y listas)"
+    )
+    generated: bool = Field(
+        description="Si el texto lo escribió el modelo de IA (con los datos de "
+        "DataIQ); si no, salió de DataIQ tal cual"
+    )
     options: list[str] = Field(description="Preguntas que se pueden mandar tal cual")
     requests: list[ChatRequest] = Field(
         description="Lo que se entendió de la pregunta: va de vuelta en "

@@ -22,6 +22,7 @@ describe('ConversationService', () => {
     instrument_id: 'i-kelly',
     field: null,
     reply: 'La Pinza Kelly es el número 9.',
+    generated: true,
     options: ['¿Qué es la Pinza Kelly?'],
     requests: [{ kind: 'locate', instrument: 'Pinza Kelly' }],
   };
@@ -50,7 +51,7 @@ describe('ConversationService', () => {
     expect(conversation.scene()).toBeNull();
   });
 
-  it('manda las tres últimas preguntas con lo que entendió el chat de cada una', async () => {
+  it('manda las tres últimas preguntas con lo que entendió el chat y su texto', async () => {
     for (const question of ['Una', 'Dos', 'Tres', 'Cuatro']) {
       const asked = conversation.ask(question, 't-1');
       http.expectOne(CHAT).flush(reply);
@@ -60,7 +61,11 @@ describe('ConversationService', () => {
     const request = http.expectOne(CHAT);
 
     expect(request.request.body.previous).toEqual(
-      ['Dos', 'Tres', 'Cuatro'].map((question) => ({ question, requests: reply.requests })),
+      ['Dos', 'Tres', 'Cuatro'].map((question) => ({
+        question,
+        requests: reply.requests,
+        reply: reply.reply,
+      })),
     );
     request.flush(reply);
   });

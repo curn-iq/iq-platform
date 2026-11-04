@@ -80,6 +80,9 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 - [x] Revisión de la fase 5 (2026-11-02): la rueda y el pellizco acercan hacia el puntero; en celular, los tres puntos mientras llega la respuesta y la leyenda que se pliega al elegir; la ficha como nota translúcida en el azul claro de SIMIQ3D, con el número de la pieza, la primera oración de la descripción y «Ver más»
 - [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
 - [x] Mandar con cada pregunta las anteriores de la conversación, con los pedidos que devolvió cada respuesta, para que el chat entienda un seguimiento (backend: «El modelo entiende y DataIQ responde»)
+- [x] El texto del tutor con su Markdown sencillo (párrafos, negrita y listas) sin `innerHTML` (`chat/rich-text.ts`), y sin marcas en la última respuesta de celular
+- [x] La línea de fuentes bajo cada respuesta del modelo (`generated`) y el campo de pregunta con «Responde un modelo de IA con los datos de DataIQ»
+- [x] Mandar también el texto de cada respuesta anterior (`PreviousTurn.reply`), para que el tutor siga la conversación
 
 ### Fase 6 — Despliegue
 

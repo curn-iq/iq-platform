@@ -62,11 +62,11 @@ describe('ChatField', () => {
     expect(area.maxLength).toBe(500);
   });
 
-  it('dice bajo el campo que las preguntas se guardan sin el nombre', async () => {
+  it('dice bajo el campo quién responde y que las preguntas se guardan sin el nombre', async () => {
     const fixture = TestBed.createComponent(ChatField);
     await fixture.whenStable();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(
-      'Responde con los datos de DataIQ. Tus preguntas se guardan sin tu nombre para medir el chat. No escribas datos de pacientes.',
+      'Responde un modelo de IA con los datos de DataIQ. Tus preguntas se guardan sin tu nombre para medir el chat. No escribas datos de pacientes.',
     );
   });
 });

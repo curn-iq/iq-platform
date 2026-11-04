@@ -96,9 +96,9 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
      la versión 1.1; el aviso lo promete (Decreto 1377 de 2013, art. 5)
    - [ ] En esa versión 1.1, completar en `docs/privacidad.md` lo del equipo
      donde corre el modelo de lenguaje del chat: desde el 2026-11-03 recibe,
-     con cada pregunta, hasta 3 preguntas anteriores de la conversación, que
-     tampoco guarda, para interpretarla y redactar la respuesta (README de
-     SIMIQ3D, «Chat»). Decidido por Mauricio el 2026-11-03: no se cambia el
+     con cada pregunta, hasta 3 preguntas anteriores de la conversación, con
+     el texto de su respuesta, que tampoco guarda, para seguir la conversación
+     y redactar la respuesta (README de SIMIQ3D, «Chat»). Decidido por Mauricio el 2026-11-03: no se cambia el
      aviso antes de que exista el paso anterior
 5. [x] Autenticación: JWT asimétrico (EdDSA) + JWKS, Argon2id
    - `POST /auth/register` (autorregistro con la política aceptada),
