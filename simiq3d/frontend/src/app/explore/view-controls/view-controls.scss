@@ -2,7 +2,7 @@
   position: absolute;
   right: 24px;
   bottom: 24px;
-  z-index: 3;
+  z-index: 5;
   display: flex;
   gap: 8px;
 }
@@ -54,14 +54,99 @@
   padding: 0;
 }
 
+// En pantallas táctiles el zoom es el pellizco: los botones + y − sobran
+@media (pointer: coarse) {
+  .zoom {
+    display: none;
+  }
+}
+
+// «Vista»: un solo botón que despliega hacia arriba sus opciones
+:host {
+  align-items: flex-end;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--sim-touch);
+  padding: 0 14px 0 18px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--sim-glass);
+  backdrop-filter: var(--sim-glass-blur);
+  box-shadow:
+    var(--sim-shadow-card),
+    inset 0 0 0 1px var(--sim-glass-edge);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  .caret {
+    transition: transform 0.25s var(--ease-fade);
+  }
+
+  &[aria-expanded='true'] .caret {
+    transform: rotate(180deg);
+  }
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: grid;
+  min-width: 268px;
+  padding: 6px;
+  border-radius: var(--sim-radius-card);
+  background: rgb(255 255 255 / 0.96);
+  box-shadow:
+    var(--sim-shadow-dock),
+    inset 0 0 0 1px var(--sim-glass-edge);
+  animation: rise 0.3s var(--sim-spring);
+
+  button {
+    display: flex;
+    align-items: center;
+    min-height: var(--sim-touch);
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--sim-radius-control);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 550;
+    text-align: left;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      background: var(--color-accent-soft);
+      color: var(--color-accent-strong);
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 @media (max-width: 820px) and (min-height: 521px) {
   :host {
     right: 12px;
     bottom: calc(var(--dock-peek, 178px) + 12px);
   }
+}
 
-  .views button {
-    padding: 0 12px;
-    font-size: 0.8125rem;
+@media (max-height: 520px) {
+  :host {
+    right: 16px;
+    bottom: 16px;
   }
 }

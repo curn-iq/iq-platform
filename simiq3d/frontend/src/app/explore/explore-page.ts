@@ -15,7 +15,7 @@ import {
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ChatField } from '../chat/chat-field';
-import { ChatHistory, ChatNames } from '../chat/chat-history';
+import { ChatHistory } from '../chat/chat-history';
 import { plainText } from '../chat/rich-text';
 import { SessionService } from '../core/session/session.service';
 import { DataIQRepository } from '../data/dataiq.repository';
@@ -167,11 +167,6 @@ export class ExplorePage {
       technique && mayo ? { name: technique.name, items: mayo.items } : undefined,
     );
   });
-  /** Los nombres de DataIQ para el chip de cada respuesta. */
-  protected readonly names = computed<ChatNames>(() => ({
-    techniques: new Map((this.techniques.value() ?? []).map((t) => [t.id, t.name])),
-    instruments: new Map((this.instruments.value() ?? []).map((i) => [i.id, i.name])),
-  }));
   protected readonly initials = computed(() => initials(this.session.account()?.name ?? ''));
   /** En celular, la última respuesta va encima del campo. */
   protected readonly lastReply = computed(() => {
@@ -179,7 +174,11 @@ export class ExplorePage {
       .reverse()
       .find((message) => message.from === 'simiq3d');
     return last?.from === 'simiq3d'
-      ? { text: plainText(last.reply.reply), options: last.reply.options }
+      ? {
+          text: plainText(last.reply.reply),
+          // Las opciones esperan a que la respuesta termine de escribirse
+          options: last.writing ? [] : last.reply.options,
+        }
       : null;
   });
 

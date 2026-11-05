@@ -123,27 +123,6 @@
   }
 }
 
-// Lo que hizo el chat en el visor
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  gap: 7px;
-  min-height: 30px;
-  padding: 0 12px 0 9px;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-soft);
-  color: var(--color-accent-strong);
-  font-family: var(--font-data);
-  font-size: 0.71875rem;
-  font-weight: 500;
-
-  svg {
-    flex: none;
-    color: var(--color-accent);
-  }
-}
-
 // De dónde sale cada cosa
 .sources {
   display: flex;
@@ -169,6 +148,14 @@
 
 .options {
   flex-wrap: wrap;
+  // Las opciones llegan cuando la respuesta termina: con un fundido suave, sin saltos
+  animation: options-in 0.5s var(--ease-fade) both;
+}
+
+@keyframes options-in {
+  from {
+    opacity: 0;
+  }
 }
 
 .option {
@@ -275,5 +262,13 @@
   .option,
   .suggestion {
     min-height: var(--sim-touch);
+  }
+}
+
+// Pantalla baja: la conversación en tamaños más chicos para que quepa más
+@media (max-height: 520px) {
+  .text {
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 }

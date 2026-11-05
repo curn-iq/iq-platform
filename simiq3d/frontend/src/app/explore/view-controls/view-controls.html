@@ -1,29 +1,61 @@
-<span class="group views">
-  <button type="button" [attr.aria-pressed]="view() === '3d'" (click)="view.set('3d')">3D</button>
-  <button type="button" [attr.aria-pressed]="view() === 'top'" (click)="view.set('top')">
-    Arriba
-  </button>
-</span>
-<span class="group icons">
-  <button type="button" aria-label="Acercar" (click)="zoom.emit(1)">
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-    </svg>
-  </button>
-  <button type="button" aria-label="Alejar" (click)="zoom.emit(-1)">
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-    </svg>
-  </button>
-  <button type="button" aria-label="Centrar la mesa" (click)="center.emit()">
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+@if (menu()) {
+  <button
+    type="button"
+    class="trigger"
+    aria-haspopup="true"
+    aria-controls="view-menu"
+    [attr.aria-expanded]="open()"
+    (click)="open.set(!open())"
+  >
+    Vista
+    <svg class="caret" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
       <path
-        d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15"
+        d="M2.5 7.5L6 4l3.5 3.5"
+        fill="none"
         stroke="currentColor"
-        stroke-width="1.6"
+        stroke-width="1.8"
         stroke-linecap="round"
+        stroke-linejoin="round"
       />
     </svg>
   </button>
-</span>
+  @if (open()) {
+    <div class="menu" id="view-menu">
+      <button type="button" (click)="reset()">Ubicar en posición original</button>
+      <button type="button" [attr.aria-pressed]="view() === '3d'" (click)="pick('3d')">3D</button>
+      <button type="button" [attr.aria-pressed]="view() === 'top'" (click)="pick('top')">
+        Arriba
+      </button>
+    </div>
+  }
+} @else {
+  <span class="group views">
+    <button type="button" [attr.aria-pressed]="view() === '3d'" (click)="view.set('3d')">3D</button>
+    <button type="button" [attr.aria-pressed]="view() === 'top'" (click)="view.set('top')">
+      Arriba
+    </button>
+  </span>
+  <span class="group icons">
+    <button type="button" class="zoom" aria-label="Acercar" (click)="zoom.emit(1)">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+    <button type="button" class="zoom" aria-label="Alejar" (click)="zoom.emit(-1)">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+    <button type="button" aria-label="Ubicar en posición original" (click)="center.emit()">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <path
+          d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  </span>
+}

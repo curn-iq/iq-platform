@@ -39,6 +39,9 @@ export class ChatField {
   readonly choose = output<string>();
   readonly ask = output<string>();
   readonly openHistory = output<void>();
+  /** El historial está subido: el mismo botón lo cierra. */
+  readonly historyOpen = input(false);
+  readonly closeHistory = output<void>();
 
   protected readonly text = signal('');
 

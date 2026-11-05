@@ -318,3 +318,12 @@ textarea {
     }
   }
 }
+
+// Pantalla baja (un celular acostado): el aviso ocupa menos para que la conversación se vea
+@media (max-height: 520px) {
+  .notice {
+    margin-top: 6px;
+    font-size: 0.6875rem;
+    line-height: 1.35;
+  }
+}
