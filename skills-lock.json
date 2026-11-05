@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "skills": {
+    "angular-developer": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-developer/SKILL.md",
+      "computedHash": "06f89c855e544fe306e8e08cae83a667e54fbb81509e8a1e631bff308f268cbd",
+      "installMode": "copy"
+    },
+    "responsive-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/ui-design/skills/responsive-design/SKILL.md",
+      "computedHash": "794cc7f1b2f79d398135d19ef3fe32c406dde926b9bdf86ee3fe7b939a0be906",
+      "installMode": "copy"
+    },
+    "threejs": {
+      "source": "mrgoonie/claudekit-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/threejs/SKILL.md",
+      "computedHash": "91ce7060f3662b18178cee772d44c89a87e72a16f3a46a46a93760757897568c",
+      "installMode": "copy"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a",
+      "installMode": "copy"
+    }
+  }
+}

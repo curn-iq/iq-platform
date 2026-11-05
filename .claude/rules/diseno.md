@@ -41,6 +41,32 @@ marcadas como tales.
 - **Voz impersonal y en español** («Ver técnica», «Crear cuenta gratis»).
 - Pensado para computador y celular por igual.
 
+## Excepción provisional: el rediseño del frontend de SIMIQ3D
+
+Decidido por Mauricio el 2026-11-05, solo para este rediseño y sin repetirse:
+el frontend de SIMIQ3D (`simiq3d/frontend`) se rediseña **directamente en la
+app de Angular, sin mockup previo**. No se aplican a ese rediseño las reglas
+de «Un archivo por pantalla» ni de «Publicar» (el Artifact). Siguen valiendo
+las demás: el mundo es uno solo (`DESIGN.md`), toda decisión visual nueva se
+anota en `DESIGN.md` en la misma sesión (y antes de programarla, para que haya
+qué comparar), los datos son reales y la voz es impersonal y en español. El
+resultado se verifica con capturas de escritorio y celular como en «Verificar».
+
+Skills del proyecto para el frontend (`.claude/skills/`, versionadas en
+`skills-lock.json`), cada una con su alcance:
+
+| Skill | Para qué |
+|---|---|
+| `angular-developer` (oficial de Angular) | El código de Angular: signals, formularios, rutas, accesibilidad, pruebas; corre `ng build` al terminar |
+| `frontend-design` (Anthropic, plugin) | La identidad visual: plan visual justificado antes de implementar |
+| `responsive-design` (wshobson) | Mobile-first, puntos de quiebre por contenido, container queries, tipografía fluida, objetivos táctiles de 44 px |
+| `web-design-guidelines` (Vercel) | Revisar lo hecho contra más de 100 reglas de accesibilidad, rendimiento y UX; trae las reglas de GitHub en cada revisión |
+| `threejs` (claudekit-skills) | El visor 3D: escena, cámara, GLTF, interacción táctil y rendimiento |
+
+Ninguna manda sobre el proyecto: si una sugiere otra cosa (Tailwind, shadcn,
+colores fuera de los tokens), gana `DESIGN.md`. La app es Angular con SCSS y
+`shared/design/tokens.css`.
+
 ## Verificar
 
 Capturas de escritorio (1310 px) y celular (390 px) con Brave sin interfaz:
