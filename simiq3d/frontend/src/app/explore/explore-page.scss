@@ -115,6 +115,7 @@
 }
 
 .hint {
+  pointer-events: none;
   position: absolute;
   bottom: 28px;
   left: calc(var(--panel, 400px) + var(--sim-gap) * 2 + 12px);

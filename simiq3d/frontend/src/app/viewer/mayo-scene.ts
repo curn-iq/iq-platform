@@ -231,6 +231,9 @@ export class MayoScene {
 
     canvas.addEventListener('pointerdown', this.onPointerDown);
     canvas.addEventListener('pointerup', this.onPointerUp);
+    // Un celular modesto puede perder el contexto de WebGL (al cambiar de app): Three.js lo
+    // restaura solo, y aquí se vuelve a dibujar, porque la escena no tiene bucle continuo
+    canvas.addEventListener('webglcontextrestored', this.requestFrame);
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas);
     this.resize();
@@ -332,6 +335,7 @@ export class MayoScene {
     this.observer.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
+    this.canvas.removeEventListener('webglcontextrestored', this.requestFrame);
     this.controls.removeEventListener('change', this.requestFrame);
     this.controls.removeEventListener('start', this.onControlsStart);
     this.controls.dispose();

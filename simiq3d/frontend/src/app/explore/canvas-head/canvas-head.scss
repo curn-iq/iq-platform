@@ -1,4 +1,7 @@
+// La cabeza flota sobre la mesa: no se queda con los gestos de girar que empiezan
+// bajo ella; solo el selector recibe toques
 :host {
+  pointer-events: none;
   display: grid;
   gap: 4px;
   max-width: min(520px, 60%);
@@ -24,6 +27,11 @@
   align-items: center;
   gap: 10px;
   margin-top: 12px;
+}
+
+.selector,
+.name-button {
+  pointer-events: auto;
 }
 
 .selector {
