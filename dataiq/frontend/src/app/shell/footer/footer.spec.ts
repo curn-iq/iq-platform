@@ -5,6 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { handledByRouter } from '../testing';
 import { Footer } from './footer';
+import { provideShellHost } from '../shell-host';
 
 @Component({ template: '' })
 class Blank {}
@@ -35,7 +36,11 @@ describe('Footer', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
+      providers: [
+        provideRepositoryTesting(),
+        provideShellHost(),
+        provideRouter([{ path: '**', component: Blank }]),
+      ],
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(Footer);

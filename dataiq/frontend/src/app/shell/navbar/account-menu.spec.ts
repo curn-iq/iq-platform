@@ -8,6 +8,7 @@ import type { Role } from '../../domain/role';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { AccountMenu } from './account-menu';
 import { SignOut } from './sign-out';
+import { provideShellHost } from '../shell-host';
 
 @Component({ template: '' })
 class Blank {}
@@ -32,7 +33,11 @@ describe('AccountMenu', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
+      providers: [
+        provideRepositoryTesting(),
+        provideShellHost(),
+        provideRouter([{ path: '**', component: Blank }]),
+      ],
     });
   });
 

@@ -1,0 +1,77 @@
+@for (menu of menus; track menu.id) {
+<details>
+  <summary>
+    {{ menu.label }}
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+      <path
+        d="M2.5 4.5L6 8l3.5-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </summary>
+  <ul>
+    @if (menu.id === 'specialties') {
+    <li>
+      <a [appNavLink]="menu.headerLink!.target">{{ menu.headerLink!.label }}</a>
+    </li>
+    @for (link of specialtyLinks(); track link.id) {
+    <li>
+      <a [appNavLink]="link.target">{{ link.label }}</a>
+    </li>
+    } } @else { @for (option of menu.options; track option.label) {
+    <li>
+      <a [appNavLink]="option.target">{{ option.label }}</a>
+    </li>
+    } }
+  </ul>
+  @if (menu.id === 'specialties' && shell.specialtiesLoading()) {
+  <p class="loading" role="status">Cargando…</p>
+  }
+</details>
+}
+
+<!-- Hasta saber si hay sesión no se muestra nada. -->
+@if (shell.account(); as account) {
+<div class="actions">
+  <p class="who">{{ account.name }} · {{ roleLabel() }}</p>
+  @for (link of links(); track link.route) {
+  <a
+    app-button
+    variant="ghost"
+    class="framed"
+    [appNavLink]="{ route: link.route }"
+    [attr.aria-current]="link.active ? 'page' : null"
+    >{{ link.label }} @if (link.count !== null) {
+    <span class="count">{{ link.count }}</span>
+    }
+  </a>
+  }
+  <button
+    app-button
+    variant="ghost"
+    class="framed exit"
+    type="button"
+    [attr.aria-busy]="shell.signingOut()"
+    (click)="exit()"
+  >
+    Cerrar sesión
+  </button>
+</div>
+} @else if (shell.loaded()) {
+<div class="actions">
+  <a app-button size="large" [appNavLink]="{ route: '/cuenta/crear' }"
+    >Crear cuenta gratis</a
+  >
+  <a
+    app-button
+    variant="ghost"
+    class="framed"
+    [appNavLink]="{ route: '/cuenta/ingresar' }"
+    >Ingresar</a
+  >
+</div>
+}

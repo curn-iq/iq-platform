@@ -5,12 +5,13 @@ import { App } from './app';
 import { NoticeService } from './core/notice/notice.service';
 import { SessionService } from './core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from './data/testing';
+import { provideShellHost } from './shell/shell-host';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([]), provideRepositoryTesting()],
+      providers: [provideRouter([]), provideRepositoryTesting(), provideShellHost()],
     }).compileComponents();
   });
 

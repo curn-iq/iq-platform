@@ -8,6 +8,7 @@ import type { Role } from '../../domain/role';
 import { handledByRouter } from '../testing';
 import { MobileMenu } from './mobile-menu';
 import { SignOut } from './sign-out';
+import { provideShellHost } from '../shell-host';
 
 @Component({ template: '' })
 class Blank {}
@@ -37,7 +38,11 @@ describe('MobileMenu', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
+      providers: [
+        provideRepositoryTesting(),
+        provideShellHost(),
+        provideRouter([{ path: '**', component: Blank }]),
+      ],
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(MobileMenu);

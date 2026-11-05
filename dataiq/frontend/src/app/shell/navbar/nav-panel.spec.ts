@@ -6,6 +6,7 @@ import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import { NAV_MENUS, NavMenuId } from './nav-menus';
 import { handledByRouter } from '../testing';
 import { NavPanel } from './nav-panel';
+import { provideShellHost } from '../shell-host';
 
 @Component({ template: '' })
 class Blank {}
@@ -32,7 +33,11 @@ describe('NavPanel', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRepositoryTesting(), provideRouter([{ path: '**', component: Blank }])],
+      providers: [
+        provideRepositoryTesting(),
+        provideShellHost(),
+        provideRouter([{ path: '**', component: Blank }]),
+      ],
     });
     http = TestBed.inject(HttpTestingController);
   });
