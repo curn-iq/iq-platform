@@ -21,6 +21,11 @@ export function loginUrl(path: string): string {
 export class ShellNavigation {
   private readonly location = inject(DOCUMENT).location;
 
+  /** Al inicio del shell (por ejemplo, al salir). */
+  goToHome(): void {
+    this.location.assign(`${environment.shellUrl}/`);
+  }
+
   /** Al ingreso del shell; después vuelve a `path`. */
   goToLogin(path: string): void {
     this.location.assign(loginUrl(path));

@@ -86,17 +86,127 @@
   }
 }
 
+.account-wrap {
+  position: relative;
+  margin-left: auto;
+}
+
 .account {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   height: 44px;
-  margin-left: auto;
-  padding: 0 12px 0 6px;
+  padding: 0 10px 0 6px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
   color: var(--color-text-muted);
+  font: inherit;
   font-size: 0.96875rem;
   font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-fade);
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: var(--color-hover);
+  }
+}
+
+.caret {
+  transition: transform 0.2s var(--ease-fade);
+}
+
+.account[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+// El panel de «Mi cuenta»: el mismo de DataIQ, en el azul de SIMIQ3D
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: 300px;
+  max-width: calc(100vw - 2 * var(--space-gutter));
+  padding: 8px;
+  border-radius: var(--radius-window);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-soft);
+  animation: drop 0.35s var(--ease-enter);
+
+  p {
+    margin: 0;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.who {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.email {
+  overflow: hidden;
+  color: var(--color-text-subtle);
+  font-size: 0.875rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 1px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.exit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.96875rem;
+  font-weight: 550;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-fade);
+
+  &:hover {
+    background: var(--color-hover);
+  }
 }
 
 // Pantalla baja (un celular acostado): la barra se achica para dejarle sitio a la mesa
@@ -113,6 +223,7 @@
 
 .avatar {
   display: grid;
+  flex: none;
   place-items: center;
   width: 32px;
   height: 32px;
@@ -121,6 +232,12 @@
   color: var(--color-accent-strong);
   font-size: 0.8125rem;
   font-weight: 700;
+}
+
+.avatar.big {
+  width: 44px;
+  height: 44px;
+  font-size: 0.9375rem;
 }
 
 @media (max-width: 820px) and (min-height: 521px) {
@@ -134,7 +251,8 @@
   }
 
   .nav,
-  .account-text {
+  .account-text,
+  .caret {
     display: none;
   }
 }

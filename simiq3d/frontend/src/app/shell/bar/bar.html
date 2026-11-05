@@ -15,9 +15,55 @@
     <a [href]="shell + '/#camino'">Herramientas</a>
   </nav>
   @if (session.account(); as account) {
-    <span class="account" [title]="account.name">
-      <span class="avatar" aria-hidden="true">{{ letters() }}</span>
-      <span class="account-text">Mi cuenta</span>
-    </span>
+    <div class="account-wrap">
+      <button
+        type="button"
+        class="account"
+        aria-haspopup="true"
+        aria-controls="account-menu"
+        [attr.aria-expanded]="open()"
+        aria-label="Mi cuenta"
+        [title]="account.name"
+        (click)="toggle()"
+      >
+        <span class="avatar" aria-hidden="true">{{ letters() }}</span>
+        <span class="account-text">Mi cuenta</span>
+        <svg class="caret" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path
+            d="M2.5 4.5 6 8l3.5-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      @if (open()) {
+        <div class="panel" id="account-menu" role="region" aria-label="Mi cuenta">
+          <div class="who">
+            <span class="avatar big" aria-hidden="true">{{ letters() }}</span>
+            <div class="who-text">
+              <p class="name">{{ account.name }}</p>
+              <p class="email">{{ account.email }}</p>
+              <span class="role">{{ role() }}</span>
+            </div>
+          </div>
+          <button type="button" class="exit" [attr.aria-busy]="leaving()" (click)="exit()">
+            Cerrar sesión
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M6.5 3H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13h2.5M10 5l3 3-3 3M13 8H6.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
   }
 </header>
