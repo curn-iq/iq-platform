@@ -20,5 +20,11 @@ export function mediaQuery(query: string): Signal<boolean> {
 /** Celular: el punto de corte de 820 px de SIMIQ3D («SIMIQ3D: explorar en 3D» en `DESIGN.md`). */
 export const MOBILE_QUERY = '(max-width: 820px)';
 
+/**
+ * Escritorio compacto (de 821 a 1199 px): el chat más angosto y la leyenda plegada, para que
+ * la mesa conserve su espacio. Sin `matchMedia` (jsdom) no aplica, como el resto.
+ */
+export const COMPACT_QUERY = '(min-width: 821px) and (max-width: 1199px)';
+
 /** Con `prefers-reduced-motion`, la cámara salta en vez de viajar. */
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';

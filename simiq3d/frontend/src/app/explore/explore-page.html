@@ -1,53 +1,9 @@
 <div
   class="bench"
   [class.empty]="welcome()"
-  [class.history]="historyOpen()"
   [style.--panel.px]="chatWidth()"
   [style.--field-height.px]="fieldHeight()"
 >
-  <app-chat-history
-    class="chat"
-    [messages]="conversation.messages()"
-    [pending]="conversation.waiting()"
-    [notice]="conversation.notice()"
-    [suggestions]="welcome() ? [] : suggestions()"
-    [initials]="initials()"
-    [names]="names()"
-    [openTechnique]="id()"
-    [items]="mayo()?.items ?? []"
-    (ask)="ask($event)"
-    (choose)="selected.set($event)"
-    (close)="historyOpen.set(false)"
-  />
-  @if (mobile() && historyOpen()) {
-    <div class="veil" (click)="historyOpen.set(false)"></div>
-  }
-  <app-chat-field
-    class="field"
-    [empty]="welcome()"
-    [techniques]="covered()"
-    [busy]="conversation.pending()"
-    [waiting]="conversation.waiting()"
-    [last]="lastReply()"
-    [showLast]="!historyOpen() && !cardOpen()"
-    (choose)="open($event)"
-    (ask)="ask($event)"
-    (openHistory)="historyOpen.set(true)"
-  />
-
-  <div
-    class="divider"
-    role="separator"
-    aria-orientation="vertical"
-    aria-label="Ancho del chat"
-    tabindex="0"
-    [attr.aria-valuenow]="chatWidth()"
-    aria-valuemin="300"
-    aria-valuemax="560"
-    (pointerdown)="startResize($event)"
-    (keydown)="resizeWithKeys($event)"
-  ></div>
-
   <main class="canvas">
     <app-viewer
       #viewer
@@ -86,7 +42,7 @@
       />
     }
     <app-view-controls [(view)]="view" (zoom)="viewer.zoom($event)" (center)="viewer.center()" />
-    @if (!mobile() && hint() && state() === 'table') {
+    @if (!mobile() && !compact() && hint() && state() === 'table') {
       <p class="hint">Arrastra para girar · rueda o pellizco para acercar</p>
     }
 
@@ -111,6 +67,60 @@
       </div>
     }
   </main>
+
+  <section class="dock" aria-label="Chat" [attr.data-level]="level()">
+    @if (mobile()) {
+      <button
+        type="button"
+        class="grab"
+        [attr.aria-label]="grabLabel()"
+        (pointerdown)="startGrab($event)"
+        (keydown.enter)="cycleLevel()"
+        (keydown.space)="cycleLevel(); $event.preventDefault()"
+      >
+        <span class="grab-bar"></span>
+      </button>
+    }
+    <app-chat-history
+      class="chat"
+      [attr.inert]="historyHidden() ? '' : null"
+      [messages]="conversation.messages()"
+      [pending]="conversation.waiting()"
+      [notice]="conversation.notice()"
+      [suggestions]="welcome() ? [] : suggestions()"
+      [initials]="initials()"
+      [names]="names()"
+      [openTechnique]="id()"
+      [items]="mayo()?.items ?? []"
+      (ask)="ask($event)"
+      (choose)="selected.set($event)"
+      (close)="level.set('peek')"
+    />
+    <app-chat-field
+      class="field"
+      [empty]="welcome()"
+      [techniques]="covered()"
+      [busy]="conversation.pending()"
+      [waiting]="conversation.waiting()"
+      [last]="lastReply()"
+      [showLast]="level() === 'peek' && !cardOpen()"
+      (choose)="open($event)"
+      (ask)="ask($event)"
+      (openHistory)="level.set('medium')"
+    />
+    <div
+      class="divider"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Ancho del chat"
+      tabindex="0"
+      [attr.aria-valuenow]="chatWidth()"
+      aria-valuemin="340"
+      aria-valuemax="560"
+      (pointerdown)="startResize($event)"
+      (keydown)="resizeWithKeys($event)"
+    ></div>
+  </section>
 </div>
 
 @if (mobile()) {

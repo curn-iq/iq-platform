@@ -113,6 +113,63 @@ describe('ExplorePage', () => {
     expect(page.querySelector('app-legend .piece')?.getAttribute('aria-current')).toBe('true');
   });
 
+  describe('el chat como panel inferior, en celular', () => {
+    beforeEach(() => {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query === MOBILE_QUERY,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }));
+    });
+
+    const dockOf = (page: HTMLElement) => page.querySelector<HTMLElement>('.dock')!;
+    const grabOf = (page: HTMLElement) => page.querySelector<HTMLButtonElement>('.grab')!;
+    const press = (page: HTMLElement, key: 'Enter' | ' ') => {
+      grabOf(page).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+      TestBed.tick();
+    };
+
+    it('empieza asomado, con la conversación fuera de alcance', async () => {
+      const page = await open('t-1');
+      expect(dockOf(page).dataset['level']).toBe('peek');
+      expect(page.querySelector('app-chat-history')?.hasAttribute('inert')).toBe(true);
+      expect(grabOf(page).getAttribute('aria-label')).toBe('Subir el chat');
+    });
+
+    it('el asa sube el panel un paso y desde el completo lo baja', async () => {
+      const page = await open('t-1');
+      press(page, 'Enter');
+      expect(dockOf(page).dataset['level']).toBe('medium');
+      expect(page.querySelector('app-chat-history')?.hasAttribute('inert')).toBe(false);
+      press(page, ' ');
+      expect(dockOf(page).dataset['level']).toBe('full');
+      expect(grabOf(page).getAttribute('aria-label')).toBe('Bajar el chat');
+      press(page, 'Enter');
+      expect(dockOf(page).dataset['level']).toBe('peek');
+    });
+
+    it('cerrar la conversación vuelve al panel asomado', async () => {
+      const page = await open('t-1');
+      press(page, 'Enter');
+      page.querySelector<HTMLButtonElement>('app-chat-history .close')!.click();
+      TestBed.tick();
+      expect(dockOf(page).dataset['level']).toBe('peek');
+    });
+  });
+
+  it('en escritorio el chat es un dock flotante sin asa y con ancho ajustable', async () => {
+    const page = await open('t-1');
+    expect(page.querySelector('.grab')).toBeNull();
+    const divider = page.querySelector<HTMLElement>('.divider')!;
+    expect(divider.getAttribute('aria-valuenow')).toBe('400');
+    divider.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true }));
+    TestBed.tick();
+    expect(divider.getAttribute('aria-valuenow')).toBe('424');
+    expect(page.querySelector<HTMLElement>('.bench')!.style.getPropertyValue('--panel')).toBe(
+      '424px',
+    );
+  });
+
   it('la respuesta del chat señala el instrumento en su mesa y abre su ficha', async () => {
     const page = await open('t-1');
     const area = page.querySelector('textarea')!;
