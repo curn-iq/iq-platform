@@ -22,9 +22,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: var(--sim-touch);
+    width: var(--sim-touch);
     height: var(--sim-touch);
-    padding: 0 16px;
+    padding: 0;
     border: 0;
     border-radius: var(--radius-pill);
     background: transparent;
@@ -49,11 +49,6 @@
   }
 }
 
-.icons button {
-  width: var(--sim-touch);
-  padding: 0;
-}
-
 // En pantallas táctiles el zoom es el pellizco: los botones + y − sobran
 @media (pointer: coarse) {
   .zoom {
@@ -67,30 +62,24 @@
 }
 
 .trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: var(--sim-touch);
-  padding: 0 14px 0 18px;
+  display: grid;
+  place-items: center;
+  width: calc(var(--sim-touch) + 8px);
+  height: calc(var(--sim-touch) + 8px);
+  padding: 0;
   border: 0;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   background: var(--sim-glass);
   backdrop-filter: var(--sim-glass-blur);
   box-shadow:
     var(--sim-shadow-card),
     inset 0 0 0 1px var(--sim-glass-edge);
   color: var(--color-text);
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
 
-  .caret {
-    transition: transform 0.25s var(--ease-fade);
-  }
-
-  &[aria-expanded='true'] .caret {
-    transform: rotate(180deg);
+  &[aria-expanded='true'] {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
   }
 }
 
@@ -99,9 +88,9 @@
   right: 0;
   bottom: calc(100% + 8px);
   display: grid;
-  min-width: 268px;
-  padding: 6px;
-  border-radius: var(--sim-radius-card);
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
   background: rgb(255 255 255 / 0.96);
   box-shadow:
     var(--sim-shadow-dock),
@@ -109,19 +98,21 @@
   animation: rise 0.3s var(--sim-spring);
 
   button {
-    display: flex;
-    align-items: center;
-    min-height: var(--sim-touch);
-    padding: 0 14px;
+    display: grid;
+    place-items: center;
+    width: var(--sim-touch);
+    height: var(--sim-touch);
+    padding: 0;
     border: 0;
-    border-radius: var(--sim-radius-control);
+    border-radius: 50%;
     background: transparent;
-    color: var(--color-text);
-    font: inherit;
-    font-size: 0.9375rem;
-    font-weight: 550;
-    text-align: left;
+    color: var(--color-text-muted);
     cursor: pointer;
+
+    &:hover {
+      background: var(--color-hover);
+      color: var(--color-text);
+    }
 
     &[aria-pressed='true'] {
       background: var(--color-accent-soft);

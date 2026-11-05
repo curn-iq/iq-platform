@@ -22,9 +22,11 @@
     </div>
   } @else {
     @if (waiting()) {
-      <button type="button" class="last waiting" (click)="openHistory.emit()">
-        <b>SIMIQ3D:</b> <app-typing />
-      </button>
+      @if (!historyOpen()) {
+        <button type="button" class="last waiting" (click)="openHistory.emit()">
+          <b>SIMIQ3D:</b> <app-typing />
+        </button>
+      }
     } @else if (last(); as reply) {
       <button type="button" class="last" (click)="openHistory.emit()">
         <span class="last-text"><b>SIMIQ3D:</b> {{ reply.text }}</span>

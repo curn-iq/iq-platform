@@ -40,9 +40,12 @@ export const SCOPE_SPECIALTY = 'Cirugía General';
 /** Ancho del chat: entre 340 y 560 px; con las flechas, de 24 en 24. */
 const CHAT_WIDTH = { initial: 400, min: 340, max: 560, step: 24 };
 
-/** Las alturas del panel inferior del chat en celular: asomado, medio y completo. */
-type SheetLevel = 'peek' | 'medium' | 'full';
-const LEVELS: readonly SheetLevel[] = ['peek', 'medium', 'full'];
+/**
+ * Las alturas del panel inferior del chat en celular: mínimo (solo el campo), asomado (con la
+ * última respuesta), medio y completo.
+ */
+type SheetLevel = 'min' | 'peek' | 'medium' | 'full';
+const LEVELS: readonly SheetLevel[] = ['min', 'peek', 'medium', 'full'];
 /** Cuánto hay que arrastrar el asa para cambiar de altura. */
 const GRAB_THRESHOLD = 24;
 
@@ -147,7 +150,9 @@ export class ExplorePage {
   /** En celular, qué tan alto está el panel del chat. En escritorio no se usa. */
   protected readonly level = signal<SheetLevel>('peek');
   /** En celular, con el panel asomado la conversación no se ve ni se alcanza con el teclado. */
-  protected readonly historyHidden = computed(() => this.mobile() && this.level() === 'peek');
+  protected readonly historyHidden = computed(
+    () => this.mobile() && (this.level() === 'min' || this.level() === 'peek'),
+  );
   /** La última respuesta va sobre el campo solo con el panel asomado y la ficha cerrada. */
   protected readonly showLast = computed(() => this.level() === 'peek' && !this.cardOpen());
   protected readonly chatWidth = signal(this.compact() ? CHAT_WIDTH.min : CHAT_WIDTH.initial);
@@ -252,6 +257,8 @@ export class ExplorePage {
 
   /** Una pregunta al chat, con la técnica abierta. */
   protected ask(question: string): void {
+    // Con el panel mínimo la respuesta no se vería: asoma, sin abrir la conversación
+    if (this.mobile() && this.level() === 'min') this.level.set('peek');
     void this.conversation.ask(question, this.id() ?? null);
   }
 
@@ -275,10 +282,10 @@ export class ExplorePage {
     return this.level() === 'full' ? 'Bajar el chat' : 'Subir el chat';
   }
 
-  /** Tocar el asa sube el panel un paso; desde el completo, lo baja. */
+  /** Tocar el asa sube el panel un paso; desde el completo, lo baja a asomado. */
   protected cycleLevel(): void {
-    const next = LEVELS[(LEVELS.indexOf(this.level()) + 1) % LEVELS.length];
-    this.level.set(next);
+    const level = this.level();
+    this.level.set(level === 'full' ? 'peek' : LEVELS[LEVELS.indexOf(level) + 1]);
   }
 
   /** Arrastrar el asa hacia arriba sube el panel y hacia abajo lo baja; un toque lo cambia. */

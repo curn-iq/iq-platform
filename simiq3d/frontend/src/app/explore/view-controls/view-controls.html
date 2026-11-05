@@ -1,61 +1,130 @@
+<!-- Íconos de 3D, arriba y ubicar en posición original: sin texto, con nombre para el lector y el puntero -->
+<ng-template #cube>
+  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+    <path
+      d="M9 2l6 3.3v7.4L9 16l-6-3.3V5.3zM3 5.3l6 3.3 6-3.3M9 8.6V16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+    />
+  </svg>
+</ng-template>
+<ng-template #up>
+  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+    <path
+      d="M3.5 3h11M9 15V6.5M5.5 9.5L9 6l3.5 3.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</ng-template>
+<ng-template #home>
+  <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+    <path
+      d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+    />
+  </svg>
+</ng-template>
+
 @if (menu()) {
   <button
     type="button"
     class="trigger"
+    aria-label="Vista de la mesa"
+    title="Vista de la mesa"
     aria-haspopup="true"
-    aria-controls="view-menu"
+    [attr.aria-controls]="open() ? 'view-menu' : null"
     [attr.aria-expanded]="open()"
     (click)="open.set(!open())"
   >
-    Vista
-    <svg class="caret" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
       <path
-        d="M2.5 7.5L6 4l3.5 3.5"
+        d="M3 7V4.5A1.5 1.5 0 0 1 4.5 3H7M13 3h2.5A1.5 1.5 0 0 1 17 4.5V7M17 13v2.5a1.5 1.5 0 0 1-1.5 1.5H13M7 17H4.5A1.5 1.5 0 0 1 3 15.5V13"
         fill="none"
         stroke="currentColor"
-        stroke-width="1.8"
+        stroke-width="1.6"
         stroke-linecap="round"
-        stroke-linejoin="round"
       />
+      <circle cx="10" cy="10" r="2.2" fill="currentColor" />
     </svg>
   </button>
   @if (open()) {
-    <div class="menu" id="view-menu">
-      <button type="button" (click)="reset()">Ubicar en posición original</button>
-      <button type="button" [attr.aria-pressed]="view() === '3d'" (click)="pick('3d')">3D</button>
-      <button type="button" [attr.aria-pressed]="view() === 'top'" (click)="pick('top')">
-        Arriba
+    <div class="menu" id="view-menu" role="group" aria-label="Vista de la mesa">
+      <button
+        type="button"
+        aria-label="Ubicar en posición original"
+        title="Ubicar en posición original"
+        (click)="reset()"
+      >
+        <ng-container [ngTemplateOutlet]="home" />
+      </button>
+      <button
+        type="button"
+        aria-label="Vista en 3D"
+        title="Vista en 3D"
+        [attr.aria-pressed]="view() === '3d'"
+        (click)="pick('3d')"
+      >
+        <ng-container [ngTemplateOutlet]="cube" />
+      </button>
+      <button
+        type="button"
+        aria-label="Vista desde arriba"
+        title="Vista desde arriba"
+        [attr.aria-pressed]="view() === 'top'"
+        (click)="pick('top')"
+      >
+        <ng-container [ngTemplateOutlet]="up" />
       </button>
     </div>
   }
 } @else {
   <span class="group views">
-    <button type="button" [attr.aria-pressed]="view() === '3d'" (click)="view.set('3d')">3D</button>
-    <button type="button" [attr.aria-pressed]="view() === 'top'" (click)="view.set('top')">
-      Arriba
+    <button
+      type="button"
+      aria-label="Vista en 3D"
+      title="Vista en 3D"
+      [attr.aria-pressed]="view() === '3d'"
+      (click)="view.set('3d')"
+    >
+      <ng-container [ngTemplateOutlet]="cube" />
+    </button>
+    <button
+      type="button"
+      aria-label="Vista desde arriba"
+      title="Vista desde arriba"
+      [attr.aria-pressed]="view() === 'top'"
+      (click)="view.set('top')"
+    >
+      <ng-container [ngTemplateOutlet]="up" />
     </button>
   </span>
   <span class="group icons">
-    <button type="button" class="zoom" aria-label="Acercar" (click)="zoom.emit(1)">
+    <button type="button" class="zoom" aria-label="Acercar" title="Acercar" (click)="zoom.emit(1)">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
         <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
       </svg>
     </button>
-    <button type="button" class="zoom" aria-label="Alejar" (click)="zoom.emit(-1)">
+    <button type="button" class="zoom" aria-label="Alejar" title="Alejar" (click)="zoom.emit(-1)">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
         <path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
       </svg>
     </button>
-    <button type="button" aria-label="Ubicar en posición original" (click)="center.emit()">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-        <circle cx="8" cy="8" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
-        <path
-          d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-        />
-      </svg>
+    <button
+      type="button"
+      aria-label="Ubicar en posición original"
+      title="Ubicar en posición original"
+      (click)="center.emit()"
+    >
+      <ng-container [ngTemplateOutlet]="home" />
     </button>
   </span>
 }

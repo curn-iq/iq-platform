@@ -151,6 +151,23 @@ describe('ExplorePage', () => {
       expect(dockOf(page).dataset['level']).toBe('peek');
     });
 
+    it('arrastrar el asa hacia abajo mínima el panel y preguntar desde ahí lo asoma', async () => {
+      const page = await open('t-1');
+      const grab = grabOf(page);
+      grab.setPointerCapture = vi.fn();
+      grab.dispatchEvent(new MouseEvent('pointerdown', { clientY: 100, bubbles: true }));
+      grab.dispatchEvent(new MouseEvent('pointerup', { clientY: 160, bubbles: true }));
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(dockOf(page).dataset['level']).toBe('min');
+
+      const area = page.querySelector('textarea')!;
+      area.value = 'Hola';
+      area.dispatchEvent(new Event('input'));
+      area.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(dockOf(page).dataset['level']).toBe('peek');
+    });
+
     it('cerrar la conversación vuelve al panel asomado', async () => {
       const page = await open('t-1');
       await press(page, 'Enter');
