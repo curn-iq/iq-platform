@@ -67,7 +67,7 @@ del chat, descripciones con fuente).
 - [x] `/simiq3d/tecnicas/:id`: la mesa de esa técnica (destino de «Ver en 3D» de DataIQ). El shell muestra «Ver en 3D» en todas las técnicas: si una no tiene sus modelos (el MVP es la mesa de Mayo de Cirugía General), se dice y se ofrecen las que sí
 - [x] Ficha del instrumento con su descripción de DataIQ: se abre al tocar la pieza; un objeto de varios instrumentos muestra la de cada uno
 - [x] Barra para volver al shell: «Técnicas» y «Herramientas» llevan al shell, «Explorar en 3D» es esta pantalla; la marca sigue verde
-- [x] La pantalla como el mockup: el chat como panel ajustable (300 a 560 px), la cabeza con el selector de técnica y la marca «provisional», la leyenda plegable, la insignia del número, los controles de vista (3D · Arriba, acercar, alejar, centrar) y la pista para girar. En celular, el lienzo a pantalla completa, el campo fijo abajo, el historial desde la izquierda y la técnica en una hoja inferior
+- [x] La pantalla como el mockup (rediseñada el 2026-11-05, ver «Rediseño «Quirófano ligero»»): el chat como panel ajustable (300 a 560 px), la cabeza con el selector de técnica y la marca «provisional», la leyenda plegable, la insignia del número, los controles de vista (3D · Arriba, acercar, alejar, centrar) y la pista para girar. En celular, el lienzo a pantalla completa, el campo fijo abajo, el historial desde la izquierda y la técnica en una hoja inferior
 
 ### Fase 5 — Chat
 
@@ -91,6 +91,23 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 - [x] Servir la app bajo `/simiq3d/` en el mismo origen que el shell: el proyecto del shell la trae con un rewrite `/simiq3d/:path*` hacia el de SIMIQ3D, con la ruta completa (ver «Resuelto»). Del lado de SIMIQ3D está listo (la app se publica en `simiq3d/`, con las rutas de la app hacia `index.html`, comprobado en un despliegue de prueba). El rewrite está en el `vercel.json` del shell desde el 2026-11-02 (`dataiq/frontend/README.md`, «Despliegue»)
 - [x] Encabezados de caché y CSP en `vercel.json` (README, «Despliegue»), comprobados en un despliegue de prueba
 - [x] GitHub Actions: build (con `npm run models`), pruebas y despliegue con el CLI de Vercel (`.github/workflows/simiq3d-frontend.yml`)
+
+### Rediseño «Quirófano ligero»
+
+Decidido por Mauricio el 2026-11-05: se rediseña todo el frontend, directo en la
+app y sin mockup (`.claude/rules/diseno.md`; `DESIGN.md`, «SIMIQ3D: Quirófano
+ligero»). Hecho con las skills del proyecto (`angular-developer`,
+`frontend-design`, `responsive-design`, `web-design-guidelines`, `threejs`).
+
+- [x] La dirección documentada en `DESIGN.md` antes de programarla, y los tokens de SIMIQ3D (`--sim-*`) en `src/styles/theme.scss`, sin tocar los compartidos con DataIQ
+- [x] La mesa a pantalla completa y el chat como dock de vidrio flotante, con ancho ajustable de 340 a 560 px; la mesa se encuadra en lo que dejan libre el dock, la cabeza, la leyenda y los controles
+- [x] Escritorio compacto (821 a 1199 px): dock de 340 px, leyenda plegada y sin pista de gestos
+- [x] Celular: el chat como panel inferior de tres alturas (asomado, medio y completo), con asa operable por toque, arrastre y teclado, la conversación asomada fuera de alcance (`inert`), `viewport-fit=cover` y áreas seguras
+- [x] El chat: burbuja con degradado para la persona, tarjeta para SIMIQ3D, chip, línea de fuentes con ícono, opciones y sugerencias; el campo como píldora con botón circular
+- [x] La cabeza, el selector, la leyenda, los controles de vista y la ficha del instrumento, de vidrio y con objetivos táctiles de 44 px; la insignia de la pieza con el degradado; las capas de estado del visor con tres puntos en vez de la rueda de carga
+- [x] Auditoría con `web-design-guidelines` (`theme-color`, gesto táctil, `overscroll-behavior`, selección de texto al arrastrar, ayuda del campo como ejemplo con puntos suspensivos, «Cargando…», bordes seguros) y con `responsive-design` (el ancho de 1024 px, que se veía apretado, dio el escritorio compacto)
+- [x] Pruebas del panel inferior y del dock (114 en total) y el build; el aviso de peso de cada estilo de componente sube de 4 a 5 kB: el chat y el campo traen dos disposiciones (dock y panel inferior) y ahora pasan de 4 kB (4,4 kB medidos el 2026-11-05)
+- [ ] Probar en un celular real y con la cuenta de un estudiante, y las capturas de escritorio y celular que revise Mauricio
 
 ### Dependencias del backend
 

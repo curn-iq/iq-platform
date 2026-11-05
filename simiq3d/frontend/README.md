@@ -124,6 +124,11 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
 
 ### El chat
 
+La disposición de la pantalla (la mesa a pantalla completa con el chat como dock
+de vidrio en escritorio y como panel inferior de tres alturas en celular) y sus
+tokens `--sim-*` están en [`DESIGN.md`](../../DESIGN.md), «SIMIQ3D: Quirófano
+ligero».
+
 Contrato de `POST /api/simiq3d/chat/stream` (el porqué de cada cosa, en
 [`../README.md`, «Chat»](../README.md#chat)):
 
