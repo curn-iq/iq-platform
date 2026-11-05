@@ -25,6 +25,8 @@
 :root {
   // El extremo claro del degradado de acción; contraste 4,8 : 1 con texto blanco
   --sim-cian: #217a9f;
+  // Solo dos usos: el botón de enviar y el número de la pieza señalada (insignia, leyenda y
+  // ficha). Si está en todas partes, deja de decir algo.
   --sim-gradient: linear-gradient(135deg, var(--quirofano) 0%, var(--sim-cian) 100%);
 
   // Vidrio: superficie translúcida con desenfoque, para lo que flota sobre la mesa

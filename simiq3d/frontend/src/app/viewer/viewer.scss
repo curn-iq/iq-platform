@@ -94,7 +94,7 @@ canvas {
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--sim-gradient);
+    background: var(--color-accent);
     animation: beat 1.2s var(--ease-fade) infinite;
 
     &:nth-child(2) {
@@ -114,15 +114,13 @@ canvas {
   margin-top: 8px;
   padding: 0 22px;
   border-radius: var(--radius-pill);
-  background: var(--sim-gradient);
-  box-shadow: 0 8px 18px -8px rgb(17 63 90 / 0.6);
+  background: var(--color-accent);
   color: #fff;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.3s var(--sim-spring);
 
   &:hover {
-    transform: translateY(-1px);
+    background: var(--color-accent-strong);
   }
 }
 

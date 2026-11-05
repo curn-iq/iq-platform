@@ -43,9 +43,8 @@
     }
 
     &[aria-pressed='true'] {
-      background: var(--sim-gradient);
-      box-shadow: 0 4px 10px -4px rgb(17 63 90 / 0.55);
-      color: #fff;
+      background: var(--color-accent-soft);
+      color: var(--color-accent-strong);
     }
   }
 }

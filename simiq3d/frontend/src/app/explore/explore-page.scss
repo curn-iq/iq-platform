@@ -178,13 +178,10 @@
   font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    background 0.2s var(--ease-fade),
-    transform 0.3s var(--sim-spring);
+  transition: background 0.2s var(--ease-fade);
 
   &:hover {
     background: var(--color-accent-soft);
-    transform: translateY(-1px);
   }
 }
 
