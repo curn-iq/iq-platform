@@ -135,13 +135,17 @@ describe('ConversationService', () => {
       loaded: 2,
       partialText: `${start}\n${first}\n`,
     });
-    expect(text()).toBe('La Pinza Kelly');
+    // El texto no sale de golpe: se escribe a paso parejo, y las opciones esperan al final
+    await vi.waitFor(() => expect(text()).toBe('La Pinza Kelly'));
+    expect(text()!.length).toBeGreaterThan(0);
     expect(conversation.waiting()).toBe(false);
     expect(conversation.pending()).toBe(true);
+    expect(conversation.messages().at(-1)).toMatchObject({ writing: true });
 
     request.flush(streamed(reply, ['La Pinza Kelly', ' es el número 9.']));
     await asked;
     expect(text()).toBe('La Pinza Kelly es el número 9.');
+    expect(conversation.messages().at(-1)).toMatchObject({ writing: false });
     expect(conversation.pending()).toBe(false);
   });
 

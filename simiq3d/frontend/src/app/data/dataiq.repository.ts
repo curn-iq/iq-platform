@@ -27,6 +27,11 @@ export class DataIQRepository {
     return this.http.get<Account>(`${this.base}/auth/me`);
   }
 
+  /** Borra la cookie de sesión. */
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/logout`, null);
+  }
+
   /** Técnicas publicadas, por nombre. */
   techniques(): HttpResourceRef<TechniqueSummary[] | undefined> {
     return httpResource<TechniqueSummary[]>(() => `${this.base}/techniques`);

@@ -139,3 +139,48 @@
     width: auto;
   }
 }
+
+// Pantalla baja: la ficha más angosta y pegada abajo, para dejar ver la mesa
+@media (max-height: 520px) {
+  :host {
+    bottom: 16px;
+    width: min(300px, calc(100% - var(--panel, 400px) - 72px));
+  }
+
+  .card {
+    padding: 10px 8px 10px 12px;
+  }
+
+  .head {
+    grid-template-columns: 30px minmax(0, 1fr) 32px;
+    gap: 10px;
+
+    h2 {
+      font-size: 0.9375rem;
+    }
+  }
+
+  .number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8125rem;
+  }
+
+  .text,
+  .more {
+    margin-left: 40px;
+  }
+
+  .text {
+    max-height: 22svh;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+}
+
+// Acostado en un celular angosto (≤720px), la ficha no cabe junto al botón «Vista»: sube sobre él
+@media (max-height: 520px) and (max-width: 720px) {
+  :host {
+    bottom: 76px;
+  }
+}

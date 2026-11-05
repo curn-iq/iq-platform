@@ -1,6 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom, fromEvent, race, Subject, timeout, timer } from 'rxjs';
+import {
+  firstValueFrom,
+  fromEvent,
+  race,
+  Subject,
+  tap,
+  timeout,
+  timer,
+  type Observable,
+} from 'rxjs';
 import type { Account } from '../../data/api/models';
 import { DataIQRepository } from '../../data/dataiq.repository';
 
@@ -67,6 +76,11 @@ export class SessionService {
   /** Vuelve a preguntar ya, sin esperar el próximo reintento. */
   retry(): void {
     this.wake.next();
+  }
+
+  /** Cierra la sesión (borra la cookie). Si falla, la cuenta sigue, porque la cookie sigue. */
+  logout(): Observable<void> {
+    return this.dataiq.logout().pipe(tap(() => this.expire()));
   }
 
   /** La sesión venció mientras se usaba la app (una API respondió 401). */

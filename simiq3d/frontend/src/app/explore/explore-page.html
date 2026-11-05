@@ -42,7 +42,12 @@
         (close)="cardOpen.set(false)"
       />
     }
-    <app-view-controls [(view)]="view" (zoom)="viewer.zoom($event)" (center)="viewer.center()" />
+    <app-view-controls
+      [(view)]="view"
+      [menu]="mobile() || short()"
+      (zoom)="viewer.zoom($event)"
+      (center)="viewer.center()"
+    />
     @if (!mobile() && !compact() && hint() && state() === 'table') {
       <p class="hint">Arrastra para girar · rueda o pellizco para acercar</p>
     }
@@ -90,7 +95,7 @@
       [notice]="conversation.notice()"
       [suggestions]="welcome() ? [] : suggestions()"
       [initials]="initials()"
-      [names]="names()"
+      [active]="!historyHidden()"
       [openTechnique]="id()"
       [items]="mayo()?.items ?? []"
       (ask)="ask($event)"
@@ -107,7 +112,9 @@
       [showLast]="showLast()"
       (choose)="open($event)"
       (ask)="ask($event)"
+      [historyOpen]="!historyHidden()"
       (openHistory)="level.set('medium')"
+      (closeHistory)="level.set('peek')"
     />
     <div
       class="divider"

@@ -21,6 +21,10 @@ const STILL_WORKS = 'La mesa, la leyenda y la ficha de cada instrumento siguen f
 /** Cuántas preguntas anteriores van con cada pregunta: el backend acepta hasta tres. */
 const PREVIOUS_TURNS = 3;
 
+/** Cada cuánto aparece una parte nueva del texto y cuánto de lo pendiente se suelta en cada una. */
+const TYPING_TICK_MS = 20;
+const CATCH_UP_TICKS = 24;
+
 /**
  * La conversación con el chat. Vive aparte de la pantalla porque al abrir otra
  * técnica desde la bienvenida la pantalla se vuelve a crear, y la conversación
@@ -34,6 +38,10 @@ export class ConversationService {
   private nextId = 1;
   /** Las últimas preguntas respondidas, con lo que entendió el chat de cada una. */
   private turns: readonly ChatTurn[] = [];
+  /** Lo que llegó del servidor y aún no se ve: el texto sale a paso parejo, no por frases. */
+  private buffer = '';
+  private typing: Promise<void> = Promise.resolve();
+  private typingActive = false;
 
   readonly messages = signal<readonly ChatMessage[]>([]);
   /** Se espera la respuesta, hasta que termina de escribirse: no se envía otra pregunta. */
@@ -63,14 +71,13 @@ export class ConversationService {
         this.simiq3d.ask(text, techniqueId, this.turns).subscribe({
           next: (event) => {
             if (event.type === 'text') {
-              if (id !== null) this.write(id, (reply) => reply.reply + event.text);
-              if (event.text.trim()) this.waiting.set(false);
+              if (id !== null) this.type(id, event.text);
               return;
             }
             const reply = withoutType(event);
             if (event.type === 'start') {
               id = this.nextId++;
-              this.push({ id, from: 'simiq3d', reply });
+              this.push({ id, from: 'simiq3d', reply, writing: true });
               this.notice.set(null);
               this.scene.set(sceneFor(reply));
               return;
@@ -80,21 +87,24 @@ export class ConversationService {
               id = this.nextId++;
               this.push({ id, from: 'simiq3d', reply });
               this.scene.set(sceneFor(reply));
-            } else {
-              this.write(id, () => reply.reply, reply);
             }
           },
           error: reject,
           complete: resolve,
         });
       });
+      await this.typing;
       if (final === null) throw new Error('La respuesta se cortó');
       const done: ChatReply = final;
+      // El texto ya se escribió entero: ahora sí llegan las opciones y el resto de los datos
+      if (id !== null) this.finish(id, done);
       const turn = { question: text, requests: done.requests ?? [], reply: done.reply };
       this.turns = [...this.turns, turn].slice(-PREVIOUS_TURNS);
       this.notice.set(null);
     } catch (error) {
       // Si ya se veía parte de la respuesta, queda, y el aviso dice que se cortó.
+      await this.typing;
+      if (id !== null) this.write(id, (reply) => reply.reply, undefined, false);
       this.notice.set(id === null ? noticeFor(error) : CUT);
     } finally {
       this.pending.set(false);
@@ -111,15 +121,60 @@ export class ConversationService {
     this.messages.update((messages) => [...messages, message]);
   }
 
+  /** Deja la respuesta completa, con sus opciones y datos finales. */
+  private finish(id: number, whole: ChatReply): void {
+    this.write(id, () => whole.reply, whole, false);
+  }
+
   /** Cambia el texto de una respuesta (y, al final, el resto de sus datos). */
-  private write(id: number, text: (reply: ChatReply) => string, whole?: ChatReply): void {
+  private write(
+    id: number,
+    text: (reply: ChatReply) => string,
+    whole?: ChatReply,
+    writing = true,
+  ): void {
     this.messages.update((messages) =>
       messages.map((m) =>
         m.id === id && m.from === 'simiq3d'
-          ? { ...m, reply: { ...(whole ?? m.reply), reply: text(m.reply) } }
+          ? { ...m, writing, reply: { ...(whole ?? m.reply), reply: text(m.reply) } }
           : m,
       ),
     );
+  }
+
+  /** Recibe una parte del texto y la va soltando a paso parejo, sin saltos. */
+  private type(id: number, text: string): void {
+    this.buffer += text;
+    if (this.typingActive) return;
+    this.typingActive = true;
+    this.typing = this.drain(id).finally(() => (this.typingActive = false));
+  }
+
+  private async drain(id: number): Promise<void> {
+    while (this.buffer) {
+      // Cuanto más hay por mostrar, más se suelta por vez, para no quedarse atrás
+      const size = Math.max(1, Math.ceil(this.buffer.length / CATCH_UP_TICKS));
+      const chunk = this.buffer.slice(0, this.safeEnd(id, size));
+      this.buffer = this.buffer.slice(chunk.length);
+      this.write(id, (reply) => reply.reply + chunk);
+      if (chunk.trim()) this.waiting.set(false);
+      await new Promise((resolve) => setTimeout(resolve, TYPING_TICK_MS));
+    }
+    this.buffer = '';
+  }
+
+  /** Hasta dónde cortar sin dejar a medias una negrita (`**así**`) a la vista. */
+  private safeEnd(id: number, size: number): number {
+    const shown = this.messages().find((m) => m.id === id);
+    const before = shown?.from === 'simiq3d' ? shown.reply.reply : '';
+    let end = size;
+    if (this.buffer[end - 1] === '*' && this.buffer[end] === '*') end++;
+    const open = ((before + this.buffer.slice(0, end)).match(/\*\*/g) ?? []).length % 2 === 1;
+    if (open) {
+      const close = this.buffer.indexOf('**', end);
+      if (close >= 0) end = close + 2;
+    }
+    return end;
   }
 }
 

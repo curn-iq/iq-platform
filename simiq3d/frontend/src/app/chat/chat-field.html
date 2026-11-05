@@ -41,7 +41,8 @@
       type="button"
       class="history-button"
       aria-label="Historial de la conversación"
-      (click)="openHistory.emit()"
+      [attr.aria-expanded]="historyOpen()"
+      (click)="historyOpen() ? closeHistory.emit() : openHistory.emit()"
     >
       <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true">
         <path

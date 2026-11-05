@@ -34,41 +34,7 @@
             <app-piece-list [items]="pieces" (choose)="choose.emit($event)" />
           }
         }
-        @if (chips().get(message.id); as chip) {
-          <span class="chip">
-            @if (chip.changed) {
-              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-                <path
-                  d="M3 7.4l2.6 2.4L11 4.4"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            } @else {
-              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-                <circle
-                  cx="7"
-                  cy="7"
-                  r="5.4"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M7 6.3v3.4M7 4.4v.1"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                />
-              </svg>
-            }
-            <span>{{ chip.label }}</span>
-          </span>
-        }
-        @if (message.reply.generated) {
+        @if (message.reply.generated && !message.writing) {
           <p class="sources">
             <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true">
               <path
@@ -79,7 +45,7 @@
             <span>{{ sources }}</span>
           </p>
         }
-        @if (message.reply.options.length) {
+        @if (!message.writing && message.reply.options.length) {
           <div class="options">
             @for (option of message.reply.options; track option) {
               <button type="button" class="option" (click)="ask.emit(option)">{{ option }}</button>

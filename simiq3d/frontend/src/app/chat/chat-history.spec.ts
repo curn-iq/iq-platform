@@ -17,10 +17,6 @@ describe('ChatHistory', () => {
 
   async function render(inputs: Record<string, unknown>) {
     const fixture = TestBed.createComponent(ChatHistory);
-    fixture.componentRef.setInput('names', {
-      techniques: new Map([['t-1', 'Mastectomía']]),
-      instruments: new Map([['i-kelly', 'Pinza Kelly']]),
-    });
     for (const [name, value] of Object.entries(inputs)) fixture.componentRef.setInput(name, value);
     const asked: string[] = [];
     fixture.componentInstance.ask.subscribe((question) => asked.push(question));
@@ -28,7 +24,7 @@ describe('ChatHistory', () => {
     return { element: fixture.nativeElement as HTMLElement, asked };
   }
 
-  it('muestra la pregunta y la respuesta con quién habla, el chip y las opciones', async () => {
+  it('muestra la pregunta y la respuesta con quién habla y las opciones', async () => {
     const messages: ChatMessage[] = [
       { id: 1, from: 'person', text: '¿Dónde va la Kelly?' },
       { id: 2, from: 'simiq3d', reply: reply() },
@@ -38,18 +34,16 @@ describe('ChatHistory', () => {
     expect(question.textContent).toContain('Tú');
     expect(question.textContent).toContain('¿Dónde va la Kelly?');
     expect(answer.textContent).toContain('SIMIQ3D');
-    expect(answer.querySelector('.chip')?.textContent).toContain('Resaltar · Pinza Kelly');
+    expect(answer.querySelector('.chip')).toBeNull();
 
     answer.querySelector<HTMLButtonElement>('.option')!.click();
     expect(asked).toEqual(['¿Qué es la Pinza Kelly?']);
   });
 
-  it('una respuesta solo en texto no lleva chip', async () => {
-    const messages: ChatMessage[] = [
-      { id: 1, from: 'simiq3d', reply: reply({ action: 'answer', options: [] }) },
-    ];
+  it('las opciones esperan a que la respuesta termine de escribirse', async () => {
+    const messages: ChatMessage[] = [{ id: 1, from: 'simiq3d', reply: reply(), writing: true }];
     const { element } = await render({ messages });
-    expect(element.querySelector('.chip')).toBeNull();
+    expect(element.querySelector('.options')).toBeNull();
   });
 
   it('el instrumental se lista solo con la mesa de esa técnica abierta', async () => {

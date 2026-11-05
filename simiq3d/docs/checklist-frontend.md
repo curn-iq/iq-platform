@@ -112,6 +112,7 @@ ligero»). Pasaron por lo hecho, una por una, las cinco skills del proyecto
 - [x] `responsive-design`: a 320 px el título quedaba tapado por «Leyenda» (ahora solo la cifra y la flecha), un celular acostado (menos de 521 px de alto) usa el diseño de escritorio con la cabeza y la barra achicadas, título fluido (`clamp`), el dock como contenedor (`@container`), el aviso a 12 px y la leyenda por encima del panel del chat
 - [x] `threejs`: la cabeza flotante dejó de quitarle los gestos de girar a la mesa (`pointer-events`) y el visor vuelve a dibujar al restaurarse el contexto de WebGL; ya cumplía: dibuja solo cuando algo cambia, tope de 2 de resolución y recursos liberados
 - [x] `frontend-design`: crítica de restricción: el degradado solo en el botón de enviar y en el número de la pieza señalada; sin elevar al pasar el puntero; sin la etiqueta «SIMIQ3D» repetida sobre cada respuesta; dos niveles de sombra
+- [x] Ajustes tras probarlo Mauricio (2026-11-05): sin chip de acción; opciones solo al terminar la respuesta con un fundido; el texto se escribe a paso parejo; «Mi cuenta» de la barra despliega su panel (nombre, correo, rol y «Cerrar sesión»); en celular el botón del chat también lo cierra, la conversación se coloca en la primera letra de la respuesta, la leyenda en dos columnas, sin botones de zoom y con el menú «Vista»; en pantalla baja, el chat, el aviso y la ficha se achican
 - [ ] Probar en un celular real y con la cuenta de un estudiante, y las capturas de escritorio y celular que revise Mauricio
 
 ### Dependencias del backend

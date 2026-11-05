@@ -205,9 +205,7 @@ describe('ExplorePage', () => {
     expect(page.querySelector('app-instrument-card')?.textContent).toContain(
       'Pinza hemostática curva.',
     );
-    expect(page.querySelector('app-chat-history .chip')?.textContent).toContain(
-      'Describir · Pinza Kelly',
-    );
+    expect(page.querySelector('app-chat-history .chip')).toBeNull();
   });
 
   it('una técnica que SIMIQ3D no cubre lo dice y ofrece las que sí', async () => {
