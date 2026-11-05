@@ -96,9 +96,9 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 
 Decidido por Mauricio el 2026-11-05: se rediseña todo el frontend, directo en la
 app y sin mockup (`.claude/rules/diseno.md`; `DESIGN.md`, «SIMIQ3D: Quirófano
-ligero»). La primera pasada se auditó con `web-design-guidelines`; las demás
-skills del proyecto (`angular-developer`, `frontend-design`,
-`responsive-design`, `threejs`) se pasan después, en la casilla de abajo.
+ligero»). Pasaron por lo hecho, una por una, las cinco skills del proyecto
+(`angular-developer`, `responsive-design`, `threejs`, `frontend-design` y
+`web-design-guidelines`, esta dos veces).
 
 - [x] La dirección documentada en `DESIGN.md` antes de programarla, y los tokens de SIMIQ3D (`--sim-*`) en `src/styles/theme.scss`, sin tocar los compartidos con DataIQ
 - [x] La mesa a pantalla completa y el chat como dock de vidrio flotante, con ancho ajustable de 340 a 560 px; la mesa se encuadra en lo que dejan libre el dock, la cabeza, la leyenda y los controles
@@ -106,9 +106,12 @@ skills del proyecto (`angular-developer`, `frontend-design`,
 - [x] Celular: el chat como panel inferior de tres alturas (asomado, medio y completo), con asa operable por toque, arrastre y teclado, la conversación asomada fuera de alcance (`inert`), `viewport-fit=cover` y áreas seguras
 - [x] El chat: burbuja con degradado para la persona, tarjeta para SIMIQ3D, chip, línea de fuentes con ícono, opciones y sugerencias; el campo como píldora con botón circular
 - [x] La cabeza, el selector, la leyenda, los controles de vista y la ficha del instrumento, de vidrio y con objetivos táctiles de 44 px; la insignia de la pieza con el degradado; las capas de estado del visor con tres puntos en vez de la rueda de carga
-- [x] Auditoría con `web-design-guidelines` (`theme-color`, gesto táctil, `overscroll-behavior`, selección de texto al arrastrar, ayuda del campo como ejemplo con puntos suspensivos, «Cargando…», bordes seguros); el ancho de 1024 px, que se veía apretado en las capturas, dio el escritorio compacto
+- [x] Auditoría con `web-design-guidelines` (`theme-color`, gesto táctil, `overscroll-behavior`, selección de texto al arrastrar, «Cargando…», bordes seguros); el ancho de 1024 px, que se veía apretado en las capturas, dio el escritorio compacto
 - [x] Pruebas del panel inferior y del dock (114 en total) y el build; el aviso de peso de cada estilo de componente sube de 4 a 5 kB: el chat y el campo traen dos disposiciones (dock y panel inferior) y ahora pasan de 4 kB (4,4 kB medidos el 2026-11-05)
-- [ ] Pasar `angular-developer`, `frontend-design`, `responsive-design` y `threejs` por lo hecho
+- [x] `angular-developer`: las pruebas del panel esperan con `whenStable()`, la lógica de la plantilla pasó a una señal calculada (`showLast`) y la leyenda y la ficha salen con `animate.leave`
+- [x] `responsive-design`: a 320 px el título quedaba tapado por «Leyenda» (ahora solo la cifra y la flecha), un celular acostado (menos de 521 px de alto) usa el diseño de escritorio con la cabeza y la barra achicadas, título fluido (`clamp`), el dock como contenedor (`@container`), el aviso a 12 px y la leyenda por encima del panel del chat
+- [x] `threejs`: la cabeza flotante dejó de quitarle los gestos de girar a la mesa (`pointer-events`) y el visor vuelve a dibujar al restaurarse el contexto de WebGL; ya cumplía: dibuja solo cuando algo cambia, tope de 2 de resolución y recursos liberados
+- [x] `frontend-design`: crítica de restricción: el degradado solo en el botón de enviar y en el número de la pieza señalada; sin elevar al pasar el puntero; sin la etiqueta «SIMIQ3D» repetida sobre cada respuesta; dos niveles de sombra
 - [ ] Probar en un celular real y con la cuenta de un estudiante, y las capturas de escritorio y celular que revise Mauricio
 
 ### Dependencias del backend
