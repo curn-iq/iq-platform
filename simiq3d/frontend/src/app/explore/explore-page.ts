@@ -24,7 +24,7 @@ import { Simiq3dRepository } from '../data/simiq3d.repository';
 import { placeItems } from '../domain/placement';
 import { suggestions } from '../domain/suggestions';
 import { initials } from '../shared/initials';
-import { COMPACT_QUERY, mediaQuery, MOBILE_QUERY } from '../shared/media-query';
+import { COMPACT_QUERY, mediaQuery, MOBILE_QUERY, SHORT_QUERY } from '../shared/media-query';
 import type { FreeArea, SceneView } from '../viewer/mayo-scene';
 import { Viewer } from '../viewer/viewer';
 import { CanvasHead } from './canvas-head/canvas-head';
@@ -80,6 +80,7 @@ export class ExplorePage {
   protected readonly conversation = inject(ConversationService);
   protected readonly mobile = mediaQuery(MOBILE_QUERY);
   protected readonly compact = mediaQuery(COMPACT_QUERY);
+  protected readonly short = mediaQuery(SHORT_QUERY);
 
   protected readonly techniques = this.dataiq.techniques();
   private readonly tables = this.dataiq.tables(() => this.id());
@@ -200,9 +201,10 @@ export class ExplorePage {
     this.mobile()
       ? { top: 84, right: 0, bottom: this.fieldHeight() + 84, left: 0 }
       : {
-          top: 150,
+          // En pantalla baja la cabeza se achica: queda más alto para la mesa
+          top: this.short() ? 92 : 150,
           right: this.legendOpen() && this.mayo() ? 344 : 0,
-          bottom: 84,
+          bottom: this.short() ? 76 : 84,
           // El dock flota a la izquierda: la mesa se encuadra en lo que deja libre
           left: this.chatWidth() + 32,
         },

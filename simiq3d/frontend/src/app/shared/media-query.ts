@@ -17,14 +17,22 @@ export function mediaQuery(query: string): Signal<boolean> {
   return matches.asReadonly();
 }
 
-/** Celular: el punto de corte de 820 px de SIMIQ3D («SIMIQ3D: explorar en 3D» en `DESIGN.md`). */
-export const MOBILE_QUERY = '(max-width: 820px)';
+/**
+ * Celular: el punto de corte de 820 px de SIMIQ3D («SIMIQ3D: explorar en 3D» en `DESIGN.md`).
+ * Un celular acostado (menos de 521 px de alto) usa el diseño de escritorio, porque el panel
+ * inferior le dejaría casi sin espacio a la mesa.
+ */
+export const MOBILE_QUERY = '(max-width: 820px) and (min-height: 521px)';
+
+/** Pantalla baja (un celular acostado): la cabeza y los controles se achican. */
+export const SHORT_QUERY = '(max-height: 520px)';
 
 /**
  * Escritorio compacto (de 821 a 1199 px): el chat más angosto y la leyenda plegada, para que
  * la mesa conserve su espacio. Sin `matchMedia` (jsdom) no aplica, como el resto.
  */
-export const COMPACT_QUERY = '(min-width: 821px) and (max-width: 1199px)';
+export const COMPACT_QUERY =
+  '(min-width: 821px) and (max-width: 1199px), (max-width: 820px) and (max-height: 520px)';
 
 /** Con `prefers-reduced-motion`, la cámara salta en vez de viajar. */
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';

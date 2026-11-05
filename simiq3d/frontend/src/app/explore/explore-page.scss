@@ -31,6 +31,8 @@
 
 // El dock del chat
 .dock {
+  // Su ancho cambia al arrastrar el asa: lo de adentro se adapta a él, no a la ventana
+  container-type: inline-size;
   position: absolute;
   top: var(--sim-gap);
   bottom: var(--sim-gap);
@@ -197,6 +199,23 @@
   }
 }
 
+// Pantalla baja (un celular acostado): el dock casi sin margen y la pista fuera
+@media (max-height: 520px) {
+  .dock {
+    top: 8px;
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .head {
+    top: 12px;
+  }
+
+  .hint {
+    display: none;
+  }
+}
+
 @keyframes dock-in {
   from {
     opacity: 0;
@@ -205,7 +224,7 @@
 }
 
 // Celular: la mesa a pantalla completa y el chat como panel inferior de tres alturas
-@media (max-width: 820px) {
+@media (max-width: 820px) and (min-height: 521px) {
   .head {
     top: 14px;
     left: 16px;
