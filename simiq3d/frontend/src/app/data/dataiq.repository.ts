@@ -32,6 +32,11 @@ export class DataIQRepository {
     return this.http.post<void>(`${this.base}/auth/logout`, null);
   }
 
+  /** Las especialidades, en el orden en que el shell las muestra (para el menú de la barra). */
+  specialties(): HttpResourceRef<{ id: string; name: string }[] | undefined> {
+    return httpResource<{ id: string; name: string }[]>(() => `${this.base}/specialties`);
+  }
+
   /** Técnicas publicadas, por nombre. */
   techniques(): HttpResourceRef<TechniqueSummary[] | undefined> {
     return httpResource<TechniqueSummary[]>(() => `${this.base}/techniques`);
