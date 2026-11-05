@@ -1,4 +1,5 @@
 import { HttpTestingController } from '@angular/common/http/testing';
+import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideRepositoryTesting, streamed, TEST_DATAIQ, TEST_SIMIQ3D } from '../data/testing';
@@ -111,6 +112,65 @@ describe('ExplorePage', () => {
     page.querySelector<HTMLButtonElement>('app-legend .toggle')!.click();
     TestBed.tick();
     expect(page.querySelector('app-legend .piece')?.getAttribute('aria-current')).toBe('true');
+  });
+
+  describe('el chat como panel inferior, en celular', () => {
+    beforeEach(() => {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query === MOBILE_QUERY,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }));
+    });
+
+    const dockOf = (page: HTMLElement) => page.querySelector<HTMLElement>('.dock')!;
+    const grabOf = (page: HTMLElement) => page.querySelector<HTMLButtonElement>('.grab')!;
+    // Actuar, esperar y comprobar (guía de `angular-developer`): con las señales, la
+    // pantalla se actualiza sola cuando la aplicación está estable
+    const press = async (page: HTMLElement, key: 'Enter' | ' ') => {
+      grabOf(page).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+      await TestBed.inject(ApplicationRef).whenStable();
+    };
+
+    it('empieza asomado, con la conversación fuera de alcance', async () => {
+      const page = await open('t-1');
+      expect(dockOf(page).dataset['level']).toBe('peek');
+      expect(page.querySelector('app-chat-history')?.hasAttribute('inert')).toBe(true);
+      expect(grabOf(page).getAttribute('aria-label')).toBe('Subir el chat');
+    });
+
+    it('el asa sube el panel un paso y desde el completo lo baja', async () => {
+      const page = await open('t-1');
+      await press(page, 'Enter');
+      expect(dockOf(page).dataset['level']).toBe('medium');
+      expect(page.querySelector('app-chat-history')?.hasAttribute('inert')).toBe(false);
+      await press(page, ' ');
+      expect(dockOf(page).dataset['level']).toBe('full');
+      expect(grabOf(page).getAttribute('aria-label')).toBe('Bajar el chat');
+      await press(page, 'Enter');
+      expect(dockOf(page).dataset['level']).toBe('peek');
+    });
+
+    it('cerrar la conversación vuelve al panel asomado', async () => {
+      const page = await open('t-1');
+      await press(page, 'Enter');
+      page.querySelector<HTMLButtonElement>('app-chat-history .close')!.click();
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(dockOf(page).dataset['level']).toBe('peek');
+    });
+  });
+
+  it('en escritorio el chat es un dock flotante sin asa y con ancho ajustable', async () => {
+    const page = await open('t-1');
+    expect(page.querySelector('.grab')).toBeNull();
+    const divider = page.querySelector<HTMLElement>('.divider')!;
+    expect(divider.getAttribute('aria-valuenow')).toBe('400');
+    divider.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true }));
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(divider.getAttribute('aria-valuenow')).toBe('424');
+    expect(page.querySelector<HTMLElement>('.bench')!.style.getPropertyValue('--panel')).toBe(
+      '424px',
+    );
   });
 
   it('la respuesta del chat señala el instrumento en su mesa y abre su ficha', async () => {

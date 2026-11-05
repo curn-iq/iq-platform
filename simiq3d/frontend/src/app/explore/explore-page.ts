@@ -24,7 +24,7 @@ import { Simiq3dRepository } from '../data/simiq3d.repository';
 import { placeItems } from '../domain/placement';
 import { suggestions } from '../domain/suggestions';
 import { initials } from '../shared/initials';
-import { mediaQuery, MOBILE_QUERY } from '../shared/media-query';
+import { COMPACT_QUERY, mediaQuery, MOBILE_QUERY, SHORT_QUERY } from '../shared/media-query';
 import type { FreeArea, SceneView } from '../viewer/mayo-scene';
 import { Viewer } from '../viewer/viewer';
 import { CanvasHead } from './canvas-head/canvas-head';
@@ -37,8 +37,14 @@ import { ViewControls } from './view-controls/view-controls';
 /** Las técnicas que SIMIQ3D muestra en 3D: las de Cirugía General, como el chat. */
 export const SCOPE_SPECIALTY = 'Cirugía General';
 
-/** Ancho del chat: entre 300 y 560 px; con las flechas, de 24 en 24. */
-const CHAT_WIDTH = { initial: 380, min: 300, max: 560, step: 24 };
+/** Ancho del chat: entre 340 y 560 px; con las flechas, de 24 en 24. */
+const CHAT_WIDTH = { initial: 400, min: 340, max: 560, step: 24 };
+
+/** Las alturas del panel inferior del chat en celular: asomado, medio y completo. */
+type SheetLevel = 'peek' | 'medium' | 'full';
+const LEVELS: readonly SheetLevel[] = ['peek', 'medium', 'full'];
+/** Cuánto hay que arrastrar el asa para cambiar de altura. */
+const GRAB_THRESHOLD = 24;
 
 /** Qué muestra el lienzo. */
 type CanvasState = 'empty' | 'uncovered' | 'missing' | 'table';
@@ -73,6 +79,8 @@ export class ExplorePage {
   private readonly session = inject(SessionService);
   protected readonly conversation = inject(ConversationService);
   protected readonly mobile = mediaQuery(MOBILE_QUERY);
+  protected readonly compact = mediaQuery(COMPACT_QUERY);
+  protected readonly short = mediaQuery(SHORT_QUERY);
 
   protected readonly techniques = this.dataiq.techniques();
   private readonly tables = this.dataiq.tables(() => this.id());
@@ -130,14 +138,19 @@ export class ExplorePage {
     });
   });
 
-  /** En escritorio la leyenda abre abierta; en celular, plegada. */
-  protected readonly legendOpen = linkedSignal(() => !this.mobile());
+  /** En escritorio la leyenda abre abierta; en celular y en escritorio compacto, plegada. */
+  protected readonly legendOpen = linkedSignal(() => !this.mobile() && !this.compact());
   protected readonly view = signal<SceneView>('3d');
   /** La pista de cómo girar se apaga al primer gesto. */
   protected readonly hint = signal(true);
   protected readonly sheetOpen = signal(false);
-  protected readonly historyOpen = signal(false);
-  protected readonly chatWidth = signal(CHAT_WIDTH.initial);
+  /** En celular, qué tan alto está el panel del chat. En escritorio no se usa. */
+  protected readonly level = signal<SheetLevel>('peek');
+  /** En celular, con el panel asomado la conversación no se ve ni se alcanza con el teclado. */
+  protected readonly historyHidden = computed(() => this.mobile() && this.level() === 'peek');
+  /** La última respuesta va sobre el campo solo con el panel asomado y la ficha cerrada. */
+  protected readonly showLast = computed(() => this.level() === 'peek' && !this.cardOpen());
+  protected readonly chatWidth = signal(this.compact() ? CHAT_WIDTH.min : CHAT_WIDTH.initial);
   /** Alto del campo de pregunta, que en celular tapa la parte de abajo del lienzo. */
   protected readonly fieldHeight = signal(150);
 
@@ -186,8 +199,15 @@ export class ExplorePage {
   /** Lo que tapan las piezas flotantes del lienzo: la mesa se encuadra en el resto. */
   protected readonly freeArea = computed<FreeArea>(() =>
     this.mobile()
-      ? { top: 84, right: 0, bottom: this.fieldHeight() + 56, left: 0 }
-      : { top: 150, right: this.legendOpen() && this.mayo() ? 324 : 0, bottom: 70, left: 0 },
+      ? { top: 84, right: 0, bottom: this.fieldHeight() + 84, left: 0 }
+      : {
+          // En pantalla baja la cabeza se achica: queda más alto para la mesa
+          top: this.short() ? 92 : 150,
+          right: this.legendOpen() && this.mayo() ? 344 : 0,
+          bottom: this.short() ? 76 : 84,
+          // El dock flota a la izquierda: la mesa se encuadra en lo que deja libre
+          left: this.chatWidth() + 32,
+        },
   );
 
   private readonly field = viewChild.required(ChatField, { read: ElementRef });
@@ -249,6 +269,37 @@ export class ExplorePage {
   /** Tocar una pieza la señala y abre su ficha; tocar la mesa vacía la suelta. */
   protected onTap(itemId: string | null): void {
     this.cardOpen.set(itemId !== null);
+  }
+
+  /** El nombre del asa, para el lector de pantalla: dice a dónde lleva. */
+  protected grabLabel(): string {
+    return this.level() === 'full' ? 'Bajar el chat' : 'Subir el chat';
+  }
+
+  /** Tocar el asa sube el panel un paso; desde el completo, lo baja. */
+  protected cycleLevel(): void {
+    const next = LEVELS[(LEVELS.indexOf(this.level()) + 1) % LEVELS.length];
+    this.level.set(next);
+  }
+
+  /** Arrastrar el asa hacia arriba sube el panel y hacia abajo lo baja; un toque lo cambia. */
+  protected startGrab(event: PointerEvent): void {
+    const grab = event.currentTarget as HTMLElement;
+    const startY = event.clientY;
+    grab.setPointerCapture(event.pointerId);
+    const end = (e: PointerEvent) => {
+      grab.removeEventListener('pointerup', end);
+      grab.removeEventListener('pointercancel', end);
+      const delta = e.clientY - startY;
+      const at = LEVELS.indexOf(this.level());
+      if (Math.abs(delta) < GRAB_THRESHOLD / 2) {
+        this.cycleLevel();
+      } else if (Math.abs(delta) >= GRAB_THRESHOLD) {
+        this.level.set(LEVELS[Math.min(LEVELS.length - 1, Math.max(0, at + (delta < 0 ? 1 : -1)))]);
+      }
+    };
+    grab.addEventListener('pointerup', end);
+    grab.addEventListener('pointercancel', end);
   }
 
   /** Arrastrar el divisor cambia el ancho del chat. */

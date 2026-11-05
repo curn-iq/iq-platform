@@ -18,3 +18,83 @@
   --color-text-muted: var(--tinta-2-quirofano);
   --color-text-subtle: var(--tinta-3-quirofano);
 }
+
+// «Quirófano ligero» (DESIGN.md, «SIMIQ3D: Quirófano ligero»): lo nuevo de este
+// módulo va aquí, con el prefijo --sim-, para no tocar los tokens compartidos
+// con DataIQ.
+:root {
+  // El extremo claro del degradado de acción; contraste 4,8 : 1 con texto blanco
+  --sim-cian: #217a9f;
+  // Solo dos usos: el botón de enviar y el número de la pieza señalada (insignia, leyenda y
+  // ficha). Si está en todas partes, deja de decir algo.
+  --sim-gradient: linear-gradient(135deg, var(--quirofano) 0%, var(--sim-cian) 100%);
+
+  // Vidrio: superficie translúcida con desenfoque, para lo que flota sobre la mesa
+  --sim-glass: rgb(255 255 255 / 0.78);
+  --sim-glass-blur: blur(20px) saturate(1.5);
+  --sim-glass-edge: rgb(255 255 255 / 0.65);
+
+  --sim-shadow-dock:
+    0 1px 2px rgb(10 27 34 / 0.06), 0 12px 32px -12px rgb(10 27 34 / 0.18),
+    0 32px 64px -32px rgb(10 27 34 / 0.28);
+  --sim-shadow-card:
+    0 1px 2px rgb(10 27 34 / 0.05), 0 6px 16px -8px rgb(10 27 34 / 0.12),
+    0 16px 32px -20px rgb(10 27 34 / 0.18);
+
+  --sim-radius-dock: 24px;
+  --sim-radius-card: 20px;
+  --sim-radius-bubble: 18px;
+  --sim-radius-control: 14px;
+
+  // Entrada del panel inferior y de las tarjetas
+  --sim-spring: cubic-bezier(0.32, 0.72, 0, 1);
+
+  // Todo lo que se toca mide al menos esto
+  --sim-touch: 44px;
+  // Separación entre lo que flota y el borde de la pantalla
+  --sim-gap: 16px;
+}
+
+// Sin soporte de desenfoque, el vidrio es casi opaco para que el texto se lea
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --sim-glass: rgb(255 255 255 / 0.96);
+  }
+}
+
+// Con «reducir movimiento», todo es inmediato
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// Lo táctil (web-design-guidelines): sin la espera del doble toque ni el
+// resplandor del sistema, y los paneles que se desplazan no arrastran la página
+button,
+a,
+[role='button'],
+select,
+textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.messages,
+.panel ol,
+.card .text,
+.sheet {
+  overscroll-behavior: contain;
+}
+
+// Mientras se arrastra un asa no se selecciona texto
+.grab,
+.divider {
+  -webkit-user-select: none;
+  user-select: none;
+}
