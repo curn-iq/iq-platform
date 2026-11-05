@@ -4,6 +4,8 @@ import { provideRouter, Router } from '@angular/router';
 import { handledByRouter } from '../testing';
 import { NavLink } from './nav-link';
 import type { NavTarget } from './nav-menus';
+import { provideRepositoryTesting } from '../../data/testing';
+import { provideShellHost } from '../shell-host';
 
 @Component({ template: '' })
 class Blank {}
@@ -28,7 +30,11 @@ describe('NavLink', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{ path: '**', component: Blank }])],
+      providers: [
+        provideRepositoryTesting(),
+        provideShellHost(),
+        provideRouter([{ path: '**', component: Blank }]),
+      ],
     });
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(Host);

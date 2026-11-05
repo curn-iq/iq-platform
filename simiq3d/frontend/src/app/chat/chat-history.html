@@ -25,7 +25,7 @@
         >
         <p class="text">{{ message.text }}</p>
       </li>
-    } @else {
+    } @else if (!message.writing || message.reply.reply) {
       <li class="message">
         <span class="who"><i aria-hidden="true">S</i>SIMIQ3D</span>
         <app-rich-text class="text" [text]="message.reply.reply" />
@@ -64,6 +64,10 @@
 </ol>
 
 <div class="foot">
+  <p class="note">
+    Responde una IA con datos de DataIQ. Tus preguntas se guardan sin tu nombre. No escribas datos
+    de pacientes.
+  </p>
   @if (notice(); as current) {
     <div class="notice" role="status">
       <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">

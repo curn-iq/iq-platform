@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Bar } from './shell/bar/bar';
+import { Navbar } from '../shared-shell/navbar/navbar';
 
 @Component({
-  imports: [Bar, RouterOutlet],
+  imports: [Navbar, RouterOutlet],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

@@ -128,6 +128,7 @@ Cada tipo de información tiene un solo lugar (decidido por Mauricio el
 | Cómo funciona y cómo se corre cada módulo | El README del módulo |
 | Arquitectura e infraestructura, con su porqué | [`docs/arquitectura.md`](docs/arquitectura.md) |
 | Esquema de la base de DataIQ | [`dataiq/docs/esquema.dbml`](dataiq/docs/esquema.dbml), su diagrama (`diagramabd.png`, dbdiagram.io) y la migración, que cambian juntos |
+| La barra superior de todo el shell (DataIQ y SIMIQ3D) | `shared/shell/`, con su contrato en `shared/shell/shell-host.ts`; «Barra compartida» en [`DESIGN.md`](DESIGN.md). Un cambio de la barra se hace ahí, una sola vez |
 | Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
 | Aviso de privacidad | [`docs/privacidad.md`](docs/privacidad.md) |
 | Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |

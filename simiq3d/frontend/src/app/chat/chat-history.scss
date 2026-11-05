@@ -98,6 +98,23 @@
   white-space: nowrap;
 }
 
+// El aviso del registro de conversaciones: en celular va al pie del chat, casi sin verse
+.note {
+  display: none;
+  margin: 0;
+  padding: 4px 16px 8px;
+  color: color-mix(in srgb, var(--color-text-subtle) 65%, transparent);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 820px) and (min-height: 521px) {
+  .note {
+    display: block;
+  }
+}
+
 .text {
   margin: 0;
   color: var(--color-text);

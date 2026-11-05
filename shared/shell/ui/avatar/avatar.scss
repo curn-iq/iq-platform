@@ -13,13 +13,13 @@
   line-height: 1;
 }
 
-:host([data-size='medium']) {
+:host([data-size="medium"]) {
   width: 44px;
   height: 44px;
   font-size: 15px;
 }
 
-:host([data-size='large']) {
+:host([data-size="large"]) {
   width: 52px;
   height: 52px;
   font-size: 17px;

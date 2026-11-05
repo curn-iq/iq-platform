@@ -190,9 +190,9 @@ textarea {
     border-radius: 0;
   }
 
+  // El aviso va en la conversación: sobre el campo ocupaba media pantalla
   .notice {
-    margin-top: 8px;
-    font-size: 0.75rem;
+    display: none;
   }
 
   form {
@@ -325,5 +325,12 @@ textarea {
     margin-top: 6px;
     font-size: 0.6875rem;
     line-height: 1.35;
+  }
+}
+
+// iOS acerca la página al enfocar un campo de menos de 16 px y no vuelve a alejarla
+@media (pointer: coarse) {
+  textarea {
+    font-size: 1rem;
   }
 }

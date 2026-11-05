@@ -57,18 +57,18 @@ nav {
     transition: transform 0.35s var(--ease-enter);
   }
 
-  &[aria-current='page'] {
+  &[aria-current="page"] {
     color: var(--color-accent-strong);
     font-weight: 650;
   }
 
   &:hover,
-  &[aria-expanded='true'] {
+  &[aria-expanded="true"] {
     background: var(--color-hover);
     color: var(--color-text);
   }
 
-  &[aria-expanded='true'] svg {
+  &[aria-expanded="true"] svg {
     transform: rotate(180deg);
   }
 }
@@ -103,11 +103,11 @@ nav {
   }
 
   &:hover,
-  &[aria-expanded='true'] {
+  &[aria-expanded="true"] {
     background: var(--color-hover);
   }
 
-  &[aria-expanded='true'] .chevron {
+  &[aria-expanded="true"] .chevron {
     transform: rotate(180deg);
   }
 }
@@ -124,7 +124,7 @@ nav {
   color: var(--color-text);
   cursor: pointer;
 
-  &[aria-expanded='true'] {
+  &[aria-expanded="true"] {
     background: var(--color-hover);
   }
 }

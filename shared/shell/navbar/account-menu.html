@@ -8,22 +8,28 @@
 </div>
 
 @if (links().length) {
-  <p class="title">Gestión de DataIQ</p>
-  <ul class="links">
-    @for (link of links(); track link.route) {
-      <li>
-        <a [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page"
-          >{{ link.label }}
-          @if (link.count !== null) {
-            <span class="count">{{ link.count }}</span>
-          }
-        </a>
-      </li>
-    }
-  </ul>
+<p class="title">Gestión de DataIQ</p>
+<ul class="links">
+  @for (link of links(); track link.route) {
+  <li>
+    <a
+      [appNavLink]="{ route: link.route }"
+      [attr.aria-current]="link.active ? 'page' : null"
+      >{{ link.label }} @if (link.count !== null) {
+      <span class="count">{{ link.count }}</span>
+      }
+    </a>
+  </li>
+  }
+</ul>
 }
 
-<button type="button" class="exit" [attr.aria-busy]="signOut.busy()" (click)="exit()">
+<button
+  type="button"
+  class="exit"
+  [attr.aria-busy]="shell.signingOut()"
+  (click)="exit()"
+>
   Cerrar sesión
   <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
     <path

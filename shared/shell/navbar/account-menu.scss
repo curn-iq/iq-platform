@@ -99,7 +99,7 @@ p {
       background: var(--color-hover);
     }
 
-    &[aria-current='page'] {
+    &[aria-current="page"] {
       background: var(--color-accent-soft);
       color: var(--color-accent-strong);
 

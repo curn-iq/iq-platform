@@ -40,6 +40,15 @@ describe('ChatHistory', () => {
     expect(asked).toEqual(['¿Qué es la Pinza Kelly?']);
   });
 
+  it('una respuesta que aún no tiene texto no dibuja una tarjeta vacía', async () => {
+    const messages: ChatMessage[] = [
+      { id: 1, from: 'simiq3d', reply: reply({ reply: '' }), writing: true },
+    ];
+    const { element } = await render({ messages, pending: true });
+    expect(element.querySelectorAll('.message')).toHaveLength(1);
+    expect(element.querySelector('app-typing')).not.toBeNull();
+  });
+
   it('las opciones esperan a que la respuesta termine de escribirse', async () => {
     const messages: ChatMessage[] = [{ id: 1, from: 'simiq3d', reply: reply(), writing: true }];
     const { element } = await render({ messages });

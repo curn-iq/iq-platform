@@ -4,6 +4,7 @@ import { provideApi } from './core/http/api.providers';
 import { provideAppRouter } from './core/router/router.providers';
 import { provideSession } from './core/session/session.providers';
 import { provideTitle } from './core/title/title.providers';
+import { provideShellHost } from './shell/shell-host';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,5 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideApi(),
     provideSession(),
     provideTitle(),
+    provideShellHost(),
   ],
 };
