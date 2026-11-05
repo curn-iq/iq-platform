@@ -1,58 +1,61 @@
 :host {
   position: absolute;
   bottom: 84px;
-  left: 28px;
+  left: calc(var(--panel, 400px) + var(--sim-gap) * 2 + 12px);
   z-index: 4;
-  width: min(320px, calc(100% - 56px));
+  width: min(360px, calc(100% - var(--panel, 400px) - 72px));
 }
 
 // Una nota sobre la escena, no un panel: la mesa se sigue viendo a través. El
 // tono es el claro del acento, como la fila señalada de la leyenda, y el número
 // es el de la insignia: así se lee como de esa pieza
 .card {
-  padding: 12px 8px 12px 12px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--color-accent-soft) 90%, transparent);
-  box-shadow: 0 12px 28px -18px rgb(10 27 34 / 0.45);
-  backdrop-filter: blur(12px);
-  animation: rise 0.4s var(--ease-enter);
+  padding: 16px 12px 16px 16px;
+  border-radius: var(--sim-radius-card);
+  background: var(--sim-glass);
+  box-shadow:
+    var(--sim-shadow-dock),
+    inset 0 0 0 1px var(--sim-glass-edge);
+  backdrop-filter: var(--sim-glass-blur);
+  animation: rise 0.5s var(--sim-spring);
 }
 
 .head {
   display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) 28px;
-  gap: 10px;
+  grid-template-columns: 40px minmax(0, 1fr) 36px;
+  gap: 12px;
   align-items: start;
 
   h2 {
-    margin: 3px 0 0;
-    color: var(--color-accent-strong);
-    font-size: 0.96875rem;
+    margin: 2px 0 0;
+    color: var(--color-text);
+    font-size: 1.0625rem;
     font-weight: 650;
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 }
 
 .number {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: var(--color-accent);
-  color: var(--color-surface);
-  font-size: 0.78125rem;
+  background: var(--sim-gradient);
+  box-shadow: 0 6px 14px -6px rgb(17 63 90 / 0.55);
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
 }
 
 .close {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 50%;
   background: transparent;
   color: var(--color-text-subtle);
   cursor: pointer;
@@ -66,7 +69,7 @@
 // Bajo el nombre, alineado con él
 .text,
 .more {
-  margin-left: 36px;
+  margin-left: 52px;
 }
 
 .text {
@@ -131,7 +134,7 @@
 @media (max-width: 820px) {
   :host {
     right: 12px;
-    bottom: calc(var(--field-height, 150px) + 4px);
+    bottom: calc(var(--dock-peek, 178px) + 12px);
     left: 12px;
     width: auto;
   }

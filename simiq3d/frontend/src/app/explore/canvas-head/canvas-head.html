@@ -17,7 +17,10 @@
     </button>
   </h1>
   @if (meta(); as line) {
-    <p class="meta">{{ line }} · <span class="provisional">provisional</span></p>
+    <p class="meta">
+      {{ line }}
+      <span class="provisional">provisional</span>
+    </p>
   }
 } @else {
   <h1 class="name">{{ title() }}</h1>
