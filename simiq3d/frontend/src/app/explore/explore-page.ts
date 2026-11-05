@@ -147,6 +147,8 @@ export class ExplorePage {
   protected readonly level = signal<SheetLevel>('peek');
   /** En celular, con el panel asomado la conversación no se ve ni se alcanza con el teclado. */
   protected readonly historyHidden = computed(() => this.mobile() && this.level() === 'peek');
+  /** La última respuesta va sobre el campo solo con el panel asomado y la ficha cerrada. */
+  protected readonly showLast = computed(() => this.level() === 'peek' && !this.cardOpen());
   protected readonly chatWidth = signal(this.compact() ? CHAT_WIDTH.min : CHAT_WIDTH.initial);
   /** Alto del campo de pregunta, que en celular tapa la parte de abajo del lienzo. */
   protected readonly fieldHeight = signal(150);

@@ -154,6 +154,17 @@ ol {
   font-weight: 700;
 }
 
+.panel-leave {
+  animation: lift 0.25s var(--ease-fade) forwards;
+}
+
+@keyframes lift {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
 @keyframes drop {
   from {
     opacity: 0;

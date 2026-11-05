@@ -20,7 +20,12 @@
 </button>
 
 @if (open() && !disabled()) {
-  <aside class="panel" id="legend-panel" aria-label="Leyenda de la mesa">
+  <aside
+    class="panel"
+    id="legend-panel"
+    aria-label="Leyenda de la mesa"
+    animate.leave="panel-leave"
+  >
     <div class="panel-head">
       <h2>Mesa de Mayo</h2>
       <p>Toca un número para ubicarlo.</p>

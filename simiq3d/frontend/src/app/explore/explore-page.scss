@@ -185,6 +185,18 @@
   }
 }
 
+// La ficha sale con un fundido y bajando, como entró subiendo
+.card-leave {
+  animation: card-out 0.25s var(--ease-fade) forwards;
+}
+
+@keyframes card-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
 @keyframes dock-in {
   from {
     opacity: 0;

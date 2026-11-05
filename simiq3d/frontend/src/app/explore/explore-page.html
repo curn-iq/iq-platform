@@ -36,6 +36,7 @@
     />
     @if (cardOpen() && selectedItem(); as item) {
       <app-instrument-card
+        animate.leave="card-leave"
         [item]="item"
         [instruments]="cardInstruments()"
         (close)="cardOpen.set(false)"
@@ -103,7 +104,7 @@
       [busy]="conversation.pending()"
       [waiting]="conversation.waiting()"
       [last]="lastReply()"
-      [showLast]="level() === 'peek' && !cardOpen()"
+      [showLast]="showLast()"
       (choose)="open($event)"
       (ask)="ask($event)"
       (openHistory)="level.set('medium')"
