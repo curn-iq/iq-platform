@@ -27,3 +27,7 @@ __pycache__/
 
 # Instrucciones personales para Claude Code en este proyecto (no se versionan)
 CLAUDE.local.md
+
+# SIVRI: pesos del modelo entrenado (se publican aparte, no en el repo)
+sivri/backend/models/
+*.pt

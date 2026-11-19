@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Pinza de Allis",
+    "box": [
+      150,
+      140,
+      210,
+      170
+    ],
+    "confidence": 0.9
+  },
+  {
+    "label": "Pinza de disección con garra",
+    "box": [
+      310,
+      140,
+      370,
+      170
+    ],
+    "confidence": 0.9
+  },
+  {
+    "label": "Pinza Rochester",
+    "box": [
+      470,
+      250,
+      530,
+      280
+    ],
+    "confidence": 0.9
+  },
+  {
+    "label": "Separador de Farabeuf",
+    "box": [
+      630,
+      360,
+      690,
+      390
+    ],
+    "confidence": 0.9
+  },
+  {
+    "label": "Tijera de Mayo",
+    "box": [
+      150,
+      470,
+      210,
+      500
+    ],
+    "confidence": 0.9
+  },
+  {
+    "label": "Tijera de Metzenbaum",
+    "box": [
+      310,
+      470,
+      370,
+      500
+    ],
+    "confidence": 0.9
+  }
+]

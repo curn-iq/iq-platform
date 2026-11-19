@@ -1,0 +1,56 @@
+[project]
+name = "sivri-backend"
+version = "0.1.0"
+description = "Backend de SIVRI: reconoce el instrumental en la mesa de Mayo y valida su disposición."
+requires-python = ">=3.14"
+license = "AGPL-3.0-only"
+dependencies = [
+    "alembic>=1.20.0",
+    "asyncpg>=0.32.0",
+    "fastapi[standard]>=0.156.2",
+    "httpx>=0.28.1",
+    "numpy>=2.2",
+    "opencv-python-headless>=4.11",
+    "pydantic-settings>=2.16.1",
+    "pyjwt[crypto]>=2.15.1",
+    "scipy>=1.15",
+    "sqlalchemy[asyncio]>=2.1.5",
+]
+
+[project.optional-dependencies]
+# El detector real (YOLO26, Ultralytics, AGPL-3.0). Aparte porque arrastra
+# PyTorch: sin él, SIVRI corre con el detector de pruebas. PyTorch va en su
+# versión solo para CPU (abajo): el Servidor PC1 no tiene GPU y la de CUDA pesa
+# varios GB.
+yolo = ["ultralytics>=8.4", "torch", "torchvision"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# Avisa de los imports sin usar (F401), pero no los borra al guardar.
+unfixable = ["F401"]
+
+[tool.ruff.lint.per-file-ignores]
+# Migraciones generadas por Alembic: llevan SQL largo que no se puede partir.
+"migrations/versions/*" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
