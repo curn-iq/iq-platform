@@ -98,8 +98,9 @@ qué posición) y la dibuja. Para que corra bien en un celular modesto:
 La regla está en [`../README.md`, «Cómo se arma la mesa en 3D»](../README.md#cómo-se-arma-la-mesa-en-3d).
 En código: la cuadrícula de la técnica (`zones`: `rows` × `columns`, de
 `GET /techniques/{id}/instruments`) se reparte en partes iguales sobre la
-mesa, de tamaño provisional y el mismo para todas las técnicas (56 × 40 cm,
-el del mockup; `MAYO_TABLE_SIZE` en `domain/mayo-table.ts`); cada objeto
+mesa, de tamaño provisional y el mismo para todas las técnicas (ver «Escena
+3D de SIMIQ3D» en [DESIGN.md](../../DESIGN.md) y `MAYO_TABLE_SIZE` en
+`domain/mayo-table.ts`); cada objeto
 va con su centro en el centro de sus celdas (si ocupa varias, el centro de
 todas). Unidades en metros, el eje Y hacia arriba, las columnas sobre X y las
 filas sobre Z. Solo la mesa de Mayo (alcance del MVP).

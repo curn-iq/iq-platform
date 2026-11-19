@@ -11,10 +11,9 @@
  */
 
 /**
- * Tamaño de la mesa: provisional, el mismo para todas las técnicas. Es el del
- * mockup; medir la del laboratorio es para después del MVP (`docs/despues-del-mvp.md`).
+ * Tamaño de la mesa: provisional, el mismo para todas las técnicas. Orientado como en las fotos de IQ; medir la del laboratorio es para después del MVP (`docs/despues-del-mvp.md`).
  */
-export const MAYO_TABLE_SIZE = { width: 0.56, depth: 0.4 } as const;
+export const MAYO_TABLE_SIZE = { width: 0.4, depth: 0.56 } as const;
 
 /** Una celda de la cuadrícula, contada desde 1. */
 export interface TableCell {

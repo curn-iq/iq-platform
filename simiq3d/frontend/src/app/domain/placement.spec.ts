@@ -20,13 +20,13 @@ describe('placeItems', () => {
     instrumentIds,
     cells,
   });
-  const table = (items: TableItem[]): MayoTable => ({ rows: 4, columns: 7, items });
+  const table = (items: TableItem[]): MayoTable => ({ rows: 10, columns: 6, items });
 
   it('cada objeto va al centro de sus celdas, con su modelo', () => {
     const [kelly] = placeItems(table([item('kelly', ['i-kelly'])]), modelFor);
     expect(kelly.itemId).toBe('kelly');
-    expect(kelly.x).toBeCloseTo(-0.24);
-    expect(kelly.z).toBeCloseTo(-0.15);
+    expect(kelly.x).toBeCloseTo(-1 / 6);
+    expect(kelly.z).toBeCloseTo(-0.252);
     expect(kelly.models).toEqual([{ file: 'kelly_forceps.glb', mountOn: null }]);
   });
 

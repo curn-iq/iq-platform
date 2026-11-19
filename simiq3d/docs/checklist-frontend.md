@@ -45,6 +45,9 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Página técnica para ver el visor con datos reales (`explore/`): técnicas, visor y leyenda; la pantalla final es la fase 4
 - [ ] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar
 
+- [x] Orientar la mesa en vertical según las fotos de IQ y comprobar que el
+  visor conserva los objetos de varias celdas (ver [diseño](../../DESIGN.md#escena-3d-de-simiq3d-material)).
+
 ### Fase 3 — Mockups
 
 Con el método de [`.claude/rules/diseno.md`](../../.claude/rules/diseno.md);
