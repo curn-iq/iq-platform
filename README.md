@@ -128,4 +128,7 @@ iq-platform/
 
 ## Licencia
 
-[MIT](LICENSE)
+[MIT](LICENSE), salvo `sivri/`, que va con [AGPL-3.0](sivri/LICENSE) porque usa
+YOLO26 de Ultralytics. SIVRI es un programa aparte que se comunica con DataIQ por
+HTTP: la AGPL no se extiende al resto del repo (decidido por Mauricio el
+2026-10-13; detalle en [`sivri/README.md`](sivri/README.md), «Licencia»).

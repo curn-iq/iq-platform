@@ -53,13 +53,17 @@ El avance, por actividad de DSRM, está en
 ## Stack
 
 - Visión artificial: YOLO26 (Ultralytics, licencia AGPL-3.0)
-- Backend: Python (por definir el framework); su propia base de datos (Neon),
-  separada de la de DataIQ
+- Backend: Python 3.14 con FastAPI, OpenCV (marcadores ArUco), SciPy (el
+  emparejamiento) y YOLO26 de Ultralytics; su propia base de datos PostgreSQL 18,
+  separada de la de DataIQ y la de SIMIQ3D. Cómo se corre y qué expone:
+  [`backend/README.md`](backend/README.md)
 - Autenticación: valida el JWT de DataIQ con su clave pública (JWKS). La
-  cookie de sesión no llega al Servidor PC1 del laboratorio (otro dominio): el
-  frontend pide a DataIQ un token corto y lo manda en
+  cookie de sesión no llega al Servidor PC1 (otro dominio): el frontend pide a
+  DataIQ un token corto (`POST /auth/module-token`, 5 minutos) y lo manda en
   `Authorization: Bearer` (pieza 10 de la
   [checklist del backend de DataIQ](../dataiq/docs/checklist-backend.md))
+- Servidor PC1: el PC de escritorio de Mauricio, con la base de SIVRI en un
+  contenedor local (decidido por Mauricio el 2026-11-18)
 - Frontend: Angular, como el shell y DataIQ
 
 ## Licencia
@@ -91,8 +95,9 @@ procedimientos ni tiempos quirúrgicos; la cámara mira siempre desde arriba.
    etiqueta («Tijera de Mayo»). No valida nada todavía.
 3. **Cuando la mesa está armada**, SIVRI la compara con las cinco técnicas y
    muestra la que más se parece, con su porcentaje («Mastectomía · 90 %»), y
-   qué instrumentos están en su lugar y cuáles mover y hacia dónde («Separador
-   de Senn Miller: mover una celda a la izquierda»). Si las dos técnicas más
+   qué instrumentos están en su lugar y cuáles mover y dónde van (la forma de
+   la frase, con lo que sale de DataIQ: «Pinza Kelly (n.º 2): va en el centro, a
+   la derecha, junto a Pinza Rochester (n.º 3)»). Si las dos técnicas más
    parecidas quedan muy cerca, muestra las dos. El estudiante no elige la
    técnica: SIVRI la reconoce.
 
@@ -101,10 +106,13 @@ procedimientos ni tiempos quirúrgicos; la cámara mira siempre desde arriba.
 Decidido por Mauricio el 2026-10-13:
 
 - **Celda exacta.** Cada instrumento va en su celda del arreglo de DataIQ; si
-  no, SIVRI dice hacia dónde moverlo. Es lo que dice el Formato 115 (la mesa de
-  Mayo es «un ordenamiento espacial normalizado que el instrumentador debe
-  reproducir con precisión»; se registra la posición, no la cantidad) y lo que
-  muestran los mockups («mover una celda a la izquierda»).
+  no, SIVRI dice dónde va. Es lo que dice el Formato 115 (la mesa de Mayo es
+  «un ordenamiento espacial normalizado que el instrumentador debe reproducir
+  con precisión»; se registra la posición, no la cantidad). La celda es la
+  medida interna: al estudiante no se le habla de filas, columnas ni celdas
+  (decidido por Mauricio el 2026-10-27), sino de la zona de la mesa, lo que
+  tiene al lado y el número del diagrama de IQ. La frase la arma el backend,
+  como SIMIQ3D (decidido por Mauricio el 2026-11-18).
 - **Margen técnico.** Un instrumento que queda justo en el borde entre dos
   celdas no se marca como error: puede ser imprecisión de la medición, no del
   estudiante. El tamaño del margen se ajusta con las fotos de validación.
@@ -141,9 +149,9 @@ columnas de DataIQ):
    | Estado | Cuándo | Qué ve el estudiante |
    |---|---|---|
    | En su lugar | El centro cae dentro de sus celdas, fuera del margen | Marcado como correcto |
-   | Mover | El centro cae en otra celda, fuera del margen | Hacia dónde moverlo («una celda a la izquierda») |
+   | Mover | El centro cae en otra celda, fuera del margen | Dónde va («va en el centro, a la derecha, junto a Pinza Rochester (n.º 3)») |
    | Dudoso | El centro cae en el margen técnico: la franja junto al borde de sus celdas | Nada: puede ser imprecisión de la medición |
-   | Falta | Se esperaba y no aparece | Qué instrumento falta |
+   | Falta | Se esperaba y no aparece | Qué instrumento falta y dónde va |
    | Sobra | Aparece y no se esperaba | Qué instrumento sobra |
 
 4. **Porcentaje de la técnica:** instrumentos en su lugar sobre instrumentos
@@ -165,7 +173,8 @@ mesas armadas con errores a propósito, que tienen anotado cuál es el error.
 
 ```
 sivri/
-├── backend/
+├── LICENSE            AGPL-3.0
+├── backend/           API, validación de la mesa y su base (README propio)
 ├── frontend/
 └── docs/
     ├── dataset.md     de dónde salen las imágenes y qué instrumentos reconoce
