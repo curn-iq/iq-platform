@@ -48,6 +48,10 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Orientar la mesa en vertical según las fotos de IQ y comprobar que el
   visor conserva los objetos de varias celdas (ver [diseño](../../DESIGN.md#escena-3d-de-simiq3d-material)).
 
+- [x] Verificar que el sitio de producción sirve la compilación con la mesa
+  de Mayo en vertical (2026-11-19,
+  [PR #82](https://github.com/curn-iq/iq-platform/pull/82)).
+
 ### Fase 3 — Mockups
 
 Con el método de [`.claude/rules/diseno.md`](../../.claude/rules/diseno.md);
