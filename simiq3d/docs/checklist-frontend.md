@@ -43,7 +43,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Sin WebGL: aviso y enlace a la mesa en DataIQ
 - [x] Las piezas quedan dentro de la mesa y no se tapan entre sí: cada una se corre lo justo desde el centro de su celda (`domain/arrangement.ts`; decidido por Mauricio el 2026-11-01)
 - [x] Página técnica para ver el visor con datos reales (`explore/`): técnicas, visor y leyenda; la pantalla final es la fase 4
-- [ ] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar
+- [x] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar (dado por bueno por Mauricio el 2026-11-13)
 
 - [x] Orientar la mesa en vertical según las fotos de IQ y comprobar que el
   visor conserva los objetos de varias celdas (ver [diseño](../../DESIGN.md#escena-3d-de-simiq3d-material)).

@@ -171,7 +171,7 @@ redacción»).
   sobre la mastectomía…» pasaba de 12 s y se mostraba lo armado; en el MVP se
   acepta esperar más (decidido por Mauricio). El log dice también cuándo la
   redacción no terminó a tiempo, como cuando no pasa la verificación
-- [ ] Probar en producción, con el Servidor PC2: el tiempo de punta a punta
+- [x] Probar en producción, con el Servidor PC2: el tiempo de punta a punta (dado por bueno por Mauricio el 2026-11-13: el tiempo del chat es adecuado)
 
 ### El tutor
 
