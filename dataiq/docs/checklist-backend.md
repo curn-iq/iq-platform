@@ -255,6 +255,14 @@ aquí para que quien opere el backend las decida.
     texto para un 429 (`describeApiError`, en `core/http/error-message.ts`, solo lee
     `detail`): el registro diría «No se pudo completar el registro»
 
+## Ajuste de las mesas de Mayo
+
+- [x] Cargar las cinco mesas de Mayo de Cirugía General a partir de las fotos
+  de IQ en PostgreSQL local (ver [fuente y criterio](../README.md#mesas-de-mayo-de-cirugía-general)).
+
+- [x] Preparar una carga específica que conserva las versiones anteriores en
+  bases existentes (ver [README](../README.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
+
 ## Datos de la fuente que no cuadraban
 
 Criterio: lo que los documentos de IQ traen completo se carga tal cual. Lo que
