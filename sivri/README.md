@@ -3,7 +3,7 @@
 Sistema Inteligente de Visión y Retroalimentación para Instrumentación Quirúrgica.
 
 Reconoce el instrumental quirúrgico con la cámara (YOLO26) y valida si su
-disposición en la mesa es la de la técnica elegida, según el arreglo publicado
+disposición en la mesa es la de la técnica reconocida, según el arreglo publicado
 en DataIQ. Le dice al estudiante qué está bien y qué no. Valida por técnica, no
 por tiempo quirúrgico.
 
@@ -17,9 +17,8 @@ por tiempo quirúrgico.
   instrumento del catálogo de DataIQ.
 - **De dónde salen las imágenes:** un dataset propio, con fotos de las mesas
   reales tomadas por el programa de Instrumentación Quirúrgica y etiquetadas
-  por el equipo de ING, publicado en Kaggle. Tres sesiones de fotos en dos
-  visitas al laboratorio, divididas por sesión: entrenamiento, validación y
-  prueba. Detalle y protocolo de fotos en
+  por el equipo de ING, publicado en Kaggle. La captura del 2026-11-18 se dividió por ronda completa en
+  entrenamiento, validación y prueba. Detalle y protocolo de fotos en
   [`docs/dataset.md`](docs/dataset.md).
 - **Cómo reconoce:** en tiempo real sobre el video de la cámara (decidido por
   Mauricio el 2026-10-13). El celular muestra el video en vivo y envía 2 o 3
@@ -122,9 +121,7 @@ Decidido por Mauricio el 2026-10-13:
   laboratorio, donde ponerlos es fácil; con una guía de encuadre en pantalla,
   un encuadre torcido correría todo una celda y daría errores falsos.
 
-Las cuadrículas de DataIQ son diagramas hechos a mano, no medidas: la
-cuadrícula se reparte en partes iguales sobre la mesa que marcan los
-marcadores.
+El arreglo se toma del [catálogo de DataIQ](../dataiq/README.md#mesas-de-mayo-de-cirugía-general).
 
 ## Cómo se valida la mesa
 

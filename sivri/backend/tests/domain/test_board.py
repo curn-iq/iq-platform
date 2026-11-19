@@ -49,3 +49,13 @@ def test_a_point_outside_the_markers_leaves_the_unit_square():
     u, v = board.to_board(600, 400)
 
     assert u > 1 and v > 1
+
+
+def test_padding_extends_the_grid_beyond_marker_centers():
+    board = Board.from_markers(
+        markers([(100, 50), (500, 50), (500, 350), (100, 350)]), padding=0.1
+    )
+    assert board is not None
+    assert board.to_board(60, 20) == pytest.approx((0, 0))
+    assert board.to_board(540, 380) == pytest.approx((1, 1))
+    assert board.to_board(100, 50) == pytest.approx((1 / 12, 1 / 12))

@@ -1,9 +1,9 @@
 """Cómo se valida la mesa (README de SIVRI, «Cómo se valida la mesa»).
 
 Detectar, emparejar cada detección con su posición esperada y darle un estado a
-cada objeto («planogram compliance»). Todo en unidades de celda: la mesa entre
-los marcadores se reparte en partes iguales según la cuadrícula de la técnica, y
-una celda mide 1 × 1.
+cada objeto («planogram compliance»). Todo en unidades de celda: el área ampliada
+a partir de los marcadores se reparte según la cuadrícula de la técnica, y una
+celda mide 1 × 1.
 """
 
 import math

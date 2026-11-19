@@ -1,0 +1,18 @@
+[Unit]
+Description=SIVRI con YOLO26n en PC1
+Requires=iq-pc1-db@sivri.service iq-dataiq-pc1.service
+After=iq-pc1-db@sivri.service iq-dataiq-pc1.service
+
+[Service]
+WorkingDirectory=%h/Projects/iq-platform/sivri/backend
+CacheDirectory=iq-sivri
+Environment=DETECTOR=yolo
+Environment=DATAIQ_URL=http://127.0.0.1:8000
+Environment=OMP_NUM_THREADS=4
+Environment=YOLO_CONFIG_DIR=%C/iq-sivri
+ExecStart=%h/Projects/iq-platform/sivri/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8002 --ws-max-size 8000000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

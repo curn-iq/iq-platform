@@ -17,7 +17,7 @@ Capas, como el backend de SIMIQ3D. Todo se corre desde `sivri/backend`.
 | `app/ports/` | Lo que el dominio necesita de afuera: detector, marcadores, catálogo, mapeo de clases, tokens |
 | `app/adapters/inbound/` | La API (FastAPI) y el comando que carga el mapeo de clases |
 | `app/adapters/outbound/` | OpenCV (marcadores), YOLO26 y el detector de pruebas, el catálogo de DataIQ, la validación de tokens (JWKS) y la base (SQLAlchemy) |
-| `classes.csv` | Las 19 clases del modelo: el instrumento y su número al entrenar |
+| `classes.csv` | Las 15 clases del modelo: el instrumento y su número al entrenar |
 | `migrations/` | Alembic: una tabla, `class_mappings` |
 
 ## Qué expone
@@ -94,7 +94,7 @@ conviene dibujarlo sobre ese cuadro y no sobre el video de ahora.
 | Campo | Cómo leerlo |
 |---|---|
 | `board_found` | `false` si falta algún marcador de los cuatro (`markers` dice cuáles se ven, por su `id` 0 a 3). Entonces solo hay `detections`; `techniques` y `ranking` vienen vacíos |
-| `detections[].label` | Nombre del instrumento tal como está en DataIQ, listo para mostrar; `instrument_id` es `null` si la clase no está mapeada |
+| `detections[].label` | Nombre de la clase del modelo, listo para mostrar; `instrument_id` es `null` si la clase no está mapeada |
 | `techniques` | La técnica que más se parece o, si quedan muy cerca, las dos. Cada una trae `objects` (lo esperado) y `extras` (lo que sobra) |
 | `percent` | De 0 a 1 (no de 0 a 100). `in_place` cuenta también los dudosos: es el numerador del porcentaje |
 | `objects[].status` | `in_place`, `move`, `doubtful` (no se le muestra nada al estudiante), `missing` (sin `box`) o `extra` |
@@ -150,7 +150,7 @@ las pruebas (`uv run pytest`) también se puede ver cada mensaje: `tests/api/`.
 - La cámara del navegador solo abre con HTTPS (o `localhost`): probar desde un celular
   contra un servidor local en http no funciona.
 - Vercel no pasa WebSockets por sus reescrituras: la página se conecta directo a
-  `wss://` del Servidor PC1 (el Funnel, aún sin dirección). La dirección de SIVRI va
+  `wss://` del Servidor PC1 (ver «Vista previa en PC1»). La dirección de SIVRI va
   en la configuración del frontend, no en una ruta del mismo origen.
 - Desde el navegador, `CORS_ORIGINS` tiene que incluir el origen de la página, también
   en desarrollo (por ejemplo `["http://localhost:4200"]`). El WebSocket no pasa por
@@ -182,8 +182,10 @@ Hace falta [uv](https://docs.astral.sh/uv/), Podman y el backend de DataIQ corri
      uv run python -m app.adapters.inbound.cli.load_classes
    ```
 
-   Cada nombre de `classes.csv` tiene que existir en DataIQ (o ser un alias); si no,
-   no carga nada y dice cuáles faltan. Hay que volver a correrlo en cada entorno,
+   Cada fila de `classes.csv` debe resolver a un instrumento de DataIQ. La columna
+   opcional `instrumento` indica su nombre o alias cuando difiere de `clase`.
+   Si falta un instrumento, la carga se detiene y lo indica. Hay que volver a
+   correr el comando en cada entorno,
    porque los ids de DataIQ cambian de una instalación a otra.
 4. Levantar la API:
 
@@ -214,8 +216,10 @@ confirmar por Mauricio):
 - **La mesa** va entre los **centros** de los cuatro marcadores (0 arriba a la
   izquierda, 1 arriba a la derecha, 2 abajo a la derecha, 3 abajo a la izquierda,
   como en `marcadores-aruco.pdf`: diccionario 4x4 de 50). La cuadrícula de cada
-  técnica se reparte en partes iguales sobre ella. Si falta un marcador no se
-  valida.
+  técnica se reparte sobre el área ampliada un 10 % por lado (`BOARD_PADDING=0.10`),
+  según la decisión de Mauricio del 2026-11-19 documentada en
+  [DataIQ](../../dataiq/README.md#mesas-de-mayo-de-cirugía-general). Si falta un
+  marcador no se valida.
 - **Emparejar:** clase por clase, con el algoritmo húngaro, minimizando la
   distancia del centro de la caja al centro de las celdas esperadas.
 - **Margen técnico:** 10 % del lado de la celda (`CELL_MARGIN`). Un objeto de varias
@@ -226,16 +230,112 @@ confirmar por Mauricio):
 - **Muy cerca:** se muestran las dos técnicas cuando su porcentaje difiere en 5
   puntos o menos (`CLOSE_GAP`); el README no da la cifra.
 - **Qué se espera:** un instrumento por componente de cada objeto, solo si es clase
-  del modelo. Las hojas de bisturí no lo son (van montadas en su mango), así que la
-  mesa no las espera.
+  del modelo. La clase «Pinza de disección» representa las dos disecciones apiladas y
+  se mapea a la de con garra. La de sin garra queda como componente del
+  catálogo de DataIQ.
 - **Cuándo está «armada» la mesa:** el backend siempre valida y devuelve el
   porcentaje; la página decide qué mostrar mientras el estudiante arma (nombrar lo
   que ve) y cuándo mostrar la técnica.
 
+## Ensayo local del WebSocket
+
+El 2026-11-19 se reprodujeron tres fotos de Colecistectomía de Ronda 3 en
+una conexión local, con YOLO26n en CPU y el catálogo de DataIQ cargado en
+memoria. Se envió un cuadro por vez, hasta tres por segundo. Excluido el
+primer cuadro, las 12 respuestas tardaron una mediana de 79,7 ms desde el
+envío hasta la recepción, con un rango de 64,1 a 92,1 ms. Queda por medir
+el tiempo de punta a punta con captura de celular, red y autenticación
+real.
+
+En las tres fotos se detectaron los cuatro ArUco y Colecistectomía quedó
+primera. La foto «Bien Armada» recibió una indicación para mover la Allis
+y la de «Error B» no recibió indicaciones. El ensayo verifica la conexión
+y deja esos casos para revisar con IQ en la evaluación espacial.
+
+## Vista previa en PC1
+
+La API de vista previa del 2026-11-19 está en
+`https://fedora.tail5cf085.ts.net:8443` y el video en
+`wss://fedora.tail5cf085.ts.net:8443/ws/validate`. Funnel reenvía el puerto
+8443 a SIVRI en `127.0.0.1:8002`. DataIQ escucha en `127.0.0.1:8000`.
+
+PC1 usa unidades permanentes de usuario de systemd, como el filtro de
+SIMIQ3D. Se instalan en `~/.config/systemd/user/` desde
+[`../servidor-pc1/`](../servidor-pc1/). Ambas APIs están habilitadas en
+`default.target` y el usuario tiene habilitado el arranque sin sesión
+(`Linger=yes`). Cada API inicia su contenedor PostgreSQL local y espera
+a que responda `pg_isready`. Se usan las bases y pesos ya instalados
+según «Correrlo».
+
+Para instalar las unidades en un PC1 preparado, desde la raíz del repo:
+
+```sh
+install -d ~/.config/systemd/user
+install -m 644 sivri/servidor-pc1/*.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now iq-dataiq-pc1.service iq-sivri-pc1.service
+```
+
+Para consultar el estado, usar `systemctl --user status iq-sivri-pc1` y
+`journalctl --user -u iq-sivri-pc1`. El servicio de sistema `tailscaled`
+mantiene la configuración de Funnel fuera de estas unidades.
+
+Se comprobó por HTTPS y WSS el inicio de sesión en DataIQ local, la emisión
+del JWT de cinco minutos, el rechazo de un token inválido y la renovación en
+una conexión abierta. La vista previa usa el catálogo y las llaves del DataIQ
+local. En una sesión desde PC1 por la IP pública de Funnel, la conexión
+procesó 25 cuadros en 316,4 s. Se renovó el JWT en la misma conexión y
+se recibieron cuadros después del vencimiento original. Una conexión
+nueva rechazó el JWT vencido con código 4401. Con el JPEG de 478,9 kB,
+la mediana tras el primer cuadro fue de 1,10 s.
+
+En seis fotos de Ronda 3, SIVRI detectó los cuatro marcadores y puso primera
+la técnica indicada por el archivo. En Mastectomía Error A indicó mover
+Kelly y Farabeuf, y en Tiroidectomía Error A, la tijera de Mayo. En
+Eventrorrafia Error A omitió ambas indicaciones esperadas y en Error B
+reportó ausencias en vez de indicar el intercambio. Las anotaciones de los
+errores están para confirmar con IQ.
+
+### Tamaño del cuadro por Funnel
+
+Ensayo desde PC1 contra la IP pública de Funnel, con JPEG de Mastectomía
+Error A y un JWT real. Se enviaron seis cuadros de cada tamaño, uno por
+vez, con calidad JPEG 75.
+
+| Lado mayor | Tamaño por cuadro | Mediana envío–respuesta |
+|---:|---:|---:|
+| 960 px | 90,4 kB | 294 ms |
+| 640 px | 45,4 kB | 248 ms |
+
+En ambos tamaños se detectaron los cuatro marcadores y se indicó mover
+Kelly y Farabeuf. El ensayo usa una sola foto. Falta medir desde el
+celular y con cuadros en vivo.
+
+### Diagnóstico de la retroalimentación
+
+Se revisaron las 35 fotos de Ronda 2 y las 35 de Ronda 3 con el despliegue
+de PC1. La comparación fija la técnica indicada por el archivo y pasa al
+mismo validador los centros de YOLO y los de las cajas anotadas. Las
+anotaciones están para confirmar con IQ. Se detectaron cuatro ArUco en 31
+fotos de Ronda 2 y en 33 de Ronda 3. Las demás se excluyeron de la
+comparación espacial.
+
+| Foto de Ronda 3 | Con YOLO26n | Con las cajas anotadas |
+|---|---|---|
+| Colecistectomía bien armada, IMG_1853 | Pide mover la Allis. El centro cae en la fila siguiente | El centro cae dentro de su celda, cerca del borde |
+| Eventrorrafia Error A, IMG_1880 | Da por bien ubicadas Metzenbaum y Kelly Adson, con cada clase en la posición de la otra según las anotaciones | Pide mover ambas |
+| Eventrorrafia Error B, IMG_1882 | Reporta que faltan Kelly y Allis | Pide mover ambas |
+| Mastectomía Error A, IMG_1925 | Pide mover Kelly y Farabeuf | Pide mover ambas |
+
+En Ronda 2, ampliar `CELL_MARGIN` de 0,10 a 0,20 mantuvo en cero las
+indicaciones de mover en las 13 fotos «Bien Armada» con cuatro marcadores.
+En las 18 fotos de error con cuatro marcadores, bajó de 33 a 30 las
+indicaciones de mover. Las ausencias y sobrantes siguieron iguales. Se
+conservó 0,10 en PC1 y no se ajustó el modelo ni la cuadrícula con Ronda 3.
+Estas cifras cuentan indicaciones durante el diagnóstico.
+
 ## Lo que falta
 
-- Los pesos entrenados (dependen de etiquetar las fotos de IQ).
-- La base guarda solo el mapeo de clases: no guarda imágenes ni resultados.
-- Despliegue en el Servidor PC1 con Tailscale Funnel, y el origen del shell en
-  `CORS_ORIGINS`.
+- Configurar el DataIQ y el origen del shell que se usarán para el piloto.
+- Medir con un celular y revisar los casos de retroalimentación con IQ.
 - El frontend de SIVRI (la cámara y el dibujo sobre el video).

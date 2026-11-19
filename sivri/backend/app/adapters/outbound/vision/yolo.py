@@ -5,8 +5,8 @@ from app.domain.vision import Box, Detection
 
 class YoloDetector:
     """Reconoce el instrumental con YOLO26 (Ultralytics, AGPL-3.0). Corre en CPU, sin
-    GPU, sobre el cuadro reducido (README de SIVRI). Cada clase del modelo se llama
-    como el instrumento del catálogo.
+    GPU, sobre el cuadro reducido (README de SIVRI). El mapeo de clases a
+    instrumentos se carga desde `classes.csv`.
 
     `ultralytics` se importa al cargar el modelo y no antes: sin él instalado
     (`uv sync --extra yolo`) SIVRI corre con el detector de pruebas.

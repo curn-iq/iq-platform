@@ -1,0 +1,8 @@
+[Unit]
+Description=Base PostgreSQL local de %i en PC1
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/podman start %i-db
+ExecStartPost=/usr/bin/bash -c 'for ((attempt=0; attempt<30; attempt++)); do /usr/bin/podman exec "$1-db" pg_isready -q && exit 0; sleep 1; done; exit 1' _ %i

@@ -107,10 +107,11 @@ def test_an_unknown_technique_closes_with_4404(web, setup, dataiq):
         assert closed_with(ws) == 4404
 
 
-def test_a_bad_frame_is_reported_and_the_connection_goes_on(web, setup, dataiq):
+@pytest.mark.parametrize("data", [b"", b"no soy una imagen"])
+def test_a_bad_frame_is_reported_and_the_connection_goes_on(web, setup, dataiq, data):
     with web.websocket_connect(URL) as ws:
         hello(ws, dataiq.token())
-        ws.send_bytes(b"no soy una imagen")
+        ws.send_bytes(data)
         assert ws.receive_json() == {
             "type": "error",
             "code": "invalid_image",

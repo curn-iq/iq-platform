@@ -47,10 +47,10 @@ Dónde corre cada pieza en producción y cómo llega ahí:
   de cada módulo, para que lleguen con la misma cookie.
 - **Neon** guarda una base por módulo (PostgreSQL 18, Ohio), cada una en su
   propio proyecto.
-- **El backend de SIVRI** corre en el **Servidor PC1**, un PC del laboratorio,
-  durante las sesiones. Tailscale Funnel le da una dirección HTTPS fija y le
-  reenvía lo que manda el celular; el servidor pide el catálogo a DataIQ una
-  vez por sesión.
+- **El backend de SIVRI** corre en el **Servidor PC1**, el PC de Mauricio.
+  Tailscale Funnel le da una dirección HTTPS y reenvía los cuadros; el
+  servidor pide el catálogo a DataIQ. Las unidades y el entorno de la vista
+  previa se documentan en el [README de SIVRI](../sivri/backend/README.md#vista-previa-en-pc1).
 - **El modelo de lenguaje de SIMIQ3D** corre con Ollama en el **Servidor
   PC2**, un PC de escritorio con GPU, detrás de Tailscale Funnel y de un
   filtro con clave. Si el Servidor PC2 se apaga, solo deja de funcionar el

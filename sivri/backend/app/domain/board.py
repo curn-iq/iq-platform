@@ -4,8 +4,7 @@ mesa, sin importar qué tan torcido o alto esté el celular.
 Los marcadores van uno en cada esquina de la mesa, encima del campo: 0 arriba a
 la izquierda, 1 arriba a la derecha, 2 abajo a la derecha y 3 abajo a la
 izquierda. Su centro marca la esquina de la mesa; la cuadrícula de cada técnica
-se reparte en partes iguales entre ellos (las de DataIQ son diagramas hechos a
-mano, no medidas).
+se reparte en partes iguales sobre el área ampliada con el padding.
 """
 
 from collections.abc import Iterable
@@ -22,15 +21,17 @@ _CORNERS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 class Board:
     """La homografía de la imagen a la mesa: (0, 0) es la esquina de arriba a la
-    izquierda y (1, 1) la de abajo a la derecha, entre los centros de los
-    marcadores. Con ella, el centro de la caja de un instrumento dice en qué
-    parte de la mesa está."""
+    izquierda y (1, 1) la de abajo a la derecha del área con padding. Con ella, el
+    centro de la caja dice en qué parte de la mesa está el instrumento."""
 
-    def __init__(self, homography: np.ndarray) -> None:
+    def __init__(self, homography: np.ndarray, padding: float = 0.0) -> None:
         self._h = homography
+        self._padding = padding
 
     @classmethod
-    def from_markers(cls, markers: Iterable[Marker]) -> Board | None:
+    def from_markers(
+        cls, markers: Iterable[Marker], padding: float = 0.0
+    ) -> Board | None:
         """None si no están los cuatro marcadores a la vez."""
         by_id = {m.id: m for m in markers}
         if not all(i in by_id for i in CORNER_IDS):
@@ -47,10 +48,14 @@ class Board:
         except np.linalg.LinAlgError:
             # Marcadores en línea o repetidos: no forman una mesa.
             return None
-        return cls(np.append(h, 1.0).reshape(3, 3))
+        return cls(np.append(h, 1.0).reshape(3, 3), padding)
 
     def to_board(self, x: float, y: float) -> tuple[float, float]:
         """Un punto de la imagen en coordenadas de la mesa (puede salirse de 0 a
-        1 si está fuera de los marcadores)."""
+        1 si está fuera del área ampliada)."""
         u, v, w = self._h @ np.array([x, y, 1.0])
-        return (float(u / w), float(v / w))
+        scale = 1 + 2 * self._padding
+        return (
+            float((u / w + self._padding) / scale),
+            float((v / w + self._padding) / scale),
+        )

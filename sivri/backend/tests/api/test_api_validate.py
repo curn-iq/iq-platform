@@ -10,7 +10,7 @@ def send(client, headers, data=None, **params):
         "/validate",
         headers=headers,
         params=params,
-        files={"image": ("cuadro.jpg", data or jpeg(), "image/jpeg")},
+        files={"image": ("cuadro.jpg", jpeg() if data is None else data, "image/jpeg")},
     )
 
 
@@ -126,8 +126,9 @@ async def test_a_technique_it_does_not_validate_is_404(client, bearer):
 
 
 @pytest.mark.anyio
-async def test_a_file_that_is_not_an_image_is_422(client, bearer):
-    response_ = await send(client, bearer, data=b"no soy una imagen")
+@pytest.mark.parametrize("data", [b"", b"no soy una imagen"])
+async def test_a_file_that_is_not_an_image_is_422(client, bearer, data):
+    response_ = await send(client, bearer, data=data)
 
     assert response_.status_code == 422
 

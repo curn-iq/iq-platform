@@ -18,10 +18,8 @@ class ExpectedObject:
 def expected_objects(technique: Technique, classes: ClassMap) -> list[ExpectedObject]:
     """Lo que la mesa de Mayo de la técnica debe llevar y el modelo puede ver.
 
-    Un objeto compuesto da un instrumento por componente («Pinza de disección con
-    garra y sin garra» son dos en la misma celda). Lo que el modelo no tiene como
-    clase (las hojas de bisturí, que van montadas en su mango) no se espera: no
-    hay cómo verlo.
+    Un objeto compuesto da un instrumento por componente que tenga clase. La
+    disección apilada cuenta una vez, por el mapeo a la de con garra.
     """
     expected = []
     for item in technique.items:

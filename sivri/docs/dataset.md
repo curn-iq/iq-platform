@@ -41,6 +41,17 @@ tenga de todo.
 Si solo se consiguen dos sesiones: la segunda es la prueba, y la validación se
 saca de la primera, al azar (sale optimista: en la tesis se aclara).
 
+### Captura del 2026-11-18
+
+Las 125 fotos se tomaron en una visita. Se mantuvieron completos los tres
+grupos de captura: Ronda 1 (55 fotos, entrenamiento), Ronda 2 (35, validación)
+y Ronda 3 (35, prueba del detector). Las tres rondas se tomaron el mismo día.
+Las tomas «Bien Armada» de las tres rondas sirvieron para definir la cuadrícula
+de DataIQ. La Ronda 3 quedó fuera del entrenamiento y de la selección de
+pesos. Sus fotos «Error A» y «Error B» pueden usarse para evaluar la
+retroalimentación espacial si IQ confirma el error de cada caso y esas
+fotos se reservan del ajuste de umbrales.
+
 ### Cómo se toman las fotos
 
 **Antes de empezar**
@@ -92,8 +103,7 @@ toma y si hace falta ajustarlas.
 
 **Cuántas fotos salen**
 
-Se fotografían 19 instrumentos: los 23 de la lista menos las 4 hojas de
-bisturí, que van montadas en su mango. Con las cantidades de arriba:
+La estimación original de captura (2026-10-13) usaba las cantidades de arriba:
 
 | Bloque | Cálculo | Fotos por sesión |
 |---|---|---|
@@ -115,8 +125,7 @@ dos veces** (unas 240 fotos de grupos en vez de 120). Con eso:
 | **Total** | **unas 800** |
 
 - Por instrumento, en la sesión de entrenamiento: los que están en las cinco
-  mesas salen unas 100 veces; los que están en una sola mesa (Kocher, Lahey,
-  entre otros), unas 60.
+  mesas salen unas 100 veces; los que están en una sola mesa, unas 60.
 - Es mucho menos de lo que Ultralytics recomienda para resultados óptimos (al
   menos 1500 imágenes por clase). Para un MVP de cinco mesas es un punto de
   partida; la sesión de validación dice si alcanza. Si los instrumentos de una
@@ -137,39 +146,42 @@ dos veces** (unas 240 fotos de grupos en vez de 120). Con eso:
 
 ### Instrumentos de las cinco mesas de Mayo
 
-Según los arreglos publicados en DataIQ:
+Los arreglos se documentan en
+[DataIQ](../../dataiq/README.md#mesas-de-mayo-de-cirugía-general). La lista
+ordenada de las 15 clases de YOLO y su correspondencia con el catálogo está en
+[`classes.csv`](../backend/classes.csv). Una caja puede representar
+instrumentos apilados que se etiquetaron juntos, como las pinzas de disección.
 
-| Instrumento | Técnicas (de 5) |
-|---|---|
-| Pinza de Allis | 5 |
-| Pinza de disección con garra | 5 |
-| Pinza de disección sin garra | 5 |
-| Pinza Rochester | 5 |
-| Separador de Farabeuf | 5 |
-| Tijera de Mayo | 5 |
-| Tijera de Metzenbaum | 5 |
-| Mango de bisturí N.° 3 | 4 |
-| Mango de bisturí N.° 4 | 4 |
-| Pinza Kelly | 4 |
-| Hoja de bisturí #20 | 4 |
-| Hoja de bisturí #15 | 3 |
-| Pinza de Babcock | 2 |
-| Hoja de bisturí #10 | 1 |
-| Hoja de bisturí #10-11 | 1 |
-| Mango de bisturí N.° 7 | 1 |
-| Pinza Kelly Adson | 1 |
-| Pinza Kocher | 1 |
-| Pinza Lahey | 1 |
-| Pinza de Moynihan | 1 |
-| Pinza Mosquito curva | 1 |
-| Portaagujas largo | 1 |
-| Separador de Senn Miller | 1 |
+## Resultados del detector YOLO26n
 
-Cada clase del modelo es un instrumento del catálogo, así que el mapeo a
-`instruments.id` es directo. Ese mapeo vive en la base de datos de SIVRI, no en
-DataIQ. Como los ids del catálogo cambian de una instalación a otra, el repo
-guarda el mapeo por nombre del instrumento (o un alias) y se traduce a ids en
-cada entorno con la API de DataIQ.
+Corrida `sivri-r1` del 2026-11-19. Entrenamiento en CPU durante 120 épocas
+con entrada de 640 px. Las cifras corresponden a los pesos `best.pt` elegidos
+con la Ronda 2. La prueba del detector se ejecutó una vez con la Ronda 3.
+
+| Grupo | Fotos | Precisión | Exhaustividad | mAP@0.5 | mAP@0.5:0.95 |
+|---|---:|---:|---:|---:|---:|
+| Validación | 35 | 0,781 | 0,834 | 0,862 | 0,616 |
+| Prueba | 35 | 0,861 | 0,843 | 0,889 | 0,628 |
+
+### Validación por clase
+
+| Clase | mAP@0.5 | mAP@0.5:0.95 |
+|---|---:|---:|
+| Mango de bisturí N.° 3 | 0,994 | 0,612 |
+| Mango de bisturí N.° 4 | 0,995 | 0,572 |
+| Tijera de Metzenbaum | 0,964 | 0,616 |
+| Tijera de Mayo | 0,983 | 0,778 |
+| Pinza de disección | 0,995 | 0,612 |
+| Separador de Farabeuf | 0,989 | 0,614 |
+| Pinza Kelly | 0,860 | 0,639 |
+| Pinza Mosquito | 0,399 | 0,312 |
+| Pinza de Allis | 0,977 | 0,779 |
+| Pinza de Babcock | 0,874 | 0,626 |
+| Pinza de Moynihan | 0,734 | 0,661 |
+| Pinza Kelly Adson | 0,788 | 0,622 |
+| Pinza Rochester | 0,877 | 0,672 |
+| Pinza Kocher | 0,617 | 0,472 |
+| Separador de Senn Miller | 0,887 | 0,649 |
 
 ## Fuentes públicas revisadas
 

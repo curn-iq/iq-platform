@@ -137,6 +137,7 @@ def _analyzer() -> FrameAnalyzer:
         ArucoMarkerFinder(),
         ValidationSettings(config.cell_margin, config.close_gap),
         config.max_image_side,
+        config.board_padding,
     )
 
 

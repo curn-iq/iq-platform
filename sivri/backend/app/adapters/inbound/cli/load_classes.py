@@ -2,9 +2,8 @@
 
     uv run python -m app.adapters.inbound.cli.load_classes [--archivo ruta]
 
-Lee `sivri/backend/classes.csv`: la columna `clase` (el nombre del instrumento en
-DataIQ, o uno de sus alias) y la columna `indice` (el número de la clase al
-entrenar el modelo). Traduce cada nombre al id que tiene en el DataIQ de este
+Lee `sivri/backend/classes.csv`: las columnas `clase` e `indice` del modelo y la columna
+opcional `instrumento` (nombre o alias en DataIQ). Traduce el nombre al id de este
 entorno (`DATAIQ_URL`): los ids cambian de una instalación a otra. Si un nombre no
 existe en DataIQ, no carga nada y dice cuál. Si todo cuadra, deja la tabla igual al
 archivo.
@@ -23,6 +22,7 @@ import getpass
 import os
 import sys
 from pathlib import Path
+from uuid import UUID
 
 import httpx
 
@@ -42,29 +42,42 @@ class MappingError(Exception):
     pass
 
 
-def read_rows(path: Path) -> list[str]:
+def read_rows(path: Path) -> list[tuple[str, str | None]]:
     with path.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         if "clase" not in (reader.fieldnames or []):
             raise MappingError("Al archivo le falta la columna: clase")
-        return [row["clase"].strip() for row in reader if (row["clase"] or "").strip()]
+        return [
+            (row["clase"].strip(), (row.get("instrumento") or "").strip() or None)
+            for row in reader
+            if (row["clase"] or "").strip()
+        ]
 
 
-def resolve(names: list[str], instruments: list[dict]) -> list[ClassEntry]:
+def resolve(
+    classes: list[tuple[str, str | None]], instruments: list[dict]
+) -> list[ClassEntry]:
     """Traduce cada nombre (o alias) al id de DataIQ. Falla con todos los nombres que
-    no encuentra, no solo con el primero. La clase queda con el nombre del
-    instrumento en DataIQ, que es el que lleva el modelo."""
+    no encuentra, no solo con el primero. Un mapeo explícito conserva el nombre de YOLO.
+    """
     by_name = {
         normalize(name): (i["id"], i["name"])
         for i in instruments
         for name in (i["name"], *i.get("aliases", []))
     }
-    unknown = [n for n in names if normalize(n) not in by_name]
+    unknown = [
+        target or label
+        for label, target in classes
+        if normalize(target or label) not in by_name
+    ]
     if unknown:
         raise MappingError("No están en DataIQ: " + "; ".join(unknown))
-    entries = [
-        ClassEntry(by_name[normalize(n)][1], by_name[normalize(n)][0]) for n in names
-    ]
+    entries = []
+    for label, target in classes:
+        instrument_id, canonical = by_name[normalize(target or label)]
+        entries.append(
+            ClassEntry(label if target else canonical, UUID(str(instrument_id)))
+        )
     ids = [e.instrument_id for e in entries]
     repeated = sorted({e.label for e in entries if ids.count(e.instrument_id) > 1})
     if repeated:

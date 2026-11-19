@@ -7,8 +7,7 @@ from app.domain.catalog import normalize
 
 @dataclass(frozen=True)
 class ClassEntry:
-    """Qué instrumento de DataIQ es cada clase del modelo. La clase se llama como
-    el instrumento (su nombre en DataIQ, o un alias)."""
+    """El nombre de la clase en el modelo y el id de su instrumento en DataIQ."""
 
     label: str
     instrument_id: UUID
