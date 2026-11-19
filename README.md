@@ -47,6 +47,7 @@ disposición en mesa es correcta según la técnica evaluada y da retroalimentac
 inmediata al estudiante.
 
 ### M2 — DataIQ
+Dataset de Instrumentación Quirúrgica.
 Plataforma web y dataset estructurado de técnicas quirúrgicas: instrumental,
 suturas, equipos biomédicos, dispositivos y arreglos de mesa. Es la fuente única
 de verdad del ecosistema y la API que consumen SIVRI y SIMIQ3D.
