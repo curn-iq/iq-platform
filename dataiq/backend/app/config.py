@@ -15,6 +15,9 @@ class Config(BaseSettings):
     # Los demás módulos solo reciben la pública, por /.well-known/jwks.json.
     jwt_private_key: str
     jwt_expiration_hours: int = 2
+    # Duración del token corto que se le entrega a un módulo (SIVRI) con la sesión
+    # del navegador; el navegador lo renueva antes de que venza.
+    module_token_minutes: int = 5
     jwt_issuer: str = "dataiq"
     jwt_audience: str = "iq-platform"
 

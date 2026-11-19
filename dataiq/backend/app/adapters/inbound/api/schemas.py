@@ -387,5 +387,12 @@ class TokenOut(BaseModel):
     token_type: str = "bearer"
 
 
+class ModuleTokenOut(TokenOut):
+    """Token corto para un módulo y en cuántos segundos vence, para renovarlo
+    antes."""
+
+    expires_in: int
+
+
 class RoleIn(BaseModel):
     role: Role

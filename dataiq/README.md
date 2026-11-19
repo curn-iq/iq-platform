@@ -117,6 +117,14 @@ Lo que no es navegador (Swagger, pruebas, servidores, una app) pide el token a
 `POST /auth/token` (formulario OAuth2: `username` = correo, `password`) y lo
 manda en `Authorization: Bearer`; con Bearer no hace falta `X-IQ-Client`.
 
+Un módulo que corre en otro dominio (SIVRI, en el Servidor PC1) no recibe la cookie.
+La página le pide a DataIQ `POST /auth/module-token` (con la cookie y
+`X-IQ-Client`), que responde `{access_token, token_type, expires_in}`: un JWT de
+DataIQ de `MODULE_TOKEN_MINUTES` minutos (5 por omisión), que la página manda al
+módulo en `Authorization: Bearer` y renueva antes de que venza. Solo se pide con la
+cookie: un token no puede pedir otro. El módulo lo valida con el JWKS y lo reenvía a
+DataIQ para pedir el catálogo.
+
 Un cambio de la API (una ruta o un esquema) va con `npm run api:types` en el
 mismo PR: regenera los tipos del frontend
 ([`frontend/README.md`](frontend/README.md#correr-el-frontend)), y el CI falla
