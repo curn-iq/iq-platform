@@ -263,6 +263,15 @@ aquí para que quien opere el backend las decida.
 - [x] Preparar una carga específica que conserva las versiones anteriores en
   bases existentes (ver [README](../README.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
 
+- [x] Publicar en DataIQ de producción la versión 2 de la mesa de Mayo de
+  Colecistectomía, Eventrorrafia, Hemicolectomía derecha, Mastectomía y
+  Tiroidectomía (2026-11-19). Se conservaron las versiones anteriores y las
+  demás mesas. El borrador de Colecistectomía recibió solo el nuevo arreglo
+  de Mayo y quedó como versión 3 en borrador, con sus demás ediciones.
+- [x] Verificar en la API pública las cinco versiones 2 y la disponibilidad
+  del endpoint de token corto tras el
+  [PR #82](https://github.com/curn-iq/iq-platform/pull/82).
+
 ## Datos de la fuente que no cuadraban
 
 Criterio: lo que los documentos de IQ traen completo se carga tal cual. Lo que
