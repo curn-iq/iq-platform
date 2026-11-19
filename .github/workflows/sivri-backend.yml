@@ -1,0 +1,55 @@
+# Backend de SIVRI: estilo y pruebas en cada PR y en cada push a main. SIVRI corre
+# en el Servidor PC1 (docs/arquitectura.md), así que no hay despliegue desde aquí.
+
+name: SIVRI backend
+
+on:
+  pull_request:
+    paths:
+      - "sivri/backend/**"
+      - ".github/workflows/sivri-backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sivri/backend/**"
+      - ".github/workflows/sivri-backend.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: sivri/backend
+
+jobs:
+  test:
+    name: Estilo y pruebas
+    runs-on: ubuntu-latest
+    services:
+      # Las pruebas crean y migran su propia base, sivri_test, en este servidor
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: sivri
+          POSTGRES_PASSWORD: sivri
+          POSTGRES_DB: sivri
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sivri"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://sivri:sivri@localhost:5432/sivri
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: "0.12.18"
+          python-version: "3.14"
+      # Sin el extra «yolo» (PyTorch): las pruebas usan un detector falso
+      - run: uv sync --locked
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      # Sin DataIQ ni modelo: las pruebas usan unos falsos
+      - run: uv run pytest

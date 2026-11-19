@@ -20,7 +20,7 @@ su carpeta.
 ## Comandos
 
 Las pruebas de los backends necesitan su PostgreSQL local corriendo
-(`podman start dataiq-db` o `podman start simiq3d-db`); si no, fallan todas.
+(`podman start dataiq-db`, `podman start simiq3d-db` o `podman start sivri-db`); si no, fallan todas.
 
 | Dónde | Para qué | Comando |
 |---|---|---|
@@ -32,6 +32,9 @@ Las pruebas de los backends necesitan su PostgreSQL local corriendo
 | `simiq3d/backend` | Pruebas | `uv run pytest` |
 | | Estilo | `uv run ruff check . && uv run ruff format --check .` |
 | | Levantar la API (puerto 8001; necesita DataIQ en el 8000) | `uv run fastapi dev app/main.py --port 8001` |
+| `sivri/backend` | Pruebas | `uv run pytest` |
+| | Estilo | `uv run ruff check . && uv run ruff format --check .` |
+| | Levantar la API (puerto 8002; necesita DataIQ en el 8000) | `uv run fastapi dev app/main.py --port 8002` |
 | `dataiq/frontend`, `simiq3d/frontend` | Pruebas y build (con los presupuestos de `angular.json`) | `npm test`, `npm run build` |
 | `dataiq/frontend` | Tipos de la API, tras cambiar una ruta o un esquema del backend (el CI falla si no coinciden) | `npm run api:types` |
 

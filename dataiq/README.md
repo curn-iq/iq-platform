@@ -58,6 +58,35 @@ desde `dataiq/backend`.
    propia: registrarse en `POST /auth/register` y asignarse el rol por terminal
    (`uv run python -m app.adapters.inbound.cli.assign_role <correo> admin`).
 
+### Mesas de Mayo de Cirugía General
+
+Decidido por Mauricio el 2026-11-19 a partir de las listas de IQ y las fotos
+del 2026-11-18. En `seed/tecnicas.xlsx`, las cinco mesas de Mayo usan una
+cuadrícula vertical de 10 filas por 6 columnas. Se proyecta el centro de
+cada caja etiquetada sobre el rectángulo entre los centros de los cuatro
+marcadores y se amplía cada eje un 10 % por lado. Cada objeto ocupa la unión
+de las celdas observadas en las tres rondas «Bien Armada». Se numera por su
+primera celda, de arriba abajo y de izquierda a derecha. No hubo choques
+entre objetos.
+
+Las tijeras de Mayo y Metzenbaum y los mangos 3 y 4 forman el objeto de
+abajo, en orden libre. Las dos Kelly y los dos mosquitos de Tiroidectomía
+se registran una vez por clase. Se agrupan las dos disecciones y se usa
+«Pinza Mosquito curva», el nombre del catálogo. En Tiroidectomía, Babcock
+reemplaza a Lahey. El mango 4 y la disección, vistos en las fotos de esa
+técnica, quedan marcados «para confirmar con IQ» en el texto de la fuente.
+
+### Publicar las mesas actualizadas en una base existente
+
+Desde `dataiq/backend`, selecciona el entorno con `DATABASE_URL`.
+`uv run python -m seed.update_mayo` muestra las cinco mesas y las versiones
+que se publicarían. Con `--apply`, el comando publica en una transacción
+una versión nueva por técnica que necesite el cambio. Conserva el historial
+y el contenido publicado fuera de la mesa de Mayo, y se detiene si alguna
+técnica por actualizar tiene un borrador o una versión en revisión. Se puede
+ejecutar nuevamente para comprobar que las cinco mesas coinciden con el
+Excel.
+
 ## Cómo lo usa el frontend
 
 La sesión del navegador va en una cookie `HttpOnly` que JavaScript no puede
@@ -116,6 +145,14 @@ Reglas para las peticiones:
 Lo que no es navegador (Swagger, pruebas, servidores, una app) pide el token a
 `POST /auth/token` (formulario OAuth2: `username` = correo, `password`) y lo
 manda en `Authorization: Bearer`; con Bearer no hace falta `X-IQ-Client`.
+
+Un módulo que corre en otro dominio (SIVRI, en el Servidor PC1) no recibe la cookie.
+La página le pide a DataIQ `POST /auth/module-token` (con la cookie y
+`X-IQ-Client`), que responde `{access_token, token_type, expires_in}`: un JWT de
+DataIQ de `MODULE_TOKEN_MINUTES` minutos (5 por omisión), que la página manda al
+módulo en `Authorization: Bearer` y renueva antes de que venza. Solo se pide con la
+cookie: un token no puede pedir otro. El módulo lo valida con el JWKS y lo reenvía a
+DataIQ para pedir el catálogo.
 
 Un cambio de la API (una ruta o un esquema) va con `npm run api:types` en el
 mismo PR: regenera los tipos del frontend

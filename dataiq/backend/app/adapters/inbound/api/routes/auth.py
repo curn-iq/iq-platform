@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -14,12 +15,14 @@ from app.adapters.inbound.api.dependencies import (
 from app.adapters.inbound.api.schemas import (
     AccountOut,
     LoginIn,
+    ModuleTokenOut,
     RegisterIn,
     TokenOut,
 )
 from app.adapters.inbound.api.session import (
     clear_session_cookie,
     require_csrf_header,
+    session_token,
     set_session_cookie,
 )
 from app.config import config
@@ -111,6 +114,34 @@ async def issue_token(
 async def logout(response: Response) -> None:
     """Borra la cookie de sesión del navegador."""
     clear_session_cookie(response)
+
+
+@router.post(
+    "/auth/module-token",
+    response_model=ModuleTokenOut,
+    dependencies=[Depends(require_csrf_header)],
+)
+async def issue_module_token(
+    request: Request, account: CurrentAccount, issuer: Issuer
+) -> ModuleTokenOut:
+    """Token corto para un módulo que corre en otro dominio (SIVRI): la cookie de
+    sesión no viaja hasta allá, así que la página lo pide aquí con la cookie y
+    lo manda en Authorization: Bearer. Dura pocos minutos y la página lo renueva
+    antes de que venza. Es un JWT normal de DataIQ: el módulo lo valida con el
+    JWKS y lo reenvía a DataIQ para pedir el catálogo. Solo con la sesión del
+    navegador (cookie) y el encabezado X-IQ-Client: con un token no se puede
+    pedir otro, así que uno robado deja de servir en minutos."""
+    if session_token(request) is None:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Este token se pide con la sesión del navegador",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    lifetime = timedelta(minutes=config.module_token_minutes)
+    return ModuleTokenOut(
+        access_token=issuer.issue_token(account, lifetime),
+        expires_in=int(lifetime.total_seconds()),
+    )
 
 
 @router.get("/auth/me", response_model=AccountOut)

@@ -133,13 +133,20 @@ Cada pieza lleva sus tests al hacerla; no hay una etapa de tests al final.
      `main` (`.github/workflows/dataiq-backend.yml`, desde el 2026-10-14)
    - [ ] Previews por PR con una rama `dev` de la base en Neon (cuando haya
      usuarios que proteger)
-10. [ ] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
+10. [x] Token corto para los módulos (lo necesita SIVRI): el navegador llama al
     backend de SIVRI en otro dominio (el Servidor PC1 del laboratorio, por
     Tailscale), así que la cookie de sesión no viaja. Un endpoint con la
     cookie y `X-IQ-Client` devuelve un JWT de pocos minutos, renovable, que la
     página manda a SIVRI en `Authorization: Bearer`; SIVRI lo valida con el
     JWKS y lo reenvía a DataIQ para pedir los datos. Revisar que la ruta del
     JWKS quede accesible en el despliegue (Vercel reserva `/.well-known`)
+    - **Hecho el 2026-11-18:** `POST /auth/module-token` (cookie de sesión +
+      `X-IQ-Client`) devuelve `{access_token, token_type, expires_in}`: un JWT
+      normal de DataIQ (EdDSA, mismo emisor y audiencia) que dura
+      `MODULE_TOKEN_MINUTES` (5 por omisión). Solo se pide con la cookie: un
+      token no puede pedir otro, así que uno robado deja de servir en minutos.
+      El JWKS ya es accesible en el despliegue: SIMIQ3D valida con él en
+      producción. Pruebas en `tests/api/test_api_module_token.py`
 11. [x] Contenido de las versiones en la lista de `GET /versions`. A cargo de
     Mauricio Lugo (asignado por Juan el 2026-11-02; hallazgo de la revisión
     de la fase 6 del frontend)
@@ -247,6 +254,14 @@ aquí para que quien opere el backend las decida.
   - [x] Avisar al frontend, en la descripción del PR que agrega este ítem, que hoy no tiene
     texto para un 429 (`describeApiError`, en `core/http/error-message.ts`, solo lee
     `detail`): el registro diría «No se pudo completar el registro»
+
+## Ajuste de las mesas de Mayo
+
+- [x] Cargar las cinco mesas de Mayo de Cirugía General a partir de las fotos
+  de IQ en PostgreSQL local (ver [fuente y criterio](../README.md#mesas-de-mayo-de-cirugía-general)).
+
+- [x] Preparar una carga específica que conserva las versiones anteriores en
+  bases existentes (ver [README](../README.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
 
 ## Datos de la fuente que no cuadraban
 

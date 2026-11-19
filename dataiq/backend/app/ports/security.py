@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Protocol
 from uuid import UUID
 
@@ -11,7 +12,9 @@ class PasswordService(Protocol):
 
 
 class TokenIssuer(Protocol):
-    def issue_token(self, account: Account) -> str: ...
+    def issue_token(self, account: Account, lifetime: timedelta | None = None) -> str:
+        """Firma un JWT de la cuenta; dura `lifetime` o, sin él, la sesión."""
+        ...
 
     def read_token(self, token: str) -> UUID:
         """Devuelve el id de la cuenta; lanza TokenInvalido si no sirve."""

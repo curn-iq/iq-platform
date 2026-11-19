@@ -434,6 +434,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/module-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue Module Token
+         * @description Token corto para un módulo que corre en otro dominio (SIVRI): la cookie de
+         *     sesión no viaja hasta allá, así que la página lo pide aquí con la cookie y
+         *     lo manda en Authorization: Bearer. Dura pocos minutos y la página lo renueva
+         *     antes de que venza. Es un JWT normal de DataIQ: el módulo lo valida con el
+         *     JWKS y lo reenvía a DataIQ para pedir el catálogo. Solo con la sesión del
+         *     navegador (cookie) y el encabezado X-IQ-Client: con un token no se puede
+         *     pedir otro, así que uno robado deja de servir en minutos.
+         */
+        post: operations["issue_module_token_auth_module_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/me": {
         parameters: {
             query?: never;
@@ -836,6 +862,22 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /**
+         * ModuleTokenOut
+         * @description Token corto para un módulo y en cuántos segundos vence, para renovarlo
+         *     antes.
+         */
+        ModuleTokenOut: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /** Expires In */
+            expires_in: number;
         };
         /** ReferenceOut */
         ReferenceOut: {
@@ -1853,6 +1895,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    issue_module_token_auth_module_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModuleTokenOut"];
+                };
             };
         };
     };

@@ -47,7 +47,7 @@ class JWTIssuer:
             "use": "sig",
         }
 
-    def issue_token(self, account: Account) -> str:
+    def issue_token(self, account: Account, lifetime: timedelta | None = None) -> str:
         now_ = datetime.now(UTC)
         data = {
             "sub": str(account.id),
@@ -55,7 +55,7 @@ class JWTIssuer:
             "iss": self._issuer,
             "aud": self._audience,
             "iat": now_,
-            "exp": now_ + self._duration,
+            "exp": now_ + (lifetime or self._duration),
         }
         return jwt.encode(
             data,
