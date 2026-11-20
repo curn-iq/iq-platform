@@ -49,6 +49,9 @@ son las rutas de la API.
 
 ```
 src/
+├── public/nosotros/        las fotos de «Nosotros» en WebP, con variantes de ancho
+│                           (`<nombre>-<ancho>.webp`): carrusel 800, 1500 y 2400 px;
+│                           programas 750 y 1423 px; retratos 480 y 840 px (Resuelto 71)
 ├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
@@ -79,7 +82,7 @@ src/
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie, aviso de sesión sin comprobar
     └── features/
-        ├── home/  catalog/  technique/  account/  privacy/
+        ├── home/  catalog/  technique/  account/  privacy/  about/
         └── management/
             ├── drafts/  editor/  review/  instruments/  users/
 ```
