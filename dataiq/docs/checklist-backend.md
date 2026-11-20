@@ -262,6 +262,12 @@ aquí para que quien opere el backend las decida.
 
 - [x] Preparar una carga específica que conserva las versiones anteriores en
   bases existentes (ver [README](../README.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
+- [x] Citar en la fuente de las cinco técnicas la lista de IQ y las fotos del
+  2026-11-18 de las que sale la mesa de Mayo; `seed.update_mayo` la publica
+  junto con la mesa
+- [x] Publicar en producción la fuente corregida (2026-11-20, con
+  `seed.update_mayo --apply`, autorizado por Mauricio). Antes se descartó el
+  borrador v3 de Colecistectomía, idéntico a la v2 publicada
 
 - [x] Publicar en DataIQ de producción la versión 2 de la mesa de Mayo de
   Colecistectomía, Eventrorrafia, Hemicolectomía derecha, Mastectomía y

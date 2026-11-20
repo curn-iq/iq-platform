@@ -1,4 +1,5 @@
-"""Publica solo las mesas de Mayo fotografiadas en una nueva versión de DataIQ."""
+"""Publica solo las mesas de Mayo fotografiadas, y la fuente que las cita, en una nueva
+versión de DataIQ."""
 
 import argparse
 import asyncio
@@ -71,13 +72,19 @@ def _updated_content(
         NewZoneLayout(z.zone_id, z.used, z.rows, z.columns) for z in published.zones
     )
     old_items = tuple(map(_existing_item, published.items))
-    if new_zone in old_zones and set(new_items) == {
-        item for item in old_items if item.zone_id == zone_id
-    }:
+    source = seed.data["source"]
+    if (
+        new_zone in old_zones
+        and set(new_items) == {item for item in old_items if item.zone_id == zone_id}
+        and published.source == source
+    ):
         return None
 
+    clinical = {field: getattr(published, field) for field in CLINICAL_FIELDS}
+    # La fuente cita de dónde sale la mesa de Mayo: cambia con ella.
+    clinical["source"] = source
     return VersionContent(
-        **{field: getattr(published, field) for field in CLINICAL_FIELDS},
+        **clinical,
         zones=tuple(z for z in old_zones if z.zone_id != zone_id) + (new_zone,),
         items=tuple(i for i in old_items if i.zone_id != zone_id) + new_items,
         sutures=tuple(
@@ -131,7 +138,7 @@ async def update_mayo(apply: bool) -> None:
                 detail.content, seeds[name], zone_id, instruments
             )
             if content is None:
-                print(f"{name}: ya tiene la Mesa de Mayo del Excel.")
+                print(f"{name}: ya tiene la Mesa de Mayo y la fuente del Excel.")
                 continue
             if await repo.has_version_in_progress(summary.technique_id):
                 raise SystemExit(
@@ -139,7 +146,9 @@ async def update_mayo(apply: bool) -> None:
                 )
             validate_content(content)
             plan.append((summary, content))
-            print(f"{name}: nueva versión desde v{summary.number}, solo Mesa de Mayo.")
+            print(
+                f"{name}: nueva versión desde v{summary.number}, Mesa de Mayo y fuente."
+            )
 
         if apply and plan:
             author = await _seed_user(session)

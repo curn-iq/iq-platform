@@ -81,8 +81,9 @@ técnica, quedan marcados «para confirmar con IQ» en el texto de la fuente.
 Desde `dataiq/backend`, selecciona el entorno con `DATABASE_URL`.
 `uv run python -m seed.update_mayo` muestra las cinco mesas y las versiones
 que se publicarían. Con `--apply`, el comando publica en una transacción
-una versión nueva por técnica que necesite el cambio. Conserva el historial
-y el contenido publicado fuera de la mesa de Mayo, y se detiene si alguna
+una versión nueva por técnica que necesite el cambio: la mesa de Mayo y la
+fuente de la técnica (`source`), que cita de dónde sale esa mesa. Conserva el
+historial y el resto del contenido publicado, y se detiene si alguna
 técnica por actualizar tiene un borrador o una versión en revisión. Se puede
 ejecutar nuevamente para comprobar que las cinco mesas coinciden con el
 Excel.
