@@ -54,6 +54,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/account/account').then((m) => m.AccountEntry),
   },
   {
+    path: 'nosotros',
+    title: 'Nosotros',
+    loadComponent: () => import('./features/about/about').then((m) => m.About),
+  },
+  {
     path: 'politica-de-datos',
     title: 'Aviso de privacidad',
     loadComponent: () => import('./features/privacy/privacy').then((m) => m.Privacy),

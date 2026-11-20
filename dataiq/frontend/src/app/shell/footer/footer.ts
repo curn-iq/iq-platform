@@ -4,16 +4,22 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { BrandMark } from '../../shared/ui/brand-mark/brand-mark';
 import { NavLink } from '../navbar/nav-link';
-import { NAV_MENUS, NavMenuId, NavOption, specialtyTarget } from '../navbar/nav-menus';
+import { NAV_LINKS, NAV_MENUS, NavMenuId, NavOption, specialtyTarget } from '../navbar/nav-menus';
 import { Specialties } from '../specialties';
 
 /** El año desde el que corre el derecho de autor del producto. */
 const COPYRIGHT_YEAR = 2026;
 
-/** Las opciones de un menú de la barra que también van en el pie. */
+/**
+ * Las opciones de un menú de la barra que también van en el pie, y al final los enlaces directos de
+ * la barra («Nosotros») que el pie pone en esa columna.
+ */
 function footerOptions(id: NavMenuId): readonly NavOption[] {
   const options = NAV_MENUS.find((menu) => menu.id === id)?.options ?? [];
-  return options.filter((option) => option.inFooter !== false);
+  const direct = NAV_LINKS.filter((link) => link.footerColumn === id).map(
+    (link): NavOption => ({ label: link.label, hint: '', target: link.target }),
+  );
+  return [...options.filter((option) => option.inFooter !== false), ...direct];
 }
 
 /**

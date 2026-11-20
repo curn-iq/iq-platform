@@ -10,7 +10,13 @@ import { SHELL_HOST } from "../shell-host";
 import { Button } from "../ui/button/button";
 import { managementLinks } from "./management-links";
 import { NavLink } from "./nav-link";
-import { NAV_MENUS, specialtyTarget } from "./nav-menus";
+import {
+  isCurrentLink,
+  NAV_LINKS,
+  NAV_MENUS,
+  NavDirectLink,
+  specialtyTarget,
+} from "./nav-menus";
 
 /**
  * El menú de la barra en celular (≤ 960 px): un panel a pantalla completa bajo
@@ -36,7 +42,14 @@ export class MobileMenu {
   readonly chosen = output<void>();
 
   protected readonly menus = NAV_MENUS;
+  /** Los enlaces directos («Nosotros»), después de los grupos plegables. */
+  protected readonly directLinks = NAV_LINKS;
   protected readonly shell = inject(SHELL_HOST);
+
+  /** Se está en la página de este enlace directo. */
+  protected isCurrent(link: NavDirectLink): boolean {
+    return isCurrentLink(link, this.shell.currentUrl());
+  }
 
   protected readonly specialtyLinks = computed(() =>
     this.shell.specialties().map((specialty) => ({

@@ -65,6 +65,21 @@ details[open] summary svg {
   transform: rotate(180deg);
 }
 
+// Un enlace directo («Nosotros»): la misma fila que el resumen de un grupo, sin flecha.
+a.direct {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+  color: inherit;
+  font-size: 18px;
+  font-weight: 650;
+  text-decoration: none;
+
+  &[aria-current="page"] {
+    color: var(--color-accent-strong);
+  }
+}
+
 ul {
   display: grid;
   gap: 2px;

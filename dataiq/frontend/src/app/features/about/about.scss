@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  padding: clamp(56px, 8vh, 96px) var(--space-gutter);
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}

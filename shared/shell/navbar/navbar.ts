@@ -22,7 +22,14 @@ import { BrandMark } from "../ui/brand-mark/brand-mark";
 import { Button } from "../ui/button/button";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
-import { NAV_MENUS, NavMenu, NavMenuId } from "./nav-menus";
+import {
+  isCurrentLink,
+  NAV_LINKS,
+  NAV_MENUS,
+  NavDirectLink,
+  NavMenu,
+  NavMenuId,
+} from "./nav-menus";
 
 /** Lo que puede tener abierto la barra: uno de sus cuatro menús o «Mi cuenta». */
 type PanelId = NavMenuId | "account";
@@ -39,8 +46,8 @@ interface PanelComponent {
 
 /**
  * La barra superior: la marca, cuatro menús (Herramientas, Especialidades,
- * ¿Por qué IQ Platform?, Ayuda) y, a la derecha, Ingresar y Crear cuenta o «Mi
- * cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
+ * ¿Por qué IQ Platform?, Ayuda), el enlace directo «Nosotros» y, a la derecha,
+ * Ingresar y Crear cuenta o «Mi cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
  * uno abierto a la vez y se cierra con Escape, con un clic fuera, al elegir una
  * opción o al cambiar de página. Ver «Navigation» en `DESIGN.md`.
  */
@@ -65,6 +72,8 @@ export class Navbar {
 
   protected readonly shell = inject(SHELL_HOST);
   protected readonly menus = NAV_MENUS;
+  /** Los enlaces directos, después de los menús («Nosotros»). */
+  protected readonly links = NAV_LINKS;
   /** El panel abierto, si hay uno. */
   protected readonly open = signal<PanelId | null>(null);
   /** El menú de celular (≤ 960 px) está abierto. */
@@ -72,6 +81,11 @@ export class Navbar {
 
   /** El menú de la sección donde se está: «Especialidades» en el catálogo y el detalle de técnica. */
   protected readonly current = this.shell.currentMenu;
+
+  /** Se está en la página de este enlace directo. */
+  protected isCurrent(link: NavDirectLink): boolean {
+    return isCurrentLink(link, this.shell.currentUrl());
+  }
 
   constructor() {
     this.destroyRef.onDestroy(() => this.dispose());

@@ -7,6 +7,7 @@ import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { Navbar } from './navbar';
 import { provideShellHost } from '../shell-host';
+import { handledByRouter } from '../testing';
 
 @Component({ template: '' })
 class Blank {}
@@ -101,6 +102,36 @@ describe('Navbar', () => {
       expect(b.getAttribute('aria-expanded')).toBe('false');
       expect(b.hasAttribute('aria-controls')).toBe(false);
     }
+  });
+
+  describe('Nosotros', () => {
+    const about = () => root().querySelector<HTMLAnchorElement>('nav a.item')!;
+
+    it('es un enlace directo después de Ayuda, sin desplegable', () => {
+      const items = Array.from(root().querySelectorAll('nav > *'));
+
+      expect(items.at(-1)).toBe(about());
+      expect(about().textContent!.trim()).toBe('Nosotros');
+      expect(about().getAttribute('href')).toBe('/nosotros');
+      expect(about().hasAttribute('aria-expanded')).toBe(false);
+      expect(about().querySelector('svg')).toBeNull();
+    });
+
+    it('lleva aria-current solo en su página', async () => {
+      expect(about().hasAttribute('aria-current')).toBe(false);
+
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      expect(about().getAttribute('aria-current')).toBe('page');
+
+      await router.navigateByUrl('/tecnicas');
+      await fixture.whenStable();
+      expect(about().hasAttribute('aria-current')).toBe(false);
+    });
+
+    it('se abre por el router', () => {
+      expect(handledByRouter(about())).toBe(true);
+    });
   });
 
   describe('abrir', () => {

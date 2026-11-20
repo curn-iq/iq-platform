@@ -10,6 +10,7 @@ import { provideTitle } from './core/title/title.providers';
 import type { Account } from './data/api/models';
 import { provideRepositoryTesting, TEST_API_BASE } from './data/testing';
 import type { Role } from './domain/role';
+import { About } from './features/about/about';
 import { AccountEntry } from './features/account/account';
 import { Catalog } from './features/catalog/catalog';
 import { Home } from './features/home/home';
@@ -30,6 +31,7 @@ const PAGES: readonly [url: string, screen: Type<unknown>, title: string][] = [
   ['/', Home, 'IQ Platform'],
   ['/tecnicas', Catalog, 'Catálogo de técnicas · IQ Platform'],
   [`/tecnicas/${TECHNIQUE_ID}/datos-clinicos`, TechniqueDetail, 'Técnica · IQ Platform'],
+  ['/nosotros', About, 'Nosotros · IQ Platform'],
   ['/politica-de-datos', Privacy, 'Aviso de privacidad · IQ Platform'],
   ['/gestion/borradores', Drafts, 'Mis borradores · IQ Platform'],
   ['/gestion/editor/nueva', Editor, 'Técnica nueva · IQ Platform'],
