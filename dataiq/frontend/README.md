@@ -287,6 +287,12 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
 - **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
 
+### Nosotros (`features/about/`)
+
+Página pública (`/nosotros`, sin API) sobre quiénes hacen IQ Platform. Su mockup es el archivo de Figma de la tabla «Rutas»; las decisiones, en los Resueltos 66 a 72 de la [checklist](../docs/checklist-frontend.md) y el diseño, en «Nosotros (página)» de [`DESIGN.md`](../../DESIGN.md). Las fotos están en `public/nosotros/` (ver «Arquitectura»).
+
+- **Presentación:** el titular (`h1`, el único de la página), la entradilla y «Ver cómo funciona» (`ArrowLink` a `/#camino`, que el router baja a la sección del inicio). El tamaño del titular cambia en 1101 px: por debajo va sobre la entradilla; por encima, junto a ella.
+
 ### Gestión del colaborador (`features/management/`)
 
 - **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.

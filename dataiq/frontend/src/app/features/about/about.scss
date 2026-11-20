@@ -1,12 +1,76 @@
+// Nosotros: ver «Nosotros (página)» en DESIGN.md.
+
 :host {
   display: block;
-  padding: clamp(56px, 8vh, 96px) var(--space-gutter);
+  padding-inline: var(--space-gutter);
+}
+
+// Presentación. Desde 1101 px el titular y la entradilla van lado a lado y la entradilla se alinea
+// con la última línea del titular; por debajo, la entradilla va bajo el titular.
+.head {
+  display: grid;
+  row-gap: 28px;
+  padding-block: 56px;
 }
 
 h1 {
   margin: 0;
-  font-size: 40px;
+  max-inline-size: 10.9em;
+  // 44 px a 390, 64 a 834 y 77 a 1100 (Figma)
+  font-size: clamp(44px, 26px + 4.62vw, 77px);
   font-weight: 650;
-  line-height: 1;
+  line-height: 0.96;
   letter-spacing: -0.04em;
+}
+
+.lead {
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+  max-inline-size: 560px;
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 1101px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 24px;
+    align-items: end;
+    padding-block: 72px;
+  }
+
+  h1 {
+    // La caja del Figma a 1440: 867 px a 92 px de letra
+    max-inline-size: 9.42em;
+    // 80 px a 1310, 92 a 1440, con el tope del Headline
+    font-size: clamp(62px, 8.88vw - 36px, 100px);
+  }
+
+  .lead {
+    gap: 24px;
+    // 397 px a 18 px de letra
+    inline-size: 22.07em;
+    font-size: 18px;
+
+    p {
+      font-size: inherit;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .head {
+    row-gap: 20px;
+    padding-block: 40px;
+  }
+
+  h1 {
+    max-inline-size: none;
+  }
 }
