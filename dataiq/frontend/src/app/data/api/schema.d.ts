@@ -659,6 +659,12 @@ export interface components {
             suture_id: string | null;
             /** Name */
             name: string;
+            /** Position X M */
+            position_x_m?: number | null;
+            /** Position Z M */
+            position_z_m?: number | null;
+            /** Yaw Deg */
+            yaw_deg?: number | null;
         };
         /**
          * ContentIn

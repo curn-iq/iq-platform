@@ -28,3 +28,26 @@ def test_a_corrected_name_keeps_the_old_one_as_alias():
         c for t in techniques.values() for item in t.items for c in item.components
     }
     assert "Pinza de Moynihan" in components
+
+
+def test_mayo_positions_cover_the_photographed_components():
+    techniques, _ = read_file(SOURCE_FILE)
+    expected = {
+        "Colecistectomía": 10,
+        "Eventrorrafia": 12,
+        "Hemicolectomía derecha": 12,
+        "Mastectomía": 10,
+        "Tiroidectomía": 13,
+    }
+    actual = {}
+    for name, technique in techniques.items():
+        measured = [item for item in technique.items if item.placements]
+        if measured:
+            actual[name] = sum(len(item.placements) for item in measured)
+        for item in measured:
+            assert item.stand == "Mesa de Mayo"
+            assert set(item.placements) == set(item.components)
+            for x, z, yaw in item.placements.values():
+                assert abs(x) < 0.24 and abs(z) < 0.28
+                assert -180 <= yaw <= 180
+    assert actual == expected

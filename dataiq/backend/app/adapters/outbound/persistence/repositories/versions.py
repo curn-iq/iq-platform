@@ -26,7 +26,10 @@ from app.adapters.outbound.persistence.models.techniques import (
     Zone,
 )
 from app.adapters.outbound.persistence.models.users import User
-from app.adapters.outbound.persistence.repositories.techniques import build_details
+from app.adapters.outbound.persistence.repositories.techniques import (
+    _items,
+    build_details,
+)
 from app.domain.errors import Conflict, InvalidContent, NotFound
 from app.domain.techniques import (
     IN_PROGRESS,
@@ -307,6 +310,9 @@ class SQLAlchemyVersionRepository:
                 item_id=new_items[c.item_id].id,
                 instrument_id=c.instrument_id,
                 suture_id=c.suture_id,
+                position_x_m=c.position_x_m,
+                position_z_m=c.position_z_m,
+                yaw_deg=c.yaw_deg,
             )
             for c in components
         )
@@ -350,6 +356,22 @@ class SQLAlchemyVersionRepository:
             setattr(version, field_, getattr(content, field_))
         version.updated_at = func.now()
 
+        measured = {
+            (
+                item.zone_id,
+                item.legend_number,
+                frozenset(item.cells),
+                component.instrument_id,
+            ): {
+                "position_x_m": component.position_x_m,
+                "position_z_m": component.position_z_m,
+                "yaw_deg": component.yaw_deg,
+            }
+            for item in (await _items(self._session, [version_id]))[version_id]
+            if item.legend_number is not None
+            for component in item.components
+            if component.position_x_m is not None
+        }
         await self._delete_content(version_id)
         # Las mesas van primero: los objetos y sus celdas se ubican en ellas.
         self._session.add_all(
@@ -379,6 +401,15 @@ class SQLAlchemyVersionRepository:
                     item_id=row.id,
                     instrument_id=c.instrument_id,
                     suture_id=c.suture_id,
+                    **measured.get(
+                        (
+                            item.zone_id,
+                            item.legend_number,
+                            frozenset(item.cells),
+                            c.instrument_id,
+                        ),
+                        {},
+                    ),
                 )
                 for c in item.components
             )

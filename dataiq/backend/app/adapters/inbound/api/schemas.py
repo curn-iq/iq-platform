@@ -68,6 +68,9 @@ class ComponentOut(OutModel):
     instrument_id: UUID | None
     suture_id: UUID | None
     name: str
+    position_x_m: float | None = None
+    position_z_m: float | None = None
+    yaw_deg: float | None = None
 
 
 class ItemOut(OutModel):
