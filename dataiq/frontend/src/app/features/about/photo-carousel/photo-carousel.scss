@@ -1,0 +1,90 @@
+// Carrusel de «Nosotros»: ver «Nosotros (página)» en DESIGN.md. Las fotos se apilan y se funden una
+// sobre otra; la proporción de cada rango es la de su marco del Figma.
+
+:host {
+  display: block;
+  position: relative;
+  // Tablet (761 a 1100 px): 762 × 520 a 834 px, dentro de los márgenes, con radio y sombra
+  aspect-ratio: 762 / 520;
+  margin-block-end: 72px;
+  border-radius: var(--radius-stage);
+  box-shadow: var(--shadow-stage);
+  background: var(--color-hover);
+  cursor: grab;
+  // El dedo desplaza la página hacia arriba y abajo; el arrastre de lado es de la foto
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+  }
+}
+
+.viewport {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.slide {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  // El fundido: la que entra sube sobre la que sale, que se queda a la vista hasta que termina
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0s linear 0.6s;
+  pointer-events: none;
+
+  &.active {
+    z-index: 2;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease-fade);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide,
+  .slide.active {
+    transition: none;
+  }
+}
+
+// Escritorio: de borde a borde (cancela el margen lateral de la página) y sin radio ni sombra
+@media (min-width: 1101px) {
+  :host {
+    aspect-ratio: 1440 / 820;
+    margin-inline: calc(var(--space-gutter) * -1);
+    margin-block-end: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    // De borde a borde no hay margen donde dibujar el anillo del foco por fuera
+    &:focus-visible {
+      outline-offset: -4px;
+    }
+  }
+
+  .slide {
+    object-position: var(--desktop-position, center);
+  }
+}
+
+// Celular: 350 × 300 a 390 px, con el radio del panel
+@media (max-width: 760px) {
+  :host {
+    aspect-ratio: 350 / 300;
+    margin-block-end: 56px;
+    border-radius: var(--radius-panel);
+  }
+}

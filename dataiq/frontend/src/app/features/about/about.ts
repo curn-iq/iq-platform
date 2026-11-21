@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ArrowLink } from '../../shared/ui/arrow-link/arrow-link';
+import { CAROUSEL_PHOTOS } from './about-photos';
+import { PhotoCarousel } from './photo-carousel/photo-carousel';
 
 /**
  * La página «Nosotros» (`/nosotros`): quiénes hacen IQ Platform. Pública y sin API. Va, de arriba
@@ -10,9 +12,11 @@ import { ArrowLink } from '../../shared/ui/arrow-link/arrow-link';
  */
 @Component({
   selector: 'app-about',
-  imports: [ArrowLink, RouterLink],
+  imports: [ArrowLink, PhotoCarousel, RouterLink],
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class About {}
+export class About {
+  protected readonly carouselPhotos = CAROUSEL_PHOTOS;
+}

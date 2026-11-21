@@ -43,4 +43,14 @@ describe('About', () => {
       expect(root.querySelector('.lead a svg')!.getAttribute('aria-hidden')).toBe('true');
     });
   });
+
+  describe('carrusel', () => {
+    it('va bajo la presentación, con las cuatro fotos y su nombre', () => {
+      const carousel = root.querySelector('app-photo-carousel')!;
+
+      expect(carousel.previousElementSibling).toBe(root.querySelector('header'));
+      expect(carousel.getAttribute('aria-label')).toBe('Fotos del equipo y del laboratorio');
+      expect(carousel.querySelectorAll('img')).toHaveLength(4);
+    });
+  });
 });
