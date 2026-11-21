@@ -144,7 +144,7 @@ Página pública `/nosotros`, sin API. Mockup: archivo de Figma `jHEduZTQNBs4CCJ
 - [x] «Conoce al equipo»: título y texto, dos grupos con su rótulo (filete de 2 px, programa y lema) y tres retratos 4:5 cada uno; 3 columnas en escritorio y tablet, carril con `scroll-snap` en celular; hover con `(hover: hover) and (pointer: fine)` (Resuelto 71)
 - [x] Retrato (en `shared/ui/` si se reutiliza, con su prueba): imagen 4:5 con radio 16, acercamiento a 1.04 dentro del recorte en .6s con expo y nombre a `marca-hondo`; no es un enlace
 - [x] Revisión de accesibilidad y de movimiento de la página (foco visible, orden de tabulación, lector de pantalla, `prefers-reduced-motion`) y de las tres medidas: 1310, 834 y 390 px
-- [ ] Revisar al final el peso (`npm run build`) contra los presupuestos de Resuelto 64 (380 kB de aviso del código inicial; 8 kB de aviso en los estilos de componente). Si algo pasa del aviso, se propone qué bajar antes de tocar los presupuestos
+- [x] Revisar al final el peso (`npm run build`) contra los presupuestos de Resuelto 64 (380 kB de aviso del código inicial; 8 kB de aviso en los estilos de componente). Medido el 2026-11-20: el código inicial pasa de 360,21 a 366,66 kB (unos 5,6 kB son de `NgOptimizedImage`, que el build pone en un trozo compartido que se precarga, y el resto, el enlace directo y el esconderse de la barra); la página es un trozo perezoso de 19,05 kB (5,16 kB comprimido) y ningún estilo de componente llega al aviso. No pasa de ningún aviso, así que los presupuestos no cambian. Las fotos no cuentan en el build: 2,4 MB en `public/nosotros/`, de los que un visitante en escritorio baja unos 700 kB
 
 ## Lo que no cuadraba
 
