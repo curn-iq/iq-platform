@@ -196,6 +196,14 @@ simiq3d/models/                  la fuente (la llenan quienes modelan)
 simiq3d/frontend/public/models/  lo que se publica (generado, no se versiona)
 ```
 
+Cada modelo se publica también con una huella de su contenido en el nombre
+(`kocher_forceps.ff785f3f26.glb`), y `public/models/manifest.json` dice cuál
+corresponde a cada uno. El visor pide el de la huella, que se guarda en caché un
+año (`immutable`), y el índice se revalida en cada visita (`vercel.json`): un
+modelo actualizado tiene otro nombre, así que nadie sigue viendo la copia vieja
+de su navegador (decidido por Mauricio el 2026-11-21, porque tras publicar los
+modelos nuevos los navegadores seguían mostrando los anteriores).
+
 Las convenciones de cada modelo (escala real en metros, origen en el centro
 visto desde arriba y a la altura de su punto más bajo, eje largo sobre +X con
 Y arriba, un GLB por instrumento con nombre en inglés) están en
