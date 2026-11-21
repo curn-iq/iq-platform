@@ -17,6 +17,7 @@ distintas del archivo se listan, y se reemplazan con --descriptions.
 """
 
 import asyncio
+import math
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -69,6 +70,9 @@ class SeedItem:
     source_text: str
     components: list[str]
     cells: list[tuple[int, int]]
+    placements: dict[str, list[tuple[float, float, float]]] = field(
+        default_factory=dict
+    )
 
 
 @dataclass
@@ -162,6 +166,35 @@ def read_file(path_: Path):
                 cells=cells,
             )
         )
+    if "posiciones" in workbook:
+        items = {
+            (t.name, item.stand, item.number): item
+            for t in techniques.values()
+            for item in t.items
+        }
+        for row in _rows(workbook, "posiciones"):
+            key = row["tecnica"], row["mesa"], row["numero"]
+            item = items.get(key)
+            name = row["instrumento"]
+            if item is None or item.components.count(name) != 1:
+                raise ValueError(
+                    f"Posición duplicada o sin un instrumento único en {key}: {name}"
+                )
+            x, z, angle = (float(row[c]) for c in ("x_cm", "z_cm", "giro_grados"))
+            if not (
+                all(math.isfinite(v) for v in (x, z, angle))
+                and max(abs(x), abs(z)) < 1000
+                and -180 <= angle <= 180
+                and _text(row["origen"])
+            ):
+                raise ValueError(f"Posición o fuente inválida en {key}: {name}")
+            placements = item.placements.setdefault(name, [])
+            occurrence = row.get("ejemplar") or 1
+            if occurrence != len(placements) + 1:
+                raise ValueError(
+                    f"Ejemplar duplicado o fuera de orden en {key}: {name}"
+                )
+            placements.append((x / 100, z / 100, angle))
     # El catálogo base (hoja catalogo) y lo que se le agregó (catalogo_nuevo):
     # así la carga también sirve en una base de datos vacía.
     instruments = [
@@ -456,8 +489,21 @@ async def load(force: bool = False, descriptions: bool = False) -> None:
                 session.add(item)
                 await session.flush()
                 for c in o.components:
+                    placements = o.placements.get(c, [])
+                    x, z, angle = placements[0] if placements else (None, None, None)
+                    additional = [
+                        {"position_x_m": x, "position_z_m": z, "yaw_deg": yaw}
+                        for x, z, yaw in placements[1:]
+                    ]
                     session.add(
-                        ItemComponent(item_id=item.id, instrument_id=instruments[c])
+                        ItemComponent(
+                            item_id=item.id,
+                            instrument_id=instruments[c],
+                            position_x_m=x,
+                            position_z_m=z,
+                            yaw_deg=angle,
+                            additional_placements=additional or None,
+                        )
                     )
                 for row, column in o.cells:
                     session.add(

@@ -28,3 +28,50 @@ def test_a_corrected_name_keeps_the_old_one_as_alias():
         c for t in techniques.values() for item in t.items for c in item.components
     }
     assert "Pinza de Moynihan" in components
+
+
+def test_mayo_positions_cover_the_photographed_components():
+    techniques, _ = read_file(SOURCE_FILE)
+    expected = {
+        "Colecistectomía": 11,
+        "Eventrorrafia": 13,
+        "Hemicolectomía derecha": 13,
+        "Mastectomía": 11,
+        "Tiroidectomía": 14,
+    }
+    actual = {}
+    for name, technique in techniques.items():
+        measured = [item for item in technique.items if item.placements]
+        if measured:
+            actual[name] = sum(
+                len(placements)
+                for item in measured
+                for placements in item.placements.values()
+            )
+        for item in measured:
+            assert item.stand == "Mesa de Mayo"
+            assert set(item.placements) == set(item.components)
+            for placements in item.placements.values():
+                for x, z, yaw in placements:
+                    assert abs(x) < 0.24 and abs(z) < 0.28
+                    assert -180 <= yaw <= 180
+    assert actual == expected
+
+
+def test_each_mayo_instrument_is_its_own_legend_object():
+    """En la leyenda se elige cada instrumento por separado (Mauricio, 2026-11-21)."""
+    techniques, _ = read_file(SOURCE_FILE)
+    names = (
+        "Colecistectomía",
+        "Eventrorrafia",
+        "Hemicolectomía derecha",
+        "Mastectomía",
+        "Tiroidectomía",
+    )
+    grouped = [
+        (name, item.number, item.components)
+        for name in names
+        for item in techniques[name].items
+        if item.stand == "Mesa de Mayo" and len(item.components) > 1
+    ]
+    assert grouped == []

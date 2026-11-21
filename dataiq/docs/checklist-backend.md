@@ -313,3 +313,8 @@ Criterios para los arreglos sin nombre:
 | Nefrectomía laparoscópica | No tiene arreglo de mesa | Las dos mesas, propuestas |
 | Cistolitotomía endoscópica | Mesa de reserva: el número 3 dice "elementos" sin decir cuáles y el número 4 no dice qué evacuador | Varilla del Lithoclast y evacuador de Ellik (IQ corregido) |
 | Colecistectomía, Tiroidectomía | El instrumento aparece como "Moninjan", la escritura fonética de Moynihan | Pinza de Moynihan; "Pinza Moninjan" queda como alias (hoja `catalogo`, columna `alias`) |
+
+## Colocación métrica de Mayo
+
+- [x] Migración aditiva de la posición y el giro por componente, con seed de
+  las cinco mesas de Cirugía General y campos en las lecturas del catálogo.
