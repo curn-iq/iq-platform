@@ -35,7 +35,7 @@ def test_mayo_positions_cover_the_photographed_components():
     expected = {
         "Colecistectomía": 11,
         "Eventrorrafia": 13,
-        "Hemicolectomía derecha": 14,
+        "Hemicolectomía derecha": 13,
         "Mastectomía": 11,
         "Tiroidectomía": 14,
     }
