@@ -179,10 +179,24 @@ Table item_components {
   item_id uuid [not null, ref: > technique_items.id]
   instrument_id uuid [ref: >? instruments.id]
   suture_id uuid [ref: >? sutures.id]
+  position_x_m double
+  position_z_m double
+  yaw_deg double
+  additional_placements jsonb
 
   checks {
+    `num_nonnulls(position_x_m, position_z_m, yaw_deg) IN (0, 3) AND (yaw_deg IS NULL OR (instrument_id IS NOT NULL AND yaw_deg BETWEEN -180 AND 180 AND abs(position_x_m) < 10 AND abs(position_z_m) < 10))` [name: 'valid_component_placement']
+    `additional_placements IS NULL OR (position_x_m IS NOT NULL AND jsonb_typeof(additional_placements) = 'array')` [name: 'valid_additional_placements']
     `num_nonnulls(instrument_id, suture_id) = 1` [name: 'component_exactly_one']
   }
+
+  Note: '''
+  Centro de cada instrumento en metros desde el centro de la mesa: X a la
+  derecha y Z hacia quien mira. El giro en grados se mide desde +X hacia +Z.
+  Los tres campos pueden faltar cuando la fuente solo indica celdas. Se
+  guardan por componente porque un objeto puede agrupar varios instrumentos.
+  additional_placements conserva centros y giros de otros ejemplares visibles.
+  '''
 }
 
 Table item_cells {

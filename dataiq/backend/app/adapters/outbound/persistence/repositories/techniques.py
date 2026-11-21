@@ -177,6 +177,10 @@ async def _items(
             ItemComponent.item_id,
             ItemComponent.instrument_id,
             ItemComponent.suture_id,
+            ItemComponent.position_x_m,
+            ItemComponent.position_z_m,
+            ItemComponent.yaw_deg,
+            ItemComponent.additional_placements,
             func.coalesce(Instrument.name, Suture.name).label("name"),
         )
         .join(TechniqueItem, TechniqueItem.id == ItemComponent.item_id)
@@ -191,6 +195,10 @@ async def _items(
                 instrument_id=row.instrument_id,
                 suture_id=row.suture_id,
                 name=row.name,
+                position_x_m=row.position_x_m,
+                position_z_m=row.position_z_m,
+                yaw_deg=row.yaw_deg,
+                additional_placements=row.additional_placements,
             )
         )
 

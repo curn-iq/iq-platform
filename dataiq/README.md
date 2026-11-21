@@ -76,13 +76,32 @@ se registran una vez por clase. Se agrupan las dos disecciones y se usa
 reemplaza a Lahey. El mango 4 y la disección, vistos en las fotos de esa
 técnica, quedan marcados «para confirmar con IQ» en el texto de la fuente.
 
+### Posición métrica de los instrumentos
+
+Mauricio decidió el 2026-11-20 que DataIQ es la fuente de la colocación fina.
+La hoja `posiciones` de `backend/seed/tecnicas.xlsx` identifica cada componente
+por técnica, mesa, número e instrumento. Guarda el centro en centímetros
+desde el centro del marco calibrado y el giro desde +X hacia +Z, en grados.
+La carga convierte las posiciones a metros. El catálogo y el detalle de la
+técnica devuelven `position_x_m`, `position_z_m` y `yaw_deg` en cada
+componente. Los campos pueden ser nulos, en cuyo caso sigue disponible la
+colocación por celdas. Los datos con oclusión visual o una identificación
+incierta se indican como «propuesto» en la columna `origen`. La columna
+`ejemplar` distingue instrumentos iguales que se ven en sitios distintos.
+El catálogo devuelve los ejemplares posteriores en `additional_placements`
+dentro del mismo componente.
+
 ### Publicar las mesas actualizadas en una base existente
 
 Desde `dataiq/backend`, selecciona el entorno con `DATABASE_URL`.
 `uv run python -m seed.update_mayo` muestra las cinco mesas y las versiones
 que se publicarían. Con `--apply`, el comando publica en una transacción
-una versión nueva por técnica que necesite el cambio: la mesa de Mayo y la
-fuente de la técnica (`source`), que cita de dónde sale esa mesa. Conserva el
+una versión nueva por técnica que necesite el cambio: la mesa de Mayo, la
+posición medida de cada instrumento (`position_x_m`, `position_z_m`,
+`yaw_deg` y `additional_placements`) y la fuente de la técnica (`source`),
+que cita de dónde sale esa mesa. Es el camino para llevar las posiciones a
+una base que ya tiene las técnicas publicadas: `seed.load` es para la carga
+inicial. Conserva el
 historial y el resto del contenido publicado, y se detiene si alguna
 técnica por actualizar tiene un borrador o una versión en revisión. Se puede
 ejecutar nuevamente para comprobar que las cinco mesas coinciden con el
