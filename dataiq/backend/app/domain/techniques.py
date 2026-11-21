@@ -75,6 +75,7 @@ class ComponentDetail:
     position_x_m: float | None = None
     position_z_m: float | None = None
     yaw_deg: float | None = None
+    additional_placements: list[dict[str, float]] | None = None
 
 
 @dataclass(frozen=True)

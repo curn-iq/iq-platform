@@ -64,6 +64,12 @@ class CellOut(OutModel):
     column: int
 
 
+class ComponentPlacementOut(OutModel):
+    position_x_m: float
+    position_z_m: float
+    yaw_deg: float
+
+
 class ComponentOut(OutModel):
     instrument_id: UUID | None
     suture_id: UUID | None
@@ -71,6 +77,7 @@ class ComponentOut(OutModel):
     position_x_m: float | None = None
     position_z_m: float | None = None
     yaw_deg: float | None = None
+    additional_placements: list[ComponentPlacementOut] | None = None
 
 
 class ItemOut(OutModel):

@@ -14,6 +14,7 @@ from sqlalchemy import (
     func,
     text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.adapters.outbound.persistence.database import Base
@@ -185,6 +186,9 @@ class ItemComponent(Base):
     position_x_m: Mapped[float | None] = mapped_column()
     position_z_m: Mapped[float | None] = mapped_column()
     yaw_deg: Mapped[float | None] = mapped_column()
+    additional_placements: Mapped[list[dict[str, float]] | None] = mapped_column(
+        JSONB(none_as_null=True)
+    )
 
     __table_args__ = (
         CheckConstraint(
@@ -193,6 +197,12 @@ class ItemComponent(Base):
             "yaw_deg BETWEEN -180 AND 180 AND abs(position_x_m) < 10 AND "
             "abs(position_z_m) < 10))",
             name="valid_component_placement",
+        ),
+        CheckConstraint(
+            "additional_placements IS NULL OR "
+            "(position_x_m IS NOT NULL AND "
+            "jsonb_typeof(additional_placements) = 'array')",
+            name="valid_additional_placements",
         ),
         CheckConstraint(
             "num_nonnulls(instrument_id, suture_id) = 1",

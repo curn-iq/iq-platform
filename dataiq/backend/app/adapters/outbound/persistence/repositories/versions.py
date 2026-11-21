@@ -313,6 +313,7 @@ class SQLAlchemyVersionRepository:
                 position_x_m=c.position_x_m,
                 position_z_m=c.position_z_m,
                 yaw_deg=c.yaw_deg,
+                additional_placements=c.additional_placements,
             )
             for c in components
         )
@@ -366,6 +367,7 @@ class SQLAlchemyVersionRepository:
                 "position_x_m": component.position_x_m,
                 "position_z_m": component.position_z_m,
                 "yaw_deg": component.yaw_deg,
+                "additional_placements": component.additional_placements,
             }
             for item in (await _items(self._session, [version_id]))[version_id]
             if item.legend_number is not None

@@ -86,7 +86,10 @@ La carga convierte las posiciones a metros. El catálogo y el detalle de la
 técnica devuelven `position_x_m`, `position_z_m` y `yaw_deg` en cada
 componente. Los campos pueden ser nulos, en cuyo caso sigue disponible la
 colocación por celdas. Los datos con oclusión visual o una identificación
-incierta se indican como «propuesto» en la columna `origen`.
+incierta se indican como «propuesto» en la columna `origen`. La columna
+`ejemplar` distingue instrumentos iguales que se ven en sitios distintos.
+El catálogo devuelve los ejemplares posteriores en `additional_placements`
+dentro del mismo componente.
 
 ### Publicar las mesas actualizadas en una base existente
 
