@@ -32,6 +32,12 @@ export interface PlacedItem {
 const HANDLE = /^scalpel_handle_/;
 const BLADE = /^scalpel_blade_/;
 
+/** Un GLB de un objeto, con su colocación medida si la fuente la trae. */
+interface MeasuredFile {
+  file: string;
+  placement?: ComponentPlacement;
+}
+
 /** Enfrenta las valvas y deja que se distingan los dos perfiles de Farabeuf. */
 function faceFarabeuf(placements: ComponentPlacement[]): ComponentPlacement[] {
   const [first, second] = placements;
@@ -61,7 +67,7 @@ export function placeItems(
   modelFor: (instrumentId: string) => string | undefined,
 ): PlacedItem[] {
   return table.items.flatMap((item) => {
-    const files = item.components.flatMap((component) => {
+    const files = item.components.flatMap((component): MeasuredFile[] => {
       const file = component.instrumentId === null ? undefined : modelFor(component.instrumentId);
       if (file === undefined) return [];
       if (!component.placement) return [{ file, placement: undefined }];

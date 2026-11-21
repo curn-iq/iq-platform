@@ -270,11 +270,15 @@ medido y distingue los ejemplares con un sitio propio. Los separadores se apoyan
 de canto cuando la fuente trae colocación métrica. Un objeto compuesto
 conserva su número compartido y cada instrumento mantiene su propia pose.
 
-Cuando DataIQ solo trae celdas, el visor conserva la colocación habitual:
-centra el objeto en sus celdas y ajusta los objetos de ese grupo para reducir
-su solapamiento. La colocación métrica conserva la medida, con un ajuste mínimo al
-reborde al alinear la pieza. Los dos Farabeuf se muestran de canto, con las
-valvas enfrentadas y una pequeña luz entre sus extremos.
+Cuando DataIQ solo trae celdas, el visor centra el objeto en sus celdas. En los
+dos casos, la mesa del visor se ve ordenada aunque en la foto las piezas estén
+encimadas (decidido por Mauricio el 2026-11-01 y el 2026-11-21): después de
+alinear cada pieza al eje, ninguna tapa a otra ni cuelga del reborde. Las piezas
+que se tapan, sean de objetos distintos o del mismo objeto (las dos tijeras y
+los dos mangos, que DataIQ agrupa en un solo objeto), se corren lo justo, por el
+lado en que menos se tapan, con 3 mm de luz (`domain/arrangement.ts`). Los dos
+Farabeuf se muestran de canto, con las valvas enfrentadas y una pequeña luz
+entre sus extremos.
 
 La fuente y el sistema de coordenadas están en el
 [README de DataIQ](../dataiq/README.md#posición-métrica-de-los-instrumentos).

@@ -253,9 +253,12 @@ export class MayoScene {
     }
     this.clearTable();
     this.pieces = built;
-    const fallback = built.filter(({ item }) => !item.models.some((model) => model.placement));
-    const fallbackPoints = arrange(
-      fallback.map((piece) => {
+    // Todas las piezas, medidas o no, pasan por `arrange`: al alinearlas a los
+    // ejes, una pieza medida en la foto puede tapar a otra o encimarse como en la
+    // foto, y la mesa del visor debe verse ordenada (decidido por Mauricio el
+    // 2026-11-01 y el 2026-11-21). Cada una se corre solo lo justo.
+    const points = arrange(
+      built.map((piece) => {
         const center = piece.bounds.getCenter(new Vector3());
         const size = piece.bounds.getSize(new Vector3());
         return {
@@ -266,16 +269,10 @@ export class MayoScene {
         };
       }),
     );
-    const fallbackByPiece = new Map(fallback.map((piece, index) => [piece, fallbackPoints[index]]));
-    for (const piece of built) {
+    built.forEach((piece, index) => {
       const center = piece.bounds.getCenter(new Vector3());
       const size = piece.bounds.getSize(new Vector3());
-      const legacy = fallbackByPiece.get(piece);
-      piece.group.position.set(
-        legacy ? legacy.x - center.x : piece.item.x,
-        0,
-        legacy ? legacy.z - center.z : piece.item.z,
-      );
+      piece.group.position.set(points[index].x - center.x, 0, points[index].z - center.z);
       this.piecesGroup.add(piece.group);
       if (piece.number) {
         piece.number.position.set(
@@ -285,7 +282,7 @@ export class MayoScene {
         );
         this.numbersGroup.add(piece.number);
       }
-    }
+    });
     this.scaleNumbers();
     this.selected = null;
     this.paint();
@@ -518,6 +515,7 @@ export class MayoScene {
 
     // Las hojas se cuelgan del `blade_mount` de su mango, sin moverlas ni girarlas
     const loose: Object3D[] = [];
+    const measured: Object3D[] = [];
     item.models.forEach((model, i) => {
       const instance = models[i];
       if (!instance) return;
@@ -544,10 +542,32 @@ export class MayoScene {
         const placedZ = fit(z - projected.z, bounds.min.z, bounds.max.z, MAYO_TABLE_SIZE.depth);
         instance.position.set(placedX - item.x, SURFACE_Y - bounds.min.y, placedZ - item.z);
         group.add(instance);
+        measured.push(instance);
       } else {
         loose.push(instance);
       }
     });
+    // Un objeto de la mesa puede traer varias piezas medidas (las dos tijeras y
+    // los dos mangos, los dos Farabeuf). Al alinearlas a los ejes, una puede
+    // quedar encima de otra: se separan entre sí con la misma regla que las
+    // piezas de objetos distintos (`arrange`).
+    if (measured.length > 1) {
+      const boxes = measured.map((instance) => new Box3().setFromObject(instance));
+      const footprints = boxes.map((box) => {
+        const center = box.getCenter(new Vector3());
+        const size = box.getSize(new Vector3());
+        return {
+          x: item.x + center.x,
+          z: item.z + center.z,
+          halfLength: size.x / 2,
+          halfWidth: size.z / 2,
+        };
+      });
+      arrange(footprints).forEach((point, i) => {
+        measured[i].position.x += point.x - footprints[i].x;
+        measured[i].position.z += point.z - footprints[i].z;
+      });
+    }
     // Los instrumentos independientes, uno al lado del otro a lo ancho
     const depths = loose.map((model) => new Box3().setFromObject(model).getSize(new Vector3()).z);
     const total = depths.reduce((sum, d) => sum + d, 0) + SIDE_GAP * (loose.length - 1);
