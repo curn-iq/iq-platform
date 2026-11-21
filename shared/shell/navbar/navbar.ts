@@ -23,6 +23,7 @@ import { Button } from "../ui/button/button";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
 import {
+  barHiddenAfterScroll,
   isCurrentLink,
   NAV_LINKS,
   NAV_MENUS,
@@ -57,7 +58,12 @@ interface PanelComponent {
   templateUrl: "./navbar.html",
   styleUrl: "./navbar.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { "(document:keydown.escape)": "onEscape()" },
+  host: {
+    "(document:keydown.escape)": "onEscape()",
+    "(window:scroll)": "onScroll()",
+    "(focusin)": "hidden.set(false)",
+    "[class.hidden]": "hidden()",
+  },
 })
 export class Navbar {
   private readonly injector = inject(Injector);
@@ -78,9 +84,25 @@ export class Navbar {
   protected readonly open = signal<PanelId | null>(null);
   /** El menú de celular (≤ 960 px) está abierto. */
   protected readonly mobileOpen = signal(false);
+  /** La barra está escondida porque se bajó por la página (solo con `ShellHost.autoHide`). */
+  protected readonly hidden = signal(false);
+  private lastScrollY = typeof window === "undefined" ? 0 : window.scrollY;
 
   /** El menú de la sección donde se está: «Especialidades» en el catálogo y el detalle de técnica. */
   protected readonly current = this.shell.currentMenu;
+
+  /** Al bajar se esconde y al subir vuelve; con un desplegable o el menú de celular abiertos, se queda. */
+  protected onScroll(): void {
+    const y = window.scrollY;
+    const from = this.lastScrollY;
+    this.lastScrollY = y;
+    if (!this.shell.autoHide?.() || this.open() !== null || this.mobileOpen()) {
+      this.hidden.set(false);
+      return;
+    }
+    const height = this.host.nativeElement.offsetHeight;
+    this.hidden.set(barHiddenAfterScroll(this.hidden(), from, y, height));
+  }
 
   /** Se está en la página de este enlace directo. */
   protected isCurrent(link: NavDirectLink): boolean {
@@ -89,6 +111,11 @@ export class Navbar {
 
   constructor() {
     this.destroyRef.onDestroy(() => this.dispose());
+
+    // Al salir de una página con la barra que se esconde, la barra vuelve
+    effect(() => {
+      if (!this.shell.autoHide?.()) untracked(() => this.hidden.set(false));
+    });
 
     // Atrás, Adelante, un guard o la sesión vencida también cambian de página, sin
     // pasar por una opción: lo que hubiera abierto se cierra.

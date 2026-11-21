@@ -134,6 +134,62 @@ describe('Navbar', () => {
     });
   });
 
+  describe('se esconde al bajar', () => {
+    const scrollTo = (y: number) => {
+      Object.defineProperty(window, 'scrollY', { value: y, configurable: true });
+      window.dispatchEvent(new Event('scroll'));
+      fixture.detectChanges();
+    };
+    const hidden = () => root().classList.contains('hidden');
+
+    beforeEach(() => {
+      Object.defineProperty(root(), 'offsetHeight', { value: 72, configurable: true });
+    });
+
+    afterEach(() => scrollTo(0));
+
+    it('en «Nosotros» se esconde al bajar y vuelve al subir', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+
+      scrollTo(400);
+      expect(hidden()).toBe(true);
+      scrollTo(300);
+      expect(hidden()).toBe(false);
+    });
+
+    it('vuelve si recibe el foco', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      scrollTo(400);
+
+      root().dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(hidden()).toBe(false);
+    });
+
+    it('en las demás páginas se queda', async () => {
+      await router.navigateByUrl('/tecnicas');
+      await fixture.whenStable();
+
+      scrollTo(400);
+
+      expect(hidden()).toBe(false);
+    });
+
+    it('al salir de «Nosotros» con la barra escondida, vuelve', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      scrollTo(400);
+
+      await router.navigateByUrl('/');
+      await fixture.whenStable();
+
+      expect(hidden()).toBe(false);
+    });
+  });
+
   describe('abrir', () => {
     it('un clic abre el desplegable del botón y lo marca como abierto', async () => {
       mouseClick(button('tools'));

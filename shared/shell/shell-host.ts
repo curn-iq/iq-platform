@@ -35,6 +35,11 @@ export interface ShellHost {
   readonly currentMenu: Signal<NavMenuId | null>;
   /** La ruta de la app donde se está, sin la base: sirve para marcar el acceso actual. */
   readonly currentUrl: Signal<string>;
+  /**
+   * La barra se esconde al bajar y vuelve al subir (hoy, solo en «Nosotros» de DataIQ). Sin este
+   * campo, la barra se queda siempre.
+   */
+  readonly autoHide?: Signal<boolean>;
 
   /** Ya se sabe si hay sesión (hasta entonces la barra no muestra ni «Ingresar» ni «Mi cuenta»). */
   readonly loaded: Signal<boolean>;

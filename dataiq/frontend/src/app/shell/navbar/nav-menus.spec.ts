@@ -1,6 +1,23 @@
-import { isCurrentLink, NAV_LINKS, NAV_MENUS, NavOption } from './nav-menus';
+import { barHiddenAfterScroll, isCurrentLink, NAV_LINKS, NAV_MENUS, NavOption } from './nav-menus';
 
 const options = (): NavOption[] => NAV_MENUS.flatMap((menu) => [...(menu.options ?? [])]);
+
+describe('barHiddenAfterScroll', () => {
+  it('bajar pasada la barra la esconde y subir la muestra', () => {
+    expect(barHiddenAfterScroll(false, 100, 300, 72)).toBe(true);
+    expect(barHiddenAfterScroll(true, 300, 200, 72)).toBe(false);
+  });
+
+  it('cerca del inicio siempre se ve', () => {
+    expect(barHiddenAfterScroll(true, 100, 60, 72)).toBe(false);
+    expect(barHiddenAfterScroll(false, 0, 72, 72)).toBe(false);
+  });
+
+  it('un movimiento de menos de 4 px no la cambia', () => {
+    expect(barHiddenAfterScroll(true, 300, 298, 72)).toBe(true);
+    expect(barHiddenAfterScroll(false, 300, 303, 72)).toBe(false);
+  });
+});
 
 describe('NAV_MENUS', () => {
   it('los enlaces al inicio van solo a las secciones que existen en el inicio', () => {

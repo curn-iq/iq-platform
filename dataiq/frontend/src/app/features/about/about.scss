@@ -3,6 +3,18 @@
 :host {
   display: block;
   padding-inline: var(--space-gutter);
+
+  // ── Valores para ajustar a gusto ───────────────────────────────────────────────────────────
+  // Se cambian aquí; abajo, un @media por rango (escritorio y celular) los sobrescribe.
+  //   --about-air-top      aire entre la barra y el titular
+  //   --about-air-bottom   aire entre la entradilla y el carrusel
+  //   --about-title-size   tamaño del titular
+  //   --about-lead-size    tamaño de la entradilla
+  // Este es el rango de tablet (761 a 1100 px).
+  --about-air-top: 24px;
+  --about-air-bottom: 32px;
+  --about-title-size: clamp(40px, 23.4px + 4.16vw, 69px);
+  --about-lead-size: 17px;
 }
 
 // Presentación. Desde 1101 px el titular y la entradilla van lado a lado y la entradilla se alinea
@@ -10,14 +22,13 @@
 .head {
   display: grid;
   row-gap: 28px;
-  padding-block: 56px;
+  padding-block: var(--about-air-top) var(--about-air-bottom);
 }
 
 h1 {
   margin: 0;
   max-inline-size: 10.9em;
-  // 44 px a 390, 64 a 834 y 77 a 1100 (Figma)
-  font-size: clamp(44px, 26px + 4.62vw, 77px);
+  font-size: var(--about-title-size);
   font-weight: 650;
   line-height: 0.96;
   letter-spacing: -0.04em;
@@ -28,46 +39,51 @@ h1 {
   justify-items: start;
   gap: 20px;
   max-inline-size: 560px;
+  font-size: var(--about-lead-size);
 
   p {
     margin: 0;
     color: var(--color-text-muted);
-    font-size: 17px;
+    font-size: inherit;
     line-height: 1.6;
   }
 }
 
 @media (min-width: 1101px) {
+  :host {
+    --about-air-top: 32px;
+    --about-air-bottom: 40px;
+    // El 90 % del Figma: 56 px a 1101, 73 a 1310 y 83 a 1440, con tope de 90 px
+    --about-title-size: clamp(56px, 8vw - 32px, 90px);
+    --about-lead-size: 18px;
+  }
+
   .head {
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 24px;
     align-items: end;
-    padding-block: 72px;
   }
 
   h1 {
-    // La caja del Figma a 1440: 867 px a 92 px de letra
+    // La caja del titular del Figma a 1440: 9.42 veces el tamaño de la letra
     max-inline-size: 9.42em;
-    // 80 px a 1310, 92 a 1440, con el tope del Headline
-    font-size: clamp(62px, 8.88vw - 36px, 100px);
   }
 
   .lead {
     gap: 24px;
-    // 397 px a 18 px de letra
-    inline-size: 22.07em;
-    font-size: 18px;
-
-    p {
-      font-size: inherit;
-    }
+    // 22 veces el tamaño de la letra de la entradilla
+    inline-size: 22em;
   }
 }
 
 @media (max-width: 760px) {
+  :host {
+    --about-air-top: 20px;
+    --about-air-bottom: 24px;
+  }
+
   .head {
     row-gap: 20px;
-    padding-block: 40px;
   }
 
   h1 {

@@ -85,8 +85,27 @@ export const NAV_LINKS: readonly NavDirectLink[] = [
   },
 ];
 
+/**
+ * Si la barra se esconde después de que la página pasó de `fromY` a `toY` (en píxeles desde arriba):
+ * bajar más allá de `threshold` (el alto de la barra) la esconde, subir la muestra y cerca del inicio
+ * siempre se ve. Moverse menos de 4 px no cambia nada, para que el temblor del scroll no la haga parpadear.
+ */
+export function barHiddenAfterScroll(
+  hidden: boolean,
+  fromY: number,
+  toY: number,
+  threshold: number,
+): boolean {
+  if (toY <= threshold) return false;
+  if (Math.abs(toY - fromY) < 4) return hidden;
+  return toY > fromY;
+}
+
 /** `currentUrl` (la ruta de la app donde se está) es la de este enlace: lleva `aria-current`. */
-export function isCurrentLink(link: NavDirectLink, currentUrl: string): boolean {
+export function isCurrentLink(
+  link: NavDirectLink,
+  currentUrl: string,
+): boolean {
   return currentUrl.split(/[?#]/)[0] === link.target.route;
 }
 
