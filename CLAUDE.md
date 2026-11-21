@@ -78,7 +78,8 @@ Las pruebas de los backends necesitan su PostgreSQL local corriendo
   al terminar cada pieza: `dataiq/docs/checklist-backend.md`,
   `dataiq/docs/checklist-frontend.md`, `simiq3d/docs/checklist.md` (por
   actividad de DSRM), `simiq3d/docs/checklist-backend.md`,
-  `simiq3d/docs/checklist-frontend.md` y `sivri/docs/checklist.md`.
+  `simiq3d/docs/checklist-frontend.md`, `sivri/docs/checklist.md` y
+  `tesis/checklist.md`.
 - **Git:** todo entra por PR a `main` con CI; no hay rama `dev` y `main` es
   producción. Commits con Conventional Commits en español
   (`feat(dataiq): …`). El título del PR es la línea que aparece en el release
@@ -138,7 +139,8 @@ Cada tipo de información tiene un solo lugar (decidido por Mauricio el
 | Producto y diseño visual | [`PRODUCT.md`](PRODUCT.md) y [`DESIGN.md`](DESIGN.md) |
 | Avance | Las checklists (ver «Convenciones») |
 | Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub |
-| La tesis (Formato 115), entregas por corte y documentos fuente de IQ | Google Drive del proyecto, carpeta «Tesis ING-IQ - CURN» |
+| Lo que va a la tesis (texto de cada sección del Formato 115, figuras, resultados y referencias) | [`tesis/`](tesis/README.md) (decidido por Mauricio el 2026-11-21) |
+| La tesis entregada (Formato 115), entregas por corte y documentos fuente de IQ | Google Drive del proyecto, carpeta «Tesis ING-IQ - CURN» |
 
 El Drive no se modifica salvo pedido explícito de quien trabaja con el
 agente. Allí, `ENTREGABLES/` tiene las entregas por corte,
