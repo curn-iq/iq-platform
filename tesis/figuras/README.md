@@ -17,6 +17,7 @@ catálogos o de internet no se suben: tienen derechos de autor.
 | `simiq3d-cinco-mesas-ordenadas.jpg` | Las cinco mesas de Mayo en el visor, vistas desde arriba | Desarrollo de SIMIQ3D; Resultados | Captura del visor (2026-11-21) |
 | `simiq3d-sombreado-antes-despues.jpg` | El instrumental sobre el paño antes y después del ajuste de sombreado | Desarrollo de SIMIQ3D | Capturas del visor (2026-11-21) |
 | `simiq3d-produccion-tiroidectomia.png` | SIMIQ3D en producción: la mesa de Tiroidectomía con su leyenda | Resultados | Captura de producción con la cuenta de prueba (2026-11-21) |
+| `simiq3d-chat-mastectomia.png` | El chat de SIMIQ3D en producción: la pregunta por la mesa de Mastectomía, la respuesta con la ubicación de cada objeto, la escena y la leyenda | Resultados | Captura de producción con la cuenta de prueba, recorrido de las cinco mesas (2026-11-21) |
 | `sivri-etiquetas-tiroidectomia.jpg` | Las cajas etiquetadas de una mesa bien armada | Desarrollo de SIVRI | Foto de IQ IMG_1929 y sus etiquetas corregidas |
 | `sivri-revision-sam-ronda-1.jpg` | Revisión de las cajas con SAM 2.1: caja vigente y caja propuesta | Desarrollo de SIVRI | Revisión del 2026-11-21 (asistencia de Codex) |
 | `sivri-cajas-ampliadas.jpg` | Cajas ampliadas (en verde) donde la anterior (en rojo) cortaba el instrumento | Desarrollo de SIVRI | Corrección del 2026-11-21 (asistencia de Claude Code) |

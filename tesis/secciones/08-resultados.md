@@ -83,6 +83,21 @@ la orden de la escena; dibujarla en el navegador suma la descarga de los
 modelos 3D la primera vez. El detalle está en
 [`../evidencias/tiempos-simiq3d-2026-11-21.csv`](../evidencias/tiempos-simiq3d-2026-11-21.csv).
 
+**Recorrido de las cinco mesas en producción.** El 2026-11-21 se pidió por
+chat, con la cuenta de prueba y una conversación nueva por técnica, la mesa
+de Mayo de cada una de las cinco técnicas de Cirugía General («Muéstrame la
+mesa de Mayo de la …»). En las cinco, el visor abrió la mesa pedida y la
+leyenda coincidió objeto por objeto, en número y nombre, con la mesa publicada
+en DataIQ: 10 objetos en Colecistectomía y Mastectomía, 12 en Eventrorrafia y
+Hemicolectomía derecha y 13 en Tiroidectomía. En el texto de las respuestas se
+observaron dos fallas de forma y una de contenido: en Colecistectomía y
+Eventrorrafia el modelo abrió una negrita sin cerrarla y la interfaz la
+muestra como asteriscos, y en Hemicolectomía derecha nombró como «pinza de
+Babcock (n.º 3)» al vecino de la pinza de Allis, que es la pinza Rochester. El
+detalle está en
+[`../evidencias/recorrido-simiq3d-2026-11-21.csv`](../evidencias/recorrido-simiq3d-2026-11-21.csv),
+y la captura de Mastectomía en `figuras/simiq3d-chat-mastectomia.png`.
+
 ### SIVRI
 
 El backend de SIVRI valida la mesa con el detector y los marcadores ArUco. El
