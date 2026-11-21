@@ -62,7 +62,9 @@ porqué están en el [README](../README.md).
 
 - [ ] Exactitud del chat sobre el banco de preguntas y sobre el registro de
   las sesiones; ninguna respuesta inventada
-- [ ] Tiempo de respuesta, desde la pregunta hasta la escena
+- [x] Tiempo de respuesta, desde la pregunta hasta la escena (2026-11-21, en
+  producción: la orden de la escena en 0,19 s de mediana, el primer texto en
+  4,3 s y la respuesta completa en 10,4 s)
 - [ ] Escala de Usabilidad del Sistema (SUS) y prueba piloto en la fase
   preliminar con el programa de IQ (ver el [README](../../README.md)), con el
   resto del ecosistema
