@@ -38,3 +38,17 @@
     </article>
   }
 </section>
+
+<section class="team" aria-labelledby="equipo-titulo">
+  <div class="team-head">
+    <h2 id="equipo-titulo">Las personas detrás del proyecto.</h2>
+    <p>
+      Somos un grupo de estudiantes unidos por un bien común: unificar la información de las mesas
+      de los procedimientos quirúrgicos en una sola plataforma educativa que sirva a las
+      instituciones que enseñan Instrumentación Quirúrgica.
+    </p>
+  </div>
+  @for (group of team; track group.id) {
+    <app-team-group [group]="group" />
+  }
+</section>

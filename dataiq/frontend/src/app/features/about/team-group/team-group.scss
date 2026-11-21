@@ -1,0 +1,137 @@
+// Grupo de «Conoce al equipo»: ver «Nosotros (página)» en DESIGN.md. Los tamaños de base son los de
+// tablet; escritorio y celular los cambian en su @media.
+
+:host {
+  display: grid;
+  row-gap: 24px;
+  --portrait-name-size: 19px;
+  --portrait-career-size: 15.5px;
+}
+
+// El rótulo: filete de 2 px en `tinta`, el programa a la izquierda y el lema a la derecha
+.label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 2px solid var(--color-text);
+
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 15px;
+  }
+}
+
+.lane {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// El trazo de avance solo existe en el carril de celular
+.progress {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  :host {
+    row-gap: 32px;
+    --portrait-name-size: 22px;
+  }
+
+  .label {
+    padding-top: 20px;
+
+    h3 {
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      font-size: 15.5px;
+    }
+  }
+
+  .lane {
+    column-gap: var(--space-column-gap);
+  }
+}
+
+@media (max-width: 760px) {
+  :host {
+    row-gap: 20px;
+    --portrait-career-size: 14.5px;
+  }
+
+  .label {
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 16px;
+
+    h3 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 14.5px;
+    }
+  }
+
+  // Carril que sale por el borde derecho: el retrato siguiente asoma
+  .lane {
+    display: flex;
+    column-gap: 12px;
+    margin-inline-end: calc(var(--space-gutter) * -1);
+    padding-inline-end: var(--space-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    li {
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+    }
+  }
+
+  .progress {
+    display: flex;
+    gap: 6px;
+
+    span {
+      width: 12px;
+      height: 3px;
+      border-radius: 1.5px;
+      background: var(--color-border-strong);
+      transition:
+        width 0.35s var(--ease-enter),
+        background-color 0.35s var(--ease-fade);
+
+      &.current {
+        width: 24px;
+        background: var(--color-accent);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress span {
+    transition: none;
+  }
+}

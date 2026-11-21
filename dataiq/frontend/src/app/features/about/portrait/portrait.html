@@ -1,0 +1,13 @@
+<div class="photo">
+  <!-- El nombre va justo debajo: la foto no repite nada para un lector de pantalla -->
+  <img
+    [ngSrc]="member().photo"
+    [ngSrcset]="srcset"
+    sizes="(min-width: 1101px) 30vw, (min-width: 761px) 31vw, 280px"
+    width="840"
+    height="1050"
+    alt=""
+  />
+</div>
+<p class="name">{{ member().name }}</p>
+<p class="career">{{ member().career }}</p>

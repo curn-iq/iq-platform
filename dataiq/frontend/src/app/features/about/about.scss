@@ -218,3 +218,66 @@ h1 {
     }
   }
 }
+
+// Conoce al equipo: sobre `fondo`. La cabecera lleva el título a la izquierda y el texto a la derecha en
+// escritorio, y apilados en tablet y celular. Los tamaños de base son los de tablet.
+.team {
+  display: grid;
+  row-gap: 72px;
+  padding-block: 72px 104px;
+}
+
+.team-head {
+  display: grid;
+  row-gap: 20px;
+  max-inline-size: 560px;
+  margin-block-end: -16px; // 56 px hasta el primer grupo, en vez de 72
+
+  h2 {
+    margin: 0;
+    // 38 px a 390, 52 a 834 y 68 desde 1356 (Figma)
+    font-size: clamp(38px, 25.7px + 3.15vw, 68px);
+    font-weight: 650;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 1101px) {
+  .team {
+    row-gap: 96px;
+    padding-block: 96px 128px;
+  }
+
+  .team-head {
+    grid-template-columns: minmax(0, 644px) minmax(0, 532px);
+    justify-content: space-between;
+    align-items: end;
+    column-gap: var(--space-column-gap);
+    max-inline-size: none;
+    margin-block-end: -16px; // 80 px hasta el primer grupo
+
+    p {
+      font-size: 18px;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .team {
+    row-gap: 56px;
+    padding-block: 56px 88px;
+  }
+
+  .team-head {
+    row-gap: 16px;
+    margin-block-end: -12px; // 44 px hasta el primer grupo
+  }
+}

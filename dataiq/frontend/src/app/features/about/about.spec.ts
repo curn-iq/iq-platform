@@ -83,6 +83,22 @@ describe('About', () => {
     });
   });
 
+  describe('conoce al equipo', () => {
+    it('lleva el título, el texto en primera persona y los dos grupos con tres personas cada uno', () => {
+      const team = root.querySelector('.team')!;
+
+      expect(team.querySelector('h2')!.textContent).toBe('Las personas detrás del proyecto.');
+      expect(team.querySelector('.team-head p')!.textContent).toContain(
+        'Somos un grupo de estudiantes',
+      );
+      expect(
+        Array.from(team.querySelectorAll('app-team-group')).map(
+          (group) => group.querySelectorAll('app-portrait').length,
+        ),
+      ).toEqual([3, 3]);
+    });
+  });
+
   describe('carrusel', () => {
     it('va bajo la presentación, con las cuatro fotos y su nombre', () => {
       const carousel = root.querySelector('app-photo-carousel')!;

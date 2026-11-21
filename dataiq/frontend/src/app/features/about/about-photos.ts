@@ -93,3 +93,49 @@ export const PROGRAMS: readonly AboutProgram[] = [
 
 /** Los anchos de cada foto de los programas en `public/nosotros/`, para el `srcset`. */
 export const PROGRAM_SRCSET = '750w, 1423w';
+
+/** Una persona del equipo: su retrato de `public/nosotros/` y su carrera. */
+export interface TeamMember {
+  readonly name: string;
+  readonly career: string;
+  /** El prefijo de sus archivos `<photo>-<ancho>.webp`. */
+  readonly photo: string;
+}
+
+/** Un grupo de «Conoce al equipo»: el programa, su lema y sus tres personas, como en el Figma. */
+export interface TeamGroup {
+  readonly id: string;
+  readonly program: string;
+  readonly motto: string;
+  readonly members: readonly TeamMember[];
+}
+
+/**
+ * Las seis personas del equipo, con su consentimiento para publicar su foto y su nombre (Resuelto 71).
+ * Los retratos miden 840 × 1050 y traen el fondo `#F0F0F0` puesto en el Figma.
+ */
+export const TEAM: readonly TeamGroup[] = [
+  {
+    id: 'instrumentacion',
+    program: 'Instrumentación Quirúrgica',
+    motto: 'Las técnicas, el instrumental y la mesa',
+    members: [
+      { name: 'Gabriela Rojas Iriarte', career: 'Instrumentación Quirúrgica', photo: 'rojas' },
+      { name: 'Gabriela Argel González', career: 'Instrumentación Quirúrgica', photo: 'argel' },
+      { name: 'Milagro Fernández Polo', career: 'Instrumentación Quirúrgica', photo: 'fernandez' },
+    ],
+  },
+  {
+    id: 'sistemas',
+    program: 'Ingeniería de Sistemas',
+    motto: 'DataIQ, SIMIQ3D y SIVRI',
+    members: [
+      { name: 'Juan José Caraballo Nieves', career: 'Ingeniería de Sistemas', photo: 'caraballo' },
+      { name: 'Mauricio José Lugo Granados', career: 'Ingeniería de Sistemas', photo: 'lugo' },
+      { name: 'Guebriel Gabriel Garcés Ravel', career: 'Ingeniería de Sistemas', photo: 'garces' },
+    ],
+  },
+];
+
+/** Los anchos de cada retrato en `public/nosotros/`, para el `srcset`. */
+export const PORTRAIT_SRCSET = '480w, 840w';
