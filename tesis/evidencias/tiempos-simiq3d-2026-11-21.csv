@@ -1,0 +1,21 @@
+pregunta,tipo,http,escena_s,primer_texto_s,completa_s
+Muéstrame la mesa de Mayo de la colecistectomía,mostrar,200,1.01,4.08,18.61
+¿Dónde va la Pinza de Moynihan en la colecistectomía?,ubicar,200,0.23,3.64,7.98
+¿Para qué sirve la Pinza de Moynihan?,describir,200,0.18,3.65,9.27
+¿Cuáles son las indicaciones de la colecistectomía?,dato,200,0.19,7.06,8.54
+Muéstrame la mesa de Mayo de la eventrorrafia,mostrar,200,0.21,3.11,17.91
+¿Dónde va la Pinza Kelly Adson en la eventrorrafia?,ubicar,200,0.19,2.85,6.07
+¿Para qué sirve la Pinza Kelly Adson?,describir,200,0.19,5.13,12.15
+¿Cuáles son las indicaciones de la eventrorrafia?,dato,200,0.18,5.63,8.09
+Muéstrame la mesa de Mayo de la hemicolectomía derecha,mostrar,200,0.19,5.37,21.28
+¿Dónde va la Pinza Kocher en la hemicolectomía derecha?,ubicar,200,0.22,4.61,8.06
+¿Para qué sirve la Pinza Kocher?,describir,200,0.19,5.09,9.26
+¿Cuáles son las indicaciones de la hemicolectomía derecha?,dato,200,0.18,4.52,10.49
+Muéstrame la mesa de Mayo de la mastectomía,mostrar,200,0.21,4.86,19.59
+¿Dónde va la Pinza Rochester en la mastectomía?,ubicar,200,0.19,3.82,9.46
+¿Para qué sirve la Pinza Rochester?,describir,200,0.19,4.17,12.77
+¿Cuáles son las indicaciones de la mastectomía?,dato,200,0.18,3.36,10.81
+Muéstrame la mesa de Mayo de la tiroidectomía,mostrar,200,0.19,4.71,20.22
+¿Dónde va la Separador de Senn Miller en la tiroidectomía?,ubicar,200,0.18,3.79,11.46
+¿Para qué sirve la Separador de Senn Miller?,describir,200,0.19,4.44,8.01
+¿Cuáles son las indicaciones de la tiroidectomía?,dato,200,0.2,3.54,10.29

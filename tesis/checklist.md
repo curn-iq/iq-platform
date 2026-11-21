@@ -82,7 +82,7 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 
 - [x] SIMIQ3D: exactitud del chat sobre el banco de preguntas, con el catálogo
   de producción.
-- [ ] SIMIQ3D: tiempo desde la pregunta hasta ver la escena, en producción (con
+- [x] SIMIQ3D: tiempo desde la pregunta hasta ver la escena, en producción (con
   el Servidor PC2).
 - [ ] SIVRI: precisión, exhaustividad, mAP@0.5 y mAP@0.5:0.95, matriz de
   confusión y curvas de pérdida, del entrenamiento con las etiquetas

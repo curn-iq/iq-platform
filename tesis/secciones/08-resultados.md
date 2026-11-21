@@ -59,10 +59,29 @@ instrumento de más o de menos; tres preguntas por datos clínicos en las que
 falta un dato o la aclaración de que DataIQ no tiene tiempos quirúrgicos; y
 casos aislados (una pregunta ambigua sin pedir precisión, un error de
 escritura, una explicación general y una pregunta sobre cómo ordenar la mesa).
-El tiempo por pregunta en el PC de desarrollo tuvo una mediana de 9,0 s y un
-máximo de 30 s; el tiempo en producción, con el Servidor PC2, se mide aparte.
 El detalle de cada pregunta está en
 [`../evidencias/banco-simiq3d-2026-11-21.csv`](../evidencias/banco-simiq3d-2026-11-21.csv).
+
+**Tiempo de respuesta en producción.** El 2026-11-21 se hicieron 20 preguntas
+al chat de producción, con el modelo en el Servidor PC2: cuatro por técnica
+(mostrar la mesa, ubicar un instrumento, para qué sirve un instrumento y las
+indicaciones de la técnica). La respuesta llega por partes, y se midieron tres
+momentos:
+
+| Momento | Mediana | Percentil 90 | Mínimo | Máximo |
+|---|---|---|---|---|
+| La orden de la escena (qué técnica abre y qué resalta) | 0,19 s | 0,22 s | 0,18 s | 1,01 s |
+| El primer texto de la respuesta | 4,3 s | 5,4 s | 2,9 s | 7,1 s |
+| La respuesta completa | 10,4 s | 19,6 s | 6,1 s | 21,3 s |
+
+La escena cambia casi de inmediato porque la decide el código con los datos
+de DataIQ, sin esperar al modelo de lenguaje; el máximo de 1,01 s fue la
+primera petición, que arranca el servicio. El texto empieza a aparecer a los
+pocos segundos y se completa mientras se lee; las respuestas más largas son
+las que presentan una mesa completa (entre 18 y 21 s). La medición llega hasta
+la orden de la escena; dibujarla en el navegador suma la descarga de los
+modelos 3D la primera vez. El detalle está en
+[`../evidencias/tiempos-simiq3d-2026-11-21.csv`](../evidencias/tiempos-simiq3d-2026-11-21.csv).
 
 ### SIVRI
 
