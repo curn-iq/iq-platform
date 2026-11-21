@@ -16,6 +16,9 @@ import { aboutImageLoader, AboutPhoto, CAROUSEL_SRCSET } from '../about-photos';
 /** Cada cuánto avanza sola. */
 const INTERVAL_MS = 3000;
 
+/** Lo que tarda la foto en terminar de entrar (o en volver) al soltarla tras arrastrarla. */
+const SETTLE_MS = 350;
+
 /** Lo que se ve de la foto mientras el navegador elige su variante: el ancho que ocupa en cada rango. */
 const SIZES =
   '(min-width: 1101px) 100vw, (min-width: 761px) calc(100vw - 72px), calc(100vw - 40px)';
@@ -23,9 +26,10 @@ const SIZES =
 /**
  * El carrusel de la presentación de «Nosotros»: solo las fotos, sin flechas, contador, puntos ni pie
  * (Resuelto 67 de `dataiq/docs/checklist-frontend.md`). Avanza solo cada 3 s con un fundido de .6s y se
- * detiene con el puntero encima o con el foco del teclado, y deja de avanzar solo cuando la persona
- * cambia de foto; se cambia de foto arrastrando con el
- * mouse o deslizando, en los dos sentidos, y con las flechas del teclado cuando tiene el foco. Con
+ * detiene con el puntero encima, con el foco del teclado y mientras se arrastra; deja de avanzar solo
+ * cuando la persona cambia de foto con las flechas o deslizando con el dedo (con el mouse sigue); se cambia de foto arrastrando con el
+ * mouse o deslizando, en los dos sentidos (las fotos siguen al puntero mientras se arrastran), y con las
+ * flechas del teclado cuando tiene el foco. Con
  * `prefers-reduced-motion` no avanza solo y el cambio es instantáneo. Ver «Nosotros (página)» en
  * `DESIGN.md`.
  */
@@ -42,11 +46,13 @@ const SIZES =
     tabindex: '0',
     '[attr.aria-label]': 'label()',
     '[class.dragging]': 'dragging()',
+    '[class.settling]': 'settling()',
     '(keydown.arrowleft)': 'onArrow($event, -1)',
     '(keydown.arrowright)': 'onArrow($event, 1)',
     '(pointerenter)': 'onPointerEnter($event)',
     '(pointerleave)': 'onPointerLeave($event)',
     '(pointerdown)': 'onPointerDown($event)',
+    '(pointermove)': 'onPointerMove($event)',
     '(pointerup)': 'onPointerUp($event)',
     '(pointercancel)': 'onPointerCancel()',
     '(focusin)': 'onFocusIn()',
@@ -63,23 +69,36 @@ export class PhotoCarousel {
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
   /** Donde se agarró la foto con el puntero, si se está arrastrando. */
   private dragFrom: number | null = null;
+  /** Se está arrastrando con el dedo (y no con el mouse o un lápiz). */
+  private dragByTouch = false;
 
   protected readonly srcset = CAROUSEL_SRCSET;
   protected readonly sizes = SIZES;
   /** La foto que se ve. */
   protected readonly index = signal(0);
   protected readonly dragging = signal(false);
+  /** Se soltó la foto y está terminando de entrar o de volver a su lugar. */
+  protected readonly settling = signal(false);
+  /** Las fotos vecinas, que asoman a los lados mientras se arrastra. */
+  protected readonly previous = computed(() => wrapIndex(this.index() - 1, this.photos().length));
+  protected readonly next = computed(() => wrapIndex(this.index() + 1, this.photos().length));
   /** El puntero (de mouse o lápiz, no el dedo) está encima. */
   private readonly hovering = signal(false);
   /** El foco llegó con el teclado. */
   protected readonly focusVisible = signal(false);
   /**
-   * Se cambió de foto a mano (flechas o arrastre): deja de avanzar solo hasta que se recargue la página.
-   * Es la forma de detenerlo en una pantalla táctil, donde no hay puntero encima (WCAG 2.2.2).
+   * Se cambió de foto con las flechas o deslizando con el dedo: deja de avanzar solo hasta que se
+   * recargue la página. Es la forma de detenerlo en una pantalla táctil, donde no hay puntero encima
+   * (WCAG 2.2.2). Con el mouse no lo detiene: ahí el puntero encima ya lo pausa.
    */
   private readonly stopped = signal(false);
   private readonly paused = computed(
-    () => this.stopped() || this.hovering() || this.focusVisible(),
+    () =>
+      this.stopped() ||
+      this.hovering() ||
+      this.focusVisible() ||
+      this.dragging() ||
+      this.settling(),
   );
 
   constructor() {
@@ -96,7 +115,7 @@ export class PhotoCarousel {
     this.index.update((index) => wrapIndex(index + step, this.photos().length));
   }
 
-  /** Un cambio hecho por la persona: cambia de foto y el carrusel deja de avanzar solo. */
+  /** Un cambio con las flechas o con el dedo: cambia de foto y el carrusel deja de avanzar solo. */
   private goByHand(step: number): void {
     this.stopped.set(true);
     this.go(step);
@@ -128,21 +147,56 @@ export class PhotoCarousel {
 
   protected onPointerDown(event: PointerEvent): void {
     if (event.pointerType !== 'touch' && event.button !== 0) return;
+    if (this.settling()) return;
     this.dragFrom = event.clientX;
+    this.dragByTouch = event.pointerType === 'touch';
     this.dragging.set(true);
     // El arrastre sigue aunque el puntero salga de la foto
     this.host.setPointerCapture?.(event.pointerId);
   }
 
+  /**
+   * Mientras se arrastra, las fotos se corren con el puntero. Solo cambia una propiedad CSS del carrusel
+   * (`--drag`, que mueve las fotos con `transform`): no pasa por Angular ni obliga a recalcular la página.
+   */
+  protected onPointerMove(event: PointerEvent): void {
+    if (this.dragFrom === null || this.reduced()) return;
+    this.setDrag(`${event.clientX - this.dragFrom}px`);
+  }
+
   protected onPointerUp(event: PointerEvent): void {
     if (this.dragFrom === null) return;
     const step = swipeStep(event.clientX - this.dragFrom);
-    this.onPointerCancel();
-    if (step !== 0) this.goByHand(step);
+    this.dragFrom = null;
+    this.dragging.set(false);
+    if (this.reduced()) {
+      this.setDrag('0px');
+      if (step !== 0) this.changeAfterDrag(step);
+      return;
+    }
+    // La foto termina de entrar (o vuelve a su lugar) y después se cambia el índice
+    this.settling.set(true);
+    this.setDrag(`${-step * 100}%`);
+    setTimeout(() => {
+      if (step !== 0) this.changeAfterDrag(step);
+      this.setDrag('0px');
+      this.settling.set(false);
+    }, SETTLE_MS);
   }
 
   protected onPointerCancel(): void {
     this.dragFrom = null;
     this.dragging.set(false);
+    this.setDrag('0px');
+  }
+
+  /** Con el dedo, cambiar de foto detiene el avance; con el mouse sigue 3 s después de la foto nueva. */
+  private changeAfterDrag(step: number): void {
+    if (this.dragByTouch) this.goByHand(step);
+    else this.go(step);
+  }
+
+  private setDrag(value: string): void {
+    this.host.style.setProperty('--drag', value);
   }
 }

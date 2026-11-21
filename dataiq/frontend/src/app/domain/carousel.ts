@@ -1,5 +1,5 @@
 /** Cuánto hay que arrastrar (en píxeles) para que cuente como cambiar de foto y no como un toque. */
-export const SWIPE_THRESHOLD_PX = 40;
+export const SWIPE_THRESHOLD_PX = 80;
 
 /** La posición `index` dentro de una lista de `count` fotos, dando la vuelta por los dos extremos. */
 export function wrapIndex(index: number, count: number): number {

@@ -179,19 +179,49 @@ describe('PhotoCarousel', () => {
       expect(active()).toBe(1);
     });
 
-    it('cambiar de foto arrastrando lo detiene, también en una pantalla táctil', () => {
+    it('cambiar de foto arrastrando con el mouse no lo detiene: sigue 3 s después', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointerup', { clientX: 200 });
+      wait(350);
+      expect(active()).toBe(1);
+
+      wait(3000);
+      expect(active()).toBe(2);
+    });
+
+    it('cambiar de foto deslizando con el dedo lo detiene', () => {
       pointer('pointerdown', { clientX: 400, pointerType: 'touch' });
       pointer('pointerup', { clientX: 200, pointerType: 'touch' });
-      settle();
+      wait(350);
       expect(active()).toBe(1);
 
       wait(30_000);
       expect(active()).toBe(1);
     });
 
+    it('mientras se arrastra no avanza solo', () => {
+      pointer('pointerdown', { clientX: 400, pointerType: 'touch' });
+      wait(10_000);
+      expect(active()).toBe(0);
+
+      pointer('pointerup', { clientX: 380, pointerType: 'touch' });
+      wait(350);
+      wait(3000);
+      expect(active()).toBe(1);
+    });
+
+    it('un arrastre de menos de 80 px no cambia de foto', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointerup', { clientX: 321 });
+      wait(350);
+
+      expect(active()).toBe(0);
+    });
+
     it('un toque sin arrastrar no lo detiene', () => {
       pointer('pointerdown', { clientX: 200, pointerType: 'touch' });
       pointer('pointerup', { clientX: 205, pointerType: 'touch' });
+      wait(350);
       wait(3000);
 
       expect(active()).toBe(1);
@@ -241,19 +271,19 @@ describe('PhotoCarousel', () => {
     it('hacia la izquierda trae la siguiente y hacia la derecha, la anterior', () => {
       pointer('pointerdown', { clientX: 400 });
       pointer('pointerup', { clientX: 200 });
-      settle();
+      wait(350);
       expect(active()).toBe(1);
 
       pointer('pointerdown', { clientX: 200 });
       pointer('pointerup', { clientX: 400 });
-      settle();
+      wait(350);
       expect(active()).toBe(0);
     });
 
     it('hacia la derecha desde la primera da la vuelta a la última', () => {
       pointer('pointerdown', { clientX: 100 });
       pointer('pointerup', { clientX: 300 });
-      settle();
+      wait(350);
 
       expect(active()).toBe(3);
     });
@@ -261,9 +291,40 @@ describe('PhotoCarousel', () => {
     it('un arrastre corto no cambia de foto', () => {
       pointer('pointerdown', { clientX: 100 });
       pointer('pointerup', { clientX: 120 });
-      settle();
+      wait(350);
 
       expect(active()).toBe(0);
+    });
+
+    it('mientras se arrastra, las fotos siguen al puntero y al soltar terminan de entrar', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointermove', { clientX: 330 });
+      expect(host().style.getPropertyValue('--drag')).toBe('-70px');
+
+      pointer('pointerup', { clientX: 300 });
+      expect(host().classList.contains('settling')).toBe(true);
+      expect(host().style.getPropertyValue('--drag')).toBe('-100%');
+      expect(active()).toBe(0);
+
+      wait(350);
+      expect(active()).toBe(1);
+      expect(host().classList.contains('settling')).toBe(false);
+      expect(host().style.getPropertyValue('--drag')).toBe('0px');
+    });
+
+    it('un arrastre corto vuelve la foto a su lugar', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointermove', { clientX: 380 });
+      pointer('pointerup', { clientX: 380 });
+      expect(host().style.getPropertyValue('--drag')).toBe('0%');
+
+      wait(350);
+      expect(active()).toBe(0);
+    });
+
+    it('las vecinas quedan marcadas para asomar a los lados', () => {
+      expect(slides()[3].classList.contains('previous')).toBe(true);
+      expect(slides()[1].classList.contains('next')).toBe(true);
     });
 
     it('el cursor es grabbing mientras se arrastra y grab al soltar', () => {
@@ -272,7 +333,7 @@ describe('PhotoCarousel', () => {
       expect(host().classList.contains('dragging')).toBe(true);
 
       pointer('pointerup', { clientX: 100 });
-      settle();
+      wait(350);
       expect(host().classList.contains('dragging')).toBe(false);
     });
 
@@ -280,7 +341,7 @@ describe('PhotoCarousel', () => {
       pointer('pointerdown', { clientX: 400 });
       pointer('pointercancel');
       pointer('pointerup', { clientX: 100 });
-      settle();
+      wait(350);
 
       expect(active()).toBe(0);
       expect(host().classList.contains('dragging')).toBe(false);
@@ -288,7 +349,7 @@ describe('PhotoCarousel', () => {
 
     it('soltar sin haber agarrado la foto no hace nada', () => {
       pointer('pointerup', { clientX: 100 });
-      settle();
+      wait(350);
 
       expect(active()).toBe(0);
     });

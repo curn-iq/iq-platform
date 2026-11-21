@@ -17,6 +17,7 @@ describe('swipeStep', () => {
   it('arrastrar hacia la izquierda trae la siguiente y hacia la derecha, la anterior', () => {
     expect(swipeStep(-120)).toBe(1);
     expect(swipeStep(120)).toBe(-1);
+    expect(SWIPE_THRESHOLD_PX).toBe(80);
   });
 
   it('un arrastre corto no cambia de foto', () => {

@@ -54,6 +54,37 @@
   }
 }
 
+// Al arrastrar, la foto sigue al puntero y las vecinas asoman a los lados; al soltarla, termina de
+// entrar (o vuelve) en .35s. Solo se mueve con `transform`, que no recalcula la página.
+:host(.dragging),
+:host(.settling) {
+  .slide {
+    transition: none;
+  }
+
+  .slide.active {
+    transform: translateX(var(--drag, 0px));
+  }
+
+  .slide.previous,
+  .slide.next {
+    z-index: 1;
+    opacity: 1;
+  }
+
+  .slide.previous {
+    transform: translateX(calc(-100% + var(--drag, 0px)));
+  }
+
+  .slide.next {
+    transform: translateX(calc(100% + var(--drag, 0px)));
+  }
+}
+
+:host(.settling) .slide {
+  transition: transform 0.35s var(--ease-enter);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .slide,
   .slide.active {
