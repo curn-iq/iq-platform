@@ -30,6 +30,13 @@
         />
       </svg>
     </button>
+    } @for (link of links; track link.id) {
+    <a
+      class="item"
+      [appNavLink]="link.target"
+      [attr.aria-current]="isCurrent(link) ? 'page' : null"
+      >{{ link.label }}</a
+    >
     }
   </nav>
   <div class="actions">

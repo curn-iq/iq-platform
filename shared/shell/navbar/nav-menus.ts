@@ -63,9 +63,55 @@ export function specialtyTarget(id: string): NavTarget {
   return { route: CATALOG_ROUTE, queryParams: { especialidad: id } };
 }
 
-// Los textos son los de `diseno/mockups/inicio.html`. En el MVP «¿Por qué IQ
-// Platform?» no lleva «Quiénes somos» (Resuelto 26 de la checklist): no tiene
-// texto. Las opciones que llevan al inicio van a su sección (`#camino`…).
+/**
+ * Un enlace directo de la barra, sin desplegable (Resuelto 66 de
+ * `dataiq/docs/checklist-frontend.md`). Va después de los menús, en el menú de
+ * celular y, en el pie, al final de la columna `footerColumn`.
+ */
+export interface NavDirectLink {
+  readonly id: string;
+  readonly label: string;
+  readonly target: NavTarget;
+  readonly footerColumn: NavMenuId;
+}
+
+/** Los enlaces directos de la barra, en orden. */
+export const NAV_LINKS: readonly NavDirectLink[] = [
+  {
+    id: "about",
+    label: "Nosotros",
+    target: { route: "/nosotros" },
+    footerColumn: "why",
+  },
+];
+
+/**
+ * Si la barra se esconde después de que la página pasó de `fromY` a `toY` (en píxeles desde arriba):
+ * bajar más allá de `threshold` (el alto de la barra) la esconde, subir la muestra y cerca del inicio
+ * siempre se ve. Moverse menos de 4 px no cambia nada, para que el temblor del scroll no la haga parpadear.
+ */
+export function barHiddenAfterScroll(
+  hidden: boolean,
+  fromY: number,
+  toY: number,
+  threshold: number,
+): boolean {
+  if (toY <= threshold) return false;
+  if (Math.abs(toY - fromY) < 4) return hidden;
+  return toY > fromY;
+}
+
+/** `currentUrl` (la ruta de la app donde se está) es la de este enlace: lleva `aria-current`. */
+export function isCurrentLink(
+  link: NavDirectLink,
+  currentUrl: string,
+): boolean {
+  return currentUrl.split(/[?#]/)[0] === link.target.route;
+}
+
+// Los textos son los de `diseno/mockups/inicio.html`. «Nosotros» no es una
+// opción de «¿Por qué IQ Platform?»: es un enlace directo (`NAV_LINKS`). Las
+// opciones que llevan al inicio van a su sección (`#camino`…).
 export const NAV_MENUS: readonly NavMenu[] = [
   {
     id: "tools",

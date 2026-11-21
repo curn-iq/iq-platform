@@ -1,0 +1,21 @@
+<div class="label">
+  <h3>{{ group().program }}</h3>
+  <p>{{ group().motto }}</p>
+</div>
+<!-- En celular el carril tiene scroll y ningún retrato recibe el foco: el carril lo recibe, para moverlo con las flechas -->
+<ul
+  class="lane"
+  #lane
+  [attr.tabindex]="mobile() ? 0 : null"
+  [attr.aria-label]="mobile() ? 'Equipo de ' + group().program : null"
+  (scroll)="onLaneScroll(lane)"
+>
+  @for (member of group().members; track member.photo) {
+    <li><app-portrait [member]="member" /></li>
+  }
+</ul>
+<div class="progress" aria-hidden="true">
+  @for (member of group().members; track member.photo; let i = $index) {
+    <span [class.current]="i === current()"></span>
+  }
+</div>

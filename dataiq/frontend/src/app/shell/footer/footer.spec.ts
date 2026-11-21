@@ -84,11 +84,18 @@ describe('Footer', () => {
     expect(anchors.map(handledByRouter)).toEqual([true, false, false]);
   });
 
-  it('¿Por qué IQ Platform? lleva a las secciones del inicio, sin «Quiénes somos»', () => {
+  it('¿Por qué IQ Platform? lleva a las secciones del inicio y, al final, a Nosotros', () => {
     expect(links('¿Por qué IQ Platform?')).toEqual([
       ['Cómo funciona', '/#camino'],
       ['La investigación', '/#investigacion'],
+      ['Nosotros', '/nosotros'],
     ]);
+  });
+
+  it('Nosotros se abre por el router', () => {
+    const about = Array.from(column('¿Por qué IQ Platform?').querySelectorAll('a')).at(-1)!;
+
+    expect(handledByRouter(about)).toBe(true);
   });
 
   it('Ayuda lleva a las preguntas y a quienes enseñan, sin «Términos de uso»', () => {

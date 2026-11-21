@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
@@ -66,6 +66,39 @@ describe('MobileMenu', () => {
       'Ayuda',
     ]);
     expect(groups().every((g) => !g.open)).toBe(true);
+  });
+
+  describe('Nosotros', () => {
+    const about = () => root().querySelector<HTMLAnchorElement>('a.direct')!;
+
+    it('es una fila simple después de los grupos y antes de las acciones', () => {
+      const children = Array.from(root().children);
+
+      expect(about().textContent!.trim()).toBe('Nosotros');
+      expect(about().getAttribute('href')).toBe('/nosotros');
+      expect(children.indexOf(about())).toBe(groups().length);
+      expect(about().querySelector('svg')).toBeNull();
+      expect(handledByRouter(about())).toBe(true);
+    });
+
+    it('lleva aria-current solo en su página', async () => {
+      expect(about().hasAttribute('aria-current')).toBe(false);
+
+      await TestBed.inject(Router).navigateByUrl('/nosotros');
+      // No se espera con `whenStable()`: el menú pide las especialidades al crearse y esa petición queda abierta
+      fixture.detectChanges();
+
+      expect(about().getAttribute('aria-current')).toBe('page');
+    });
+
+    it('al elegirlo, el menú se cierra', () => {
+      const chosen = vi.fn();
+      fixture.componentInstance.chosen.subscribe(chosen);
+
+      about().click();
+
+      expect(chosen).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('DataIQ se abre por el router; SIMIQ3D y SIVRI, con navegación completa', () => {

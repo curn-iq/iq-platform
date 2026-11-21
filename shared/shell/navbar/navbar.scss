@@ -7,6 +7,17 @@
   z-index: 50;
 }
 
+// Escondida al bajar por la página (solo donde la app lo pide: ver `ShellHost.autoHide`). Se mueve
+// `.bar` y no el host: un host con `transform` sería el bloque contenedor del menú de celular
+// (`position: fixed`) mientras dura la animación. El hueco que deja no recibe clics.
+:host(.hidden) {
+  pointer-events: none;
+
+  .bar {
+    transform: translateY(-100%);
+  }
+}
+
 .bar {
   display: flex;
   align-items: center;
@@ -15,6 +26,11 @@
   padding-inline: var(--space-gutter);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
+  transition: transform 0.35s var(--ease-enter);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .brand {
@@ -48,6 +64,7 @@ nav {
   font-size: 15.5px;
   font-weight: 550;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   transition:
     background-color 0.2s var(--ease-fade),

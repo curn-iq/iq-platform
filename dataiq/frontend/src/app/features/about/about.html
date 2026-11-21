@@ -1,0 +1,54 @@
+<header class="head">
+  <h1>Donde la tecnología se encuentra con la práctica quirúrgica.</h1>
+  <div class="lead">
+    <p>
+      IQ Platform nace en la Corporación Universitaria Rafael Núñez, entre dos programas.
+      Instrumentación Quirúrgica aporta las técnicas, el instrumental y su lugar en la mesa;
+      Ingeniería de Sistemas lo lleva a una consulta, a una vista en 3D y a la cámara.
+    </p>
+    <a app-arrow-link routerLink="/" fragment="camino">Ver cómo funciona</a>
+  </div>
+</header>
+
+<app-photo-carousel [photos]="carouselPhotos" label="Fotos del equipo y del laboratorio" />
+
+<section class="programs">
+  @for (program of programs; track program.id) {
+    <article class="program">
+      <div class="program-photo">
+        <img
+          [ngSrc]="program.photo.name"
+          [ngSrcset]="programSrcset"
+          sizes="(min-width: 1101px) 52vw, (min-width: 761px) calc(100vw - 72px), calc(100vw - 40px)"
+          [width]="program.photo.width"
+          [height]="program.photo.height"
+          alt=""
+        />
+        <p class="mark">
+          <span aria-hidden="true">foto ilustrativa · Pexels</span>
+          <span class="sr-only">Foto ilustrativa de Pexels, sin relación con el equipo.</span>
+        </p>
+      </div>
+      <div class="program-text">
+        <h2>{{ program.name }}</h2>
+        @for (paragraph of program.paragraphs; track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+    </article>
+  }
+</section>
+
+<section class="team" aria-labelledby="equipo-titulo">
+  <div class="team-head">
+    <h2 id="equipo-titulo">Las personas detrás del proyecto.</h2>
+    <p>
+      Somos un grupo de estudiantes unidos por un bien común: unificar la información de las mesas
+      de los procedimientos quirúrgicos en una sola plataforma educativa que sirva a las
+      instituciones que enseñan Instrumentación Quirúrgica.
+    </p>
+  </div>
+  @for (group of team; track group.id) {
+    <app-team-group [group]="group" />
+  }
+</section>

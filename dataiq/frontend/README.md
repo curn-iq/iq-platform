@@ -49,6 +49,9 @@ son las rutas de la API.
 
 ```
 src/
+├── public/nosotros/        las fotos de «Nosotros» en WebP, con variantes de ancho
+│                           (`<nombre>-<ancho>.webp`): carrusel 800, 1500 y 2400 px;
+│                           programas 750 y 1423 px; retratos 480 y 840 px (Resuelto 71)
 ├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
 └── app/
     ├── core/               servicios únicos de toda la app
@@ -79,7 +82,7 @@ src/
     │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
     ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie, aviso de sesión sin comprobar
     └── features/
-        ├── home/  catalog/  technique/  account/  privacy/
+        ├── home/  catalog/  technique/  account/  privacy/  about/
         └── management/
             ├── drafts/  editor/  review/  instruments/  users/
 ```
@@ -284,6 +287,15 @@ El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs
 - **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
 - **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
 
+### Nosotros (`features/about/`)
+
+Página pública (`/nosotros`, sin API) sobre quiénes hacen IQ Platform. Su mockup es el archivo de Figma de la tabla «Rutas»; las decisiones, en los Resueltos 66 a 72 de la [checklist](../docs/checklist-frontend.md) y el diseño, en «Nosotros (página)» de [`DESIGN.md`](../../DESIGN.md). Las fotos están en `public/nosotros/` (ver «Arquitectura»).
+
+- **Presentación:** el titular (`h1`, el único de la página), la entradilla y «Ver cómo funciona» (`ArrowLink` a `/#camino`, que el router baja a la sección del inicio). El tamaño del titular cambia en 1101 px: por debajo va sobre la entradilla; por encima, junto a ella.
+- **Los dos programas:** los datos están en `about-photos.ts` (`PROGRAMS`: nombre, foto y párrafos); cada programa es un `article` con su `h2`. Las fotos usan `NgOptimizedImage` con el mismo cargador (`aboutImageLoader(1423)`, que da `About`) y son decorativas: la marca «foto ilustrativa · Pexels» lleva para los lectores de pantalla el texto completo (Resuelto 74).
+- **Conoce al equipo:** `TEAM` en `about-photos.ts` (programa, lema y las tres personas de cada grupo). Cada grupo es `TeamGroupSection` (`team-group/`): el rótulo, la lista de retratos (en celular, un carril con `scroll-snap`) y el trazo de avance, que sigue al carril con su evento `scroll`. Cada persona es `Portrait` (`portrait/`), con su propio cargador de imágenes; el acercamiento al señalarlo es solo CSS, con `(hover: hover) and (pointer: fine)` (Resuelto 75).
+- **Carrusel** (`photo-carousel/`): las fotos de `about-photos.ts` (`CAROUSEL_PHOTOS`, con su texto alternativo) en `NgOptimizedImage` con `ngSrcset`; el cargador `aboutImageLoader()` arma `/nosotros/<nombre>-<ancho>.webp` y la primera foto lleva `priority`. El estado es una señal con la foto que se ve; cambiar de foto con las flechas o deslizando con el dedo lo detiene (`stopped`); con el mouse, arrastrar solo lo pausa mientras dura (`pointerType`, Resuelto 76); un `effect` programa el siguiente avance a los 3 s y se reinicia con cada cambio, con el puntero (`pointerenter`/`pointerleave`, no el dedo) y con el foco del teclado (`:focus-visible`). El arrastre usa eventos de puntero con captura; mientras dura, `pointermove` escribe la propiedad CSS `--drag` del carrusel sin pasar por Angular y las fotos (la actual y sus vecinas, `.previous` y `.next`) se corren con `transform` (Resuelto 77) y `domain/carousel.ts` (`swipeStep()`, `wrapIndex()`, sin Angular y con pruebas). Con `prefers-reduced-motion` no avanza solo: si el sistema tiene desactivados los efectos de animación (en Windows, «Efectos de animación»), el navegador lo informa y el carrusel no corre; Brave sin ventana también lo informa.
+
 ### Gestión del colaborador (`features/management/`)
 
 - **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.
@@ -358,6 +370,7 @@ relativas a `/api/dataiq`.
 | `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
 | `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
+| `/nosotros` | Figma, archivo `jHEduZTQNBs4CCJEWB8u5v`: «Sobre nosotros» en escritorio (1440), tablet (834) y mobile (390) | público | ninguna |
 | `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
 | `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
 | `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true&include=content`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
@@ -408,6 +421,15 @@ enlaces con la directiva `NavLink` (`nav-link.ts`, `<a [appNavLink]>`), que abre
 las rutas con el router y deja `href` al navegador. Con `npm start` esas dos rutas no existen: el router
 las toma por una ruta desconocida y abre «No encontrada».
 
+- **Nosotros:** después de los cuatro menús va «Nosotros», un enlace directo a
+  `/nosotros` (sin desplegable ni flecha; Resuelto 66 de la
+  [checklist](../docs/checklist-frontend.md)). Está en `NAV_LINKS` de `nav-menus.ts`
+  (`NavDirectLink`), no en `NAV_MENUS`, y lleva `aria-current` en su página
+  (`isCurrentLink()`, que mira `ShellHost.currentUrl`), con el texto `marca-hondo` en
+  650 como cualquier sección actual. Como la barra es compartida, SIMIQ3D también lo
+  muestra: su host arma el destino con la URL del shell y lo abre con navegación
+  completa.
+- **Esconderse al bajar:** si el host da `autoHide` en `true` (DataIQ lo hace solo en `/nosotros`), la barra se esconde al bajar por la página y vuelve al subir (`barHiddenAfterScroll()` en `nav-menus.ts`, con pruebas). Con un desplegable o el menú de celular abiertos, o con el foco en ella, se queda. Solo escucha el scroll de la ventana mientras `autoHide` está en `true`. SIMIQ3D no da `autoHide` y su barra no cambia (decidido por Juan el 2026-11-20).
 - **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
   dinámico la primera vez que se abre un menú: la barra está en todas las
   páginas y no debe engordar el código inicial.
@@ -441,7 +463,9 @@ las toma por una ruta desconocida y abre «No encontrada».
   (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
   ventana vuelve a pasar de 960 px; abrirlo cierra el desplegable de escritorio y
   al revés, y si la ventana baja de 961 px con un desplegable abierto, este se
-  cierra. Al
+  cierra. Tras los cuatro grupos va «Nosotros», una fila simple de la misma altura
+  y con el mismo filete que el resumen de un grupo, sin flecha y con `aria-current`
+  en su página. Al
   final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
   mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
   solo con el avatar.
@@ -451,10 +475,11 @@ las toma por una ruta desconocida y abre «No encontrada».
 El pie oscuro (`Footer`) va en todas las páginas, bajo `<main>`, que crece para
 que el pie quede abajo aunque la página sea corta. Lleva la marca con su frase y
 las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
-Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`. En el MVP
-no lleva «Quiénes somos» ni «Términos de uso» (Resuelto 26), y Ayuda solo
-«Preguntas frecuentes» y «Para docentes» (la opción que va solo en la barra
-lleva `inFooter: false` en `nav-menus.ts`); «Aviso de privacidad», que abre su
+Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`; la columna
+«¿Por qué IQ Platform?» termina con «Nosotros» (el enlace directo de la barra, por
+su `footerColumn` en `NAV_LINKS`). En el MVP no lleva «Términos de uso»
+(Resuelto 26), y Ayuda solo «Preguntas frecuentes» y «Para docentes» (la opción
+que va solo en la barra lleva `inFooter: false` en `nav-menus.ts`); «Aviso de privacidad», que abre su
 página, va en la franja de abajo, junto al derecho de autor. Las especialidades las da `Specialties` (`GET /specialties`,
 una sola petición al cargar la app, porque el pie está en todas las páginas, que
 comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si

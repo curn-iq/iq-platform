@@ -7,6 +7,7 @@ import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { Navbar } from './navbar';
 import { provideShellHost } from '../shell-host';
+import { handledByRouter } from '../testing';
 
 @Component({ template: '' })
 class Blank {}
@@ -101,6 +102,104 @@ describe('Navbar', () => {
       expect(b.getAttribute('aria-expanded')).toBe('false');
       expect(b.hasAttribute('aria-controls')).toBe(false);
     }
+  });
+
+  describe('Nosotros', () => {
+    const about = () => root().querySelector<HTMLAnchorElement>('nav a.item')!;
+
+    it('es un enlace directo después de Ayuda, sin desplegable', () => {
+      const items = Array.from(root().querySelectorAll('nav > *'));
+
+      expect(items.at(-1)).toBe(about());
+      expect(about().textContent!.trim()).toBe('Nosotros');
+      expect(about().getAttribute('href')).toBe('/nosotros');
+      expect(about().hasAttribute('aria-expanded')).toBe(false);
+      expect(about().querySelector('svg')).toBeNull();
+    });
+
+    it('lleva aria-current solo en su página', async () => {
+      expect(about().hasAttribute('aria-current')).toBe(false);
+
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      expect(about().getAttribute('aria-current')).toBe('page');
+
+      await router.navigateByUrl('/tecnicas');
+      await fixture.whenStable();
+      expect(about().hasAttribute('aria-current')).toBe(false);
+    });
+
+    it('se abre por el router', () => {
+      expect(handledByRouter(about())).toBe(true);
+    });
+  });
+
+  describe('se esconde al bajar', () => {
+    const scrollTo = (y: number) => {
+      Object.defineProperty(window, 'scrollY', { value: y, configurable: true });
+      window.dispatchEvent(new Event('scroll'));
+      fixture.detectChanges();
+    };
+    const hidden = () => root().classList.contains('hidden');
+
+    beforeEach(() => {
+      Object.defineProperty(root(), 'offsetHeight', { value: 72, configurable: true });
+    });
+
+    afterEach(() => scrollTo(0));
+
+    it('en «Nosotros» se esconde al bajar y vuelve al subir', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+
+      scrollTo(400);
+      expect(hidden()).toBe(true);
+      scrollTo(300);
+      expect(hidden()).toBe(false);
+    });
+
+    it('vuelve si recibe el foco', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      scrollTo(400);
+
+      root().dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(hidden()).toBe(false);
+    });
+
+    it('con el foco del teclado dentro, no se esconde al bajar', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      const link = root().querySelector<HTMLAnchorElement>('nav a.item')!;
+      link.focus();
+
+      scrollTo(400);
+
+      expect(hidden()).toBe(false);
+      link.blur();
+    });
+
+    it('en las demás páginas se queda', async () => {
+      await router.navigateByUrl('/tecnicas');
+      await fixture.whenStable();
+
+      scrollTo(400);
+
+      expect(hidden()).toBe(false);
+    });
+
+    it('al salir de «Nosotros» con la barra escondida, vuelve', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      scrollTo(400);
+
+      await router.navigateByUrl('/');
+      await fixture.whenStable();
+
+      expect(hidden()).toBe(false);
+    });
   });
 
   describe('abrir', () => {

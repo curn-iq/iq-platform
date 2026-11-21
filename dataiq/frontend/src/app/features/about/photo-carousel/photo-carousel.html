@@ -1,0 +1,20 @@
+<div class="viewport">
+  @for (photo of photos(); track photo.name; let i = $index) {
+    <img
+      class="slide"
+      [class.active]="i === index()"
+      [class.previous]="isPrevious(i)"
+      [class.next]="isNext(i)"
+      [ngSrc]="photo.name"
+      [ngSrcset]="srcset"
+      [sizes]="sizes"
+      [width]="photo.width"
+      [height]="photo.height"
+      [alt]="photo.alt"
+      [priority]="i === 0"
+      [attr.aria-hidden]="i === index() ? null : 'true'"
+      [style.--desktop-position]="photo.desktopPosition"
+      draggable="false"
+    />
+  }
+</div>

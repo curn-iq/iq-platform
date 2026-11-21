@@ -154,7 +154,7 @@ describe('NavPanel', () => {
   describe('¿Por qué IQ Platform?', () => {
     beforeEach(() => open('why'));
 
-    it('lleva a las secciones del inicio, sin «Quiénes somos»', () => {
+    it('lleva a las secciones del inicio; «Nosotros» es un enlace directo de la barra', () => {
       expect(texts('.list strong')).toEqual(['Cómo funciona', 'La investigación']);
       expect(links().map((a) => a.getAttribute('href'))).toEqual(['/#camino', '/#investigacion']);
     });

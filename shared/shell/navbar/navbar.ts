@@ -22,7 +22,15 @@ import { BrandMark } from "../ui/brand-mark/brand-mark";
 import { Button } from "../ui/button/button";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
-import { NAV_MENUS, NavMenu, NavMenuId } from "./nav-menus";
+import {
+  barHiddenAfterScroll,
+  isCurrentLink,
+  NAV_LINKS,
+  NAV_MENUS,
+  NavDirectLink,
+  NavMenu,
+  NavMenuId,
+} from "./nav-menus";
 
 /** Lo que puede tener abierto la barra: uno de sus cuatro menús o «Mi cuenta». */
 type PanelId = NavMenuId | "account";
@@ -39,8 +47,8 @@ interface PanelComponent {
 
 /**
  * La barra superior: la marca, cuatro menús (Herramientas, Especialidades,
- * ¿Por qué IQ Platform?, Ayuda) y, a la derecha, Ingresar y Crear cuenta o «Mi
- * cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
+ * ¿Por qué IQ Platform?, Ayuda), el enlace directo «Nosotros» y, a la derecha,
+ * Ingresar y Crear cuenta o «Mi cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
  * uno abierto a la vez y se cierra con Escape, con un clic fuera, al elegir una
  * opción o al cambiar de página. Ver «Navigation» en `DESIGN.md`.
  */
@@ -50,7 +58,11 @@ interface PanelComponent {
   templateUrl: "./navbar.html",
   styleUrl: "./navbar.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { "(document:keydown.escape)": "onEscape()" },
+  host: {
+    "(document:keydown.escape)": "onEscape()",
+    "(focusin)": "hidden.set(false)",
+    "[class.hidden]": "hidden()",
+  },
 })
 export class Navbar {
   private readonly injector = inject(Injector);
@@ -65,16 +77,58 @@ export class Navbar {
 
   protected readonly shell = inject(SHELL_HOST);
   protected readonly menus = NAV_MENUS;
+  /** Los enlaces directos, después de los menús («Nosotros»). */
+  protected readonly links = NAV_LINKS;
   /** El panel abierto, si hay uno. */
   protected readonly open = signal<PanelId | null>(null);
   /** El menú de celular (≤ 960 px) está abierto. */
   protected readonly mobileOpen = signal(false);
+  /** La barra está escondida porque se bajó por la página (solo con `ShellHost.autoHide`). */
+  protected readonly hidden = signal(false);
+  private lastScrollY = typeof window === "undefined" ? 0 : window.scrollY;
 
   /** El menú de la sección donde se está: «Especialidades» en el catálogo y el detalle de técnica. */
   protected readonly current = this.shell.currentMenu;
 
+  /**
+   * Al bajar se esconde y al subir vuelve; con un desplegable o el menú de celular abiertos, o con
+   * el foco del teclado dentro de ella, se queda (WCAG 2.4.11).
+   */
+  private onScroll(): void {
+    const y = window.scrollY;
+    const from = this.lastScrollY;
+    this.lastScrollY = y;
+    if (
+      this.open() !== null ||
+      this.mobileOpen() ||
+      this.host.nativeElement.contains(document.activeElement)
+    ) {
+      this.hidden.set(false);
+      return;
+    }
+    const height = this.host.nativeElement.offsetHeight;
+    this.hidden.set(barHiddenAfterScroll(this.hidden(), from, y, height));
+  }
+
+  /** Se está en la página de este enlace directo. */
+  protected isCurrent(link: NavDirectLink): boolean {
+    return isCurrentLink(link, this.shell.currentUrl());
+  }
+
   constructor() {
     this.destroyRef.onDestroy(() => this.dispose());
+
+    // Solo escucha el scroll en una página con la barra que se esconde; al salir de ella, la barra vuelve
+    effect((onCleanup) => {
+      if (!this.shell.autoHide?.()) {
+        untracked(() => this.hidden.set(false));
+        return;
+      }
+      this.lastScrollY = window.scrollY;
+      const listener = () => this.onScroll();
+      window.addEventListener("scroll", listener, { passive: true });
+      onCleanup(() => window.removeEventListener("scroll", listener));
+    });
 
     // Atrás, Adelante, un guard o la sesión vencida también cambian de página, sin
     // pasar por una opción: lo que hubiera abierto se cierra.

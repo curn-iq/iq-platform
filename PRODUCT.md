@@ -110,7 +110,7 @@ enseña Instrumentación Quirúrgica; no se presenta como proyecto universitario
 - Identidad propia de ecosistema de productos. Sin créditos ni nombre de
   institución en la web; el origen (nació en la Corporación Universitaria
   Rafael Núñez, con sus programas de Instrumentación Quirúrgica e Ingeniería
-  de Sistemas) va solo en «Quiénes somos».
+  de Sistemas) va solo en «Nosotros».
 - Abstracción para quien usa, no para quien desarrolla: la web habla de los
   productos y de lo que resuelve cada uno. No explica el funcionamiento
   interno (versiones, revisión, roles, licencia, base de datos).

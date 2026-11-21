@@ -32,6 +32,13 @@
   <p class="loading" role="status">Cargando…</p>
   }
 </details>
+} @for (link of directLinks; track link.id) {
+<a
+  class="direct"
+  [appNavLink]="link.target"
+  [attr.aria-current]="isCurrent(link) ? 'page' : null"
+  >{{ link.label }}</a
+>
 }
 
 <!-- Hasta saber si hay sesión no se muestra nada. -->

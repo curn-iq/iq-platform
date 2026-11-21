@@ -3,7 +3,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { computed, inject, Injector, type Provider } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { CATALOG_ROUTE, type NavMenuId, type NavTarget } from '../../shared-shell/navbar/nav-menus';
+import {
+  CATALOG_ROUTE,
+  isCurrentLink,
+  NAV_LINKS,
+  type NavMenuId,
+  type NavTarget,
+} from '../../shared-shell/navbar/nav-menus';
 import { SHELL_HOST, type ShellHost } from '../../shared-shell/shell-host';
 import { PendingReviews } from '../core/pending-reviews/pending-reviews';
 import { SessionService } from '../core/session/session.service';
@@ -45,6 +51,10 @@ function dataiqShellHost(): ShellHost {
       return path === CATALOG_ROUTE || path.startsWith(`${CATALOG_ROUTE}/`) ? 'specialties' : null;
     }),
     currentUrl: url,
+    // En «Nosotros» la barra se esconde al bajar, para dejar la foto del carrusel de borde a borde
+    autoHide: computed(() =>
+      NAV_LINKS.some((link) => link.id === 'about' && isCurrentLink(link, url())),
+    ),
     loaded: session.loaded,
     account: session.account,
     pendingCount: pending.count,
