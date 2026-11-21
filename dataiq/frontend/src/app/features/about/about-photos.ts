@@ -56,3 +56,40 @@ export const CAROUSEL_SRCSET = '800w, 1500w, 2400w';
 export function aboutImageLoader(defaultWidth: number): ImageLoader {
   return ({ src, width }) => `/nosotros/${src}-${width ?? defaultWidth}.webp`;
 }
+
+/** Un programa de «Los dos programas»: su nombre, su foto y dos párrafos (los textos del Figma). */
+export interface AboutProgram {
+  readonly id: string;
+  readonly name: string;
+  readonly photo: AboutPhoto;
+  readonly paragraphs: readonly string[];
+}
+
+/**
+ * Instrumentación Quirúrgica y después Ingeniería de Sistemas (Resuelto 68). Las fotos son de Pexels,
+ * ilustrativas y sin relación con el equipo (Resuelto 71): son decorativas para un lector de pantalla y
+ * llevan la marca «foto ilustrativa · Pexels».
+ */
+export const PROGRAMS: readonly AboutProgram[] = [
+  {
+    id: 'instrumentacion',
+    name: 'Instrumentación Quirúrgica',
+    photo: { name: 'programa-instrumentacion', alt: '', width: 1423, height: 1067 },
+    paragraphs: [
+      'Equipo encargado de suministrar la información de la plataforma: las técnicas quirúrgicas, el instrumental de cada una y su lugar en la mesa de Mayo y en la de reserva. También revisa y corrige el contenido antes de que llegue a los estudiantes.',
+      'Además, arma las mesas reales en el laboratorio y toma las fotos y los videos del instrumental con los que se entrena la cámara de SIVRI.',
+    ],
+  },
+  {
+    id: 'sistemas',
+    name: 'Ingeniería de Sistemas',
+    photo: { name: 'programa-sistemas', alt: '', width: 1423, height: 1067 },
+    paragraphs: [
+      'Equipo encargado de digitalizar la información de las técnicas en el catálogo de DataIQ, de entrenar el modelo YOLO que reconoce el instrumental en SIVRI y de configurar la infraestructura en la nube donde corre la plataforma.',
+      'También construye la mesa en 3D de SIMIQ3D, el chat que responde con los datos del catálogo y el etiquetado de las fotos que enseñan a la cámara a reconocer cada pieza.',
+    ],
+  },
+];
+
+/** Los anchos de cada foto de los programas en `public/nosotros/`, para el `srcset`. */
+export const PROGRAM_SRCSET = '750w, 1423w';

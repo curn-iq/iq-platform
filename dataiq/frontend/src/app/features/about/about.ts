@@ -1,7 +1,8 @@
+import { IMAGE_LOADER, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ArrowLink } from '../../shared/ui/arrow-link/arrow-link';
-import { CAROUSEL_PHOTOS } from './about-photos';
+import { aboutImageLoader, CAROUSEL_PHOTOS, PROGRAM_SRCSET, PROGRAMS } from './about-photos';
 import { PhotoCarousel } from './photo-carousel/photo-carousel';
 
 /**
@@ -12,11 +13,15 @@ import { PhotoCarousel } from './photo-carousel/photo-carousel';
  */
 @Component({
   selector: 'app-about',
-  imports: [ArrowLink, PhotoCarousel, RouterLink],
+  imports: [ArrowLink, NgOptimizedImage, PhotoCarousel, RouterLink],
+  // Las fotos de los programas; el carrusel trae su propio cargador
+  providers: [{ provide: IMAGE_LOADER, useValue: aboutImageLoader(1423) }],
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class About {
   protected readonly carouselPhotos = CAROUSEL_PHOTOS;
+  protected readonly programs = PROGRAMS;
+  protected readonly programSrcset = PROGRAM_SRCSET;
 }

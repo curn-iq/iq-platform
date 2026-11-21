@@ -44,6 +44,45 @@ describe('About', () => {
     });
   });
 
+  describe('los dos programas', () => {
+    const programs = () => Array.from(root.querySelectorAll('.program'));
+
+    it('van Instrumentación Quirúrgica y después Ingeniería de Sistemas, con sus dos párrafos', () => {
+      expect(programs().map((p) => p.querySelector('h2')!.textContent)).toEqual([
+        'Instrumentación Quirúrgica',
+        'Ingeniería de Sistemas',
+      ]);
+      expect(programs().map((p) => p.querySelectorAll('.program-text p').length)).toEqual([2, 2]);
+      expect(programs()[1].querySelector('.program-text p')!.textContent).toContain(
+        'entrenar el modelo YOLO',
+      );
+    });
+
+    it('cada foto es decorativa y dice que es ilustrativa y sin relación con el equipo', () => {
+      for (const program of programs()) {
+        const img = program.querySelector('img')!;
+        const mark = program.querySelector('.mark')!;
+
+        expect(img.getAttribute('alt')).toBe('');
+        expect(mark.querySelector('[aria-hidden="true"]')!.textContent).toBe(
+          'foto ilustrativa · Pexels',
+        );
+        expect(mark.querySelector('.sr-only')!.textContent).toBe(
+          'Foto ilustrativa de Pexels, sin relación con el equipo.',
+        );
+      }
+    });
+
+    it('las fotos cargan perezosas con sus dos anchos', () => {
+      const img = programs()[0].querySelector('img')!;
+
+      expect(img.getAttribute('loading')).toBe('lazy');
+      expect(img.getAttribute('srcset')).toBe(
+        '/nosotros/programa-instrumentacion-750.webp 750w, /nosotros/programa-instrumentacion-1423.webp 1423w',
+      );
+    });
+  });
+
   describe('carrusel', () => {
     it('va bajo la presentación, con las cuatro fotos y su nombre', () => {
       const carousel = root.querySelector('app-photo-carousel')!;

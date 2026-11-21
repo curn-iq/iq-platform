@@ -90,3 +90,131 @@ h1 {
     max-inline-size: none;
   }
 }
+
+// Los dos programas: sobre `superficie`, de borde a borde. Escritorio: la foto en las columnas 1-7 (16:10)
+// y el texto a la derecha, centrado en alto; tablet y celular: la foto arriba a todo el ancho.
+.programs {
+  display: grid;
+  row-gap: 72px;
+  margin-inline: calc(var(--space-gutter) * -1);
+  padding: 72px var(--space-gutter) 56px;
+  background: var(--color-surface);
+}
+
+.program {
+  display: grid;
+  row-gap: 28px;
+}
+
+.program-photo {
+  position: relative;
+  aspect-ratio: 762 / 440;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// La marca de que la foto es ilustrativa: Martian Mono, como «demostración»
+.mark {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  color: var(--color-text-subtle);
+  font-family: var(--font-data);
+  font-size: 11.5px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.program-text {
+  display: grid;
+  gap: 16px;
+  max-inline-size: 560px;
+
+  h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 650;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 16.5px;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 1101px) {
+  .programs {
+    row-gap: 96px;
+    padding-block: 96px 72px;
+  }
+
+  .program {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-column-gap);
+    align-items: center;
+  }
+
+  .program-photo {
+    grid-column: 1 / 8;
+    aspect-ratio: 16 / 10;
+  }
+
+  .program-text {
+    grid-column: 8 / 13;
+    justify-self: end;
+    max-inline-size: 470px;
+
+    h2 {
+      font-size: 40px;
+      letter-spacing: -0.04em;
+    }
+
+    p {
+      font-size: 18px;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .programs {
+    row-gap: 56px;
+    padding-block: 56px 48px;
+  }
+
+  .program-photo {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-window);
+  }
+
+  .program-text {
+    max-inline-size: none;
+
+    h2 {
+      font-size: 28px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+}
