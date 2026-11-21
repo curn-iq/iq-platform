@@ -96,8 +96,12 @@ dentro del mismo componente.
 Desde `dataiq/backend`, selecciona el entorno con `DATABASE_URL`.
 `uv run python -m seed.update_mayo` muestra las cinco mesas y las versiones
 que se publicarían. Con `--apply`, el comando publica en una transacción
-una versión nueva por técnica que necesite el cambio: la mesa de Mayo y la
-fuente de la técnica (`source`), que cita de dónde sale esa mesa. Conserva el
+una versión nueva por técnica que necesite el cambio: la mesa de Mayo, la
+posición medida de cada instrumento (`position_x_m`, `position_z_m`,
+`yaw_deg` y `additional_placements`) y la fuente de la técnica (`source`),
+que cita de dónde sale esa mesa. Es el camino para llevar las posiciones a
+una base que ya tiene las técnicas publicadas: `seed.load` es para la carga
+inicial. Conserva el
 historial y el resto del contenido publicado, y se detiene si alguna
 técnica por actualizar tiene un borrador o una versión en revisión. Se puede
 ejecutar nuevamente para comprobar que las cinco mesas coinciden con el
