@@ -161,3 +161,13 @@ Nada por ahora.
 | 5 | El mockup tenía un selector de escala («a la celda», «escala real»), pero lo decidido es que los instrumentos van a escala real | Solo escala real, sin selector (decidido por Mauricio el 2026-11-01); `DESIGN.md` al día |
 | 6 | El mockup dejaba ver la cuadrícula sobre la mesa y pintaba la celda de la pieza señalada, una cuadrícula que la mesa real no tiene | Sin rejilla ni celda pintada: la pieza señalada se levanta y se tiñe, con su número (decidido por Mauricio el 2026-11-01); `DESIGN.md` y `shared/design/tokens.css` sin `rejilla-escena`, `celda-escena` ni `celda-quirofano` |
 | 7 | El estado «Conectado» del chat: `GET /health` del backend no mira el Servidor PC2, así que solo se sabe si el chat responde al preguntar | Sin estado al entrar; «No disponible» después de un 503, hasta la siguiente respuesta (decidido por Mauricio el 2026-11-01) |
+
+## Revisión de las mesas de Mayo de Cirugía General
+
+- [x] Oclusión ambiental y sombra de contacto ajustadas al instrumental.
+  Verificado con las cinco técnicas en escritorio y móvil con el azul original de la funda.
+- [x] El visor aplica el centro y giro por componente de DataIQ y conserva
+  la colocación por celdas si falta la medición.
+
+- [x] Las piezas se alinean a los cuatro ejes cardinales, con una instancia por
+  ejemplar separado detectado en la foto y un número común en la leyenda.

@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ChatMessage } from '../domain/chat';
-import type { TableItem } from '../domain/mayo-table';
+import type { PieceChoice, TableItem } from '../domain/mayo-table';
 import { PieceList } from './piece-list';
 import { RichText } from './rich-text';
 import { Typing } from './typing';
@@ -45,18 +45,18 @@ export class ChatHistory {
   readonly openTechnique = input<string | undefined>();
   readonly items = input<readonly TableItem[]>([]);
   readonly ask = output<string>();
-  readonly choose = output<string>();
+  readonly choose = output<PieceChoice>();
   /** Cerrar el historial (en celular). */
   readonly close = output<void>();
 
   private readonly list = viewChild.required<ElementRef<HTMLElement>>('list');
 
   /**
-   * Bajo cada respuesta que escribió el modelo: de dónde sale cada cosa y que
-   * puede equivocarse (pautas 1 y 2 de Microsoft HAX: qué hace y qué tan bien).
+   * Bajo cada respuesta que escribió el modelo: que es un modelo de IA y que puede
+   * equivocarse (pautas 1 y 2 de Microsoft HAX). De dónde salen los datos ya lo
+   * dice el aviso del chat.
    */
-  protected readonly sources =
-    'Mesa y técnica: DataIQ. Lo demás lo explica un modelo de IA y puede equivocarse.';
+  protected readonly sources = 'Lo explica un modelo de IA y puede equivocarse.';
 
   constructor() {
     // La conversación se coloca sola: lo último se ve, pero una respuesta larga empieza en su

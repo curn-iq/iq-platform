@@ -123,7 +123,14 @@ export interface paths {
          * @description Versiones por estado (por defecto, las en curso), de la más reciente a la
          *     más vieja. Un colaborador solo ve las suyas; un revisor ve todas, o solo las
          *     suyas con `mine=true`. Con `reviewed_by_me=true` (desde revisor), las de
-         *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno.
+         *     otros que aprobó o rechazó, en cualquier estado salvo que se pida uno. Con
+         *     `include=content`, cada una con su contenido y sus rechazos, en la misma
+         *     respuesta: así Mis borradores no pide cada versión por separado. Con
+         *     `include=rejections`, cada una con sus rechazos y sin el contenido, que es
+         *     casi todo el peso: lo que necesita «Revisadas por mí» para decir si se
+         *     devolvió y por qué. Con `technique_id`, solo las de esa técnica: la revisión
+         *     busca así la publicada de la técnica que se edita, sin traer las de todo el
+         *     catálogo.
          */
         get: operations["list_versions_versions_get"];
         put?: never;
@@ -427,6 +434,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/module-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue Module Token
+         * @description Token corto para un módulo que corre en otro dominio (SIVRI): la cookie de
+         *     sesión no viaja hasta allá, así que la página lo pide aquí con la cookie y
+         *     lo manda en Authorization: Bearer. Dura pocos minutos y la página lo renueva
+         *     antes de que venza. Es un JWT normal de DataIQ: el módulo lo valida con el
+         *     JWKS y lo reenvía a DataIQ para pedir el catálogo. Solo con la sesión del
+         *     navegador (cookie) y el encabezado X-IQ-Client: con un token no se puede
+         *     pedir otro, así que uno robado deja de servir en minutos.
+         */
+        post: operations["issue_module_token_auth_module_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/me": {
         parameters: {
             query?: never;
@@ -476,8 +509,10 @@ export interface paths {
         };
         /**
          * List Users
-         * @description Todas las cuentas con su rol, cuándo se registraron y qué versión de la
-         *     política aceptaron. Solo admin.
+         * @description Todas las cuentas con su rol, cuándo se registraron, qué versión de la
+         *     política aceptaron y su actividad en DataIQ (sus versiones en borrador,
+         *     devueltas y en revisión, las técnicas que publicó y lo que revisó). Solo
+         *     admin.
          */
         get: operations["list_users_users_get"];
         put?: never;
@@ -525,6 +560,37 @@ export interface components {
             /** Email */
             email: string;
             role: components["schemas"]["Role"];
+        };
+        /**
+         * ActivityOut
+         * @description Lo que la cuenta hizo en DataIQ.
+         */
+        ActivityOut: {
+            /**
+             * Drafts
+             * @description Sus versiones en borrador, devueltas incluidas
+             */
+            drafts: number;
+            /**
+             * Returned
+             * @description De esos borradores, los que tienen alguna devolución
+             */
+            returned: number;
+            /**
+             * In Review
+             * @description Sus versiones enviadas a revisión
+             */
+            in_review: number;
+            /**
+             * Published Techniques
+             * @description Técnicas con una versión suya que llegó a publicarse, aunque ya esté reemplazada o archivada
+             */
+            published_techniques: number;
+            /**
+             * Reviewed
+             * @description Versiones de otras personas que aprobó o devolvió
+             */
+            reviewed: number;
         };
         /** Body_issue_token_auth_token_post */
         Body_issue_token_auth_token_post: {
@@ -593,6 +659,23 @@ export interface components {
             suture_id: string | null;
             /** Name */
             name: string;
+            /** Position X M */
+            position_x_m?: number | null;
+            /** Position Z M */
+            position_z_m?: number | null;
+            /** Yaw Deg */
+            yaw_deg?: number | null;
+            /** Additional Placements */
+            additional_placements?: components["schemas"]["ComponentPlacementOut"][] | null;
+        };
+        /** ComponentPlacementOut */
+        ComponentPlacementOut: {
+            /** Position X M */
+            position_x_m: number;
+            /** Position Z M */
+            position_z_m: number;
+            /** Yaw Deg */
+            yaw_deg: number;
         };
         /**
          * ContentIn
@@ -796,6 +879,22 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /**
+         * ModuleTokenOut
+         * @description Token corto para un módulo y en cuántos segundos vence, para renovarlo
+         *     antes.
+         */
+        ModuleTokenOut: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /** Expires In */
+            expires_in: number;
         };
         /** ReferenceOut */
         ReferenceOut: {
@@ -1031,6 +1130,7 @@ export interface components {
             policy_accepted_at: string;
             /** Policy Version */
             policy_version: string;
+            activity: components["schemas"]["ActivityOut"];
         };
         /** ValidationError */
         ValidationError: {
@@ -1049,6 +1149,15 @@ export interface components {
         VersionDetailOut: {
             summary: components["schemas"]["VersionSummaryOut"];
             content: components["schemas"]["TechniqueDetailOut"];
+            /** Rejections */
+            rejections: components["schemas"]["RejectionOut"][];
+        };
+        /**
+         * VersionRejectionsOut
+         * @description Una versión con sus rechazos, sin su contenido (`include=rejections`).
+         */
+        VersionRejectionsOut: {
+            summary: components["schemas"]["VersionSummaryOut"];
             /** Rejections */
             rejections: components["schemas"]["RejectionOut"][];
         };
@@ -1315,6 +1424,10 @@ export interface operations {
                 state?: components["schemas"]["VersionState"][] | null;
                 mine?: boolean;
                 reviewed_by_me?: boolean;
+                /** @description Solo las versiones de esa técnica */
+                technique_id?: string | null;
+                /** @description Con `content`, cada versión trae su contenido y sus rechazos, como `GET /versions/{id}`; con `rejections`, solo sus rechazos, sin el contenido */
+                include?: ("content" | "rejections") | null;
             };
             header?: never;
             path?: never;
@@ -1328,7 +1441,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VersionSummaryOut"][];
+                    "application/json": components["schemas"]["VersionSummaryOut"][] | components["schemas"]["VersionDetailOut"][] | components["schemas"]["VersionRejectionsOut"][];
                 };
             };
             /** @description Validation Error */
@@ -1799,6 +1912,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    issue_module_token_auth_module_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModuleTokenOut"];
+                };
             };
         };
     };

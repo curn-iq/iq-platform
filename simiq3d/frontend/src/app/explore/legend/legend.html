@@ -6,7 +6,7 @@
   [disabled]="disabled()"
   (click)="open.set(!open())"
 >
-  <span class="label">Leyenda</span> <span class="count">{{ items().length }}</span>
+  <span class="label">Leyenda</span> <span class="count">{{ entries().length }}</span>
   <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
     <path
       d="M2.5 4.5L6 8l3.5-3.5"
@@ -27,20 +27,33 @@
     animate.leave="panel-leave"
   >
     <div class="panel-head">
-      <h2>Mesa de Mayo</h2>
-      <p>Toca un número para ubicarlo.</p>
+      <span class="head-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <path
+            d="M7.5 5.5h9M7.5 10h9M7.5 14.5h9M3.5 5.5h.01M3.5 10h.01M3.5 14.5h.01"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+      <div>
+        <h2>Mesa de Mayo</h2>
+        <p>Toca un número para ubicarlo.</p>
+      </div>
     </div>
     <ol>
-      @for (item of items(); track item.id) {
+      @for (entry of entries(); track entry.key) {
         <li>
           <button
             type="button"
             class="piece"
-            [attr.aria-current]="item.id === selected()"
-            (click)="choose.emit(item.id)"
+            [attr.aria-current]="isCurrent(entry)"
+            (click)="choose.emit({ id: entry.item.id, part: entry.index })"
           >
-            <span class="number">{{ item.legendNumber ?? '–' }}</span>
-            <strong>{{ item.name }}</strong>
+            <span class="number">{{ entry.item.legendNumber ?? '–' }}</span>
+            <strong>{{ entry.name }}</strong>
           </button>
         </li>
       }

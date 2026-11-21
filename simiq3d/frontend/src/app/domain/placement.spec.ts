@@ -1,5 +1,5 @@
 import type { MayoTable, TableItem } from './mayo-table';
-import { placeItems } from './placement';
+import { FARABEUF_STAGGER, placeItems } from './placement';
 
 describe('placeItems', () => {
   const MODELS: Record<string, string> = {
@@ -7,6 +7,7 @@ describe('placeItems', () => {
     'i-mango': 'scalpel_handle_4.glb',
     'i-hoja': 'scalpel_blade_20.glb',
     'i-allis': 'allis_forceps.glb',
+    'i-farabeuf': 'farabeuf_retractor.glb',
   };
   const modelFor = (id: string) => MODELS[id];
   const item = (
@@ -18,6 +19,7 @@ describe('placeItems', () => {
     legendNumber: 1,
     name: id,
     instrumentIds,
+    components: instrumentIds.map((instrumentId) => ({ instrumentId, name: instrumentId })),
     cells,
   });
   const table = (items: TableItem[]): MayoTable => ({ rows: 10, columns: 6, items });
@@ -59,5 +61,41 @@ describe('placeItems', () => {
     );
     expect(placed.map((p) => p.itemId)).toEqual(['kelly']);
     expect(placed[0].models).toEqual([{ file: 'kelly_forceps.glb', mountOn: null }]);
+  });
+
+  it('conserva los centros y ajusta el giro a los ejes, aun sin celdas', () => {
+    const pair = item('par', ['i-kelly', 'i-allis'], []);
+    const first = { x: -0.1, z: 0.05, yawDeg: 92 };
+    const second = { x: 0.08, z: 0.04, yawDeg: -173 };
+    pair.components[0].placement = first;
+    pair.components[1].placement = second;
+    const [placed] = placeItems(table([pair]), modelFor);
+    expect(placed.models.map((model) => model.placement)).toEqual([
+      { ...first, yawDeg: 90 },
+      { ...second, yawDeg: -180 },
+    ]);
+    expect(placed.x).toBeCloseTo(-0.01);
+    expect(placed.z).toBeCloseTo(0.045);
+  });
+
+  it('muestra otro ejemplar en su centro sin duplicar el objeto de la leyenda', () => {
+    const pair = item('kelly', ['i-kelly']);
+    pair.components[0].placement = { x: 0.12, z: 0.05, yawDeg: 6 };
+    pair.components[0].additionalPlacements = [{ x: 0.12, z: 0.11, yawDeg: 174 }];
+    const placed = placeItems(table([pair]), modelFor);
+    expect(placed).toHaveLength(1);
+    expect(placed[0].models.map((model) => model.placement?.yawDeg)).toEqual([0, 180]);
+    expect(placed[0].models.map((model) => model.placement?.z)).toEqual([0.05, 0.11]);
+  });
+
+  it('enfrenta los dos Farabeuf abrazados: mismo centro a lo ancho, corridos a lo largo', () => {
+    const pair = item('farabeuf', ['i-farabeuf']);
+    pair.components[0].placement = { x: 0, z: 0, yawDeg: 91 };
+    pair.components[0].additionalPlacements = [{ x: 0.06, z: 0.01, yawDeg: 86 }];
+    const [{ models }] = placeItems(table([pair]), modelFor);
+    expect(models.map((model) => model.placement?.yawDeg)).toEqual([90, -90]);
+    expect(models.map((model) => model.placement?.x)).toEqual([0.03, 0.03]);
+    expect(models[0].placement!.z).toBeCloseTo(0.005 - FARABEUF_STAGGER / 2);
+    expect(models[1].placement!.z).toBeCloseTo(0.005 + FARABEUF_STAGGER / 2);
   });
 });

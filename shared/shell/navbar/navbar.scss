@@ -111,6 +111,8 @@ nav {
   font: inherit;
   font-size: 15.5px;
   font-weight: 600;
+  // «Mi cuenta» no se parte en dos líneas en las barras angostas (1024 px)
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.2s var(--ease-fade);
 

@@ -290,7 +290,7 @@ Una vez que el tutor quedó en producción (#71 a #75).
 - [x] `GET /models` con `Cache-Control` y `ETag`
 - [x] Comando `load_models`: de `models/modelos.csv` (nombre o alias) a los ids
   del DataIQ de cada entorno
-- [x] Cargar el mapeo cuando estén los GLB (23 modelos, en local y en Neon)
+- [x] Cargar el mapeo de los modelos publicados en local y en Neon
 
 ## Registro de conversaciones
 

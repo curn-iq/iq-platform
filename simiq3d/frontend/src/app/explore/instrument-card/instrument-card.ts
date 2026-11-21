@@ -24,6 +24,8 @@ import type { TableItem } from '../../domain/mayo-table';
 })
 export class InstrumentCard {
   readonly item = input.required<TableItem>();
+  /** Cuál instrumento del objeto se eligió; `null` muestra el objeto entero. */
+  readonly part = input<number | null>(null);
   /** Los instrumentos del objeto, con su descripción de DataIQ. */
   readonly instruments = input<readonly Instrument[]>([]);
   readonly close = output<void>();
@@ -37,6 +39,13 @@ export class InstrumentCard {
       return { id, name, text: this.expanded() && rest ? `${lead} ${rest}` : lead, more: !!rest };
     }),
   );
+
+  /** El nombre del instrumento elegido, o el del objeto entero. */
+  protected readonly title = computed(() => {
+    const part = this.part();
+    const { components, name } = this.item();
+    return part !== null && components.length > 1 ? (components[part]?.name ?? name) : name;
+  });
 
   protected readonly hasMore = computed(() => this.texts().some((text) => text.more));
 }

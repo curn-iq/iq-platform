@@ -13,6 +13,7 @@ describe('InstrumentCard', () => {
       legendNumber: 7,
       name: 'Mango de bisturí N.° 3 y Hoja de bisturí #15',
       instrumentIds: instruments.map((i) => i.id),
+      components: instruments.map((i) => ({ instrumentId: i.id, name: i.name })),
       cells: [],
     });
     fixture.componentRef.setInput('instruments', instruments);

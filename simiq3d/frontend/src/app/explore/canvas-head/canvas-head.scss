@@ -13,11 +13,12 @@
   font-weight: 650;
   line-height: 1.05;
   letter-spacing: -0.04em;
+  color: var(--sim-lila-hondo);
 }
 
 .meta {
   margin: 0;
-  color: var(--color-text-subtle);
+  color: var(--sim-orquidea-hondo);
   font-size: 0.9375rem;
 }
 
@@ -36,65 +37,104 @@
 
 .selector {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-
-  select {
-    appearance: none;
-    height: var(--sim-touch);
-    padding: 0 42px 0 18px;
-    border: 0;
-    border-radius: var(--radius-pill);
-    background: var(--sim-glass);
-    backdrop-filter: var(--sim-glass-blur);
-    box-shadow:
-      var(--sim-shadow-card),
-      inset 0 0 0 1px var(--sim-glass-edge);
-    color: var(--color-text);
-    font: inherit;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: box-shadow 0.2s var(--ease-fade);
-
-    &:hover {
-      box-shadow:
-        var(--sim-shadow-card),
-        inset 0 0 0 1.5px color-mix(in srgb, var(--color-accent) 40%, transparent);
-    }
-  }
-
-  svg {
-    position: absolute;
-    right: 16px;
-    color: var(--color-text-muted);
-    pointer-events: none;
-  }
+  display: inline-block;
 }
 
-// La fuente no trae el tamaño de la mesa ni hacia dónde apunta cada instrumento
-.provisional {
+// El botón cerrado: la píldora de vidrio de siempre
+.trigger {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 0 12px;
+  gap: 12px;
+  height: var(--sim-touch);
+  padding: 0 16px 0 18px;
+  border: 0;
   border-radius: var(--radius-pill);
   background: var(--sim-glass);
   backdrop-filter: var(--sim-glass-blur);
-  box-shadow: inset 0 0 0 1px var(--color-border);
-  color: var(--color-text-subtle);
-  font-family: var(--font-data);
-  font-size: 0.6875rem;
-  white-space: nowrap;
+  box-shadow:
+    var(--sim-shadow-card),
+    inset 0 0 0 1px var(--sim-glass-edge);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s var(--ease-fade);
+
+  &:hover,
+  &[aria-expanded='true'] {
+    box-shadow:
+      var(--sim-shadow-card),
+      inset 0 0 0 1.5px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+
+  .arrow {
+    flex: none;
+    color: var(--color-text-muted);
+    transition: transform 0.2s var(--ease-fade);
+  }
+
+  &[aria-expanded='true'] .arrow {
+    transform: rotate(180deg);
+  }
 }
 
-.sr-only {
+// La lista abierta: el mismo vidrio, el mismo radio de los controles y las filas como las de
+// la leyenda
+.list {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 8;
+  display: grid;
+  gap: 2px;
+  min-width: max(100%, 260px);
+  margin: 0;
+  padding: 6px;
+  border-radius: var(--sim-radius-control);
+  background: var(--sim-glass);
+  backdrop-filter: var(--sim-glass-blur);
+  box-shadow:
+    var(--sim-shadow-dock),
+    inset 0 0 0 1px var(--sim-glass-edge);
+  list-style: none;
+  animation: list-in 0.22s var(--ease-enter);
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-fade);
+
+    svg {
+      flex: none;
+      color: var(--color-accent);
+    }
+  }
+
+  li.active {
+    background: var(--color-accent-soft);
+  }
+
+  li[aria-selected='true'] {
+    color: var(--color-accent-strong);
+    font-weight: 650;
+  }
+}
+
+@keyframes list-in {
+  from {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
 }
 
 // En celular el nombre es el selector: una sola línea, con su flecha en un cuadro
@@ -119,8 +159,7 @@
     font-size: 1.5rem;
   }
 
-  .meta,
-  .provisional {
+  .meta {
     display: none;
   }
 
@@ -128,7 +167,7 @@
     margin-top: 6px;
   }
 
-  .selector select {
+  .trigger {
     height: 40px;
   }
 }

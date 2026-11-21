@@ -7,6 +7,7 @@ describe('suggestions', () => {
     legendNumber: 1,
     name,
     instrumentIds,
+    components: instrumentIds.map((instrumentId) => ({ instrumentId, name })),
     cells: [],
   });
 

@@ -83,7 +83,7 @@
 .message:not(.person) {
   padding: 14px 16px 14px;
   border-radius: var(--sim-radius-bubble);
-  background: var(--color-surface);
+  background: linear-gradient(160deg, var(--sim-lila-claro) 0%, var(--color-surface) 55%);
   box-shadow: var(--sim-shadow-card);
 }
 
@@ -133,7 +133,7 @@
   .text {
     padding: 10px 16px;
     border-radius: var(--sim-radius-bubble) var(--sim-radius-bubble) 6px var(--sim-radius-bubble);
-    background: var(--color-accent-strong);
+    background: var(--color-accent);
     color: #fff;
     font-weight: 500;
     line-height: 1.5;
@@ -153,7 +153,7 @@
   svg {
     flex: none;
     margin-top: 1px;
-    color: var(--sim-cian);
+    color: var(--color-accent);
   }
 }
 

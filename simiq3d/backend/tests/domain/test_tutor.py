@@ -6,6 +6,7 @@ from app.domain.tutor import (
     TIMES_ASKED,
     TUTOR,
     UNAVAILABLE,
+    _as_steps,
     data_of,
     messages,
     requests_of,
@@ -190,9 +191,22 @@ def test_without_the_model_it_says_so_and_shows_dataiq():
     text = without_model(focus, "¿Para qué sirve la Tijera de Mayo?", CATALOG, s)
 
     assert text.startswith("El modelo de IA no está disponible ahora.")
-    assert f"**{MAYO_SCISSORS.name}**: Tijera recta para cortar tejidos." in text
-    assert "Va en 1 mesa de Mayo de Cirugía General: Colecistectomía" in text
+    # Ordenado: el instrumento como título y, debajo, cada dato en su viñeta
+    assert (
+        f"**{MAYO_SCISSORS.name}**\n- Qué es: Tijera recta para cortar tejidos." in text
+    )
+    assert "\n- Mesa de Mayo de Colecistectomía: " in text
+    assert text.endswith("Vuelve a preguntar en unos minutos para que te lo explique.")
     assert without_model(empty, "Hola", CATALOG, nothing) == UNAVAILABLE
+
+
+def test_without_the_model_the_steps_of_a_technique_become_a_numbered_list():
+    assert _as_steps("1) Incisión. 2) Exposición; tracción. 3) Cierre.") == (
+        "1. Incisión.\n2. Exposición; tracción.\n3. Cierre."
+    )
+    # Sin pasos, o con un número suelto en el texto, queda igual
+    assert _as_steps("Extirpación de la vesícula.") == "Extirpación de la vesícula."
+    assert _as_steps("Hoja #20 y sutura 2) larga") == "Hoja #20 y sutura 2) larga"
 
 
 def test_an_instrument_in_only_one_table_is_highlighted_there():

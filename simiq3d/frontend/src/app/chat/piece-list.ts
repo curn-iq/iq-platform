@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import type { TableItem } from '../domain/mayo-table';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { PieceChoice, partsOf, TableItem } from '../domain/mayo-table';
 
 /**
  * La respuesta de «Instrumental» como lista: el número del diagrama de IQ y el
- * nombre de cada objeto de la mesa abierta. Tocar uno lo señala en la escena.
+ * nombre de cada instrumento de la mesa abierta, uno por fila. Tocar uno señala su
+ * objeto en la escena.
  */
 @Component({
   selector: 'app-piece-list',
@@ -13,5 +14,7 @@ import type { TableItem } from '../domain/mayo-table';
 })
 export class PieceList {
   readonly items = input<readonly TableItem[]>([]);
-  readonly choose = output<string>();
+  readonly choose = output<PieceChoice>();
+
+  protected readonly entries = computed(() => partsOf(this.items()));
 }
