@@ -55,8 +55,10 @@ porqué están en el [README](../README.md).
 
 ## 4. Demostración
 
-- [ ] Explorar por chat las cinco mesas de Mayo de Cirugía General, de punta a
-  punta
+- [x] Explorar por chat las cinco mesas de Mayo de Cirugía General, de punta a
+  punta (2026-11-21, en producción con la cuenta de prueba: cada técnica
+  pedida por chat abre su mesa, y la leyenda coincide objeto por objeto con la
+  hoja `objetos` de `dataiq/backend/seed/tecnicas.xlsx`)
 
 ## 5. Evaluación sumativa
 
