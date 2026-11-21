@@ -169,6 +169,18 @@ describe('Navbar', () => {
       expect(hidden()).toBe(false);
     });
 
+    it('con el foco del teclado dentro, no se esconde al bajar', async () => {
+      await router.navigateByUrl('/nosotros');
+      await fixture.whenStable();
+      const link = root().querySelector<HTMLAnchorElement>('nav a.item')!;
+      link.focus();
+
+      scrollTo(400);
+
+      expect(hidden()).toBe(false);
+      link.blur();
+    });
+
     it('en las demás páginas se queda', async () => {
       await router.navigateByUrl('/tecnicas');
       await fixture.whenStable();

@@ -54,6 +54,21 @@ describe('PhotoCarousel', () => {
     vi.unstubAllGlobals();
   });
 
+  describe('con dos fotos', () => {
+    beforeEach(() => {
+      create();
+      fixture.componentRef.setInput('photos', CAROUSEL_PHOTOS.slice(0, 2));
+      settle();
+    });
+
+    it('la otra foto es solo una vecina, y la actual no lo es', () => {
+      expect(slides()[0].classList.contains('previous')).toBe(false);
+      expect(slides()[0].classList.contains('next')).toBe(false);
+      expect(slides()[1].classList.contains('previous')).toBe(true);
+      expect(slides()[1].classList.contains('next')).toBe(false);
+    });
+  });
+
   describe('fotos', () => {
     beforeEach(() => create());
 
@@ -352,6 +367,45 @@ describe('PhotoCarousel', () => {
       wait(350);
 
       expect(active()).toBe(0);
+    });
+
+    it('una flecha mientras la foto termina de entrar no salta dos fotos', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointerup', { clientX: 200 });
+      key('ArrowRight');
+      settle();
+      wait(350);
+
+      expect(active()).toBe(1);
+    });
+
+    it('un segundo dedo no cambia el arrastre', () => {
+      pointer('pointerdown', { clientX: 400, pointerType: 'touch' });
+      const second = new MouseEvent('pointerdown', { bubbles: true, clientX: 100 });
+      Object.defineProperty(second, 'pointerType', { value: 'touch' });
+      Object.defineProperty(second, 'isPrimary', { value: false });
+      host().dispatchEvent(second);
+      pointer('pointerup', { clientX: 200, pointerType: 'touch' });
+      wait(350);
+
+      expect(active()).toBe(1);
+    });
+
+    it('perder la captura sin soltar cancela el arrastre', () => {
+      pointer('pointerdown', { clientX: 400 });
+      host().dispatchEvent(new MouseEvent('lostpointercapture', { bubbles: true }));
+      settle();
+
+      expect(host().classList.contains('dragging')).toBe(false);
+      expect(host().style.getPropertyValue('--drag')).toBe('0px');
+    });
+
+    it('al destruirse no deja pendiente el final del arrastre', () => {
+      pointer('pointerdown', { clientX: 400 });
+      pointer('pointerup', { clientX: 200 });
+      fixture.destroy();
+
+      expect(vi.getTimerCount()).toBe(0);
     });
 
     it('no deja arrastrar la imagen ni seleccionarla', () => {

@@ -3,8 +3,8 @@
     <img
       class="slide"
       [class.active]="i === index()"
-      [class.previous]="i === previous()"
-      [class.next]="i === next()"
+      [class.previous]="isPrevious(i)"
+      [class.next]="isNext(i)"
       [ngSrc]="photo.name"
       [ngSrcset]="srcset"
       [sizes]="sizes"

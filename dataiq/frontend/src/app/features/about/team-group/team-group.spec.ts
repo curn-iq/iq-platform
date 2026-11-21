@@ -27,6 +27,26 @@ describe('TeamGroupSection', () => {
     ).toEqual(['Gabriela Rojas Iriarte', 'Gabriela Argel González', 'Milagro Fernández Polo']);
   });
 
+  it('en escritorio el carril no recibe el foco: no tiene scroll', () => {
+    expect(root().querySelector('.lane')!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('en celular el carril recibe el foco y tiene nombre, para moverlo con las flechas', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('max-width: 760px'),
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    fixture = TestBed.createComponent(TeamGroupSection);
+    fixture.componentRef.setInput('group', TEAM[0]);
+    fixture.detectChanges();
+    vi.unstubAllGlobals();
+
+    const lane = root().querySelector('.lane')!;
+    expect(lane.getAttribute('tabindex')).toBe('0');
+    expect(lane.getAttribute('aria-label')).toBe('Equipo de Instrumentación Quirúrgica');
+  });
+
   it('el trazo de avance es decorativo y empieza en el primero', () => {
     expect(root().querySelector('.progress')!.getAttribute('aria-hidden')).toBe('true');
     expect(bars()).toHaveLength(3);

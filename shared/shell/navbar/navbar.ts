@@ -60,7 +60,6 @@ interface PanelComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     "(document:keydown.escape)": "onEscape()",
-    "(window:scroll)": "onScroll()",
     "(focusin)": "hidden.set(false)",
     "[class.hidden]": "hidden()",
   },
@@ -91,12 +90,19 @@ export class Navbar {
   /** El menú de la sección donde se está: «Especialidades» en el catálogo y el detalle de técnica. */
   protected readonly current = this.shell.currentMenu;
 
-  /** Al bajar se esconde y al subir vuelve; con un desplegable o el menú de celular abiertos, se queda. */
-  protected onScroll(): void {
+  /**
+   * Al bajar se esconde y al subir vuelve; con un desplegable o el menú de celular abiertos, o con
+   * el foco del teclado dentro de ella, se queda (WCAG 2.4.11).
+   */
+  private onScroll(): void {
     const y = window.scrollY;
     const from = this.lastScrollY;
     this.lastScrollY = y;
-    if (!this.shell.autoHide?.() || this.open() !== null || this.mobileOpen()) {
+    if (
+      this.open() !== null ||
+      this.mobileOpen() ||
+      this.host.nativeElement.contains(document.activeElement)
+    ) {
       this.hidden.set(false);
       return;
     }
@@ -112,9 +118,16 @@ export class Navbar {
   constructor() {
     this.destroyRef.onDestroy(() => this.dispose());
 
-    // Al salir de una página con la barra que se esconde, la barra vuelve
-    effect(() => {
-      if (!this.shell.autoHide?.()) untracked(() => this.hidden.set(false));
+    // Solo escucha el scroll en una página con la barra que se esconde; al salir de ella, la barra vuelve
+    effect((onCleanup) => {
+      if (!this.shell.autoHide?.()) {
+        untracked(() => this.hidden.set(false));
+        return;
+      }
+      this.lastScrollY = window.scrollY;
+      const listener = () => this.onScroll();
+      window.addEventListener("scroll", listener, { passive: true });
+      onCleanup(() => window.removeEventListener("scroll", listener));
     });
 
     // Atrás, Adelante, un guard o la sesión vencida también cambian de página, sin

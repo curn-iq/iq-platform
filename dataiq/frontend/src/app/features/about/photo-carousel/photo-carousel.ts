@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -55,6 +56,7 @@ const SIZES =
     '(pointermove)': 'onPointerMove($event)',
     '(pointerup)': 'onPointerUp($event)',
     '(pointercancel)': 'onPointerCancel()',
+    '(lostpointercapture)': 'onLostPointerCapture()',
     '(focusin)': 'onFocusIn()',
     '(focusout)': 'focusVisible.set(false)',
     '(dragstart)': '$event.preventDefault()',
@@ -69,8 +71,12 @@ export class PhotoCarousel {
   private readonly reduced = mediaQuery(REDUCED_MOTION_QUERY);
   /** Donde se agarró la foto con el puntero, si se está arrastrando. */
   private dragFrom: number | null = null;
+  /** El puntero que arrastra: otro dedo que se apoye no cambia el arrastre. */
+  private dragPointer: number | null = null;
   /** Se está arrastrando con el dedo (y no con el mouse o un lápiz). */
   private dragByTouch = false;
+  /** El temporizador de la foto que termina de entrar tras soltarla. */
+  private settleTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly srcset = CAROUSEL_SRCSET;
   protected readonly sizes = SIZES;
@@ -109,6 +115,16 @@ export class PhotoCarousel {
       const timer = setTimeout(() => this.go(1), INTERVAL_MS);
       onCleanup(() => clearTimeout(timer));
     });
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.settleTimer));
+  }
+
+  /** La clase de vecina solo va si esa foto no es la actual ni la otra vecina (con 1 o 2 fotos coinciden). */
+  protected isPrevious(i: number): boolean {
+    return i === this.previous() && i !== this.index();
+  }
+
+  protected isNext(i: number): boolean {
+    return i === this.next() && i !== this.index() && i !== this.previous();
   }
 
   private go(step: number): void {
@@ -123,6 +139,8 @@ export class PhotoCarousel {
 
   protected onArrow(event: Event, step: -1 | 1): void {
     event.preventDefault();
+    // Mientras la foto termina de entrar, el cambio ya está en camino
+    if (this.settling()) return;
     this.goByHand(step);
   }
 
@@ -147,8 +165,11 @@ export class PhotoCarousel {
 
   protected onPointerDown(event: PointerEvent): void {
     if (event.pointerType !== 'touch' && event.button !== 0) return;
-    if (this.settling()) return;
+    // Un segundo dedo no empieza otro arrastre; con una sola foto no hay a dónde arrastrar
+    if (event.isPrimary === false || this.dragFrom !== null) return;
+    if (this.settling() || this.photos().length < 2) return;
     this.dragFrom = event.clientX;
+    this.dragPointer = event.pointerId ?? null;
     this.dragByTouch = event.pointerType === 'touch';
     this.dragging.set(true);
     // El arrastre sigue aunque el puntero salga de la foto
@@ -160,14 +181,15 @@ export class PhotoCarousel {
    * (`--drag`, que mueve las fotos con `transform`): no pasa por Angular ni obliga a recalcular la página.
    */
   protected onPointerMove(event: PointerEvent): void {
-    if (this.dragFrom === null || this.reduced()) return;
+    if (this.dragFrom === null || !this.isDragPointer(event) || this.reduced()) return;
     this.setDrag(`${event.clientX - this.dragFrom}px`);
   }
 
   protected onPointerUp(event: PointerEvent): void {
-    if (this.dragFrom === null) return;
+    if (this.dragFrom === null || !this.isDragPointer(event)) return;
     const step = swipeStep(event.clientX - this.dragFrom);
     this.dragFrom = null;
+    this.dragPointer = null;
     this.dragging.set(false);
     if (this.reduced()) {
       this.setDrag('0px');
@@ -177,7 +199,7 @@ export class PhotoCarousel {
     // La foto termina de entrar (o vuelve a su lugar) y después se cambia el índice
     this.settling.set(true);
     this.setDrag(`${-step * 100}%`);
-    setTimeout(() => {
+    this.settleTimer = setTimeout(() => {
       if (step !== 0) this.changeAfterDrag(step);
       this.setDrag('0px');
       this.settling.set(false);
@@ -186,8 +208,18 @@ export class PhotoCarousel {
 
   protected onPointerCancel(): void {
     this.dragFrom = null;
+    this.dragPointer = null;
     this.dragging.set(false);
     this.setDrag('0px');
+  }
+
+  /** Se perdió la captura sin soltar (p. ej. al cambiar de ventana): el arrastre se cancela. */
+  protected onLostPointerCapture(): void {
+    if (this.dragFrom !== null) this.onPointerCancel();
+  }
+
+  private isDragPointer(event: PointerEvent): boolean {
+    return (event.pointerId ?? null) === this.dragPointer;
   }
 
   /** Con el dedo, cambiar de foto detiene el avance; con el mouse sigue 3 s después de la foto nueva. */

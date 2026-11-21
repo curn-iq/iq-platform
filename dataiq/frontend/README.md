@@ -429,7 +429,7 @@ las toma por una ruta desconocida y abre «No encontrada».
   650 como cualquier sección actual. Como la barra es compartida, SIMIQ3D también lo
   muestra: su host arma el destino con la URL del shell y lo abre con navegación
   completa.
-- **Esconderse al bajar:** si el host da `autoHide` en `true` (DataIQ lo hace solo en `/nosotros`), la barra se esconde al bajar por la página y vuelve al subir (`barHiddenAfterScroll()` en `nav-menus.ts`, con pruebas). Con un desplegable o el menú de celular abiertos, o con el foco en ella, se queda. SIMIQ3D no da `autoHide` y su barra no cambia (decidido por Juan el 2026-11-20).
+- **Esconderse al bajar:** si el host da `autoHide` en `true` (DataIQ lo hace solo en `/nosotros`), la barra se esconde al bajar por la página y vuelve al subir (`barHiddenAfterScroll()` en `nav-menus.ts`, con pruebas). Con un desplegable o el menú de celular abiertos, o con el foco en ella, se queda. Solo escucha el scroll de la ventana mientras `autoHide` está en `true`. SIMIQ3D no da `autoHide` y su barra no cambia (decidido por Juan el 2026-11-20).
 - **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
   dinámico la primera vez que se abre un menú: la barra está en todas las
   páginas y no debe engordar el código inicial.

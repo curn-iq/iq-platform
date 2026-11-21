@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { mediaQuery, MOBILE_QUERY } from '../../../shared/media-query';
 import { TeamGroup } from '../about-photos';
 import { Portrait } from '../portrait/portrait';
 
@@ -17,6 +18,9 @@ import { Portrait } from '../portrait/portrait';
 })
 export class TeamGroupSection {
   readonly group = input.required<TeamGroup>();
+
+  /** En celular los retratos van en un carril con scroll. */
+  protected readonly mobile = mediaQuery(MOBILE_QUERY);
 
   /** El retrato al que llegó el carril en celular. */
   protected readonly current = signal(0);
