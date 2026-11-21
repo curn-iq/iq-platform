@@ -23,7 +23,8 @@ const SIZES =
 /**
  * El carrusel de la presentación de «Nosotros»: solo las fotos, sin flechas, contador, puntos ni pie
  * (Resuelto 67 de `dataiq/docs/checklist-frontend.md`). Avanza solo cada 3 s con un fundido de .6s y se
- * detiene con el puntero encima o con el foco del teclado; se cambia de foto arrastrando con el
+ * detiene con el puntero encima o con el foco del teclado, y deja de avanzar solo cuando la persona
+ * cambia de foto; se cambia de foto arrastrando con el
  * mouse o deslizando, en los dos sentidos, y con las flechas del teclado cuando tiene el foco. Con
  * `prefers-reduced-motion` no avanza solo y el cambio es instantáneo. Ver «Nosotros (página)» en
  * `DESIGN.md`.
@@ -72,10 +73,17 @@ export class PhotoCarousel {
   private readonly hovering = signal(false);
   /** El foco llegó con el teclado. */
   protected readonly focusVisible = signal(false);
-  private readonly paused = computed(() => this.hovering() || this.focusVisible());
+  /**
+   * Se cambió de foto a mano (flechas o arrastre): deja de avanzar solo hasta que se recargue la página.
+   * Es la forma de detenerlo en una pantalla táctil, donde no hay puntero encima (WCAG 2.2.2).
+   */
+  private readonly stopped = signal(false);
+  private readonly paused = computed(
+    () => this.stopped() || this.hovering() || this.focusVisible(),
+  );
 
   constructor() {
-    // Cada cambio de foto, o dejar de estar pausado, empieza a contar los 3 s de nuevo.
+    // Cada cambio de foto, o dejar de estar en pausa, empieza a contar los 3 s de nuevo.
     effect((onCleanup) => {
       this.index();
       if (this.reduced() || this.paused() || this.photos().length < 2) return;
@@ -88,9 +96,15 @@ export class PhotoCarousel {
     this.index.update((index) => wrapIndex(index + step, this.photos().length));
   }
 
+  /** Un cambio hecho por la persona: cambia de foto y el carrusel deja de avanzar solo. */
+  private goByHand(step: number): void {
+    this.stopped.set(true);
+    this.go(step);
+  }
+
   protected onArrow(event: Event, step: -1 | 1): void {
     event.preventDefault();
-    this.go(step);
+    this.goByHand(step);
   }
 
   protected onPointerEnter(event: PointerEvent): void {
@@ -124,7 +138,7 @@ export class PhotoCarousel {
     if (this.dragFrom === null) return;
     const step = swipeStep(event.clientX - this.dragFrom);
     this.onPointerCancel();
-    if (step !== 0) this.go(step);
+    if (step !== 0) this.goByHand(step);
   }
 
   protected onPointerCancel(): void {

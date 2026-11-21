@@ -169,16 +169,32 @@ describe('PhotoCarousel', () => {
       expect(active()).toBe(1);
     });
 
-    it('cambiar de foto a mano vuelve a contar los 3 s', () => {
+    it('cambiar de foto con las flechas lo detiene', () => {
       wait(2000);
       key('ArrowRight');
       settle();
       expect(active()).toBe(1);
 
-      wait(2000);
+      wait(30_000);
       expect(active()).toBe(1);
-      wait(1000);
-      expect(active()).toBe(2);
+    });
+
+    it('cambiar de foto arrastrando lo detiene, también en una pantalla táctil', () => {
+      pointer('pointerdown', { clientX: 400, pointerType: 'touch' });
+      pointer('pointerup', { clientX: 200, pointerType: 'touch' });
+      settle();
+      expect(active()).toBe(1);
+
+      wait(30_000);
+      expect(active()).toBe(1);
+    });
+
+    it('un toque sin arrastrar no lo detiene', () => {
+      pointer('pointerdown', { clientX: 200, pointerType: 'touch' });
+      pointer('pointerup', { clientX: 205, pointerType: 'touch' });
+      wait(3000);
+
+      expect(active()).toBe(1);
     });
   });
 
