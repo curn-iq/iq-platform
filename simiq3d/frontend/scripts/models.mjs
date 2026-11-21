@@ -6,8 +6,23 @@
 // nodos con nombre, como `blade_mount`, de donde el visor cuelga la hoja de
 // bisturí (simiq3d/models/README.md, «Mango y hoja»). Solo vuelve a comprimir
 // un modelo si su GLB cambió.
+//
+// Cada modelo se publica también con una huella de su contenido en el nombre
+// (`kocher_forceps.ff785f3f26.glb`) y `manifest.json` dice cuál corresponde a cada
+// uno. El visor pide el de la huella: si el modelo cambia, cambia su nombre y el
+// navegador no puede seguir usando la copia vieja de su caché
+// (simiq3d/frontend/README.md, «Modelos 3D»).
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,7 +36,8 @@ const MAX_BYTES = 150 * 1024;
 mkdirSync(output, { recursive: true });
 const models = readdirSync(source).filter((name) => name.endsWith('.glb'));
 
-// Lo que ya no está en la fuente tampoco se publica
+// Lo que ya no está en la fuente tampoco se publica (las copias con huella se
+// rehacen al final)
 for (const name of readdirSync(output)) {
   if (!models.includes(name)) rmSync(join(output, name));
 }
@@ -40,6 +56,16 @@ for (const name of models) {
   }
   packed += 1;
 }
+
+const manifest = {};
+for (const name of models) {
+  const bytes = readFileSync(join(output, name));
+  const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 10);
+  const hashed = name.replace(/\.glb$/, `.${hash}.glb`);
+  writeFileSync(join(output, hashed), bytes);
+  manifest[name] = hashed;
+}
+writeFileSync(join(output, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 
 const sizes = models.map((name) => ({ name, bytes: statSync(join(output, name)).size }));
 const total = sizes.reduce((sum, { bytes }) => sum + bytes, 0);
