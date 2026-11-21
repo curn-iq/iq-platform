@@ -1,9 +1,9 @@
 <ol>
-  @for (piece of items(); track piece.id) {
+  @for (entry of entries(); track entry.key) {
     <li>
-      <button type="button" (click)="choose.emit(piece.id)">
-        <span class="number">{{ piece.legendNumber ?? '–' }}</span>
-        {{ piece.name }}
+      <button type="button" (click)="choose.emit({ id: entry.item.id, part: entry.index })">
+        <span class="number">{{ entry.item.legendNumber ?? '–' }}</span>
+        {{ entry.name }}
       </button>
     </li>
   }

@@ -1,7 +1,7 @@
-<section class="card" aria-live="polite" [attr.aria-label]="item().name">
+<section class="card" aria-live="polite" [attr.aria-label]="title()">
   <div class="head">
     <span class="number" aria-hidden="true">{{ item().legendNumber ?? '–' }}</span>
-    <h2>{{ item().name }}</h2>
+    <h2>{{ title() }}</h2>
     <button type="button" class="close" aria-label="Cerrar ficha" (click)="close.emit()">
       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
         <path

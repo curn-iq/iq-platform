@@ -2,44 +2,84 @@
 // compartido» en CLAUDE.md). Solo sobrescribe propiedades CSS, nunca define
 // estilos de componentes.
 //
-// SIMIQ3D cambia el verde de interfaz por el azul de quirófano, para que se
-// sienta otro módulo (DESIGN.md, «SIMIQ3D: explorar en 3D»). El acento es una
-// familia y se cambia completa; el foco la sigue solo. El verde se queda en el
-// logo (`--color-brand`), y la funda de la mesa en 3D es azul (`--color-drape`).
+// SIMIQ3D cambia el verde de interfaz por el lila, a pedido del programa de IQ
+// (2026-11-20: más color y más vida), para que se sienta otro módulo (DESIGN.md,
+// «SIMIQ3D: explorar en 3D»). El acento es una familia y se cambia completa; el
+// foco la sigue solo. El azul de quirófano queda en los filetes, los textos
+// secundarios y la funda de la mesa en 3D (`--color-drape`); el verde, en el logo
+// (`--color-brand`).
 :root {
-  --color-accent: var(--quirofano);
-  --color-accent-strong: var(--quirofano-hondo);
-  --color-accent-soft: var(--quirofano-claro);
-  --color-accent-soft-hover: var(--quirofano-claro-hover);
-  --color-bg: var(--fondo-quirofano);
-  --color-hover: var(--hover-quirofano);
-  --color-border: var(--filete-quirofano);
-  --color-border-strong: var(--filete-2-quirofano);
-  --color-text-muted: var(--tinta-2-quirofano);
-  --color-text-subtle: var(--tinta-3-quirofano);
+  --color-accent: var(--sim-lila);
+  --color-accent-strong: var(--sim-lila-hondo);
+  --color-accent-soft: var(--sim-lila-claro);
+  --color-accent-soft-hover: var(--sim-lila-claro-hover);
+  --color-bg: var(--sim-fondo-lila);
+  // Los neutros siguen al lila (tinta, textos, filetes y fondo al mismo tono, croma bajo):
+  // el color no queda en los botones sino en toda la pantalla
+  --color-text: var(--sim-tinta);
+  --color-text-muted: var(--sim-tinta-2);
+  --color-text-subtle: var(--sim-tinta-3);
+  --color-hover: var(--sim-hover);
+  --color-border: var(--sim-filete);
+  --color-border-strong: var(--sim-filete-2);
+  // El lienzo sigue casi blanco en el centro, donde está la mesa, y se carga de lila hacia
+  // los bordes
+  --color-canvas-center: #fefdff;
+  --color-canvas-middle: #f3eeff;
+  --color-canvas-edge: #e6dcff;
+  // Con el foco, las casillas y el cursor, también
+  color-scheme: light;
+  accent-color: var(--color-accent);
+  caret-color: var(--color-accent);
 }
 
 // «Quirófano ligero» (DESIGN.md, «SIMIQ3D: Quirófano ligero»): lo nuevo de este
 // módulo va aquí, con el prefijo --sim-, para no tocar los tokens compartidos
 // con DataIQ.
 :root {
-  // El extremo claro del degradado de acción; contraste 4,8 : 1 con texto blanco
-  --sim-cian: #217a9f;
+  // Paleta del 2026-11-20 (OKLCH; lila tono 295, orquídea 350, celeste 240). El lila de
+  // acento es el más claro que aún da texto blanco legible (4,6 : 1); los tonos «vivo»
+  // son solo decorativos (el fondo) y nunca llevan texto. Cada color trae su «claro» (fondo
+  // de chips y tarjetas), su «hondo» (texto sobre el claro, de 7 a 8 : 1) y su sombra.
+  --sim-lila: #8859e3;
+  --sim-lila-hondo: #572e9d;
+  --sim-lila-claro: #f2ebff;
+  --sim-lila-claro-hover: #e9dfff;
+  --sim-lila-suave: #e1d4ff;
+  --sim-lila-vivo: #bea4ff;
+  --sim-fondo-lila: #f7f3ff;
+  --sim-orquidea: #d1328e;
+  --sim-orquidea-hondo: #8c005a;
+  --sim-orquidea-claro: #ffe4f4;
+  --sim-orquidea-vivo: #fc8ec5;
+  --sim-celeste: #007bc1;
+  --sim-celeste-hondo: #00538a;
+  --sim-celeste-claro: #ddf4ff;
+  --sim-celeste-vivo: #75c0f4;
+  --sim-tinta: #1b172c;
+  --sim-tinta-2: #48435e;
+  --sim-tinta-3: #635e7e;
+  --sim-filete: #e6e0f6;
+  --sim-filete-2: #d3cbea;
+  --sim-hover: #efeafd;
+
   // Solo dos usos: el botón de enviar y el número de la pieza señalada (insignia, leyenda y
-  // ficha). Si está en todas partes, deja de decir algo.
-  --sim-gradient: linear-gradient(135deg, var(--quirofano) 0%, var(--sim-cian) 100%);
+  // ficha). Si está en todas partes, deja de decir algo. Del lila a la orquídea.
+  --sim-gradient: linear-gradient(135deg, var(--sim-lila) 0%, var(--sim-orquidea) 100%);
+  // La sombra de color del degradado
+  --sim-glow: rgb(87 46 157 / 0.5);
 
   // Vidrio: superficie translúcida con desenfoque, para lo que flota sobre la mesa
-  --sim-glass: rgb(255 255 255 / 0.78);
+  --sim-glass: rgb(252 250 255 / 0.82);
   --sim-glass-blur: blur(20px) saturate(1.5);
   --sim-glass-edge: rgb(255 255 255 / 0.65);
 
   --sim-shadow-dock:
-    0 1px 2px rgb(10 27 34 / 0.06), 0 12px 32px -12px rgb(10 27 34 / 0.18),
-    0 32px 64px -32px rgb(10 27 34 / 0.28);
+    0 1px 2px rgb(44 22 110 / 0.07), 0 12px 32px -12px rgb(44 22 110 / 0.2),
+    0 32px 64px -32px rgb(44 22 110 / 0.3);
   --sim-shadow-card:
-    0 1px 2px rgb(10 27 34 / 0.05), 0 6px 16px -8px rgb(10 27 34 / 0.12),
-    0 16px 32px -20px rgb(10 27 34 / 0.18);
+    0 1px 2px rgb(44 22 110 / 0.06), 0 6px 16px -8px rgb(44 22 110 / 0.14),
+    0 16px 32px -20px rgb(44 22 110 / 0.2);
 
   --sim-radius-dock: 24px;
   --sim-radius-card: 20px;
@@ -97,4 +137,15 @@ textarea {
 .divider {
   -webkit-user-select: none;
   user-select: none;
+}
+
+// Lo que dibuja el navegador, con la paleta: la selección de texto y las barras de
+// desplazamiento
+::selection {
+  background: var(--sim-lila-suave);
+  color: var(--sim-tinta);
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--sim-lila) 45%, transparent) transparent;
 }

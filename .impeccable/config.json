@@ -188,6 +188,14 @@
         "value": "var(--sim-spring)",
         "createdAt": "2026-11-05T17:42:40.067Z",
         "reason": "cubic-bezier(0.32, 0.72, 0, 1) no rebota: termina en 1 sin sobrepasar, es una desaceleración exponencial; definido en DESIGN.md (Quirófano ligero) y evidencia: theme.scss"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "simiq3d/frontend/src/app/explore/explore-page.scss"
+        ],
+        "createdAt": "2026-11-20T19:13:43.472Z"
       }
     ]
   }

@@ -60,7 +60,14 @@ describe('ChatHistory', () => {
       { id: 1, from: 'simiq3d', reply: reply({ action: 'list_instruments', instrument_id: null }) },
     ];
     const items = [
-      { id: 'kelly', legendNumber: 9, name: 'Pinza Kelly', instrumentIds: ['i-kelly'], cells: [] },
+      {
+        id: 'kelly',
+        legendNumber: 9,
+        name: 'Pinza Kelly',
+        instrumentIds: ['i-kelly'],
+        components: [{ instrumentId: 'i-kelly', name: 'Pinza Kelly' }],
+        cells: [],
+      },
     ];
     const open = await render({ messages, items, openTechnique: 't-1' });
     expect(open.element.querySelector('app-piece-list')?.textContent).toContain('Pinza Kelly');
@@ -96,7 +103,7 @@ describe('ChatHistory', () => {
     expect(withMessages.element.querySelector('.suggestion')).toBeNull();
   });
 
-  it('con el texto del modelo, muestra la negrita y de dónde sale cada cosa', async () => {
+  it('con el texto del modelo, muestra la negrita y el aviso de que es un modelo de IA', async () => {
     const written = reply({ reply: 'La **Pinza Kelly** es hemostática.', generated: true });
     const messages: ChatMessage[] = [
       { id: 1, from: 'simiq3d', reply: written },
@@ -106,7 +113,7 @@ describe('ChatHistory', () => {
     const [model, dataiq] = Array.from(element.querySelectorAll('.message'));
     expect(model.querySelector('strong')?.textContent).toBe('Pinza Kelly');
     expect(model.querySelector('.sources')?.textContent).toContain(
-      'Lo demás lo explica un modelo de IA',
+      'Lo explica un modelo de IA y puede equivocarse',
     );
     expect(dataiq.querySelector('.sources')).toBeNull();
   });

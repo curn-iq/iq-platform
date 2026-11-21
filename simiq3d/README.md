@@ -262,32 +262,19 @@ producción el chat por pedidos).
 
 ## Cómo se arma la mesa en 3D
 
-Decidido por Mauricio el 2026-10-15. DataIQ dice en qué celda va cada objeto
-(cuadrículas de distinto tamaño, dibujadas a mano), no dónde exactamente ni
-hacia dónde apunta:
+Por decisión de Mauricio del 2026-11-20, la posición y el giro de cada
+instrumento de las cinco mesas se leen de DataIQ. Cada GLB va a escala real
+con su centro y orientación medidos en la foto, y los separadores se apoyan
+de canto cuando la fuente trae colocación métrica. Un objeto compuesto
+conserva su número compartido y cada instrumento mantiene su propia pose.
 
-- **La cuadrícula se reparte en partes iguales sobre la mesa**, la misma regla
-  de SIVRI: lo que el estudiante ve en 3D es lo que SIVRI le revisa.
-- **La mesa, de tamaño provisional**, la misma para todas las técnicas.
-  Medirla es para después del MVP
-  ([`docs/despues-del-mvp.md`](../docs/despues-del-mvp.md)).
-- **Los instrumentos, a escala real** (ver «Modelos 3D»), con **su centro
-  en el centro de su celda** y apoyados en la mesa (el origen de cada modelo
-  está a la altura de su punto más bajo). Un instrumento suele ser más largo que una celda:
-  sobresale hacia las vecinas, como en la mesa real. SIVRI mide igual: por el
-  centro.
-- **Todos los instrumentos apuntan igual.** Hacia dónde apunta cada uno es
-  para después del MVP.
-- **Dentro de la mesa y sin taparse** (decidido por Mauricio el
-  2026-11-01): una pieza que se saldría por el borde, o que taparía a otra
-  hasta no distinguir cuál es cuál, se corre lo justo, hacia adentro o a lo
-  ancho, junto a su vecina. En una mesa real ninguna pieza cuelga del borde y,
-  aunque estén juntas, se distinguen. Las demás quedan en el centro de su
-  celda.
-- **Objetos compuestos:** el mango con su hoja va en la celda como un
-  mango, con la hoja montada en él: la hoja se cuelga del nodo `blade_mount`
-  de su mango ([`models/README.md`](models/README.md), «Mango y hoja»). Dos
-  instrumentos independientes en la misma celda van uno al lado del otro.
+Cuando DataIQ solo trae celdas, el visor conserva la colocación habitual:
+centra el objeto en sus celdas y ajusta los objetos de ese grupo para reducir
+su solapamiento. La colocación métrica se aplica sin ese desplazamiento.
+
+La fuente y el sistema de coordenadas están en el
+[README de DataIQ](../dataiq/README.md#posición-métrica-de-los-instrumentos).
+Las convenciones de exportación están en [Modelos 3D](models/README.md).
 
 ## Backend y base de datos
 

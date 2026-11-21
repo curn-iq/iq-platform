@@ -30,6 +30,7 @@
     <app-legend
       [items]="mayo()?.items ?? []"
       [selected]="selected()"
+      [part]="part()"
       [(open)]="legendOpen"
       [disabled]="!mayo()"
       (choose)="pickFromLegend($event)"
@@ -38,6 +39,7 @@
       <app-instrument-card
         animate.leave="card-leave"
         [item]="item"
+        [part]="cardPart()"
         [instruments]="cardInstruments()"
         (close)="cardOpen.set(false)"
       />
@@ -87,6 +89,25 @@
         <span class="grab-bar"></span>
       </button>
     }
+    @if (!mobile()) {
+      <header class="dock-head">
+        <span class="dock-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 48 48">
+            <path
+              d="M24 6 40 15v18L24 42 8 33V15Z M8 15l16 9 16-9 M24 24v18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+        <div>
+          <p class="dock-title">SIMIQ3D</p>
+          <p class="dock-sub">Explora la mesa de Mayo y pregunta lo que quieras</p>
+        </div>
+      </header>
+    }
     <app-chat-history
       class="chat"
       [attr.inert]="historyHidden() ? '' : null"
@@ -99,7 +120,7 @@
       [openTechnique]="id()"
       [items]="mayo()?.items ?? []"
       (ask)="ask($event)"
-      (choose)="selected.set($event)"
+      (choose)="pick($event)"
       (close)="level.set('peek')"
     />
     <app-chat-field

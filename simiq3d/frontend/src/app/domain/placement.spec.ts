@@ -18,6 +18,7 @@ describe('placeItems', () => {
     legendNumber: 1,
     name: id,
     instrumentIds,
+    components: instrumentIds.map((instrumentId) => ({ instrumentId, name: instrumentId })),
     cells,
   });
   const table = (items: TableItem[]): MayoTable => ({ rows: 10, columns: 6, items });
@@ -59,5 +60,17 @@ describe('placeItems', () => {
     );
     expect(placed.map((p) => p.itemId)).toEqual(['kelly']);
     expect(placed[0].models).toEqual([{ file: 'kelly_forceps.glb', mountOn: null }]);
+  });
+
+  it('conserva una posición y un giro por componente, aun sin celdas', () => {
+    const pair = item('par', ['i-kelly', 'i-allis'], []);
+    const first = { x: -0.1, z: 0.05, yawDeg: 92 };
+    const second = { x: 0.08, z: 0.04, yawDeg: -173 };
+    pair.components[0].placement = first;
+    pair.components[1].placement = second;
+    const [placed] = placeItems(table([pair]), modelFor);
+    expect(placed.models.map((model) => model.placement)).toEqual([first, second]);
+    expect(placed.x).toBeCloseTo(-0.01);
+    expect(placed.z).toBeCloseTo(0.045);
   });
 });

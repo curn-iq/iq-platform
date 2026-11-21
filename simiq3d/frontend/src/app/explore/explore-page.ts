@@ -20,6 +20,7 @@ import { plainText } from '../chat/rich-text';
 import { SessionService } from '../core/session/session.service';
 import { DataIQRepository } from '../data/dataiq.repository';
 import { toMayoTable } from '../data/mayo-table';
+import type { PieceChoice } from '../domain/mayo-table';
 import { Simiq3dRepository } from '../data/simiq3d.repository';
 import { placeItems } from '../domain/placement';
 import { suggestions } from '../domain/suggestions';
@@ -130,12 +131,31 @@ export class ExplorePage {
     source: () => this.id(),
     computation: () => false,
   });
+  /**
+   * Cuál instrumento del objeto señalado se eligió en la leyenda o en el chat; `null` si se
+   * señaló el objeto entero (al tocarlo en la mesa). Se suelta al cambiar de objeto.
+   */
+  protected readonly part = linkedSignal<string | null, number | null>({
+    source: this.selected,
+    computation: () => null,
+  });
   protected readonly selectedItem = computed(() =>
     this.mayo()?.items.find((item) => item.id === this.selected()),
   );
+  /** Con varios instrumentos en el objeto, la ficha sigue al elegido; con uno, no hay a cuál. */
+  protected readonly cardPart = computed(() =>
+    (this.selectedItem()?.components.length ?? 0) > 1 ? this.part() : null,
+  );
   protected readonly cardInstruments = computed(() => {
+    const item = this.selectedItem();
+    if (!item) return [];
+    const part = this.cardPart();
+    const ids =
+      part === null
+        ? item.instrumentIds
+        : item.components.flatMap((c, i) => (i === part && c.instrumentId ? [c.instrumentId] : []));
     const all = this.instruments.value() ?? [];
-    return (this.selectedItem()?.instrumentIds ?? []).flatMap((id) => {
+    return ids.flatMap((id) => {
       const instrument = all.find((i) => i.id === id);
       return instrument ? [instrument] : [];
     });
@@ -248,6 +268,9 @@ export class ExplorePage {
         const item = mayo?.items.find((i) => i.instrumentIds.includes(change.instrument!));
         if (item) {
           this.selected.set(item.id);
+          // El instrumento que pidió el chat, entre los del objeto
+          const part = item.components.findIndex((c) => c.instrumentId === change.instrument);
+          this.part.set(part >= 0 ? part : null);
           this.cardOpen.set(change.card);
         }
         this.conversation.takeScene();
@@ -267,9 +290,15 @@ export class ExplorePage {
   }
 
   /** En celular la leyenda tapa la mesa: al elegir una pieza se pliega para que se vea. */
-  protected pickFromLegend(id: string): void {
-    this.selected.set(id);
+  protected pickFromLegend(choice: PieceChoice): void {
+    this.pick(choice);
     if (this.mobile()) this.legendOpen.set(false);
+  }
+
+  /** Señala el objeto y el instrumento elegidos en la leyenda o en una lista del chat. */
+  protected pick(choice: PieceChoice): void {
+    this.selected.set(choice.id);
+    this.part.set(choice.part);
   }
 
   /** Tocar una pieza la señala y abre su ficha; tocar la mesa vacía la suelta. */

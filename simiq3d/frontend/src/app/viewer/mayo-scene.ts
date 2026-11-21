@@ -89,9 +89,10 @@ const TARGET_RADIUS = 0.45;
 const TAP_PX = 6;
 
 /** Una propiedad CSS del sistema visual (`shared/design/tokens.css`) como color de Three.js. */
-function token(name: string, fallback: string): Color {
+function token(name: string, fallback?: string): Color {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return new Color(value || fallback);
+  const color = value || fallback;
+  return color ? new Color(color) : new Color();
 }
 
 /**
@@ -131,7 +132,7 @@ function shadowTexture(): Texture {
   return new CanvasTexture(canvas);
 }
 
-/** El número del diagrama de IQ en un círculo blanco, como textura. */
+/** El número del diagrama de IQ en un círculo claro, como textura. */
 function numberTexture(value: number, ink: Color): Texture {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 96;
@@ -172,8 +173,8 @@ export class MayoScene {
   private readonly shadow = shadowTexture();
   private readonly shadowGeometry = new PlaneGeometry(1, 1);
   private readonly numbers = new Map<number, Texture>();
-  private readonly accent = token('--color-accent', '#1b5f86');
   private readonly ink = token('--color-text', '#0a1b22');
+  private readonly accent = token('--color-accent', '#1b5f86');
   private readonly observer: ResizeObserver;
   private readonly disposables: { dispose(): void }[] = [];
   private pieces: ScenePiece[] = [];
@@ -243,7 +244,8 @@ export class MayoScene {
   /** Pone en la mesa los objetos de una técnica, en lugar de los que había. */
   async setTable(items: readonly PlacedItem[]): Promise<void> {
     const loading = ++this.loading;
-    const built = await Promise.all(items.map((item) => this.buildPiece(item)));
+    const pieces = await Promise.all(items.map((item) => this.buildPiece(item)));
+    const built = pieces.filter((piece) => piece !== null);
     if (loading !== this.loading) {
       // Llegó otra técnica mientras se armaba esta
       built.forEach((piece) => this.disposePiece(piece));
@@ -251,27 +253,39 @@ export class MayoScene {
     }
     this.clearTable();
     this.pieces = built;
-    // Cada pieza parte del centro de su celda y se corre lo justo para quedar
-    // dentro de la mesa y no tapar a otra (`domain/arrangement.ts`)
-    const centers = built.map((piece) => piece.bounds.getCenter(new Vector3()));
-    const sizes = built.map((piece) => piece.bounds.getSize(new Vector3()));
-    const points = arrange(
-      built.map((piece, i) => ({
-        x: piece.item.x + centers[i].x,
-        z: piece.item.z + centers[i].z,
-        halfLength: sizes[i].x / 2,
-        halfWidth: sizes[i].z / 2,
-      })),
+    const fallback = built.filter(({ item }) => !item.models.some((model) => model.placement));
+    const fallbackPoints = arrange(
+      fallback.map((piece) => {
+        const center = piece.bounds.getCenter(new Vector3());
+        const size = piece.bounds.getSize(new Vector3());
+        return {
+          x: piece.item.x + center.x,
+          z: piece.item.z + center.z,
+          halfLength: size.x / 2,
+          halfWidth: size.z / 2,
+        };
+      }),
     );
-    built.forEach((piece, i) => {
-      piece.group.position.set(points[i].x - centers[i].x, 0, points[i].z - centers[i].z);
+    const fallbackByPiece = new Map(fallback.map((piece, index) => [piece, fallbackPoints[index]]));
+    for (const piece of built) {
+      const center = piece.bounds.getCenter(new Vector3());
+      const size = piece.bounds.getSize(new Vector3());
+      const legacy = fallbackByPiece.get(piece);
+      piece.group.position.set(
+        legacy ? legacy.x - center.x : piece.item.x,
+        0,
+        legacy ? legacy.z - center.z : piece.item.z,
+      );
       this.piecesGroup.add(piece.group);
       if (piece.number) {
-        // Junto a la pieza, del lado de los anillos (−X)
-        piece.number.position.set(points[i].x - sizes[i].x / 2 - 0.012, 0.006, points[i].z);
+        piece.number.position.set(
+          piece.group.position.x + center.x - size.x / 2 - 0.012,
+          0.006,
+          piece.group.position.z + center.z,
+        );
         this.numbersGroup.add(piece.number);
       }
-    });
+    }
     this.scaleNumbers();
     this.selected = null;
     this.paint();
@@ -354,8 +368,19 @@ export class MayoScene {
    * extremo libre (`drape.ts`). Debajo, la barra de apoyo, el poste y la base.
    */
   private buildTable(): void {
-    const { width, depth } = MAYO_TABLE_SIZE;
-    const steel = new MeshStandardMaterial({ color: 0xc3ccd0, metalness: 0.9, roughness: 0.28 });
+    // La mesa es vertical, como en las fotos de IQ: su largo va de atrás hacia
+    // quien mira (Z). Se arma con el largo en X y se gira un cuarto de vuelta, así
+    // el poste queda del lado de quien mira y la funda cae por el extremo del fondo.
+    const width = MAYO_TABLE_SIZE.depth;
+    const depth = MAYO_TABLE_SIZE.width;
+    const stand = new Group();
+    stand.rotation.y = Math.PI / 2;
+    this.scene.add(stand);
+    const steel = new MeshStandardMaterial({
+      color: 0xc3ccd0,
+      metalness: 0.9,
+      roughness: 0.28,
+    });
     // Tela de polipropileno: mate, con el brillo suave de la tela en los pliegues
     const drape = new MeshPhysicalMaterial({
       color: token('--color-drape', '#2a78c2'),
@@ -368,10 +393,14 @@ export class MayoScene {
       envMapIntensity: 0.5,
       side: DoubleSide,
     });
-    const floor = new MeshBasicMaterial({ map: this.shadow, transparent: true, depthWrite: false });
+    const floor = new MeshBasicMaterial({
+      map: this.shadow,
+      transparent: true,
+      depthWrite: false,
+    });
     const add = (mesh: Mesh, x: number, y: number, z: number) => {
       mesh.position.set(x, y, z);
-      this.scene.add(mesh);
+      stand.add(mesh);
       this.disposables.push(mesh.geometry);
     };
 
@@ -436,29 +465,53 @@ export class MayoScene {
   // ---------- Las piezas ----------
 
   /** Arma la pieza en el origen; `setTable` la pone en su lugar. */
-  private async buildPiece(item: PlacedItem): Promise<ScenePiece> {
+  private async buildPiece(item: PlacedItem): Promise<ScenePiece | null> {
+    // El catálogo puede conservar una referencia a un GLB retirado. Cada
+    // descarga se resuelve por separado para mantener visible el resto.
+    const loaded = await Promise.allSettled(
+      item.models.map((model) => this.library.instance(model.file)),
+    );
+    const models = loaded.map((result) => (result.status === 'fulfilled' ? result.value : null));
+    if (!models.some((model) => model !== null)) return null;
+
     const group = new Group();
     group.userData['itemId'] = item.itemId;
     // Materiales propios de la pieza: así se apaga o se tiñe sola
     const steel = new MeshStandardMaterial({
-      color: 0xb4bec3,
-      metalness: 1,
-      roughness: 0.22,
-      envMapIntensity: 1.35,
-      transparent: true,
+      color: token('--color-steel-light'),
+      metalness: 0.74,
+      roughness: 0.32,
+      envMapIntensity: 0.88,
+      // El sombreado que trae cada modelo (oclusión ambiental horneada en sus vértices): oscurece
+      // ranuras, muescas y cuellos, que con un acero liso no se distinguirían
+      vertexColors: true,
     });
     const blade = new MeshStandardMaterial({
-      color: 0xdde4e6,
-      metalness: 1,
-      roughness: 0.18,
-      envMapIntensity: 1.35,
-      transparent: true,
+      color: token('--color-steel-glint'),
+      metalness: 0.8,
+      roughness: 0.26,
+      envMapIntensity: 0.88,
+      // El sombreado que trae cada modelo (oclusión ambiental horneada en sus vértices): oscurece
+      // ranuras, muescas y cuellos, que con un acero liso no se distinguirían
+      vertexColors: true,
     });
 
-    const models = await Promise.all(item.models.map((model) => this.library.instance(model.file)));
+    for (const material of [steel, blade]) {
+      material.onBeforeCompile = (shader) => {
+        // La oclusión del GLB acentúa el relieve del metal a escala de mesa.
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <color_vertex>',
+          `#include <color_vertex>
+          #if defined(USE_COLOR) || defined(USE_COLOR_ALPHA)
+            vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(1.35));
+          #endif`,
+        );
+      };
+    }
+
     models.forEach((model, i) => {
       const material = /^scalpel_blade_/.test(item.models[i].file) ? blade : steel;
-      model.traverse((node) => {
+      model?.traverse((node) => {
         if (node instanceof Mesh) node.material = material;
       });
     });
@@ -466,10 +519,29 @@ export class MayoScene {
     // Las hojas se cuelgan del `blade_mount` de su mango, sin moverlas ni girarlas
     const loose: Object3D[] = [];
     item.models.forEach((model, i) => {
+      const instance = models[i];
+      if (!instance) return;
       const mount =
-        model.mountOn === null ? undefined : models[model.mountOn].getObjectByName('blade_mount');
-      if (mount) mount.add(models[i]);
-      else loose.push(models[i]);
+        model.mountOn === null ? undefined : models[model.mountOn]?.getObjectByName('blade_mount');
+      if (mount) {
+        mount.add(instance);
+      } else if (model.placement) {
+        const { x, z, yawDeg } = model.placement;
+        // En las fotos los separadores apoyan de canto. La valva del Farabeuf
+        // y las uñas del Senn Miller quedan hacia el lado visible de la foto.
+        const onEdge = /^(farabeuf|senn_miller)_retractor\.glb$/.test(model.file);
+        instance.rotation.set(onEdge ? -Math.PI / 2 : 0, -MathUtils.degToRad(yawDeg), 0, 'YXZ');
+        const bounds = new Box3().setFromObject(instance);
+        const projected = onEdge ? bounds.getCenter(new Vector3()) : new Vector3();
+        instance.position.set(
+          x - item.x - projected.x,
+          SURFACE_Y - bounds.min.y,
+          z - item.z - projected.z,
+        );
+        group.add(instance);
+      } else {
+        loose.push(instance);
+      }
     });
     // Los instrumentos independientes, uno al lado del otro a lo ancho
     const depths = loose.map((model) => new Box3().setFromObject(model).getSize(new Vector3()).z);
@@ -482,20 +554,7 @@ export class MayoScene {
     });
 
     const bounds = new Box3().setFromObject(group);
-    const size = bounds.getSize(new Vector3());
-    const center = bounds.getCenter(new Vector3());
-    const shadow = new Mesh(
-      this.shadowGeometry,
-      new MeshBasicMaterial({
-        map: this.shadow,
-        transparent: true,
-        opacity: 0.55,
-        depthWrite: false,
-      }),
-    );
-    shadow.scale.set(size.x * 1.15, Math.max(0.03, size.z * 1.4), 1);
-    shadow.rotation.x = -Math.PI / 2;
-    shadow.position.set(center.x, SURFACE_Y - 0.0001, center.z);
+    const shadow = this.contactShadow(group, bounds);
     group.add(shadow);
 
     // El número no sube con la pieza: va aparte, y `setTable` lo pone junto a ella
@@ -515,6 +574,67 @@ export class MayoScene {
     return { item, group, bounds, materials: [steel, blade], shadow, number };
   }
 
+  /** Proyecta el contorno real sobre la funda una vez, al armar la pieza. */
+  private contactShadow(group: Group, bounds: Box3): Mesh {
+    const size = bounds.getSize(new Vector3());
+    const center = bounds.getCenter(new Vector3());
+    const width = size.x + 0.012;
+    const depth = size.z + 0.012;
+    const scale = 256 / Math.max(width, depth);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(width * scale);
+    canvas.height = Math.ceil(depth * scale);
+    const context = canvas.getContext('2d')!;
+    const a = new Vector3();
+    const b = new Vector3();
+    const c = new Vector3();
+    // Se pintan todos los triángulos con el mismo sentido para rellenar la
+    // unión de sus proyecciones, incluidos los huecos reales de los anillos.
+    context.beginPath();
+    group.updateMatrixWorld(true);
+    group.traverse((node) => {
+      if (!(node instanceof Mesh)) return;
+      const { index } = node.geometry;
+      const position = node.geometry.getAttribute('position');
+      const count = index?.count ?? position.count;
+      const project = (vertex: Vector3, i: number) => {
+        vertex.fromBufferAttribute(position, index?.getX(i) ?? i).applyMatrix4(node.matrixWorld);
+        vertex.x = (vertex.x - center.x + width / 2) * scale;
+        vertex.z = (vertex.z - center.z + depth / 2) * scale;
+      };
+      for (let i = 0; i < count; i += 3) {
+        project(a, i);
+        project(b, i + 1);
+        project(c, i + 2);
+        const positive = (b.x - a.x) * (c.z - a.z) >= (b.z - a.z) * (c.x - a.x);
+        const second = positive ? b : c;
+        const third = positive ? c : b;
+        context.moveTo(a.x, a.z);
+        context.lineTo(second.x, second.z);
+        context.lineTo(third.x, third.z);
+        context.closePath();
+      }
+    });
+    context.filter = 'blur(0.85px)';
+    context.fillStyle = `#${this.ink.getHexString()}`;
+    context.fill();
+    const texture = new CanvasTexture(canvas);
+    texture.colorSpace = SRGBColorSpace;
+    const shadow = new Mesh(
+      this.shadowGeometry,
+      new MeshBasicMaterial({
+        map: texture,
+        opacity: 0.6,
+        transparent: true,
+        depthWrite: false,
+      }),
+    );
+    shadow.scale.set(canvas.width / scale, canvas.height / scale, 1);
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.set(center.x + 0.0016, SURFACE_Y - 0.0002, center.z + 0.0011);
+    return shadow;
+  }
+
   private numberTexture(value: number): Texture {
     let texture = this.numbers.get(value);
     if (texture === undefined) {
@@ -530,6 +650,11 @@ export class MayoScene {
       const isSelected = piece === this.selected;
       const dimmed = this.selected !== null && !isSelected;
       for (const material of piece.materials) {
+        if (material.transparent !== dimmed) {
+          material.transparent = dimmed;
+          material.depthWrite = !dimmed;
+          material.needsUpdate = true;
+        }
         material.opacity = dimmed ? DIMMED : 1;
         material.emissive.copy(isSelected ? this.accent : new Color(0x000000));
         material.emissiveIntensity = isSelected ? 0.22 : 0;
@@ -549,7 +674,9 @@ export class MayoScene {
     piece.group.removeFromParent();
     piece.number?.removeFromParent();
     piece.materials.forEach((material) => material.dispose());
-    (piece.shadow.material as MeshBasicMaterial).dispose();
+    const material = piece.shadow.material as MeshBasicMaterial;
+    material.map?.dispose();
+    material.dispose();
     piece.number?.material.dispose();
   }
 
@@ -627,6 +754,7 @@ export class MayoScene {
       const goal = piece === this.selected ? LIFT : 0;
       const y = piece.group.position.y;
       piece.group.position.y = this.options.reducedMotion ? goal : y + (goal - y) * 0.22;
+      piece.shadow.position.y = SURFACE_Y - 0.0002 - piece.group.position.y;
       if (Math.abs(goal - piece.group.position.y) > 0.0002) moving = true;
     }
     this.controls.update();

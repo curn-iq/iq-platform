@@ -29,6 +29,21 @@ export function toMayoTable(technique: TechniqueInstruments): MayoTable | null {
         instrumentIds: item.components.flatMap((component) =>
           component.instrument_id === null ? [] : [component.instrument_id],
         ),
+        components: item.components.map((component) => ({
+          instrumentId: component.instrument_id,
+          name: component.name,
+          ...(typeof component.position_x_m === 'number' &&
+          typeof component.position_z_m === 'number' &&
+          typeof component.yaw_deg === 'number'
+            ? {
+                placement: {
+                  x: component.position_x_m,
+                  z: component.position_z_m,
+                  yawDeg: component.yaw_deg,
+                },
+              }
+            : {}),
+        })),
         cells: item.cells.map((cell) => ({ row: cell.row, column: cell.column })),
       })),
   };

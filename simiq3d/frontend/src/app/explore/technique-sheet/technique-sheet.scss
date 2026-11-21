@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: rgb(10 27 34 / 0.32);
+  background: rgb(34 16 73 / 0.34);
   opacity: 0;
   visibility: hidden;
   transition:
@@ -21,7 +21,7 @@
   overflow-y: auto;
   border-radius: 16px 16px 0 0;
   background: var(--color-surface);
-  box-shadow: 0 -24px 48px -32px rgb(10 27 34 / 0.55);
+  box-shadow: 0 -24px 48px -32px rgb(34 16 73 / 0.5);
   transform: translateY(104%);
   visibility: hidden;
   transition:

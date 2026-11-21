@@ -1,4 +1,4 @@
-import { itemCenter, MayoTable } from './mayo-table';
+import { ComponentPlacement, itemCenter, MayoTable } from './mayo-table';
 
 /**
  * Cómo se arma cada objeto de la mesa en la escena: qué modelos 3D lleva y
@@ -15,6 +15,7 @@ export interface PlacedModel {
    * mesa, al lado de los demás modelos sueltos del mismo objeto.
    */
   mountOn: number | null;
+  placement?: ComponentPlacement;
 }
 
 /** Un objeto de la mesa listo para la escena. */
@@ -42,21 +43,31 @@ export function placeItems(
   modelFor: (instrumentId: string) => string | undefined,
 ): PlacedItem[] {
   return table.items.flatMap((item) => {
-    const center = itemCenter(table, item.cells);
-    const files = item.instrumentIds.flatMap((id) => {
-      const file = modelFor(id);
-      return file === undefined ? [] : [file];
+    const files = item.components.flatMap((component) => {
+      const file = component.instrumentId === null ? undefined : modelFor(component.instrumentId);
+      return file === undefined ? [] : [{ file, placement: component.placement }];
     });
-    if (center === null || files.length === 0) return [];
-    const handle = files.findIndex((file) => HANDLE.test(file));
+    if (files.length === 0) return [];
+    const measured = files.flatMap(({ placement }) => (placement ? [placement] : []));
+    const cell = itemCenter(table, item.cells);
+    const center =
+      measured.length > 0
+        ? {
+            x: measured.reduce((sum, point) => sum + point.x, 0) / measured.length,
+            z: measured.reduce((sum, point) => sum + point.z, 0) / measured.length,
+          }
+        : cell;
+    if (center === null) return [];
+    const handle = files.findIndex(({ file }) => HANDLE.test(file));
     return [
       {
         itemId: item.id,
         legendNumber: item.legendNumber,
         x: center.x,
         z: center.z,
-        models: files.map((file) => ({
+        models: files.map(({ file, placement }) => ({
           file,
+          ...(placement ? { placement } : {}),
           mountOn: BLADE.test(file) && handle >= 0 ? handle : null,
         })),
       },

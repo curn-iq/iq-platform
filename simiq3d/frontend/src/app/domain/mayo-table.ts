@@ -21,9 +21,23 @@ export interface TableCell {
   column: number;
 }
 
+/** Centro y giro de un instrumento medidos en la foto de su mesa. */
+export interface ComponentPlacement extends TablePoint {
+  yawDeg: number;
+}
+
+/** Uno de los componentes de un objeto: un instrumento del catálogo (o lo que la fuente nombra). */
+export interface TableComponent {
+  /** El instrumento del catálogo; `null` si el componente no es un instrumento (una sutura). */
+  instrumentId: string | null;
+  name: string;
+  placement?: ComponentPlacement;
+}
+
 /**
  * Un objeto físico de la mesa: un instrumento, o varios que van juntos (el mango
- * con su hoja). Aunque ocupe varias celdas, es uno solo y lleva un solo número.
+ * con su hoja, o las tijeras y los mangos que IQ arma en un mismo sitio). Aunque
+ * ocupe varias celdas, es uno solo y lleva un solo número en el diagrama.
  */
 export interface TableItem {
   id: string;
@@ -33,6 +47,8 @@ export interface TableItem {
   name: string;
   /** Los instrumentos del catálogo que lo forman, en orden; las suturas no se dibujan. */
   instrumentIds: string[];
+  /** Todos sus componentes, en orden, cada uno con su nombre. */
+  components: TableComponent[];
   cells: TableCell[];
 }
 
@@ -75,4 +91,37 @@ export function itemCenter(
     x: centers.reduce((sum, point) => sum + point.x, 0) / centers.length,
     z: centers.reduce((sum, point) => sum + point.z, 0) / centers.length,
   };
+}
+
+/**
+ * Cada instrumento de la mesa por separado, como lo listan la leyenda y el chat: una fila por
+ * instrumento, no por objeto. Los de un mismo objeto comparten número (es el del diagrama de
+ * IQ) y sitio, y quedan juntos. Un objeto de un solo componente (o sin ninguno) es una fila.
+ */
+export interface TablePart {
+  item: TableItem;
+  /** Su lugar entre los componentes del objeto. */
+  index: number;
+  name: string;
+  /** Único en la mesa, para `track`. */
+  key: string;
+}
+
+export function partsOf(items: readonly TableItem[]): TablePart[] {
+  return items.flatMap((item) =>
+    item.components.length > 1
+      ? item.components.map((component, index) => ({
+          item,
+          index,
+          name: component.name,
+          key: `${item.id}:${index}`,
+        }))
+      : [{ item, index: 0, name: item.name, key: `${item.id}:0` }],
+  );
+}
+
+/** Lo que se elige en la leyenda o en el chat: un objeto y cuál de sus instrumentos. */
+export interface PieceChoice {
+  id: string;
+  part: number;
 }
