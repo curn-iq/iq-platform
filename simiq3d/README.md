@@ -272,7 +272,8 @@ conserva su número compartido y cada instrumento mantiene su propia pose.
 
 Cuando DataIQ solo trae celdas, el visor conserva la colocación habitual:
 centra el objeto en sus celdas y ajusta los objetos de ese grupo para reducir
-su solapamiento. La colocación métrica se aplica sin ese desplazamiento.
+su solapamiento. La colocación métrica conserva la medida, con un ajuste mínimo al
+reborde al alinear la pieza y una separación visible entre ambos Farabeuf.
 
 La fuente y el sistema de coordenadas están en el
 [README de DataIQ](../dataiq/README.md#posición-métrica-de-los-instrumentos).

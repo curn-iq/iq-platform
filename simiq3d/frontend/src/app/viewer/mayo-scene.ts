@@ -533,11 +533,16 @@ export class MayoScene {
         instance.rotation.set(onEdge ? -Math.PI / 2 : 0, -MathUtils.degToRad(yawDeg), 0, 'YXZ');
         const bounds = new Box3().setFromObject(instance);
         const projected = onEdge ? bounds.getCenter(new Vector3()) : new Vector3();
-        instance.position.set(
-          x - item.x - projected.x,
-          SURFACE_Y - bounds.min.y,
-          z - item.z - projected.z,
-        );
+        // Al alinear una pieza al eje, el anillo puede pasar el reborde. Se
+        // desplaza solo lo imprescindible para dejar su silueta sobre el paño.
+        const fit = (coordinate: number, low: number, high: number, span: number) => {
+          const minimum = -span / 2 + 0.002 - low;
+          const maximum = span / 2 - 0.002 - high;
+          return minimum <= maximum ? MathUtils.clamp(coordinate, minimum, maximum) : coordinate;
+        };
+        const placedX = fit(x - projected.x, bounds.min.x, bounds.max.x, MAYO_TABLE_SIZE.width);
+        const placedZ = fit(z - projected.z, bounds.min.z, bounds.max.z, MAYO_TABLE_SIZE.depth);
+        instance.position.set(placedX - item.x, SURFACE_Y - bounds.min.y, placedZ - item.z);
         group.add(instance);
       } else {
         loose.push(instance);
