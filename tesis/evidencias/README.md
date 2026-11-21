@@ -10,3 +10,4 @@ SIVRI y no se suben al repositorio).
 
 | Archivo | Qué mide | Cómo se obtuvo |
 |---|---|---|
+| `banco-simiq3d-2026-11-21.csv` | Exactitud del chat de SIMIQ3D: 153 preguntas, con la respuesta, la acción del visor, la calificación y el tiempo de cada una | `chat_bank` con `simiq3d/backend/eval/banco.csv`, el catálogo de producción de DataIQ y el modelo Qwen3-VL 8B en Ollama, en el PC de desarrollo (2026-11-21) |
