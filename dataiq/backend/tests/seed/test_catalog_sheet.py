@@ -56,3 +56,22 @@ def test_mayo_positions_cover_the_photographed_components():
                     assert abs(x) < 0.24 and abs(z) < 0.28
                     assert -180 <= yaw <= 180
     assert actual == expected
+
+
+def test_each_mayo_instrument_is_its_own_legend_object():
+    """En la leyenda se elige cada instrumento por separado (Mauricio, 2026-11-21)."""
+    techniques, _ = read_file(SOURCE_FILE)
+    names = (
+        "Colecistectomía",
+        "Eventrorrafia",
+        "Hemicolectomía derecha",
+        "Mastectomía",
+        "Tiroidectomía",
+    )
+    grouped = [
+        (name, item.number, item.components)
+        for name in names
+        for item in techniques[name].items
+        if item.stand == "Mesa de Mayo" and len(item.components) > 1
+    ]
+    assert grouped == []
