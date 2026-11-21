@@ -278,8 +278,10 @@ que se tapan, sean de objetos distintos o del mismo objeto (las dos tijeras y
 los dos mangos, que DataIQ agrupa en un solo objeto), se corren lo justo, por el
 lado en que menos se tapan, con 3 mm de luz (`domain/arrangement.ts`); así las
 dos pinzas de disección quedan una al lado de la otra y no encimadas. Los dos
-Farabeuf son la excepción: se muestran de canto, cara a cara y pegados, como en
-las fotos, de modo que sus valvas forman un solo rectángulo.
+Farabeuf son la excepción: se muestran de canto y abrazados, como en las fotos:
+enfrentados, cada uno mete sus valvas dentro del otro, así que juntos ocupan el
+ancho de una sola valva, y se corren 6 mm a lo largo para que las valvas queden
+una junto a la otra.
 
 La fuente y el sistema de coordenadas están en el
 [README de DataIQ](../dataiq/README.md#posición-métrica-de-los-instrumentos).

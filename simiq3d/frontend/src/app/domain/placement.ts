@@ -38,13 +38,17 @@ interface MeasuredFile {
   placement?: ComponentPlacement;
 }
 
-/** El perfil de canto del Farabeuf mide unos 38 mm: a esa distancia, las puntas se tocan. */
-export const FARABEUF_FACE_GAP = 0.038;
+/**
+ * Cuánto se corre un Farabeuf respecto del otro a lo largo, para que sus valvas
+ * queden una junto a la otra sin atravesarse (en las fotos, unos 5 mm).
+ */
+export const FARABEUF_STAGGER = 0.006;
 
 /**
- * Los dos Farabeuf, cara a cara y pegados, como en las fotos de IQ: las valvas
- * enfrentadas forman un solo rectángulo (Mauricio, 2026-11-21). Quedan en el
- * punto medio de lo medido y alineados a lo largo.
+ * Los dos Farabeuf se abrazan, como en las fotos de IQ (Mauricio, 2026-11-21):
+ * enfrentados, cada uno mete sus valvas dentro del otro, así que juntos ocupan el
+ * ancho de una sola valva y forman un solo rectángulo. Comparten el centro a lo
+ * ancho (el punto medio de lo medido) y se corren un poco a lo largo.
  */
 function faceFarabeuf(placements: ComponentPlacement[]): ComponentPlacement[] {
   const [first, second] = placements;
@@ -54,12 +58,11 @@ function faceFarabeuf(placements: ComponentPlacement[]): ComponentPlacement[] {
   const direction = second[axis] - first[axis] < 0 ? -1 : 1;
   const middle = (first[axis] + second[axis]) / 2;
   const line = (first[along] + second[along]) / 2;
-  const half = (direction * FARABEUF_FACE_GAP) / 2;
   const towardOther = axis === 'x' ? direction * 90 : direction > 0 ? 180 : 0;
   const opposed = ((towardOther + 360) % 360) - 180;
   return [
-    { ...first, [axis]: middle - half, [along]: line, yawDeg: towardOther },
-    { ...second, [axis]: middle + half, [along]: line, yawDeg: opposed },
+    { ...first, [axis]: middle, [along]: line - FARABEUF_STAGGER / 2, yawDeg: towardOther },
+    { ...second, [axis]: middle, [along]: line + FARABEUF_STAGGER / 2, yawDeg: opposed },
     ...placements.slice(2),
   ];
 }
