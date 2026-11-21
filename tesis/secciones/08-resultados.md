@@ -40,7 +40,29 @@ medidas en Tiroidectomía y Fig. de las cinco mesas). La captura de producción
 muestra la mesa de Tiroidectomía con su leyenda, en la que cada instrumento se
 elige por separado (Fig. de producción).
 
-<!-- Exactitud del chat: el resultado del banco de preguntas contra el catálogo de producción va aquí, con su CSV en ../evidencias/. -->
+**Exactitud del chat.** El 2026-11-21 el banco de 153 preguntas se corrió
+contra el catálogo de producción de DataIQ, con el mismo modelo que usa
+SIMIQ3D (Qwen3-VL 8B en Ollama), en el PC de desarrollo. Antes se
+actualizaron 8 preguntas cuya respuesta esperada correspondía a las mesas
+anteriores a las listas de IQ del 2026-11-19 (por ejemplo, instrumentos que ya
+no van en ninguna mesa). Resultado: **140 de 153 respuestas correctas
+(91,5 %)**. Ninguna respuesta tuvo frases sin respaldo en los datos de DataIQ
+según la verificación automática, que compara nombres, números y ubicaciones
+(no el sentido de cada frase). La revisión del tutor corrigió 60 frases en 36
+respuestas antes de mostrarlas. El modelo no responde igual en cada corrida:
+entre dos corridas seguidas, el resultado varió en unas tres preguntas.
+
+Las 13 respuestas incorrectas se agrupan así: tres respuestas fuera de tema
+que el modelo contesta en lugar de declinar (incluido un intento de hacerle
+olvidar sus reglas); tres comparaciones entre mesas que nombran un
+instrumento de más o de menos; tres preguntas por datos clínicos en las que
+falta un dato o la aclaración de que DataIQ no tiene tiempos quirúrgicos; y
+casos aislados (una pregunta ambigua sin pedir precisión, un error de
+escritura, una explicación general y una pregunta sobre cómo ordenar la mesa).
+El tiempo por pregunta en el PC de desarrollo tuvo una mediana de 9,0 s y un
+máximo de 30 s; el tiempo en producción, con el Servidor PC2, se mide aparte.
+El detalle de cada pregunta está en
+[`../evidencias/banco-simiq3d-2026-11-21.csv`](../evidencias/banco-simiq3d-2026-11-21.csv).
 
 ### SIVRI
 
