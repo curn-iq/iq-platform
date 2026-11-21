@@ -84,7 +84,8 @@ iq-platform/
 │   └── docs/            dataset y checklist
 ├── shared/design/       tokens visuales comunes a los frontends
 ├── diseno/mockups/      mockups de las pantallas
-└── docs/                arquitectura, flujos, privacidad y lo de después del MVP
+├── docs/                arquitectura, flujos, privacidad y lo de después del MVP
+└── tesis/               lo que va al trabajo de grado (Formato 115)
 ```
 
 ## Documentación
@@ -99,6 +100,7 @@ iq-platform/
   MVP: [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md).
 - Producto y diseño visual: [`PRODUCT.md`](PRODUCT.md) y
   [`DESIGN.md`](DESIGN.md).
+- Lo que va al trabajo de grado (Formato 115): [`tesis/`](tesis/README.md).
 - Instrucciones del proyecto para Claude Code: [`CLAUDE.md`](CLAUDE.md) y,
   por módulo, [`.claude/rules/`](.claude/rules/).
 
