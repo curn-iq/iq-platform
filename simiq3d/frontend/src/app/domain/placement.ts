@@ -32,18 +32,20 @@ export interface PlacedItem {
 const HANDLE = /^scalpel_handle_/;
 const BLADE = /^scalpel_blade_/;
 
-/** Los dos Farabeuf se leen como dos piezas aun cuando sus cantos casi coinciden. */
-function spaceFarabeuf(placements: ComponentPlacement[]): ComponentPlacement[] {
+/** Enfrenta las valvas y deja que se distingan los dos perfiles de Farabeuf. */
+function faceFarabeuf(placements: ComponentPlacement[]): ComponentPlacement[] {
   const [first, second] = placements;
   if (!first || !second || (first.yawDeg - second.yawDeg) % 180 !== 0) return placements;
   const axis = first.yawDeg % 180 === 0 ? 'z' : 'x';
   const gap = second[axis] - first[axis];
-  const separation = 0.006;
-  if (Math.abs(gap) >= separation) return placements;
-  const offset = ((gap < 0 ? -separation : separation) - gap) / 2;
+  const direction = gap < 0 ? -1 : 1;
+  // El perfil de canto mide unos 38 mm. La luz entre valvas es de 3 mm.
+  const offset = (direction * Math.max(0, 0.041 - Math.abs(gap))) / 2;
+  const towardOther = axis === 'x' ? direction * 90 : direction > 0 ? 180 : 0;
+  const opposed = ((towardOther + 360) % 360) - 180;
   return [
-    { ...first, [axis]: first[axis] - offset },
-    { ...second, [axis]: second[axis] + offset },
+    { ...first, [axis]: first[axis] - offset, yawDeg: towardOther },
+    { ...second, [axis]: second[axis] + offset, yawDeg: opposed },
     ...placements.slice(2),
   ];
 }
@@ -66,7 +68,7 @@ export function placeItems(
       const placements = [component.placement, ...(component.additionalPlacements ?? [])].map(
         (placement) => ({ ...placement, yawDeg: 90 * Math.round(placement.yawDeg / 90) }),
       );
-      const visible = file === 'farabeuf_retractor.glb' ? spaceFarabeuf(placements) : placements;
+      const visible = file === 'farabeuf_retractor.glb' ? faceFarabeuf(placements) : placements;
       return visible.map((placement) => ({ file, placement }));
     });
     if (files.length === 0) return [];

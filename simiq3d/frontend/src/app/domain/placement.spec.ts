@@ -7,6 +7,7 @@ describe('placeItems', () => {
     'i-mango': 'scalpel_handle_4.glb',
     'i-hoja': 'scalpel_blade_20.glb',
     'i-allis': 'allis_forceps.glb',
+    'i-farabeuf': 'farabeuf_retractor.glb',
   };
   const modelFor = (id: string) => MODELS[id];
   const item = (
@@ -85,5 +86,15 @@ describe('placeItems', () => {
     expect(placed).toHaveLength(1);
     expect(placed[0].models.map((model) => model.placement?.yawDeg)).toEqual([0, 180]);
     expect(placed[0].models.map((model) => model.placement?.z)).toEqual([0.05, 0.11]);
+  });
+
+  it('enfrenta las valvas de los dos Farabeuf con luz entre sus perfiles', () => {
+    const pair = item('farabeuf', ['i-farabeuf']);
+    pair.components[0].placement = { x: 0, z: 0, yawDeg: 91 };
+    pair.components[0].additionalPlacements = [{ x: 0.004, z: 0.01, yawDeg: 86 }];
+    const [{ models }] = placeItems(table([pair]), modelFor);
+    expect(models.map((model) => model.placement?.yawDeg)).toEqual([90, -90]);
+    expect(models[1].placement!.x - models[0].placement!.x).toBeCloseTo(0.041);
+    expect(models.map((model) => model.placement?.z)).toEqual([0, 0.01]);
   });
 });
