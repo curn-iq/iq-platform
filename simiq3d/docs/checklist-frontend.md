@@ -85,7 +85,7 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 - [x] Chat no disponible (503) cuando el Servidor PC2 está apagado, con el visor funcionando; el campo sigue activo para volver a intentar
 - [x] Tope de preguntas seguidas (429): el texto de la API, con la mesa funcionando
 - [x] Revisión de la fase 5 (2026-11-02): la rueda y el pellizco acercan hacia el puntero; en celular, los tres puntos mientras llega la respuesta y la leyenda que se pliega al elegir; la ficha como nota translúcida en el azul claro de SIMIQ3D, con el número de la pieza, la primera oración de la descripción y «Ver más»
-- [ ] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa)
+- [x] Tiempo desde la pregunta hasta ver la escena (métrica de la evaluación sumativa): medido en producción el 2026-11-21 (`tesis/secciones/08-resultados.md`)
 - [x] Mandar con cada pregunta las anteriores de la conversación, con los pedidos que devolvió cada respuesta, para que el chat entienda un seguimiento (backend: «El modelo entiende y DataIQ responde»)
 - [x] El texto del tutor con su Markdown sencillo (párrafos, negrita y listas) sin `innerHTML` (`chat/rich-text.ts`), y sin marcas en la última respuesta de celular
 - [x] La línea de fuentes bajo cada respuesta del modelo (`generated`) y el campo de pregunta con «Responde un modelo de IA con los datos de DataIQ»
@@ -122,7 +122,7 @@ ligero»). Pasaron por lo hecho, una por una, las cinco skills del proyecto
 - [x] Ajustes tras probarlo Mauricio (2026-11-05): sin chip de acción; opciones solo al terminar la respuesta con un fundido; el texto se escribe a paso parejo; «Mi cuenta» de la barra despliega su panel (nombre, correo, rol y «Cerrar sesión»); en celular el botón del chat también lo cierra, la conversación se coloca en la primera letra de la respuesta, la leyenda en dos columnas, sin botones de zoom y con el menú «Vista»; en pantalla baja, el chat, el aviso y la ficha se achican
 - [x] Segunda tanda de ajustes (2026-11-05): controles de vista solo con íconos (también en escritorio), marca «SIMIQ3D» con el ícono y sin «IQ Platform», sin tarjeta vacía ni puntos repetidos mientras llega la respuesta, panel inferior con nivel mínimo, aviso de registro dentro de la conversación y campo de 16 px en táctiles (evita el acercamiento de iOS)
 - [x] La barra de SIMIQ3D es la de DataIQ, compartida: el código pasó a `shared/shell/` (ambas apps lo compilan por un enlace simbólico), cada app provee su `ShellHost`; con los cuatro menús y «Mi cuenta» en el azul del módulo, la marca «SIMIQ3D» y el presupuesto inicial de SIMIQ3D subido a 340 kB (la barra suma 31 kB)
-- [ ] Probar en un celular real y con la cuenta de un estudiante, y las capturas de escritorio y celular que revise Mauricio
+- [x] Probar en un celular real y con la cuenta de un estudiante, y las capturas de escritorio y celular que revise Mauricio (Mauricio lo probó en su celular el 2026-11-21: se ve bien)
 
 ### Dependencias del backend
 
