@@ -168,3 +168,6 @@ Nada por ahora.
   Verificado con las cinco técnicas en escritorio y móvil con el azul original de la funda.
 - [x] El visor aplica el centro y giro por componente de DataIQ y conserva
   la colocación por celdas si falta la medición.
+
+- [x] Las piezas se alinean a los cuatro ejes cardinales, con una instancia por
+  ejemplar separado detectado en la foto y un número común en la leyenda.

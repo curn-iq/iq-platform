@@ -45,7 +45,14 @@ export function placeItems(
   return table.items.flatMap((item) => {
     const files = item.components.flatMap((component) => {
       const file = component.instrumentId === null ? undefined : modelFor(component.instrumentId);
-      return file === undefined ? [] : [{ file, placement: component.placement }];
+      if (file === undefined) return [];
+      const placements = [component.placement, ...(component.additionalPlacements ?? [])];
+      return placements.map((placement) => ({
+        file,
+        placement: placement
+          ? { ...placement, yawDeg: 90 * Math.round(placement.yawDeg / 90) }
+          : undefined,
+      }));
     });
     if (files.length === 0) return [];
     const measured = files.flatMap(({ placement }) => (placement ? [placement] : []));

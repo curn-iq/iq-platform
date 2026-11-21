@@ -264,7 +264,9 @@ producción el chat por pedidos).
 
 Por decisión de Mauricio del 2026-11-20, la posición y el giro de cada
 instrumento de las cinco mesas se leen de DataIQ. Cada GLB va a escala real
-con su centro y orientación medidos en la foto, y los separadores se apoyan
+con su centro medido en la foto y el giro ajustado al eje cardinal más
+cercano (decidido por Mauricio el 2026-11-21). El catálogo conserva el ángulo
+medido y distingue los ejemplares con un sitio propio. Los separadores se apoyan
 de canto cuando la fuente trae colocación métrica. Un objeto compuesto
 conserva su número compartido y cada instrumento mantiene su propia pose.
 

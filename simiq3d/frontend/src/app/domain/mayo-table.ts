@@ -32,6 +32,7 @@ export interface TableComponent {
   instrumentId: string | null;
   name: string;
   placement?: ComponentPlacement;
+  additionalPlacements?: ComponentPlacement[];
 }
 
 /**
