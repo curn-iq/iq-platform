@@ -358,12 +358,9 @@ def _table_lines(technique: Technique, catalog: Catalog) -> list[str]:
     return lines
 
 
-def _instrument_lines(instrument: Instrument, catalog: Catalog) -> list[str]:
-    also = f" (también se le dice {', '.join(instrument.aliases)})"
-    lines = [
-        f"Instrumento: {instrument.name}{also if instrument.aliases else ''}",
-        f"- Descripción: {_or_missing(instrument.description)}",
-    ]
+def _holdings(instrument: Instrument, catalog: Catalog) -> list[tuple[str, str]]:
+    """En qué mesas de Mayo del MVP va el instrumento, una por técnica, con su
+    número del diagrama, su zona y lo que tiene al lado."""
     holding = []
     for technique in in_scope(catalog):
         item = item_with(technique, instrument.id)
@@ -379,7 +376,17 @@ def _instrument_lines(instrument: Instrument, catalog: Catalog) -> list[str]:
             parts.append("al lado de " + ", ".join(near))
         if item.name != instrument.name:
             parts.append(f"como parte de «{item.name}»")
-        holding.append(f"{technique.name} ({'; '.join(parts)})")
+        holding.append((technique.name, "; ".join(parts)))
+    return holding
+
+
+def _instrument_lines(instrument: Instrument, catalog: Catalog) -> list[str]:
+    also = f" (también se le dice {', '.join(instrument.aliases)})"
+    lines = [
+        f"Instrumento: {instrument.name}{also if instrument.aliases else ''}",
+        f"- Descripción: {_or_missing(instrument.description)}",
+    ]
+    holding = [f"{name} ({where})" for name, where in _holdings(instrument, catalog)]
     if holding:
         lines.append(
             f"- Va en {len(holding)} mesa{'s' if len(holding) > 1 else ''} de Mayo "
@@ -549,19 +556,36 @@ UNAVAILABLE = (
     "cada instrumento siguen funcionando; vuelve a preguntar en unos minutos."
 )
 
+# Pasos numerados escritos en una sola línea, como los guarda DataIQ: «1) … 2) …»
+_STEP = re.compile(r"(?:^|\s)(\d+)[.)]\s+")
+
+
+def _as_steps(text: str) -> str:
+    """Un texto con pasos «1) … 2) …» seguidos se parte en una lista numerada; si
+    no los tiene, queda igual."""
+    marks = list(_STEP.finditer(text))
+    if len(marks) < 2 or marks[0].group(1) != "1" or text[: marks[0].start()].strip():
+        return text
+    steps = []
+    for i, mark in enumerate(marks):
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(text)
+        steps.append(f"{mark.group(1)}. {text[mark.end() : end].strip()}")
+    return "\n".join(steps)
+
 
 def without_model(focus: Focus, question: str, catalog: Catalog, scene: Scene) -> str:
     """Cuando el Servidor PC2 no responde: se dice, y se muestra lo que DataIQ
     tiene de lo que se nombró. Es lo único con forma fija, porque sin el modelo
-    no hay quién redacte."""
+    no hay quién redacte: cada cosa con su título en negrita y, debajo, sus datos
+    en lista (los pasos numerados, numerados), para que no quede un solo bloque."""
     facts = []
     for technique in focus.techniques or (
         [scene.technique] if scene.technique and not focus.instruments else []
     ):
         field = scene.field or ClinicalField.description
         if field == ClinicalField.anesthesia_position:
-            text = " ".join(
-                f"{label}: {value}."
+            body = "\n".join(
+                f"- {label}: {value}"
                 for label, value in (
                     ("Anestesia", technique.anesthesia),
                     ("Posición del paciente", technique.patient_position),
@@ -569,19 +593,26 @@ def without_model(focus: Focus, question: str, catalog: Catalog, scene: Scene) -
                 if value
             )
         else:
-            text = getattr(technique, field.value) or ""
-        if text:
-            facts.append(
-                f"**{technique.name}** ({FIELD_LABELS[field].lower()}): {text}"
-            )
+            body = _as_steps(getattr(technique, field.value) or "")
+        if body:
+            # Un párrafo suelto va separado del título; una lista ya empieza en su línea
+            gap = "\n" if body.startswith(("- ", "1. ")) else "\n\n"
+            title = f"**{technique.name}: {FIELD_LABELS[field].lower()}**"
+            facts.append(title + gap + body)
     for instrument in focus.instruments:
-        lines = _instrument_lines(instrument, catalog)
-        description = instrument.description or "DataIQ no tiene su descripción."
-        where = lines[-1].removeprefix("- ")
-        facts.append(f"**{instrument.name}**: {description} {where}")
+        lines = [
+            f"- Qué es: {instrument.description or 'DataIQ no tiene su descripción.'}"
+        ]
+        holding = _holdings(instrument, catalog)
+        lines += [f"- Mesa de Mayo de {name}: {where}" for name, where in holding]
+        if not holding:
+            lines.append("- No va en ninguna mesa de Mayo de Cirugía General.")
+        facts.append(f"**{instrument.name}**\n" + "\n".join(lines))
     if not facts:
         return UNAVAILABLE
     return (
-        "El modelo de IA no está disponible ahora. Esto es lo que DataIQ tiene de "
-        "lo que preguntaste:\n\n" + "\n\n".join(facts)
+        "El modelo de IA no está disponible ahora. Mientras vuelve, esto es lo que "
+        "hay registrado sobre lo que preguntaste:\n\n"
+        + "\n\n".join(facts)
+        + "\n\nVuelve a preguntar en unos minutos para que te lo explique."
     )
