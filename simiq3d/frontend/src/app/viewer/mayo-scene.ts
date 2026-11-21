@@ -542,13 +542,14 @@ export class MayoScene {
         const placedZ = fit(z - projected.z, bounds.min.z, bounds.max.z, MAYO_TABLE_SIZE.depth);
         instance.position.set(placedX - item.x, SURFACE_Y - bounds.min.y, placedZ - item.z);
         group.add(instance);
-        measured.push(instance);
+        // Los dos Farabeuf van pegados cara a cara (`faceFarabeuf`): no se separan
+        if (!onEdge || model.file !== 'farabeuf_retractor.glb') measured.push(instance);
       } else {
         loose.push(instance);
       }
     });
     // Un objeto de la mesa puede traer varias piezas medidas (las dos tijeras y
-    // los dos mangos, los dos Farabeuf). Al alinearlas a los ejes, una puede
+    // los dos mangos, las dos pinzas de disección). Al alinearlas a los ejes, una puede
     // quedar encima de otra: se separan entre sí con la misma regla que las
     // piezas de objetos distintos (`arrange`).
     if (measured.length > 1) {

@@ -276,9 +276,10 @@ encimadas (decidido por Mauricio el 2026-11-01 y el 2026-11-21): después de
 alinear cada pieza al eje, ninguna tapa a otra ni cuelga del reborde. Las piezas
 que se tapan, sean de objetos distintos o del mismo objeto (las dos tijeras y
 los dos mangos, que DataIQ agrupa en un solo objeto), se corren lo justo, por el
-lado en que menos se tapan, con 3 mm de luz (`domain/arrangement.ts`). Los dos
-Farabeuf se muestran de canto, con las valvas enfrentadas y una pequeña luz
-entre sus extremos.
+lado en que menos se tapan, con 3 mm de luz (`domain/arrangement.ts`); así las
+dos pinzas de disección quedan una al lado de la otra y no encimadas. Los dos
+Farabeuf son la excepción: se muestran de canto, cara a cara y pegados, como en
+las fotos, de modo que sus valvas forman un solo rectángulo.
 
 La fuente y el sistema de coordenadas están en el
 [README de DataIQ](../dataiq/README.md#posición-métrica-de-los-instrumentos).
