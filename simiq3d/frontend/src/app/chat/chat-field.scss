@@ -182,7 +182,7 @@ textarea {
 
 // En celular el campo va al pie del panel inferior, con el botón de la
 // conversación a su izquierda y la última respuesta encima
-@media (max-width: 820px) and (min-height: 521px) {
+@media (width <= 820px) and (height > 520px) {
   :host,
   :host(.empty) {
     padding: 4px max(12px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom))
@@ -320,7 +320,7 @@ textarea {
 }
 
 // Pantalla baja (un celular acostado): el aviso ocupa menos para que la conversación se vea
-@media (max-height: 520px) {
+@media (height <= 520px) {
   .notice {
     margin-top: 6px;
     font-size: 0.6875rem;

@@ -21,8 +21,7 @@ const INTERVAL_MS = 3000;
 const SETTLE_MS = 350;
 
 /** Lo que se ve de la foto mientras el navegador elige su variante: el ancho que ocupa en cada rango. */
-const SIZES =
-  '(min-width: 1101px) 100vw, (min-width: 761px) calc(100vw - 72px), calc(100vw - 40px)';
+const SIZES = '(width > 1100px) 100vw, (width > 760px) calc(100vw - 72px), calc(100vw - 40px)';
 
 /**
  * El carrusel de la presentación de «Nosotros»: solo las fotos, sin flechas, contador, puntos ni pie

@@ -19,7 +19,7 @@
         <img
           [ngSrc]="program.photo.name"
           [ngSrcset]="programSrcset"
-          sizes="(min-width: 1101px) 52vw, (min-width: 761px) calc(100vw - 72px), calc(100vw - 40px)"
+          sizes="(width > 1100px) 52vw, (width > 760px) calc(100vw - 72px), calc(100vw - 40px)"
           [width]="program.photo.width"
           [height]="program.photo.height"
           alt=""
