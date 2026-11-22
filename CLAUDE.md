@@ -78,7 +78,8 @@ Las pruebas de los backends necesitan su PostgreSQL local corriendo
   al terminar cada pieza: `dataiq/docs/checklist-backend.md`,
   `dataiq/docs/checklist-frontend.md`, `simiq3d/docs/checklist.md` (por
   actividad de DSRM), `simiq3d/docs/checklist-backend.md`,
-  `simiq3d/docs/checklist-frontend.md` y `sivri/docs/checklist.md`.
+  `simiq3d/docs/checklist-frontend.md`, `sivri/docs/checklist.md` y
+  `sivri/docs/checklist-frontend.md`.
 - **Git:** todo entra por PR a `main` con CI; no hay rama `dev` y `main` es
   producción. Commits con Conventional Commits en español
   (`feat(dataiq): …`). El título del PR es la línea que aparece en el release
