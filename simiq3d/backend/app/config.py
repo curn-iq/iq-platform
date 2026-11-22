@@ -46,8 +46,11 @@ class Config(BaseSettings):
     llm_api_key: str = ""
     llm_timeout: float = 60
     # Tiempo máximo para que el tutor escriba la respuesta entera. Pasado ese
-    # tiempo, responde con lo que DataIQ tiene de lo que se nombró.
-    llm_deadline: float = 30
+    # tiempo, responde con lo que DataIQ tiene de lo que se nombró. Una mesa
+    # entera son de 450 a 800 tokens, y el Servidor PC2 escribe entre 10 y 24
+    # por segundo según su carga (banco del 2026-11-21): con 30 se cortaba. La
+    # función de Vercel admite hasta 300 s (Fluid compute).
+    llm_deadline: float = 60
 
     # Tope de preguntas por cuenta: cuántas en cuántos segundos. Se cuenta con
     # el id de la cuenta cifrado con esta clave (HMAC), aparte del registro
