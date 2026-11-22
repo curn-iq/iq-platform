@@ -31,6 +31,11 @@ export interface ShellBrand {
    */
   readonly logo?: string;
   /**
+   * La «Q» de `label` (si el nombre va en texto) se dibuja con la Q del logotipo, con un degradado
+   * de `--color-brand-q-start` a `--color-brand-q-end`. Sin `logo` y con una «Q» en el nombre.
+   */
+  readonly drawnQ?: boolean;
+  /**
    * La mesa entra desde el borde izquierdo de la pantalla, choca con el nombre, rebota y queda en
    * su lugar, una vez por carga de la app. Con movimiento reducido no se anima.
    */

@@ -19,6 +19,7 @@ import { filter } from "rxjs";
 import { SHELL_HOST, type ShellAccount } from "../shell-host";
 import { Avatar } from "../ui/avatar/avatar";
 import { BrandMark } from "../ui/brand-mark/brand-mark";
+import { BrandQ } from "../ui/brand-q/brand-q";
 import { Button } from "../ui/button/button";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
@@ -54,7 +55,7 @@ interface PanelComponent {
  */
 @Component({
   selector: "app-navbar",
-  imports: [Avatar, BrandMark, Button, MobileMenu, NavLink],
+  imports: [Avatar, BrandMark, BrandQ, Button, MobileMenu, NavLink],
   templateUrl: "./navbar.html",
   styleUrl: "./navbar.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,6 +78,12 @@ export class Navbar {
 
   protected readonly shell = inject(SHELL_HOST);
   protected readonly menus = NAV_MENUS;
+  /** El nombre en texto partido en su «Q», si la app pide dibujarla (`ShellBrand.drawnQ`). */
+  protected readonly nameAroundQ = (() => {
+    const { label, drawnQ } = this.shell.brand;
+    const at = label.indexOf("Q");
+    return drawnQ && at >= 0 ? [label.slice(0, at), label.slice(at + 1)] : null;
+  })();
   /** Los enlaces directos, después de los menús («Nosotros»). */
   protected readonly links = NAV_LINKS;
   /** El panel abierto, si hay uno. */

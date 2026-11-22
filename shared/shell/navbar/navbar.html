@@ -9,7 +9,8 @@
     <span class="brand-name">
       @if (shell.brand.logo; as logo) {
       <img [src]="logo" width="134" height="21" alt="" />
-      } @else { {{ shell.brand.label }} }
+      } @else if (nameAroundQ; as parts) { {{ parts[0] }}<app-brand-q />{{
+      parts[1] }} } @else { {{ shell.brand.label }} }
     </span>
   </a>
   <nav aria-label="Principal">

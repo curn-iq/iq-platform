@@ -133,6 +133,29 @@ describe('Navbar', () => {
       expect(root().querySelector('.brand')!.getAttribute('aria-label')).toBe('SIMIQ3D, inicio');
     });
 
+    it('con drawnQ dibuja la Q del nombre con app-brand-q, decorativa, y sin él, todo texto', async () => {
+      await withBrand({ label: 'SIMIQ3D', target: { route: '/' }, drawnQ: true });
+
+      const q = name().querySelector('app-brand-q')!;
+      expect(q.getAttribute('aria-hidden')).toBe('true');
+      expect(name().textContent!.trim()).toBe('SIMI3D');
+      expect(q.previousSibling!.textContent!.trim()).toBe('SIMI');
+      expect(q.nextSibling!.textContent!.trim()).toBe('3D');
+      expect(root().querySelector('.brand')!.getAttribute('aria-label')).toBe('SIMIQ3D, inicio');
+
+      await withBrand({ label: 'SIMIQ3D', target: { route: '/' } });
+
+      expect(name().querySelector('app-brand-q')).toBeNull();
+      expect(name().textContent!.trim()).toBe('SIMIQ3D');
+    });
+
+    it('con drawnQ y un nombre sin Q lo deja como texto', async () => {
+      await withBrand({ label: 'DataI', target: { route: '/' }, drawnQ: true });
+
+      expect(name().querySelector('app-brand-q')).toBeNull();
+      expect(name().textContent!.trim()).toBe('DataI');
+    });
+
     it('la clase entrance solo está cuando la app la pide', async () => {
       await withBrand({ label: 'SIMIQ3D', target: { route: '/' }, entrance: true });
 
