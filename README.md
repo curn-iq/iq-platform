@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diseno/marca/imagotipo-compacto-oscuro.svg">
+    <img src="diseno/marca/imagotipo-compacto.svg" alt="IQ Platform" width="440">
+  </picture>
+</p>
+
 # IQ Platform — Ecosistema Educativo para Instrumentación Quirúrgica
 
 Plataforma tecnológica desarrollada en colaboración entre estudiantes de
@@ -83,7 +90,9 @@ iq-platform/
 │   ├── frontend/
 │   └── docs/            dataset y checklist
 ├── shared/design/       tokens visuales comunes a los frontends
-├── diseno/mockups/      mockups de las pantallas
+├── diseno/
+│   ├── marca/           imagotipo y favicon
+│   └── mockups/         mockups de las pantallas
 ├── docs/                arquitectura, flujos, privacidad y lo de después del MVP
 └── tesis/               lo que va al trabajo de grado (Formato 115)
 ```
@@ -100,6 +109,10 @@ iq-platform/
   MVP: [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md).
 - Producto y diseño visual: [`PRODUCT.md`](PRODUCT.md) y
   [`DESIGN.md`](DESIGN.md).
+- [Figma del proyecto](https://www.figma.com/design/jHEduZTQNBs4CCJEWB8u5v/):
+  el mockup de «Nosotros», las rondas de exploración de la marca y los maestros
+  del imagotipo y del favicon. Las decisiones de diseño están en `DESIGN.md`.
+  El enlace es público (decidido por Juan el 2026-11-22).
 - Lo que va al trabajo de grado (Formato 115): [`tesis/`](tesis/README.md).
 - Instrucciones del proyecto para Claude Code: [`CLAUDE.md`](CLAUDE.md) y,
   por módulo, [`.claude/rules/`](.claude/rules/).

@@ -54,6 +54,7 @@ Cómo se trabaja (decidido por Juan el 2026-10-27):
 - [x] Menú de celular a pantalla completa (≤ 960 px)
 - [x] Ingresar / Crear cuenta o «Mi cuenta» con los accesos de gestión según el rol
 - [x] Pie oscuro
+- [ ] Marca: el imagotipo compacto en la barra, el horizontal en el pie oscuro y el favicon «IQ» de `diseno/marca/`, según «Marca» en `DESIGN.md`
 - [x] Enlaces de la barra y del pie a secciones del inicio (router con `anchorScrolling`): «Cómo funciona» a `/#camino`, «La investigación» a `/#investigacion`, «Preguntas frecuentes» a `/#preguntas`, y «Guía para estudiantes» y «Para docentes» a su perfil en «Para quién» (`/#quien`). La política de datos, a su página (fase 5). Sin «Quiénes somos» ni «Términos de uso» en el MVP: no tienen texto (Resuelto 26)
 - [x] SIVRI y SIMIQ3D como enlaces a `/sivri/` y `/simiq3d/`, con navegación completa: son otras apps, servidas en el mismo origen (Resuelto 17)
 
