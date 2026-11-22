@@ -2,7 +2,21 @@ import { TestBed } from '@angular/core/testing';
 import { blocksOf, plainText, RichText, spansOf } from './rich-text';
 
 describe('RichText', () => {
-  it('lee la negrita y deja un ** sin cerrar como está', () => {
+  it('quita la negrita que el modelo abre y no cierra', () => {
+    expect(spansOf('**1. La Pinza de Allis va arriba (n.º 1 del diagrama).')).toEqual([
+      { text: '1. La Pinza de Allis va arriba (n.º 1 del diagrama).', bold: false },
+    ]);
+    expect(spansOf('La **Kelly** y la Allis**')).toEqual([
+      { text: 'La ', bold: false },
+      { text: 'Kelly', bold: true },
+      { text: ' y la Allis', bold: false },
+    ]);
+    expect(plainText('Así:\n- **1. La Allis va arriba.\n- **2. Kelly** — centro')).toBe(
+      'Así: 1. La Allis va arriba. 2. Kelly — centro',
+    );
+  });
+
+  it('lee la negrita y deja un ** entre espacios como está', () => {
     expect(spansOf('La **Pinza Kelly** es hemostática')).toEqual([
       { text: 'La ', bold: false },
       { text: 'Pinza Kelly', bold: true },

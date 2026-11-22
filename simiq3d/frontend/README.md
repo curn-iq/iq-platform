@@ -155,7 +155,9 @@ Contrato de `POST /api/simiq3d/chat/stream` (el porqué de cada cosa, en
 - **El texto viene en Markdown sencillo:** párrafos, `**negrita**` y listas
   con «- » o «1. ». `chat/rich-text.ts` lo convierte en datos (párrafos,
   listas y tramos en negrita) y la plantilla los dibuja, sin `innerHTML`: el
-  texto nunca se interpreta como HTML. En celular, la última respuesta encima
+  texto nunca se interpreta como HTML. Un `**` sin pareja pegado a una
+  palabra (una negrita que el modelo abrió y no cerró) se quita para que no se
+  vean los asteriscos. En celular, la última respuesta encima
   del campo va sin marcas (`plainText`). Bajo una respuesta con `generated`
   va la línea de fuentes («Línea de fuentes» en `DESIGN.md`).
 
