@@ -18,7 +18,7 @@ import { Simiq3dWindow } from './simiq3d-window';
 import { SivriWindow } from './sivri-window';
 
 /** Desde este ancho el carril se recorre con el scroll de la página; por debajo, con el dedo. */
-const HORIZONTAL_QUERY = '(min-width: 761px)';
+const HORIZONTAL_QUERY = '(width > 760px)';
 
 interface Product {
   id: 'dataiq' | 'simiq3d' | 'sivri';
