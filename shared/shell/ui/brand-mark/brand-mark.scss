@@ -1,27 +1,42 @@
+// La mesa de Mayo de nivel 2 (ver «Marca» en DESIGN.md). Los trazos son los del imagotipo compacto
+// de `diseno/marca/`: no se redibujan. Los colores salen de nombres de uso; el trazo es
+// `--color-brand-line` y no `--color-text-muted`, porque SIMIQ3D tiñe ese de lila.
+
 :host {
   display: block;
   flex: none;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
 }
 
+// La barra la reduce a 40 px en celular (cambia el ancho del host): el dibujo la sigue.
 svg {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.tile {
-  fill: var(--color-accent);
+.tray-edge,
+.tray,
+.pole,
+.base {
+  stroke: var(--color-brand-line);
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.grid {
-  stroke: var(--color-surface);
-  stroke-opacity: 0.35;
+.tray-edge {
+  fill: var(--color-steel);
 }
 
-.dot {
-  fill: var(--color-surface);
+.tray {
+  fill: var(--color-steel-light);
 }
 
-.spark {
-  fill: var(--color-accent-soft);
+.cloth {
+  fill: var(--color-brand);
+}
+
+.wheel {
+  fill: var(--color-brand-line);
 }

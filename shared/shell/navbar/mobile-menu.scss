@@ -14,8 +14,8 @@
   animation: drop 0.4s var(--ease-enter);
 }
 
-// Por encima de 960 px la barra muestra los menús y este panel no se usa.
-@media (min-width: 961px) {
+// Por encima de 1240 px la barra muestra los menús y este panel no se usa.
+@media (width > 1240px) {
   :host {
     display: none;
   }

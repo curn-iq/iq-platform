@@ -19,6 +19,12 @@ describe('el adaptador de la barra compartida en SIMIQ3D', () => {
     expect(host().currentMenu()).toBe('tools');
   });
 
+  it('la mesa entra animada y el nombre sigue en texto, con la Q dibujada', () => {
+    expect(host().brand.entrance).toBe(true);
+    expect(host().brand.drawnQ).toBe(true);
+    expect(host().brand.logo).toBeUndefined();
+  });
+
   it('las rutas son del shell de DataIQ: navegación completa, nunca el router de esta app', () => {
     const { href, navigate } = host();
     expect(href({ route: '/tecnicas', queryParams: { especialidad: 'e-1' } })).toBe(

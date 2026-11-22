@@ -19,6 +19,7 @@ import { filter } from "rxjs";
 import { SHELL_HOST, type ShellAccount } from "../shell-host";
 import { Avatar } from "../ui/avatar/avatar";
 import { BrandMark } from "../ui/brand-mark/brand-mark";
+import { BrandQ } from "../ui/brand-q/brand-q";
 import { Button } from "../ui/button/button";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
@@ -36,7 +37,7 @@ import {
 type PanelId = NavMenuId | "account";
 
 /** Por encima de este ancho la barra muestra sus cuatro menús; por debajo, el menú de celular. */
-const WIDE_QUERY = "(min-width: 961px)";
+const WIDE_QUERY = "(width > 1240px)";
 /** Hasta este ancho la barra mide `--size-navbar-mobile` en vez de `--size-navbar` (ver `navbar.scss`). */
 const COMPACT_QUERY = "(max-width: 760px)";
 
@@ -54,7 +55,7 @@ interface PanelComponent {
  */
 @Component({
   selector: "app-navbar",
-  imports: [Avatar, BrandMark, Button, MobileMenu, NavLink],
+  imports: [Avatar, BrandMark, BrandQ, Button, MobileMenu, NavLink],
   templateUrl: "./navbar.html",
   styleUrl: "./navbar.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,11 +78,17 @@ export class Navbar {
 
   protected readonly shell = inject(SHELL_HOST);
   protected readonly menus = NAV_MENUS;
+  /** El nombre en texto partido en su «Q», si la app pide dibujarla (`ShellBrand.drawnQ`). */
+  protected readonly nameAroundQ = (() => {
+    const { label, drawnQ } = this.shell.brand;
+    const at = label.indexOf("Q");
+    return drawnQ && at >= 0 ? [label.slice(0, at), label.slice(at + 1)] : null;
+  })();
   /** Los enlaces directos, después de los menús («Nosotros»). */
   protected readonly links = NAV_LINKS;
   /** El panel abierto, si hay uno. */
   protected readonly open = signal<PanelId | null>(null);
-  /** El menú de celular (≤ 960 px) está abierto. */
+  /** El menú de celular (≤ 1240 px) está abierto. */
   protected readonly mobileOpen = signal(false);
   /** La barra está escondida porque se bajó por la página (solo con `ShellHost.autoHide`). */
   protected readonly hidden = signal(false);
@@ -152,7 +159,7 @@ export class Navbar {
     });
 
     if (typeof matchMedia === "function") {
-      // Por encima de 960 px el menú de celular se esconde, y por debajo, los botones
+      // Por encima de 1240 px el menú de celular se esconde, y por debajo, los botones
       // de los desplegables: lo que quede sin botón se cierra.
       this.onMediaChange(WIDE_QUERY, (wide) => {
         if (wide) {

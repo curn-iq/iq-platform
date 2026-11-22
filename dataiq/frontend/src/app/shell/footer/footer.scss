@@ -44,15 +44,48 @@ a {
   gap: 40px;
 }
 
+// La columna de la marca es un contenedor: con 344 px o más cabe el imagotipo horizontal (isotipo de
+// 96 px, 12 px de separación y logotipo de 236 px); con menos, el compacto de 230 px. Las tres
+// imágenes llevan `loading="lazy"`: así el navegador no descarga la versión oculta con `display: none`.
+.brand {
+  container-type: inline-size;
+}
+
 .brand-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: var(--color-surface);
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
+  gap: 12px;
+}
+
+.brand-link img {
+  height: auto;
+}
+
+// Por defecto, el compacto; el horizontal se muestra cuando la columna es ancha (abajo).
+.isotipo {
+  display: none;
+  width: 96px;
+}
+
+.logotipo {
+  display: none;
+  width: 236px;
+}
+
+.compacto {
+  display: block;
+  width: 230px;
+}
+
+@container (min-width: 344px) {
+  .isotipo,
+  .logotipo {
+    display: block;
+  }
+
+  .compacto {
+    display: none;
+  }
 }
 
 .brand p {
