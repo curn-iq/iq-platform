@@ -186,7 +186,8 @@ ChatGPT y Claude al mismo prompt.
   técnica de la que se habla; la acción del visor y las preguntas sugeridas
   (`app/domain/tutor.py`)
 - [x] Una llamada al modelo con el prompt `TUTOR`, temperatura 0,3 y topes de
-  350 o 600 tokens; las preguntas anteriores con su respuesta
+  350 o 800 tokens (800 desde el 2026-11-21: con 600 una mesa entera se
+  cortaba); las preguntas anteriores con su respuesta
 - [x] La revisión frase por frase (`app/domain/review.py`): la mesa de Mayo
   (instrumento, objeto inventado, número, zona, cuántos objetos), tiempos
   quirúrgicos, dosis y cuadrícula; el número de una lista numerada se corrige
