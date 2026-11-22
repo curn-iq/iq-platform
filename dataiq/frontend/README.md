@@ -645,9 +645,10 @@ El proyecto de Vercel `dataiq-frontend` (cuenta de Mauricio, plan Hobby) sirve
 la app como sitio estático en https://dataiq-frontend.vercel.app. El workflow
 [`dataiq-frontend.yml`](../../.github/workflows/dataiq-frontend.yml) corre el
 build, las pruebas y la revisión de los tipos en cada PR y, en cada push a
-`main` que toque el frontend, construye en GitHub Actions y publica con el CLI
-de Vercel. Vercel no la construye, porque el build lee `../../shared/design/`
-y `../../docs/privacidad.md`, que están fuera de esta carpeta.
+`main` que toque el frontend o lo que su build lee de fuera, construye en
+GitHub Actions y publica con el CLI de Vercel. Vercel no la construye, porque
+el build lee `../../shared/design/`, `../../shared/shell/` (la barra) y
+`../../docs/privacidad.md`, que están fuera de esta carpeta.
 
 - **Un solo origen** (`vercel.json`). El navegador pide todo a este dominio, y
   así la cookie de sesión llega a las APIs sin CORS:

@@ -11,6 +11,8 @@ on:
       # El build comprime los modelos de aquí (npm run models)
       - "simiq3d/models/glb/**"
       - "shared/design/**"
+      # La barra compartida: el build la lee por el enlace src/shared-shell
+      - "shared/shell/**"
       - ".github/workflows/simiq3d-frontend.yml"
   push:
     branches: [main]
@@ -18,6 +20,8 @@ on:
       - "simiq3d/frontend/**"
       - "simiq3d/models/glb/**"
       - "shared/design/**"
+      # La barra compartida: el build la lee por el enlace src/shared-shell
+      - "shared/shell/**"
       - ".github/workflows/simiq3d-frontend.yml"
 
 permissions:
@@ -64,7 +68,8 @@ jobs:
       - run: npm run build
       # El shell trae la app con la ruta completa (/simiq3d/…), así que se
       # publica dentro de simiq3d/, con vercel.json (encabezados y rutas) al lado.
-      # Vercel no la construye: el build lee ../../shared/design/ y ../models/.
+      # Vercel no la construye: el build lee ../../shared/ (design y shell) y
+      # ../models/.
       - name: Carpeta que se publica
         run: |
           mkdir -p "$RUNNER_TEMP/deploy/simiq3d"
