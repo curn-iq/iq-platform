@@ -10,6 +10,8 @@ on:
     paths:
       - "dataiq/frontend/**"
       - "shared/design/**"
+      # La barra compartida: el build la lee por el enlace src/shared-shell
+      - "shared/shell/**"
       # La página /politica-de-datos importa este documento en el build
       - "docs/privacidad.md"
       # Un cambio de rutas o esquemas del backend obliga a regenerar los tipos
@@ -20,6 +22,8 @@ on:
     paths:
       - "dataiq/frontend/**"
       - "shared/design/**"
+      # La barra compartida: el build la lee por el enlace src/shared-shell
+      - "shared/shell/**"
       - "docs/privacidad.md"
       - ".github/workflows/dataiq-frontend.yml"
 
@@ -89,7 +93,7 @@ jobs:
       - run: npm ci
       - run: npx ng build
       # Se publica lo construido, con vercel.json (rutas y encabezados) al lado.
-      # Vercel no lo construye: el build lee ../../shared/design/ y
+      # Vercel no lo construye: el build lee ../../shared/ (design y shell) y
       # ../../docs/privacidad.md, que están fuera de esta carpeta.
       - name: Carpeta que se publica
         run: |
