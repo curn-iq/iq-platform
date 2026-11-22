@@ -17,7 +17,7 @@ describe('HomeProducts', () => {
     catalog?: { techniques: unknown[]; specialties: unknown[] },
   ): Promise<void> {
     vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: query.includes('min-width') ? !!options.desktop : !!options.reduced,
+      matches: query.includes('width >') ? !!options.desktop : !!options.reduced,
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
     }));
