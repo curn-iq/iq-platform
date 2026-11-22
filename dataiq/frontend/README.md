@@ -457,12 +457,12 @@ las toma por una ruta desconocida y abre «No encontrada».
   (ver «Salir», abajo). «Por revisar» lleva junto a su nombre la cifra de las versiones de
   otras personas que esperan revisión, en el panel y en el menú de celular (`PendingReviews`, ver
   «Gestión del revisor»; Resuelto 57). Mis borradores e Instrumental no llevan cifra todavía.
-- **Celular (≤ 960 px):** los cuatro botones se esconden y aparece el botón de
+- **Celular (≤ 1240 px):** los cuatro botones se esconden y aparece el botón de
   menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
   (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
-  ventana vuelve a pasar de 960 px; abrirlo cierra el desplegable de escritorio y
-  al revés, y si la ventana baja de 961 px con un desplegable abierto, este se
+  ventana vuelve a pasar de 1240 px; abrirlo cierra el desplegable de escritorio y
+  al revés, y si la ventana baja de 1241 px con un desplegable abierto, este se
   cierra. Tras los cuatro grupos va «Nosotros», una fila simple de la misma altura
   y con el mismo filete que el resumen de un grupo, sin flecha y con `aria-current`
   en su página. Al

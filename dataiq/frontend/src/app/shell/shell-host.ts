@@ -45,7 +45,7 @@ function dataiqShellHost(): ShellHost {
   };
 
   return {
-    brand: { label: 'IQ Platform', target: { route: '/' } },
+    brand: { label: 'IQ Platform', target: { route: '/' }, logo: '/marca/logotipo.svg' },
     currentMenu: computed<NavMenuId | null>(() => {
       const path = url().split(/[?#]/)[0];
       return path === CATALOG_ROUTE || path.startsWith(`${CATALOG_ROUTE}/`) ? 'specialties' : null;

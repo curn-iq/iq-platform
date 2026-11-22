@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 /**
- * La marca de IQ Platform: un cuadrado de 30 px y 8 px de radio en `marca` con
- * rejilla blanca. Va en la barra y en el pie, junto al nombre. Es decorativa: el
- * nombre siempre está al lado, en texto.
+ * La mesa de Mayo de IQ Platform (isotipo de nivel 2), a 44 px: bandeja, paño, poste y base con
+ * sus cuatro ruedas, en SVG en línea con los trazos del imagotipo compacto. Va en la barra
+ * compartida, junto al nombre. Es decorativa: el enlace de la marca lleva su `aria-label`.
  */
 @Component({
   selector: "app-brand-mark",

@@ -6,6 +6,7 @@ import { SessionService } from '../../core/session/session.service';
 import { provideRepositoryTesting, TEST_API_BASE } from '../../data/testing';
 import type { Role } from '../../domain/role';
 import { Navbar } from './navbar';
+import { SHELL_HOST, type ShellBrand } from '../../../shared-shell/shell-host';
 import { provideShellHost } from '../shell-host';
 import { handledByRouter } from '../testing';
 
@@ -28,7 +29,7 @@ describe('Navbar', () => {
 
   /** Quienes escuchan cada consulta de `matchMedia`, que jsdom no trae. */
   let mediaListeners: Map<string, ((event: { matches: boolean }) => void)[]>;
-  /** Las consultas que se cumplen (ninguna al empezar: una ventana entre 761 y 960 px). */
+  /** Las consultas que se cumplen (ninguna al empezar: una ventana entre 761 y 1240 px). */
   let mediaMatches: Set<string>;
   const listeners = (query: string) => mediaListeners.get(query) ?? [];
   /** La ventana cambia de ancho y `query` pasa a cumplirse o a dejar de cumplirse. */
@@ -37,7 +38,7 @@ describe('Navbar', () => {
     else mediaMatches.delete(query);
     listeners(query).forEach((listener) => listener({ matches }));
   };
-  const WIDE = '(min-width: 961px)';
+  const WIDE = '(min-width: 1241px)';
   const COMPACT = '(max-width: 760px)';
   /** Una tecla sobre lo que tiene el foco; dice si se canceló lo que haría el navegador. */
   const press = (key: string, options: KeyboardEventInit = {}) => {
@@ -94,6 +95,53 @@ describe('Navbar', () => {
       Array.from(root().querySelectorAll('nav button')).map((b) => b.textContent!.trim()),
     ).toEqual(['Herramientas', 'Especialidades', '¿Por qué IQ Platform?', 'Ayuda']);
     expect(root().querySelector('nav')!.getAttribute('aria-label')).toBe('Principal');
+  });
+
+  describe('la marca', () => {
+    const name = () => root().querySelector('.brand-name')!;
+    /** La barra con otra marca: el host es un singleton de la prueba. */
+    const withBrand = async (brand: ShellBrand) => {
+      (TestBed.inject(SHELL_HOST) as { brand: ShellBrand }).brand = brand;
+      fixture = TestBed.createComponent(Navbar);
+      await fixture.whenStable();
+    };
+
+    it('en DataIQ dibuja el nombre como imagen de 134 × 21 px, sin entrada animada', () => {
+      const image = name().querySelector('img')!;
+
+      expect(image.getAttribute('src')).toBe('/marca/logotipo.svg');
+      expect(image.getAttribute('width')).toBe('134');
+      expect(image.getAttribute('height')).toBe('21');
+      expect(image.getAttribute('alt')).toBe('');
+      expect(name().textContent!.trim()).toBe('');
+      expect(root().querySelector('.brand')!.classList).not.toContain('entrance');
+    });
+
+    it('la mesa va en SVG, decorativa, antes del nombre', () => {
+      const brand = root().querySelector('.brand')!;
+
+      expect(brand.firstElementChild!.tagName).toBe('APP-BRAND-MARK');
+      expect(brand.firstElementChild!.getAttribute('aria-hidden')).toBe('true');
+      expect(brand.children[1]).toBe(name());
+    });
+
+    it('sin logo muestra el nombre como texto y conserva el aria-label', async () => {
+      await withBrand({ label: 'SIMIQ3D', target: { route: '/' } });
+
+      expect(name().querySelector('img')).toBeNull();
+      expect(name().textContent!.trim()).toBe('SIMIQ3D');
+      expect(root().querySelector('.brand')!.getAttribute('aria-label')).toBe('SIMIQ3D, inicio');
+    });
+
+    it('la clase entrance solo está cuando la app la pide', async () => {
+      await withBrand({ label: 'SIMIQ3D', target: { route: '/' }, entrance: true });
+
+      expect(root().querySelector('.brand')!.classList).toContain('entrance');
+
+      await withBrand({ label: 'SIMIQ3D', target: { route: '/' }, entrance: false });
+
+      expect(root().querySelector('.brand')!.classList).not.toContain('entrance');
+    });
   });
 
   it('empieza con todo cerrado', () => {
@@ -408,7 +456,7 @@ describe('Navbar', () => {
     });
 
     it('Escape lo cierra y devuelve el foco al botón', async () => {
-      // El botón solo se ve por debajo de 960 px, y jsdom no da el foco a lo que no se ve.
+      // El botón solo se ve hasta 1240 px, y jsdom no da el foco a lo que no se ve.
       mobileButton().style.display = 'inline-grid';
       mobileButton().click();
       await settle();
@@ -468,7 +516,7 @@ describe('Navbar', () => {
       expect(mobileMenu()).toBeNull();
     });
 
-    it('si la ventana se ensancha por encima de 960 px, el menú se cierra', async () => {
+    it('si la ventana se ensancha por encima de 1240 px, el menú se cierra', async () => {
       mobileButton().click();
       await settle();
 
@@ -626,7 +674,7 @@ describe('Navbar', () => {
       expect(pane().style.marginTop).toBe('calc(var(--size-navbar-mobile) - 4px)');
     });
 
-    it('angostar la ventana por debajo de 961 px no lo cierra: «Mi cuenta» sigue en la barra', async () => {
+    it('angostar la ventana por debajo de 1241 px no lo cierra: «Mi cuenta» sigue en la barra', async () => {
       await loadSession('contributor');
       mouseClick(account()!);
       await vi.waitFor(() => expect(accountMenu()).not.toBeNull());

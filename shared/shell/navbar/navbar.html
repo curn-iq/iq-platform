@@ -1,11 +1,16 @@
 <header class="bar">
   <a
     class="brand"
+    [class.entrance]="shell.brand.entrance"
     [appNavLink]="shell.brand.target"
     [attr.aria-label]="shell.brand.label + ', inicio'"
   >
     <app-brand-mark />
-    {{ shell.brand.label }}
+    <span class="brand-name">
+      @if (shell.brand.logo; as logo) {
+      <img [src]="logo" width="134" height="21" alt="" />
+      } @else { {{ shell.brand.label }} }
+    </span>
   </a>
   <nav aria-label="Principal">
     @for (menu of menus; track menu.id) {

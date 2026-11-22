@@ -33,16 +33,88 @@
   }
 }
 
+// La marca: la mesa y el nombre (imagen o texto). Ver «Marca» en DESIGN.md.
 .brand {
+  --brand-gap: 8px;
+
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--brand-gap);
   color: inherit;
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.02em;
   text-decoration: none;
   white-space: nowrap;
+}
+
+// `inline-block` para que el nombre acepte `transform` en la animación de entrada.
+.brand-name {
+  display: inline-block;
+
+  img {
+    display: block;
+    width: 134px;
+    height: auto;
+  }
+}
+
+// Entrada de la mesa (solo si la app la pide: `ShellBrand.entrance`): llega desde el borde
+// izquierdo de la pantalla, choca con el nombre en el 48 % (480 ms), rebota y queda en su lugar.
+// Solo `transform`, una vez por carga de la app (la barra no se vuelve a crear al navegar).
+.brand.entrance app-brand-mark {
+  animation: brand-enter 1000ms both;
+}
+
+.brand.entrance .brand-name {
+  animation: brand-hit 1000ms both;
+}
+
+@keyframes brand-enter {
+  0% {
+    // El borde derecho de la mesa queda justo en el borde izquierdo de la pantalla
+    transform: translateX(calc(-1 * (var(--space-gutter) + 100%)));
+    // acelera hacia el choque
+    animation-timing-function: cubic-bezier(0.45, 0, 0.9, 0.6);
+  }
+  48% {
+    // contacto: la separación más 4 px de aire interno del SVG a la derecha
+    transform: translateX(calc(var(--brand-gap) + 4px));
+    animation-timing-function: var(--ease-enter);
+  }
+  72% {
+    // rebote
+    transform: translateX(-7px);
+    animation-timing-function: ease-in-out;
+  }
+  88% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+// Las letras no se mueven hasta que la mesa las toca
+@keyframes brand-hit {
+  0%,
+  48% {
+    transform: none;
+  }
+  56% {
+    transform: translateX(3px);
+  }
+  74%,
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand.entrance app-brand-mark,
+  .brand.entrance .brand-name {
+    animation: none;
+  }
 }
 
 nav {
@@ -148,9 +220,21 @@ nav {
   }
 }
 
-// Por debajo de 960 px los cuatro menús ya no caben en una línea y pasan al
-// botón de menú y su panel a pantalla completa.
-@media (max-width: 960px) {
+// Entre 1241 y 1439 px la barra se aprieta para que quepan los cuatro menús, Ingresar y Crear cuenta
+// con el nombre dibujado.
+@media (min-width: 1241px) and (max-width: 1439px) {
+  .bar {
+    gap: 20px;
+  }
+
+  .item {
+    padding: 0 10px;
+  }
+}
+
+// Hasta 1240 px los cuatro menús ya no caben en una línea y pasan al botón de menú y su panel a
+// pantalla completa.
+@media (max-width: 1240px) {
   nav {
     display: none;
   }
@@ -175,5 +259,28 @@ nav {
   .bar {
     gap: 12px;
     height: var(--size-navbar-mobile);
+  }
+}
+
+// Marca en celular: mesa de 40 px, separación de 6 px y nombre dibujado de 104 px.
+@media (max-width: 430px) {
+  .brand {
+    --brand-gap: 6px;
+  }
+
+  .brand app-brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-name img {
+    width: 104px;
+  }
+}
+
+// Con menos de 360 px queda solo la mesa; el enlace conserva su `aria-label`.
+@media (max-width: 359px) {
+  .brand-name {
+    display: none;
   }
 }
