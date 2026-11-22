@@ -306,10 +306,11 @@ fetch('/api/dataiq/auth/login', {
 El proyecto de Vercel `simiq3d-frontend` (cuenta de Mauricio, plan Hobby)
 sirve la app como sitio estático. El workflow
 [`simiq3d-frontend.yml`](../../.github/workflows/simiq3d-frontend.yml) corre
-el build y las pruebas en cada PR y, en cada push a `main`, construye en
-GitHub Actions y publica con el CLI de Vercel. Vercel no la construye, porque
-el build lee `../../shared/design/` y `../models/glb/`, que están fuera de
-esta carpeta.
+el build y las pruebas en cada PR y, en cada push a `main` que toque el
+frontend o lo que su build lee de fuera, construye en GitHub Actions y publica
+con el CLI de Vercel. Vercel no la construye, porque el build lee
+`../../shared/design/`, `../../shared/shell/` (la barra) y `../models/glb/`,
+que están fuera de esta carpeta.
 
 - **La ruta completa.** El proyecto del shell trae la app con un rewrite
   `/simiq3d/:path*` hacia `https://simiq3d-frontend.vercel.app/simiq3d/:path*`
