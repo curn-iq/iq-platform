@@ -21,12 +21,22 @@ export type Block =
 const BULLET = /^\s*[-*•]\s+(.*)$/;
 const NUMBERED = /^\s*(\d+)[.)]\s+(.*)$/;
 
-/** Los tramos de una línea: `**así**` es negrita. Un `**` sin cerrar se deja como está. */
+const BOLD = /\*\*(.+?)\*\*/g;
+
+/**
+ * Un `**` que quedó sin pareja y va pegado a una palabra es una negrita que el modelo
+ * abrió y no cerró (por ejemplo, `- **1. La Pinza de Allis va…`): se quita, para que no
+ * se vean los asteriscos. Uno entre espacios (`3 ** 2`) no es una marca y se deja.
+ */
+const unpaired = (text: string) => text.replace(/(?<=\S)\*\*|\*\*(?=\S)/g, '');
+
+/** Los tramos de una línea: `**así**` es negrita. */
 export function spansOf(line: string): Span[] {
   const spans: Span[] = [];
-  const parts = line.split(/\*\*(.+?)\*\*/g);
-  parts.forEach((text, i) => {
-    if (text) spans.push({ text, bold: i % 2 === 1 });
+  line.split(BOLD).forEach((part, i) => {
+    const bold = i % 2 === 1;
+    const text = bold ? part : unpaired(part);
+    if (text) spans.push({ text, bold });
   });
   return spans;
 }
@@ -73,7 +83,9 @@ export function blocksOf(text: string): Block[] {
 /** El texto sin marcas, en una línea: para la última respuesta encima del campo (celular). */
 export function plainText(text: string): string {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .split('\n')
+    .map((line) => unpaired(line.replace(BOLD, '$1')))
+    .join('\n')
     .replace(/^\s*(?:[-*•]|\d+[.)])\s+/gm, '')
     .replace(/\s*\n\s*/g, ' ')
     .trim();
