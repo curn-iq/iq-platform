@@ -105,9 +105,11 @@ MAX_PREVIOUS_REPLY = 600
 
 # Cuánto puede escribir el modelo: una respuesta normal cabe en 350 tokens
 # (unos 15 s a 24 tokens/s en el Servidor PC2); comparar o explicar la mesa
-# pide más.
+# pide más. Una mesa entera de 13 objetos, con su zona, sus vecinos y su
+# función, se cortaba a la mitad con 600 y antes con 350 («Muéstrame la mesa de
+# Mayo de …», recorrido en producción del 2026-11-21): por eso 800.
 MAX_TOKENS = 350
-MAX_TOKENS_LONG = 600
+MAX_TOKENS_LONG = 800
 
 _TABLE = re.compile(
     r"\b(?:mesa|instrumental|instrumentos|objetos|piezas|lleva|llevan|"
@@ -463,10 +465,15 @@ def data_of(focus: Focus, question: str, catalog: Catalog, scene: Scene) -> str:
 
 
 def max_tokens(focus: Focus, question: str, scene: Scene) -> int:
+    """El tope largo cuando la respuesta puede recorrer una mesa entera: si se
+    comparan técnicas, se abre una técnica o se pide su lista, se pide «todo» o
+    se pregunta por la mesa."""
+    asked = normalize(question)
     long = (
         len(focus.techniques) >= 2
-        or scene.action == ChatAction.list_instruments
-        or "todo" in normalize(question).split()
+        or scene.action in (ChatAction.show_technique, ChatAction.list_instruments)
+        or "todo" in asked.split()
+        or bool(_TABLE.search(asked))
     )
     return MAX_TOKENS_LONG if long else MAX_TOKENS
 

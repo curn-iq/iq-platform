@@ -2,12 +2,15 @@ from app.domain.chat import ChatAction, ClinicalField
 from app.domain.focus import focus_of
 from app.domain.requests import RequestKind, Turn
 from app.domain.tutor import (
+    MAX_TOKENS,
+    MAX_TOKENS_LONG,
     NOTHING_NAMED,
     TIMES_ASKED,
     TUTOR,
     UNAVAILABLE,
     _as_steps,
     data_of,
+    max_tokens,
     messages,
     requests_of,
     retry_messages,
@@ -86,6 +89,20 @@ def test_a_technique_named_opens_with_the_datum_or_the_list_asked():
     )
     assert "lista numerada" in table.note
     assert shown.action == ChatAction.show_technique
+
+
+def test_showing_a_whole_table_gets_the_long_limit():
+    for question in (
+        "Muéstrame la mesa de Mayo de la Tiroidectomía",
+        "Muéstrame la mastectomía",
+        "¿Qué lleva la mesa de Colecistectomía?",
+        "Compara la colecistectomía con la mastectomía",
+    ):
+        focus, shown = scene(question)
+        assert max_tokens(focus, question, shown) == MAX_TOKENS_LONG, question
+
+    focus, what = scene("¿Qué es la mastectomía?")
+    assert max_tokens(focus, "¿Qué es la mastectomía?", what) == MAX_TOKENS
 
 
 def test_talking_in_general_does_not_change_the_viewer():

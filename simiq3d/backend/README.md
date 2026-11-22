@@ -145,8 +145,9 @@ El diseño y su porqué: [`../README.md`](../README.md), «Chat».
    hace la escena), `<aviso>` (si se piden tiempos quirúrgicos, o si la
    pregunta no nombra nada de DataIQ y puede no ser del tema) y la pregunta.
 4. **Una llamada al modelo**, con temperatura `LLM_TEMPERATURE` (0,3) y un tope
-   de `MAX_TOKENS` (350) o `MAX_TOKENS_LONG` (600, para comparar, la mesa
-   entera o «todo»), y de `LLM_DEADLINE` segundos para la respuesta entera.
+   de `MAX_TOKENS` (350) o `MAX_TOKENS_LONG` (800, para comparar, abrir una
+   técnica, pedir su lista o «todo», o preguntar por la mesa), y de `LLM_DEADLINE` segundos
+   para la respuesta entera.
    Con `POST /chat/stream` (`TutorAgent.stream`) la llamada lleva `"stream":
    true` y cada parte pasa por la revisión al llegar (`Reviewer`, la misma de
    `review` pero por partes); si el filtro respondiera sin streaming, el texto
@@ -192,7 +193,7 @@ está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.m
   | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
   | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
   | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
-  | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `30`, `30`, `600` (los valores por defecto) |
+  | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `60`, `30`, `600` (los valores por defecto) |
   | `LLM_TEMPERATURE` | `0.3` (el valor por defecto) |
 
   Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
