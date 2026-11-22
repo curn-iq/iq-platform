@@ -147,6 +147,11 @@
   /* La marca de IQ Platform (el logo): verde aunque un módulo cambie su acento */
   --color-brand: var(--marca);
   --color-brand-soft: var(--marca-claro);
+  /* El trazo y las ruedas de la mesa de la marca; no usa `--color-text-muted`, que SIMIQ3D tiñe de lila */
+  --color-brand-line: var(--tinta-2);
+  /* La Q dibujada del nombre en texto (`ShellBrand.drawnQ`): de un color a otro; sin tema, plana en el acento */
+  --color-brand-q-start: var(--color-accent);
+  --color-brand-q-end: var(--color-accent);
   /* El foco es siempre el acento: un tema que lo cambie lo arrastra */
   --color-focus: var(--color-accent);
   --color-dark: var(--noche);

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
-import { BrandMark } from '../../shared/ui/brand-mark/brand-mark';
 import { NavLink } from '../navbar/nav-link';
 import { NAV_LINKS, NAV_MENUS, NavMenuId, NavOption, specialtyTarget } from '../navbar/nav-menus';
 import { Specialties } from '../specialties';
@@ -23,13 +22,13 @@ function footerOptions(id: NavMenuId): readonly NavOption[] {
 }
 
 /**
- * El pie oscuro: la marca con su frase y cuatro columnas, las mismas de la barra
+ * El pie oscuro: el imagotipo con su frase y cuatro columnas, las mismas de la barra
  * (Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda). Ver «Pie» en
  * «Navigation» de `DESIGN.md`.
  */
 @Component({
   selector: 'app-footer',
-  imports: [BrandMark, NavLink, RouterLink],
+  imports: [NavLink, RouterLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

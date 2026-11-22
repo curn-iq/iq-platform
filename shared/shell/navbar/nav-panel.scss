@@ -16,8 +16,8 @@
   animation: drop 0.4s var(--ease-enter);
 }
 
-// Por debajo de 960 px los menús pasan al panel del celular.
-@media (max-width: 960px) {
+// Hasta 1240 px los menús pasan al panel del celular.
+@media (width <= 1240px) {
   :host {
     display: none;
   }

@@ -50,11 +50,21 @@ describe('Footer', () => {
   // Algunas pruebas no responden las especialidades.
   afterEach(() => http.match(() => true));
 
-  it('lleva la marca al inicio con su frase', () => {
+  it('lleva el imagotipo al inicio con su frase', () => {
     const brand = root().querySelector<HTMLAnchorElement>('.brand-link')!;
 
     expect(brand.getAttribute('href')).toBe('/');
-    expect(brand.textContent!.trim()).toBe('IQ Platform');
+    expect(brand.getAttribute('aria-label')).toBe('IQ Platform, inicio');
+    // El nombre va dibujado: las imágenes son decorativas y el enlace no tiene texto propio
+    expect(brand.textContent!.trim()).toBe('');
+    const images = Array.from(brand.querySelectorAll('img'));
+    expect(
+      images.map((img) => [img.className, img.getAttribute('src'), img.getAttribute('alt')]),
+    ).toEqual([
+      ['isotipo', '/marca/isotipo-nivel-1-oscuro.svg', ''],
+      ['logotipo', '/marca/logotipo-oscuro.svg', ''],
+      ['compacto', '/marca/imagotipo-compacto-oscuro.svg', ''],
+    ]);
     expect(root().querySelector('.brand p')!.textContent!.trim()).toBe(
       'Herramientas para estudiar la distribución del instrumental quirúrgico, técnica por técnica.',
     );

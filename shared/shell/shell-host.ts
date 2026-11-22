@@ -17,10 +17,29 @@ export interface SpecialtyEntry {
   readonly techniques: readonly string[];
 }
 
-/** La marca de la barra: su nombre y a dónde lleva. */
+/**
+ * La marca de la barra: la mesa de Mayo, su nombre y a dónde lleva. La mesa la dibuja la barra; lo
+ * que cambia entre módulos es el nombre y si la mesa entra animada.
+ */
 export interface ShellBrand {
+  /** El nombre de la app: texto del nombre sin `logo` y `aria-label` del enlace («…, inicio»). */
   readonly label: string;
   readonly target: NavTarget;
+  /**
+   * El nombre dibujado: la ruta de una imagen (134 × 21 px, decorativa). Sin él se muestra
+   * `label` como texto.
+   */
+  readonly logo?: string;
+  /**
+   * La «Q» de `label` (si el nombre va en texto) se dibuja con la Q del logotipo, con un degradado
+   * de `--color-brand-q-start` a `--color-brand-q-end`. Sin `logo` y con una «Q» en el nombre.
+   */
+  readonly drawnQ?: boolean;
+  /**
+   * La mesa entra desde el borde izquierdo de la pantalla, choca con el nombre, rebota y queda en
+   * su lugar, una vez por carga de la app. Con movimiento reducido no se anima.
+   */
+  readonly entrance?: boolean;
 }
 
 /**
@@ -29,7 +48,7 @@ export interface ShellBrand {
  * (`provide(SHELL_HOST, …)`). Lo único que cambia entre módulos es esto y los colores del tema.
  */
 export interface ShellHost {
-  /** La marca de la barra (en DataIQ, «IQ Platform»; en SIMIQ3D, «SIMIQ3D»). */
+  /** La marca de la barra (en DataIQ, «IQ Platform» dibujado; en SIMIQ3D, «SIMIQ3D» en texto y con entrada animada). */
   readonly brand: ShellBrand;
   /** El menú de la barra que corresponde a donde se está, si hay uno. */
   readonly currentMenu: Signal<NavMenuId | null>;
