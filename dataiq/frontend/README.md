@@ -462,7 +462,7 @@ las toma por una ruta desconocida y abre «No encontrada».
   plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
   (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
   ventana vuelve a pasar de 1240 px; abrirlo cierra el desplegable de escritorio y
-  al revés, y si la ventana baja de 1241 px con un desplegable abierto, este se
+  al revés, y si la ventana llega a 1240 px o menos con un desplegable abierto, este se
   cierra. Tras los cuatro grupos va «Nosotros», una fila simple de la misma altura
   y con el mismo filete que el resumen de un grupo, sin flecha y con `aria-current`
   en su página. Al

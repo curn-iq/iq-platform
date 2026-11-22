@@ -37,7 +37,7 @@ import {
 type PanelId = NavMenuId | "account";
 
 /** Por encima de este ancho la barra muestra sus cuatro menús; por debajo, el menú de celular. */
-const WIDE_QUERY = "(min-width: 1241px)";
+const WIDE_QUERY = "(width > 1240px)";
 /** Hasta este ancho la barra mide `--size-navbar-mobile` en vez de `--size-navbar` (ver `navbar.scss`). */
 const COMPACT_QUERY = "(max-width: 760px)";
 
