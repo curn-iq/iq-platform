@@ -45,7 +45,8 @@ a {
 }
 
 // La columna de la marca es un contenedor: con 344 px o más cabe el imagotipo horizontal (isotipo de
-// 96 px, 12 px de separación y logotipo de 236 px); con menos, el compacto de 230 px.
+// 96 px, 12 px de separación y logotipo de 236 px); con menos, el compacto de 230 px. Las tres
+// imágenes llevan `loading="lazy"`: así el navegador no descarga la versión oculta con `display: none`.
 .brand {
   container-type: inline-size;
 }

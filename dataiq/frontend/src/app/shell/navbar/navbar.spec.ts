@@ -38,7 +38,7 @@ describe('Navbar', () => {
     else mediaMatches.delete(query);
     listeners(query).forEach((listener) => listener({ matches }));
   };
-  const WIDE = '(min-width: 1241px)';
+  const WIDE = '(width > 1240px)';
   const COMPACT = '(max-width: 760px)';
   /** Una tecla sobre lo que tiene el foco; dice si se canceló lo que haría el navegador. */
   const press = (key: string, options: KeyboardEventInit = {}) => {
@@ -697,7 +697,7 @@ describe('Navbar', () => {
       expect(pane().style.marginTop).toBe('calc(var(--size-navbar-mobile) - 4px)');
     });
 
-    it('angostar la ventana por debajo de 1241 px no lo cierra: «Mi cuenta» sigue en la barra', async () => {
+    it('angostar la ventana a 1240 px o menos no lo cierra: «Mi cuenta» sigue en la barra', async () => {
       await loadSession('contributor');
       mouseClick(account()!);
       await vi.waitFor(() => expect(accountMenu()).not.toBeNull());

@@ -220,9 +220,10 @@ nav {
   }
 }
 
-// Entre 1241 y 1439 px la barra se aprieta para que quepan los cuatro menús, Ingresar y Crear cuenta
-// con el nombre dibujado.
-@media (min-width: 1241px) and (max-width: 1439px) {
+// Por encima de 1240 px y por debajo de 1440 px la barra se aprieta para que quepan los cuatro
+// menús, Ingresar y Crear cuenta con el nombre dibujado. Con la sintaxis de rangos ningún ancho
+// fraccionario (zoom o escalado de pantalla) queda entre dos reglas.
+@media (1240px < width < 1440px) {
   .bar {
     gap: 20px;
   }
@@ -234,7 +235,7 @@ nav {
 
 // Hasta 1240 px los cuatro menús ya no caben en una línea y pasan al botón de menú y su panel a
 // pantalla completa.
-@media (max-width: 1240px) {
+@media (width <= 1240px) {
   nav {
     display: none;
   }
