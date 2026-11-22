@@ -44,7 +44,7 @@ function simiq3dShellHost(): ShellHost {
   };
 
   return {
-    brand: { label: 'SIMIQ3D', target: { route: '/' }, entrance: true },
+    brand: { label: 'SIMIQ3D', target: { route: '/' }, entrance: true, drawnQ: true },
     // SIMIQ3D es una de las herramientas
     currentMenu: signal<NavMenuId | null>('tools').asReadonly(),
     currentUrl: signal('').asReadonly(),

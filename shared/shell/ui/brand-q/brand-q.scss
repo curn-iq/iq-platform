@@ -1,0 +1,20 @@
+// La Q del logotipo (trazos 1 y 2 de `logotipo.svg`, sin redibujar) dentro de un nombre en texto. Es
+// una máscara (`q.svg`) sobre un degradado de `--color-brand-q-start` a `--color-brand-q-end`: el
+// trazo queda fuera del JavaScript, que tiene poco margen. Se escala con el tamaño de letra del
+// nombre: el recuadro cubre la Q con su cola (0,878 em de ancho por 0,748 em de alto, con la base de
+// la Q 0,029 em bajo la línea del texto) y ocupa lo que la Q de Host Grotesk con la cola metida 0,05 em bajo el «3».
+
+:host {
+  display: inline-block;
+  width: 0.878em;
+  height: 0.748em;
+  margin-right: -0.05em;
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-q-start),
+    var(--color-brand-q-end)
+  );
+  vertical-align: -0.029em;
+  -webkit-mask: url("./q.svg") center / 100% 100% no-repeat;
+  mask: url("./q.svg") center / 100% 100% no-repeat;
+}

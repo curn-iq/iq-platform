@@ -19,8 +19,9 @@ describe('el adaptador de la barra compartida en SIMIQ3D', () => {
     expect(host().currentMenu()).toBe('tools');
   });
 
-  it('la mesa entra animada y el nombre sigue en texto, sin imagen', () => {
+  it('la mesa entra animada y el nombre sigue en texto, con la Q dibujada', () => {
     expect(host().brand.entrance).toBe(true);
+    expect(host().brand.drawnQ).toBe(true);
     expect(host().brand.logo).toBeUndefined();
   });
 
