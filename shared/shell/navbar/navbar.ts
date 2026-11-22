@@ -36,7 +36,7 @@ import {
 type PanelId = NavMenuId | "account";
 
 /** Por encima de este ancho la barra muestra sus cuatro menús; por debajo, el menú de celular. */
-const WIDE_QUERY = "(min-width: 961px)";
+const WIDE_QUERY = "(min-width: 1241px)";
 /** Hasta este ancho la barra mide `--size-navbar-mobile` en vez de `--size-navbar` (ver `navbar.scss`). */
 const COMPACT_QUERY = "(max-width: 760px)";
 
@@ -81,7 +81,7 @@ export class Navbar {
   protected readonly links = NAV_LINKS;
   /** El panel abierto, si hay uno. */
   protected readonly open = signal<PanelId | null>(null);
-  /** El menú de celular (≤ 960 px) está abierto. */
+  /** El menú de celular (≤ 1240 px) está abierto. */
   protected readonly mobileOpen = signal(false);
   /** La barra está escondida porque se bajó por la página (solo con `ShellHost.autoHide`). */
   protected readonly hidden = signal(false);
@@ -152,7 +152,7 @@ export class Navbar {
     });
 
     if (typeof matchMedia === "function") {
-      // Por encima de 960 px el menú de celular se esconde, y por debajo, los botones
+      // Por encima de 1240 px el menú de celular se esconde, y por debajo, los botones
       // de los desplegables: lo que quede sin botón se cierra.
       this.onMediaChange(WIDE_QUERY, (wide) => {
         if (wide) {
