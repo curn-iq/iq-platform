@@ -77,7 +77,8 @@ proyecto de grado). Se marca cada pieza al terminarla.
 - [ ] Frontend de SIVRI, servido bajo `/sivri/` en el mismo origen que el
   shell (rewrite del proyecto del shell hacia el de SIVRI). Es el destino de
   «Comprobar con la cámara» en todas las técnicas de DataIQ, así que dice qué
-  mesas valida (la de Mayo de las cinco técnicas de Cirugía General)
+  mesas valida (la de Mayo de las cinco técnicas de Cirugía General). Avance en
+  [`checklist-frontend.md`](checklist-frontend.md) (fase 1)
 
 ## 4. Demostración
 
