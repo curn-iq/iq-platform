@@ -92,6 +92,16 @@ class TechniqueResult:
     objects: list[ObjectResult]
     extras: list[ObjectResult]
 
+    @property
+    def likeness(self) -> float:
+        """Cuánto se parece la mesa a esta técnica: lo que está en su lugar sobre
+        lo que la técnica espera más los instrumentos que sobran para ella. Sin
+        descontar lo que sobra, una técnica con menos piezas parecía tan buena
+        como la armada (Mastectomía 9 de 10 frente a Tiroidectomía 12 de 13 en
+        una Tiroidectomía bien armada, 2026-11-23)."""
+        total = self.expected + len(self.extras)
+        return self.in_place / total if total else 0.0
+
 
 @dataclass(frozen=True)
 class Recognition:
@@ -284,16 +294,17 @@ def recognize(
     placed: list[PlacedDetection],
     settings: ValidationSettings = ValidationSettings(),
 ) -> Recognition:
-    """Reconoce de qué técnica es la mesa: la de mayor porcentaje, o las dos más
-    altas si quedan muy cerca. El estudiante no elige la técnica."""
+    """Reconoce de qué técnica es la mesa: la que más se parece (`likeness`), o
+    las dos que más se parecen si quedan muy cerca. El estudiante no elige la
+    técnica. El porcentaje que se muestra sigue siendo el de su propia mesa."""
     ranking = sorted(
         (validate_technique(t, classes, placed, settings) for t in techniques),
-        key=lambda r: (-r.percent, -r.in_place, r.name),
+        key=lambda r: (-r.likeness, -r.percent, -r.in_place, r.name),
     )
     shown = ranking[:1]
     if (
         len(ranking) > 1
-        and ranking[0].percent - ranking[1].percent <= settings.close_gap
+        and ranking[0].likeness - ranking[1].likeness <= settings.close_gap
     ):
         shown = ranking[:2]
     return Recognition(ranking, shown)

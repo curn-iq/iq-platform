@@ -65,7 +65,15 @@ problemas, que se corrigieron:
 
 El 2026-11-21 Mauricio Lugo decidió separar la pinza de disección con garra y
 la sin garra en dos clases, para que el detector las distinga, y asignar a cada
-instrumento la celda donde cae su posición medida.
+instrumento la celda donde cae su posición medida. Al probar el frontend con
+las fotos «Bien armada» aparecían indicaciones de mover piezas bien puestas,
+porque las celdas salían de una sola foto por técnica y el programa de IQ no
+armó la mesa igual en cada ronda. El 2026-11-23 Mauricio Lugo decidió
+recalcularlas con las fotos «Bien armada» de las tres rondas: cada instrumento
+suma las celdas vecinas donde también se puso, y con las cajas anotadas las
+indicaciones falsas de mover bajaron de 49 a 18 (`sivri/backend/README.md`).
+Ese mismo día se corrigió el reconocimiento de la técnica, que ahora descuenta
+los instrumentos que sobran para cada una.
 
 ### Detector
 
