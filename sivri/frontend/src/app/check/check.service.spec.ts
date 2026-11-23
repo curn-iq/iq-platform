@@ -247,6 +247,16 @@ describe('CheckService', () => {
       expect(service.flow().error).toBe('unsupported-technique');
     });
 
+    it('después de una técnica fuera del alcance, vuelve a intentar sin pedirla', async () => {
+      await started('t-9');
+      sockets[0].hangUp(4404);
+      service.restart();
+      await settle();
+      sockets[1].open();
+      expect(service.flow().error).toBeNull();
+      expect(sockets[1].url).not.toContain('technique_id');
+    });
+
     it('si DataIQ responde 401 al pedir el token, la sesión terminó', async () => {
       tokens.get.mockRejectedValue(new HttpErrorResponse({ status: 401 }));
       service.setVideo(video);

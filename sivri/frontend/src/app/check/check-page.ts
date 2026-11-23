@@ -12,12 +12,14 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Layout } from '../core/layout/layout';
+import { ShellNavigation } from '../core/session/shell';
 import { moveDirection } from '../domain/geometry';
 import { corrections, headline, summaryOf, type Piece } from '../domain/frame-reading';
 import { estimateMissingMarker } from '../domain/markers';
 import { BoardStage } from './board-stage/board-stage';
 import type { Mark } from './board-stage/marks';
 import { CheckService } from './check.service';
+import { ErrorPage } from './error-page/error-page';
 import { FramingPanel } from './framing-panel/framing-panel';
 import { PiecePanel } from './piece-panel/piece-panel';
 import { ResultPanel } from './result-panel/result-panel';
@@ -32,7 +34,7 @@ import { ResultPanel } from './result-panel/result-panel';
  */
 @Component({
   selector: 'app-check-page',
-  imports: [BoardStage, FramingPanel, PiecePanel, ResultPanel, RouterLink],
+  imports: [BoardStage, ErrorPage, FramingPanel, PiecePanel, ResultPanel, RouterLink],
   providers: [CheckService],
   templateUrl: './check-page.html',
   styleUrl: './check-page.scss',
@@ -43,6 +45,7 @@ export class CheckPage {
 
   protected readonly check = inject(CheckService);
   private readonly layout = inject(Layout);
+  private readonly shell = inject(ShellNavigation);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly stage = viewChild(BoardStage);
 
@@ -136,6 +139,11 @@ export class CheckPage {
     }
     return '';
   });
+
+  /** «Ingresar»: al ingreso del shell, para volver a la cámara. */
+  protected signIn(): void {
+    this.shell.goToLogin('/camara');
+  }
 
   constructor() {
     // El `<video>` cambia cuando la pantalla pasa del video en vivo al cuadro fijo y vuelve

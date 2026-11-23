@@ -1,6 +1,10 @@
 @if (flow().error; as error) {
-  <!-- Las páginas de estado se agregan con los estados -->
-  <p class="pending">{{ error }}</p>
+  <app-error-page
+    [kind]="error"
+    (restart)="check.restart()"
+    (review)="check.reviewAgain()"
+    (login)="signIn()"
+  />
 } @else {
   <div class="screen">
     <header class="bar">

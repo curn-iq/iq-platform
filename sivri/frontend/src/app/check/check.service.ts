@@ -159,6 +159,8 @@ export class CheckService {
   }
   /** «Intentar de nuevo» desde un error: otra vez desde el permiso de la cámara. */
   restart(): void {
+    // Una técnica que SIVRI no valida no se vuelve a pedir: se reconoce la mesa
+    if (this.state().error === 'unsupported-technique') this.techniqueId = undefined;
     this.fixed.set(null);
     this.liveResult.set(null);
     this.frames.clear();
