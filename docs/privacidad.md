@@ -1,8 +1,8 @@
 # Aviso de privacidad y autorización para el tratamiento de datos personales
 
-**IQ Platform** · Versión 1.0 · Vigente desde el 29 de octubre de 2026
+**IQ Platform** · Versión 1.1 · Vigente desde el 23 de noviembre de 2026
 
-IQ Platform reúne DataIQ y SIMIQ3D. Es un proyecto de grado del programa
+IQ Platform reúne DataIQ, SIMIQ3D y SIVRI. Es un proyecto de grado del programa
 de Ingeniería de Sistemas de la Corporación Universitaria Rafael Núñez, hecho
 con el programa de Instrumentación Quirúrgica. Este aviso explica qué datos
 personales trata la plataforma, para qué y cómo se ejercen los derechos sobre
@@ -38,6 +38,7 @@ no requiere cuenta ni datos personales.
 | Rol, fecha de registro, y fecha y versión de esta autorización | Saber qué puede hacer la cuenta y probar que se dio la autorización (Decreto 1377 de 2013, art. 8) | Hasta que se pida suprimir la cuenta |
 | Cookie de sesión | Mantener la sesión abierta. No se usa para publicidad ni para seguimiento | 2 horas |
 | Preguntas escritas en el chat de SIMIQ3D, con lo que hizo el chat (la técnica o el instrumento que mostró) y cuánto tardó | Medir la exactitud y el tiempo de respuesta del chat en la evaluación del proyecto de grado. Se guardan sin la cuenta ni nada que identifique a quien pregunta | Hasta que termine la evaluación del proyecto; después se borran |
+| Imágenes de la cámara del celular con la mesa armada, cuando se usa SIVRI | Reconocer el instrumental y decir qué falta, qué sobra y qué debe moverse. La cámara se usa solo con el permiso del navegador, mientras SIVRI está abierto | No se guardan: se procesan y se descartan |
 | Contador de preguntas al chat | Limitar cuántas preguntas hace una cuenta en 10 minutos. Guarda un código derivado de la cuenta que no permite saber cuál es | Un día |
 
 Además, como en cualquier sitio web, los servidores registran datos técnicos de
@@ -50,14 +51,19 @@ La plataforma no pide datos sensibles. El chat de SIMIQ3D es texto libre: no se
 deben escribir datos de pacientes ni de otras personas, porque los datos de
 salud son sensibles (Ley 1581 de 2012, art. 5) y lo escrito queda en el
 registro de preguntas hasta que este se borre.
+SIVRI no está hecho para fotografiar personas: la cámara debe apuntar solo a la
+mesa, sin personas en el encuadre.
 
 ## Dónde se guardan los datos y quién los procesa
 
 - **Vercel Inc.**, en Estados Unidos: aloja la plataforma y sus servicios.
 - **Neon**, en Estados Unidos: aloja las bases de datos.
 - **Un equipo del proyecto, en Colombia**, donde corre el modelo de lenguaje
-  del chat. Recibe cada pregunta por un canal cifrado para redactar la
-  respuesta y no la guarda.
+  del chat. Recibe cada pregunta, con hasta tres preguntas anteriores de la
+  conversación y el texto de su respuesta, por un canal cifrado, para seguir la
+  conversación y redactar la respuesta; no las guarda.
+- **Otro equipo del proyecto, en Colombia**, donde corre SIVRI. Recibe por un
+  canal cifrado las imágenes de la cámara, las procesa y no las guarda.
 - **Google Fonts**: la plataforma carga sus tipografías desde servidores de
   Google, así que el navegador se conecta a ellos.
 
