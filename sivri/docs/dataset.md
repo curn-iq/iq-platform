@@ -52,6 +52,14 @@ pesos. Sus fotos «Error A» y «Error B» pueden usarse para evaluar la
 retroalimentación espacial si IQ confirma el error de cada caso y esas
 fotos se reservan del ajuste de umbrales.
 
+La división por ronda no cumple lo planificado en «Sesiones y división de los
+datos»: las tres rondas son de la misma visita y del mismo instrumental, no de
+sesiones independientes (otro día, otras personas, otro celular). La Ronda 3
+sirve como prueba reservada del entrenamiento, pero las métricas pueden ser
+más optimistas que las de una sesión nueva. Además, la Ronda 3 se midió con las
+tres corridas y la elección de mantener `sivri-r2` se tomó viendo esas
+mediciones.
+
 ### Cómo se toman las fotos
 
 **Antes de empezar**
@@ -158,7 +166,7 @@ Lugo, se etiquetó cada pinza de disección por separado. El dataset tiene
 
 Corrida `sivri-r1` del 2026-11-19. Entrenamiento en CPU durante 120 épocas
 con entrada de 640 px. Las cifras corresponden a los pesos `best.pt` elegidos
-con la Ronda 2. La prueba del detector se ejecutó una vez con la Ronda 3.
+con la Ronda 2. Cada corrida se evaluó una vez con la Ronda 3.
 
 | Corrida | Grupo | Fotos | Precisión | Exhaustividad | mAP@0.5 | mAP@0.5:0.95 |
 |---|---|---:|---:|---:|---:|---:|
@@ -166,11 +174,24 @@ con la Ronda 2. La prueba del detector se ejecutó una vez con la Ronda 3.
 | sivri-r1 | Prueba | 35 | 0,861 | 0,843 | 0,889 | 0,628 |
 | sivri-r2 | Validación | 35 | 0,801 | 0,874 | 0,900 | 0,635 |
 | sivri-r2 | Prueba | 35 | 0,794 | 0,862 | 0,887 | 0,614 |
+| sivri-r3 | Validación | 35 | 0,832 | 0,854 | 0,892 | 0,628 |
+| sivri-r3 | Prueba | 35 | 0,829 | 0,821 | 0,885 | 0,606 |
 
 La corrida `sivri-r2` del 2026-11-21 partió de YOLO26n preentrenado, con
 la misma receta durante 120 épocas. Se seleccionaron los pesos con Ronda 2
 y se tomó una única medición final del detector por corrida en Ronda 3.
 El cambio de etiquetas y de número de clases afecta la comparación global.
+
+La corrida `sivri-r3` del 2026-11-23 repitió la receta de `sivri-r2` después de
+revisar las etiquetas de la Pinza Kelly en las rondas 1 y 2 (una caja por
+pinza cuando las dos se distinguen en la foto; 17 fotos cambiaron). No mejoró
+a `sivri-r2` en la Ronda 3: más precisión, menos exhaustividad y el mismo
+mAP@0.5. Por clase, mejoraron la Kocher (AP@0.5 de 0,752 a 0,881) y el Senn
+Miller, y empeoraron la Moynihan (0,917 a 0,755) y la Kelly (0,666 a 0,632);
+las etiquetas de la Kelly de la Ronda 3 no se revisaron, así que esa
+comparación no es pareja. Mauricio Lugo decidió el 2026-11-23 mantener
+`sivri-r2`. La validación de la Ronda 2 también cambió de etiquetas, por lo
+que tampoco es pareja.
 
 ### Validación por clase
 
