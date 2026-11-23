@@ -31,7 +31,7 @@ Mockups: sección «SIVRI · Mockups», ronda 2, del Figma del proyecto (archivo
 #### Núcleo
 
 - [x] `core/http` y `core/session` como en SIMIQ3D: `withFetch`, `X-IQ-Client: web`, 401 → ingreso del shell, espera con reintentos si DataIQ no responde. `X-IQ-Client` y el 401 valen solo para DataIQ: el CORS de SIVRI solo admite `Authorization` y `Content-Type`, y un 401 de SIVRI es un token rechazado, no la sesión
-- [ ] La barra compartida: `SHELL_HOST` con la marca `{ label: 'SIVRI', entrance: true }`, menú y cuenta como en SIMIQ3D
+- [x] La barra compartida: `SHELL_HOST` con la marca `{ label: 'SIVRI', entrance: true }`, menú y cuenta como en SIMIQ3D
 - [ ] Token corto: `POST /api/dataiq/auth/module-token`, una petición a la vez, renovado antes de los 5 minutos; un 401 de DataIQ es sesión terminada
 - [ ] `domain/` (lógica pura, con pruebas): cómo se lee un `FrameOut` (en su lugar sobre esperados, con los dudosos contados como en su lugar y sin mostrarse; grupos por mover, falta, sobra y en su lugar, en el orden del número del diagrama), qué marcador falta y su frase, el paso de fracciones del cuadro al dibujo con `object-fit: cover`, y la máquina de estados del flujo (permiso → encuadrar → armar → resultado → pieza por mover → revisar de nuevo, y los estados de error)
 
