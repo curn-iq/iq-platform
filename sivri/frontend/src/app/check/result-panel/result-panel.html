@@ -1,0 +1,54 @@
+<p class="eyebrow">{{ eyebrow() }}</p>
+<h1 class="title" tabindex="-1">{{ title() }}</h1>
+<p class="lead">{{ lead() }}</p>
+
+@if (close()) {
+  <app-group name="Las más parecidas" [note]="top().name + ' va primera'">
+    @for (candidate of candidates(); track candidate.id) {
+      <div class="row candidate">
+        <span class="name">{{ candidate.name }}</span>
+        <span class="detail">{{ candidate.detail }}</span>
+      </div>
+    }
+  </app-group>
+}
+
+@for (group of groups(); track group.kind) {
+  <app-group [name]="group.name" [note]="group.note">
+    @for (row of group.rows; track row.piece.id) {
+      <div class="row piece">
+        <p class="piece-name">
+          @if (row.piece.legendNumber !== null) {
+            <span class="num">{{ row.piece.legendNumber }}</span>
+          }
+          <strong>{{ row.piece.label }}</strong>
+        </p>
+        @if (row.piece.sentence) {
+          <p class="sentence">{{ row.piece.sentence }}</p>
+        }
+        <button
+          appArrowLink
+          type="button"
+          [disabled]="close()"
+          [attr.aria-disabled]="close()"
+          (click)="openPiece.emit(row.index)"
+        >
+          {{ row.link }}
+        </button>
+      </div>
+    }
+  </app-group>
+}
+
+@if (hasPlaced()) {
+  <app-group name="En su lugar" [note]="placedNote()">
+    <div class="row">
+      <p class="placed">{{ placedNames() }}</p>
+    </div>
+  </app-group>
+}
+
+<div class="actions">
+  <button appButton class="block" type="button" (click)="again.emit()">Revisar de nuevo</button>
+  <a appArrowLink [href]="referenceUrl()">Ver la mesa de referencia</a>
+</div>

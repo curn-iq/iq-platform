@@ -37,6 +37,8 @@ interface Arrow {
   /** Los dos trazos de la punta. */
   readonly head: string;
   readonly labelAt: { x: number; y: number };
+  /** La etiqueta termina en la punta (y no se centra en ella) si no cabe hacia la derecha. */
+  readonly labelEnds: boolean;
 }
 
 /** Cuánto mide la flecha de una pieza por mover (px): da la dirección, no la distancia. */
@@ -138,6 +140,7 @@ export class BoardStage {
         to,
         head: `${wing(0.45)} ${to.x},${to.y} ${wing(-0.45)}`,
         labelAt: { x: to.x, y: to.y },
+        labelEnds: to.x > stage.width - 72,
       });
     }
     return arrows;
