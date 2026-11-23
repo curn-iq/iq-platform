@@ -13,6 +13,7 @@
   height: 100%;
   overflow: hidden;
   // Lo que mide el panel asomado en celular: el campo más el asa
+  --panel: var(--preferred-panel, 400px);
   --dock-peek: calc(var(--field-height, 150px) + 28px);
 }
 
@@ -152,6 +153,17 @@
   }
 }
 
+.legend-in-dock .dock {
+  visibility: hidden;
+}
+
+// La cabeza reserva el sitio del botón de la leyenda en el escritorio compacto.
+@media (820px < width < 1200px) {
+  .head {
+    right: 190px;
+  }
+}
+
 // La cabeza, a la derecha del dock
 .head {
   position: absolute;
@@ -245,6 +257,10 @@
 
 // Pantalla baja (un celular acostado): el dock casi sin margen y la pista fuera
 @media (height <= 520px) {
+  .bench {
+    --panel: min(var(--preferred-panel, 400px), 40vw);
+  }
+
   .dock {
     top: 8px;
     bottom: 8px;
@@ -253,6 +269,8 @@
 
   .head {
     top: 12px;
+    left: calc(var(--panel) + 20px);
+    right: 108px;
   }
 
   .hint {

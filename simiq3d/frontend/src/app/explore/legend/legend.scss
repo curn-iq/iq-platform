@@ -184,9 +184,20 @@ ol {
   }
 }
 
+// En la disposición compacta, la leyenda ocupa el sitio del chat.
+@media (820px < width < 1200px), (width <= 820px) and (height <= 520px) {
+  .panel {
+    top: var(--sim-gap);
+    right: auto;
+    left: var(--sim-gap);
+    width: var(--panel);
+    max-height: calc(100% - 2 * var(--sim-gap));
+  }
+}
+
 // En un celular muy angosto, el botón es solo la cifra y la flecha; su nombre queda
 // para el lector de pantalla
-@media (max-width: 420px) {
+@media (max-width: 420px), (height <= 520px) {
   .toggle {
     gap: 8px;
     padding: 0 12px;

@@ -176,6 +176,7 @@ export class ExplorePage {
   /** La última respuesta va sobre el campo solo con el panel asomado y la ficha cerrada. */
   protected readonly showLast = computed(() => this.level() === 'peek' && !this.cardOpen());
   protected readonly chatWidth = signal(this.compact() ? CHAT_WIDTH.min : CHAT_WIDTH.initial);
+  private readonly dockWidth = signal(this.chatWidth());
   /** Alto del campo de pregunta, que en celular tapa la parte de abajo del lienzo. */
   protected readonly fieldHeight = signal(150);
 
@@ -227,10 +228,10 @@ export class ExplorePage {
       : {
           // En pantalla baja la cabeza se achica: queda más alto para la mesa
           top: this.short() ? 92 : 150,
-          right: this.legendOpen() && this.mayo() ? 344 : 0,
+          right: this.legendOpen() && !this.compact() && this.mayo() ? 344 : 0,
           bottom: this.short() ? 76 : 84,
           // El dock flota a la izquierda: la mesa se encuadra en lo que deja libre
-          left: this.chatWidth() + 32,
+          left: this.dockWidth() + 32,
         },
   );
 
@@ -241,9 +242,11 @@ export class ExplorePage {
     afterNextRender(() => {
       // Sin `ResizeObserver` (jsdom en las pruebas) se queda el alto de partida
       if (typeof ResizeObserver === 'undefined') return;
-      const observer = new ResizeObserver(([entry]) =>
-        this.fieldHeight.set(Math.round(entry.borderBoxSize[0]?.blockSize ?? 150)),
-      );
+      const observer = new ResizeObserver(([entry]) => {
+        const box = entry.borderBoxSize[0];
+        this.fieldHeight.set(Math.round(box.blockSize));
+        this.dockWidth.set(Math.round(box.inlineSize));
+      });
       observer.observe(this.field().nativeElement);
       destroyRef.onDestroy(() => observer.disconnect());
     });
