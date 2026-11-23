@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-# IQ Platform — Ecosistema Educativo para Instrumentación Quirúrgica
+# Ecosistema Educativo para Instrumentación Quirúrgica
 
 Plataforma tecnológica desarrollada en colaboración entre estudiantes de
 Ingeniería de Sistemas e Instrumentación Quirúrgica de la Corporación
