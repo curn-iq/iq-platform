@@ -55,6 +55,12 @@ proyecto de grado). Se marca cada pieza al terminarla.
 - [x] Verificar esas celdas y los 16 mapeos en el entorno de PC1 (2026-11-22:
   las 57 celdas del DataIQ local coinciden con la semilla, 16 clases cargadas y
   una foto de Ronda 3 por Funnel, por HTTPS y WebSocket con renovación del token)
+- [x] Reconocer la técnica descontando lo que sobra para cada una (2026-11-23: una
+  Tiroidectomía bien armada salía empatada con Mastectomía)
+- [x] Recalcular las celdas de las cinco mesas con las fotos «Bien armada» de las
+  tres rondas (2026-11-23; ver [celdas recalculadas](../backend/README.md#celdas-recalculadas-con-las-tres-rondas-2026-11-23))
+- [x] Publicar las celdas recalculadas en el DataIQ del Servidor PC1 y en producción
+  (`seed.update_mayo --apply`, 2026-11-23; los 57 objetos coinciden con el Excel en los dos)
 - [ ] Confirmar con IQ las anotaciones de los errores de Ronda 3 (diferido para después de la entrega)
 - [x] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ,
   y CORS para el origen del shell: la página se sirve allí y manda los cuadros

@@ -117,6 +117,14 @@ Decidido por Mauricio el 2026-10-13:
   (decidido por Mauricio el 2026-10-27), sino de la zona de la mesa, lo que
   tiene al lado y el número del diagrama de IQ. La frase la arma el backend,
   como SIMIQ3D (decidido por Mauricio el 2026-11-18).
+- **De dónde salen las celdas de las cinco mesas** (decidido por Mauricio el
+  2026-11-23). Las celdas de cada instrumento se toman de las fotos «Bien
+  armada» de las tres rondas, con las cajas anotadas a mano: cada instrumento
+  conserva sus celdas y suma las vecinas donde el programa de IQ lo puso en
+  otra ronda; si dos instrumentos caen en la misma celda, la toma el que más
+  veces está allí (una celda es de un solo objeto). Antes salían de la
+  posición medida en una sola foto por técnica, y las otras rondas daban
+  avisos falsos de mover.
 - **Margen técnico.** Un instrumento que queda justo en el borde entre dos
   celdas no se marca como error: puede ser imprecisión de la medición, no del
   estudiante. El tamaño del margen se ajusta con las fotos de validación.
@@ -159,8 +167,13 @@ columnas de DataIQ):
    | Sobra | Aparece y no se esperaba | Qué instrumento sobra |
 
 4. **Porcentaje de la técnica:** instrumentos en su lugar sobre instrumentos
-   esperados. SIVRI muestra la técnica con el porcentaje más alto, o las dos
-   más altas si quedan muy cerca.
+   esperados; es lo que se le muestra al estudiante.
+5. **Qué técnica es:** SIVRI muestra la que más se parece a la mesa, o las dos
+   que más se parecen si quedan muy cerca. El parecido es lo que está en su
+   lugar sobre lo que la técnica espera más los instrumentos que sobran para
+   ella; así, una técnica con menos piezas no empata con la que está armada
+   (corregido por Mauricio el 2026-11-23: una Tiroidectomía bien armada salía
+   empatada con Mastectomía, 12 de 13 frente a 9 de 10).
 
 El ancho del margen (punto de partida: el 10 % del lado de la celda, a cada
 lado del borde) y la distancia que cuenta como «muy cerca» se ajustan con la
