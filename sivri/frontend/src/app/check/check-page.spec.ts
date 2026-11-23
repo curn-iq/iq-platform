@@ -245,5 +245,13 @@ describe('CheckPage', () => {
       root.querySelector<HTMLButtonElement>('app-error-page button')!.click();
       expect(goToLogin).toHaveBeenCalledWith('/camara');
     });
+
+    it('si se validaba una técnica, «Ingresar» vuelve a la cámara con esa técnica', async () => {
+      goToLogin.mockClear();
+      const { fixture, root } = await render('t 1');
+      await update(fixture, { error: 'session-ended' });
+      root.querySelector<HTMLButtonElement>('app-error-page button')!.click();
+      expect(goToLogin).toHaveBeenCalledWith('/camara?tecnica=t%201');
+    });
   });
 });

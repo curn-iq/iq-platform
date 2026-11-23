@@ -170,7 +170,11 @@ export class BoardStage {
     });
   }
 
-  /** El video ya sabe de qué tamaño es: desde aquí se pueden dibujar las marcas. */
+  /**
+   * El video ya sabe de qué tamaño es: desde aquí se pueden dibujar las marcas. Se vuelve a
+   * medir en `resize`, que es lo que avisa el video cuando el celular gira y el cuadro pasa de
+   * vertical a horizontal (`loadedmetadata` no se repite).
+   */
   protected onVideoMetadata(event: Event): void {
     const video = event.target as HTMLVideoElement;
     this.videoSize.set({ width: video.videoWidth, height: video.videoHeight });

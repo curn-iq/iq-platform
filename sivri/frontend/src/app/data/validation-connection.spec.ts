@@ -199,6 +199,17 @@ describe('ValidationConnection', () => {
       expect(handlers.onFailure).not.toHaveBeenCalled();
     });
 
+    it('tras un 4401, si renovar falla por la red, el reintento vuelve a pedir un token nuevo', async () => {
+      await started();
+      getToken.mockRejectedValueOnce(new HttpErrorResponse({ status: 0 }));
+      sockets[0].hangUp(4401);
+      await settle();
+      expect(getToken).toHaveBeenLastCalledWith(true);
+      await vi.advanceTimersByTimeAsync(BACKOFF_MS[0]);
+      expect(getToken).toHaveBeenLastCalledWith(true);
+      expect(sockets).toHaveLength(2);
+    });
+
     it('un segundo 4401 seguido es que la sesión terminó', async () => {
       await started();
       sockets[0].hangUp(4401);

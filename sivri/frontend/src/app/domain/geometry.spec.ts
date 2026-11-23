@@ -90,4 +90,23 @@ describe('moveDirection', () => {
     expect(direction.x).toBeCloseTo(0);
     expect(direction.y).toBeCloseTo(1);
   });
+
+  it('en un cuadro 16:9 cuenta que una fracción de ancho mide más que una de alto', () => {
+    // La mesa girada 30° en un cuadro de 640×360, con los marcadores en píxeles pasados a fracciones
+    const frame = { width: 640, height: 360 };
+    const angle = Math.PI / 6;
+    const corner = (x: number, y: number) => ({
+      x: (320 + x * Math.cos(angle) - y * Math.sin(angle)) / frame.width,
+      y: (180 + x * Math.sin(angle) + y * Math.cos(angle)) / frame.height,
+    });
+    const markers = [
+      { id: 0, ...corner(-100, -60) },
+      { id: 1, ...corner(100, -60) },
+      { id: 2, ...corner(100, 60) },
+      { id: 3, ...corner(-100, 60) },
+    ];
+    const direction = moveDirection({ rows: 0, columns: 1 }, markers, frame)!;
+    expect(direction.x).toBeCloseTo(Math.cos(angle));
+    expect(direction.y).toBeCloseTo(Math.sin(angle));
+  });
 });

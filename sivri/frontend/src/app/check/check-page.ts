@@ -111,7 +111,12 @@ export class CheckPage {
     const marks: Mark[] = [
       { kind: 'piece', label: `${piece.label}${number(piece)}`, box: piece.box },
     ];
-    const direction = moveDirection(piece.move, result.markers);
+    const frame = this.check.fixedFrame();
+    const direction = moveDirection(
+      piece.move,
+      result.markers,
+      frame ? { width: frame.width, height: frame.height } : undefined,
+    );
     if (piece.kind === 'move' && direction)
       marks.push({ kind: 'arrow', box: piece.box, direction });
     return marks;
@@ -140,9 +145,10 @@ export class CheckPage {
     return '';
   });
 
-  /** «Ingresar»: al ingreso del shell, para volver a la cámara. */
+  /** «Ingresar»: al ingreso del shell, para volver a la cámara con la misma técnica. */
   protected signIn(): void {
-    this.shell.goToLogin('/camara');
+    const tecnica = this.tecnica();
+    this.shell.goToLogin(tecnica ? `/camara?tecnica=${encodeURIComponent(tecnica)}` : '/camara');
   }
 
   constructor() {

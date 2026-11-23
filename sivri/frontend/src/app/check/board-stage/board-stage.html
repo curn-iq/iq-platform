@@ -8,6 +8,7 @@
       [muted]="true"
       autoplay
       (loadedmetadata)="onVideoMetadata($event)"
+      (resize)="onVideoMetadata($event)"
     ></video>
   } @else if (imageUrl(); as url) {
     <img class="media" [src]="url" alt="" />

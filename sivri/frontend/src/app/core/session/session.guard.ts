@@ -4,7 +4,7 @@ import { SessionService } from './session.service';
 import { ShellNavigation } from './shell';
 
 /**
- * Toda ruta de SIMIQ3D pide cuenta. Espera a saber si hay sesión (ver
+ * Para las rutas de SIVRI que piden cuenta (la cámara). Espera a saber si hay sesión (ver
  * `SessionService.known`); sin sesión, lleva al ingreso del shell con `?volver=`
  * a la ruta pedida.
  */

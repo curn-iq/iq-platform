@@ -71,14 +71,16 @@ export function isVisible(rect: Rect, container: Size): boolean {
  * `move` dice cuántas celdas hacia abajo (`rows`) y hacia la derecha (`columns`) de la mesa;
  * con los marcadores se giran a como se ve la mesa en el cuadro. Sin movimiento, `null`. No
  * se sabe cuánto mide una celda en el cuadro, así que la flecha da la dirección, no la
- * distancia: el destino exacto no lo da el backend.
+ * distancia: el destino exacto no lo da el backend. El vector sale en píxeles del cuadro
+ * (`frame`, su tamaño), que es como se dibuja.
  */
 export function moveDirection(
   move: { rows: number; columns: number } | null,
   markers: readonly Marker[] = [],
+  frame?: Size,
 ): { x: number; y: number } | null {
   if (!move || (move.rows === 0 && move.columns === 0)) return null;
-  const axes = boardAxes(markers) ?? { columns: { x: 1, y: 0 }, rows: { x: 0, y: 1 } };
+  const axes = boardAxes(markers, frame) ?? { columns: { x: 1, y: 0 }, rows: { x: 0, y: 1 } };
   const x = move.columns * axes.columns.x + move.rows * axes.rows.x;
   const y = move.columns * axes.columns.y + move.rows * axes.rows.y;
   const length = Math.hypot(x, y);

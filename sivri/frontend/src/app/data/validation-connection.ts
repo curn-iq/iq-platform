@@ -134,11 +134,12 @@ export class ValidationConnection {
 
   private async connect(): Promise<void> {
     const generation = ++this.generation;
-    const fresh = this.wantFreshToken;
-    this.wantFreshToken = false;
     let token: string;
     try {
-      token = await this.options.getToken(fresh);
+      token = await this.options.getToken(this.wantFreshToken);
+      // Solo con el token nuevo en la mano: si pedirlo falla por la red, el reintento lo vuelve a
+      // pedir nuevo y no reutiliza el que SIVRI ya rechazó
+      this.wantFreshToken = false;
     } catch (error) {
       if (this.stopped || generation !== this.generation) return;
       if (error instanceof HttpErrorResponse && error.status === 401) {
