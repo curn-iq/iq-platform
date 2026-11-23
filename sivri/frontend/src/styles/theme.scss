@@ -1,0 +1,24 @@
+// Tema de SIVRI sobre los tokens de shared/design/ (ver «Sistema visual
+// compartido» en CLAUDE.md). Solo sobrescribe propiedades CSS, nunca define
+// estilos de componentes. El contenido sin verde de marca se agrega con las
+// pantallas (DESIGN.md, «SIVRI: celular y computador (mockups)»).
+
+// Con «reducir movimiento», todo es inmediato
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// Lo táctil: sin la espera del doble toque ni el resplandor del sistema
+button,
+a,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
