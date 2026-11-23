@@ -1,10 +1,14 @@
 import {
   corrections,
+  GROUP_LABELS,
   headline,
   isClose,
+  joinNames,
+  piecesCount,
   readFrame,
   readTechnique,
   sentenceOf,
+  summaryOf,
 } from './frame-reading';
 import { ALL_MARKERS, frame, object, technique } from './testing';
 
@@ -167,5 +171,68 @@ describe('readFrame', () => {
     const reading = readFrame(frame({ board_found: false, recognized: false }));
     expect(reading.boardFound).toBe(false);
     expect(reading.techniques).toEqual([]);
+  });
+});
+
+describe('summaryOf', () => {
+  const of = (...objects: ReturnType<typeof object>[]) =>
+    summaryOf(readTechnique(technique('t', 'X', objects)));
+
+  it('con una por mover y una que falta, como en el mockup', () => {
+    expect(of(object('in_place', 'A', 1), object('move', 'B', 2), object('missing', 'C', 3))).toBe(
+      'Una pieza va en otro sitio y a la mesa le falta otra. Lo demás está como lo publicó el programa de IQ.',
+    );
+  });
+
+  it('con varias, dice cuántas', () => {
+    expect(
+      of(
+        object('in_place', 'A', 1),
+        object('move', 'B', 2),
+        object('move', 'C', 3),
+        object('missing', 'D', 4),
+        object('missing', 'E', 5),
+        object('extra', 'F', null),
+      ),
+    ).toBe(
+      '2 piezas van en otro sitio, a la mesa le faltan 2 piezas y sobra una pieza. Lo demás está como lo publicó el programa de IQ.',
+    );
+  });
+
+  it('solo una que falta no dice «otra»', () => {
+    expect(of(object('in_place', 'A', 1), object('missing', 'B', 2))).toBe(
+      'A la mesa le falta una pieza. Lo demás está como lo publicó el programa de IQ.',
+    );
+  });
+
+  it('sin nada en su lugar no dice «lo demás»', () => {
+    expect(of(object('move', 'A', 1))).toBe('Una pieza va en otro sitio.');
+  });
+
+  it('con todo en su lugar, lo dice', () => {
+    expect(of(object('in_place', 'A', 1), object('doubtful', 'B', 2))).toBe(
+      'La mesa está como la publicó el programa de IQ.',
+    );
+  });
+});
+
+describe('textos del resultado', () => {
+  it('cuenta las piezas', () => {
+    expect(piecesCount(1)).toBe('1 pieza');
+    expect(piecesCount(8)).toBe('8 piezas');
+  });
+
+  it('junta los nombres como en español', () => {
+    expect(joinNames([])).toBe('');
+    expect(joinNames(['A'])).toBe('A');
+    expect(joinNames(['A', 'B'])).toBe('A y B');
+    expect(joinNames(['A', 'B', 'C'])).toBe('A, B y C');
+  });
+
+  it('nombra cada grupo', () => {
+    expect(GROUP_LABELS.move).toBe('Por mover');
+    expect(GROUP_LABELS.missing).toBe('Falta');
+    expect(GROUP_LABELS.extra).toBe('Sobra');
+    expect(GROUP_LABELS['in-place']).toBe('En su lugar');
   });
 });

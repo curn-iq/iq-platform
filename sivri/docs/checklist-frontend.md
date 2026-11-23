@@ -50,9 +50,9 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 - [x] Celular: entrada (224:2592)
 - [x] Celular: encuadrar la mesa (223:2421)
 - [x] Celular: mientras arma (sin mockup en la ronda 2; ver «Por confirmar»)
-- [ ] Celular: resultado (221:2463)
-- [ ] Celular: pieza por mover (223:2566)
-- [ ] Celular: dos técnicas muy cerca (sin mockup en la ronda 2; ver «Por confirmar»)
+- [x] Celular: resultado (221:2463)
+- [x] Celular: pieza por mover (223:2566)
+- [x] Celular: dos técnicas muy cerca (sin mockup en la ronda 2; ver «Por confirmar»)
 - [ ] Estados, como páginas de texto con titular, párrafo y una acción: sin conexión con SIVRI (224:2666), cámara bloqueada (224:2691), técnica fuera del alcance (224:2716), equipo sin cámara, sesión vencida y técnica no reconocida (`recognized: false` con la mesa a la vista)
 - [ ] El pie: «Las imágenes se procesan y no se guardan.» y «Código fuente (AGPL-3.0)», enlazado a https://github.com/curn-iq/iq-platform/tree/main/sivri
 

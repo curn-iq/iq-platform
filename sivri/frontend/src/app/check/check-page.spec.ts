@@ -3,8 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Layout } from '../core/layout/layout';
 import { initialFlow, type FlowState } from '../domain/flow';
+import { readFrame } from '../domain/frame-reading';
 import { markerStatus } from '../domain/markers';
-import { ALL_MARKERS } from '../domain/testing';
+import { ALL_MARKERS, frame, object, technique } from '../domain/testing';
 import { CheckPage } from './check-page';
 import { CheckService, type LiveResult } from './check.service';
 
@@ -17,6 +18,10 @@ function fakeCheck() {
     start: vi.fn(),
     setVideo: vi.fn(),
     pressReady: vi.fn(),
+    openPiece: vi.fn(),
+    back: vi.fn(),
+    next: vi.fn(),
+    reviewAgain: vi.fn(),
     stop: vi.fn(),
   };
 }
@@ -138,6 +143,71 @@ describe('CheckPage', () => {
       expect(announced(root).textContent).toContain('Se ven los cuatro marcadores');
       await update(fixture, { committed: true });
       expect(announced(root).textContent).toContain('Revisando la mesa');
+    });
+  });
+
+  describe('con el resultado fijado', () => {
+    const result = readFrame(
+      frame({
+        techniques: [
+          technique('t-1', 'Mastectomía', [
+            object('in_place', 'A', 1),
+            object('move', 'Pinza Kelly', 6, {
+              message: 'Pinza Kelly (n.º 6): va en el centro.',
+              move: { rows: 0, columns: 1 },
+            }),
+            object('missing', 'Mango', 10, { message: 'Falta Mango (n.º 10): va al final.' }),
+          ]),
+        ],
+      }),
+    );
+    const fixed = { screen: 'result' as const, result, resultFrame: 3 };
+    const sentFrame = { number: 3, blob: new Blob(['x']), width: 640, height: 360 };
+
+    it('muestra el resultado y la barra dice «CUADRO FIJO»', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, fixed);
+      expect(root.querySelector('app-result-panel h1')?.textContent).toBe('1 de 3 en su lugar.');
+      expect(root.querySelector('app-framing-panel')).toBeNull();
+      expect(root.querySelector('.status')?.textContent?.trim()).toBe('CUADRO FIJO');
+    });
+
+    it('el escenario es el cuadro que se mandó, no el video', async () => {
+      const { fixture, root } = await render();
+      check.fixedFrame.set(sentFrame as never);
+      await update(fixture, fixed);
+      expect(root.querySelector('app-board-stage video')).toBeNull();
+    });
+
+    it('anuncia el resultado una vez', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, fixed);
+      expect(root.querySelector('[aria-live="polite"]')?.textContent).toContain(
+        'Mastectomía. 1 de 3 en su lugar.',
+      );
+    });
+
+    it('«Ver dónde va» abre la pieza y «Revisar de nuevo» vuelve a encuadrar', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, fixed);
+      root.querySelector<HTMLButtonElement>('app-result-panel .piece button')!.click();
+      expect(check.openPiece).toHaveBeenCalledWith(0);
+      root.querySelector<HTMLButtonElement>('app-result-panel button[appButton]')!.click();
+      expect(check.reviewAgain).toHaveBeenCalledOnce();
+    });
+
+    it('en una pieza muestra su nombre y la siguiente, y el foco va al titular', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, { ...fixed, screen: 'piece', pieceIndex: 0 });
+      const panel = root.querySelector('app-piece-panel')!;
+      expect(panel.querySelector('h1')?.textContent).toBe('Pinza Kelly');
+      expect(panel.textContent).toContain('Siguiente: Mango');
+      await new Promise((resolve) => setTimeout(resolve));
+      expect(document.activeElement).toBe(panel.querySelector('h1'));
+      panel.querySelectorAll<HTMLButtonElement>('nav button')[1].click();
+      expect(check.next).toHaveBeenCalledOnce();
+      panel.querySelectorAll<HTMLButtonElement>('nav button')[0].click();
+      expect(check.back).toHaveBeenCalledOnce();
     });
   });
 });

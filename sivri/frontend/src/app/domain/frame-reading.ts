@@ -158,3 +158,50 @@ export function headline(technique: TechniqueReading): string {
 export function isClose(reading: FrameReading): boolean {
   return reading.techniques.length > 1;
 }
+
+/** «1 pieza», «8 piezas». */
+export function piecesCount(count: number): string {
+  return count === 1 ? '1 pieza' : `${count} piezas`;
+}
+
+/** Une los nombres como en español: «A, B y C». */
+export function joinNames(names: readonly string[]): string {
+  if (names.length <= 1) return names.join('');
+  return `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}`;
+}
+
+/** Cómo se llama cada grupo de piezas por corregir. */
+export const GROUP_LABELS: Record<GroupKind, string> = {
+  move: 'Por mover',
+  missing: 'Falta',
+  extra: 'Sobra',
+  'in-place': 'En su lugar',
+};
+
+/**
+ * La entradilla del resultado, con lo que hay que corregir: «Una pieza va en otro sitio y a la
+ * mesa le falta otra. Lo demás está como lo publicó el programa de IQ.» Con la mesa como la
+ * publicó IQ, lo dice.
+ */
+export function summaryOf(technique: TechniqueReading): string {
+  const moves = technique.move.length;
+  const missing = technique.missing.length;
+  const extra = technique.extra.length;
+  const clauses: string[] = [];
+  if (moves > 0)
+    clauses.push(moves === 1 ? 'una pieza va en otro sitio' : `${moves} piezas van en otro sitio`);
+  if (missing > 0) {
+    // «a la mesa le falta otra», si ya se habló de una pieza
+    const one = moves === 1 ? 'otra' : 'una pieza';
+    clauses.push(
+      missing === 1 ? `a la mesa le falta ${one}` : `a la mesa le faltan ${missing} piezas`,
+    );
+  }
+  if (extra > 0) clauses.push(extra === 1 ? 'sobra una pieza' : `sobran ${extra} piezas`);
+  if (clauses.length === 0) return 'La mesa está como la publicó el programa de IQ.';
+  const first = clauses[0].charAt(0).toUpperCase() + clauses[0].slice(1);
+  const sentence = joinNames([first, ...clauses.slice(1)]) + '.';
+  return technique.placed.length > 0
+    ? `${sentence} Lo demás está como lo publicó el programa de IQ.`
+    : sentence;
+}
