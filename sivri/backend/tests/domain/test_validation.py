@@ -11,6 +11,7 @@ from tests.domain.helpers import (
     ALLIS,
     CLASSES,
     KELLY,
+    MAYO_SCISSORS,
     METZ,
     item,
     seen,
@@ -215,6 +216,27 @@ def test_recognition_picks_the_technique_that_looks_most_like_the_table():
 
     assert [r.name for r in recognition.ranking] == ["Prueba", "Otra"]
     assert [r.name for r in recognition.shown] == ["Prueba"]
+
+
+def test_what_is_left_over_counts_against_a_technique():
+    # Como una Tiroidectomía bien armada frente a Mastectomía (2026-11-23): la
+    # técnica con menos piezas tiene más porcentaje, pero le sobra la Metzenbaum.
+    big = technique(
+        "Grande",
+        4,
+        4,
+        item(1, ALLIS, (1, 1)),
+        item(2, KELLY, (2, 3)),
+        item(3, METZ, (4, 1), (4, 2)),
+        item(4, MAYO_SCISSORS, (3, 4)),
+    )
+    small = technique("Pequeña", 4, 4, item(1, ALLIS, (1, 1)), item(2, KELLY, (2, 3)))
+    placed = [seen(ALLIS, 0.5, 0.5), seen(KELLY, 1.5, 2.5), seen(METZ, 3.5, 1.0)]
+
+    recognition = recognize([small, big], CLASSES, placed)
+
+    assert [r.name for r in recognition.shown] == ["Grande"]
+    assert [r.percent for r in recognition.ranking] == [0.75, 1.0]
 
 
 def test_two_very_close_techniques_are_both_shown():

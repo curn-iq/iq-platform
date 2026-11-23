@@ -368,3 +368,29 @@ errores intencionales de A/B carecen de confirmación de IQ. La concordancia
 con las cajas permite localizar discrepancias del detector y de la geometría.
 Sin un registro de los errores puestos en A y B, estas fotos no miden la
 precisión ni la exhaustividad frente a errores confirmados.
+
+## Celdas recalculadas con las tres rondas (2026-11-23)
+
+Las celdas de las cinco mesas se recalcularon con la regla del
+[README del módulo](../README.md#qué-es-una-mesa-correcta) («De dónde salen las
+celdas»). Se proyectaron con los marcadores ArUco las cajas anotadas de las 42
+fotos «Bien armada» de las tres rondas que tienen los cuatro marcadores (466
+centros) y se contó, con el margen de 0,10, cuántos centros caen fuera de las
+celdas de su instrumento y fuera del margen, es decir, cuántas indicaciones de
+mover daría SIVRI con las cajas anotadas:
+
+| Técnica | Celdas del 2026-11-21 | Celdas recalculadas |
+|---|---:|---:|
+| Colecistectomía | 15 | 6 |
+| Eventrorrafia | 15 | 3 |
+| Hemicolectomía derecha | 10 | 6 |
+| Mastectomía | 6 | 3 |
+| Tiroidectomía | 3 | 0 |
+| **Total** | **49** | **18** |
+
+Cambiaron las celdas de 19 de los 57 objetos, casi todos con una celda vecina
+más. Las 18 indicaciones que quedan son de rondas en que el programa de IQ
+invirtió el orden de dos piezas (por ejemplo, los dos mangos de bisturí), que
+ninguna asignación fija de celdas cubre. Las fotos de la Ronda 3 ya habían
+servido para las celdas del 2026-11-21, así que esta medición describe la
+concordancia con las fotos de referencia y no es una prueba independiente.
