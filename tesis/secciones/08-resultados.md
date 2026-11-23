@@ -31,6 +31,26 @@ mesas. Las mesas de Mayo de las cinco técnicas de Cirugía General están
 publicadas con la posición medida de cada instrumento en las fotos del
 programa de IQ: 57 colocaciones, en la versión publicada el 2026-11-21.
 
+El catálogo se consulta sin cuenta, por especialidad, y cada técnica muestra
+sus datos clínicos con la fuente (Fig. del catálogo y Fig. de la ficha de
+Tiroidectomía); con una cuenta se ven además el instrumental y las mesas, con
+el diagrama numerado de la mesa de Mayo (Fig. de la mesa de Mayo de
+Tiroidectomía).
+
+**Pruebas automatizadas.** El texto del segundo corte reportaba 69 pruebas del
+backend de DataIQ. Contadas de nuevo el 2026-11-22, cada parte del sistema
+tiene sus propias pruebas, que la integración continua ejecuta en los PR que
+tocan ese módulo; las de los backends corren contra una base PostgreSQL de
+prueba:
+
+| Parte | Pruebas | Qué cubren |
+|---|---:|---|
+| Backend de DataIQ | 129 | 26 de las reglas del dominio, 16 de los adaptadores, 72 de la API y 15 de la carga del catálogo |
+| Backend de SIMIQ3D | 280 | 140 del dominio (el chat, la revisión de frases), 104 de los adaptadores y 36 de la API |
+| Backend de SIVRI | 96 | 34 del dominio (la validación de la mesa), 32 de los adaptadores y 30 de la API |
+| Frontend de DataIQ y shell | 2309 | Componentes, servicios y rutas |
+| Frontend de SIMIQ3D | 130 | Componentes, el visor y el chat |
+
 ### SIMIQ3D
 
 SIMIQ3D está en producción con el visor 3D y el chat. Los 16 instrumentos de
