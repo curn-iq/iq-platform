@@ -1,39 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  BACKOFF_MS,
-  type ConnectionHandlers,
-  type SocketLike,
-  ValidationConnection,
-} from './validation-connection';
-
-class FakeSocket implements SocketLike {
-  onopen: ((event: unknown) => void) | null = null;
-  onmessage: ((event: { data: unknown }) => void) | null = null;
-  onclose: ((event: { code: number }) => void) | null = null;
-  onerror: ((event: unknown) => void) | null = null;
-  sent: (string | Blob)[] = [];
-  closed: number | undefined;
-
-  constructor(readonly url: string) {}
-
-  send(data: string | Blob): void {
-    this.sent.push(data);
-  }
-  close(code?: number): void {
-    this.closed = code;
-  }
-
-  // Lo que hace el servidor
-  open(): void {
-    this.onopen?.({});
-  }
-  say(message: unknown): void {
-    this.onmessage?.({ data: JSON.stringify(message) });
-  }
-  hangUp(code: number): void {
-    this.onclose?.({ code });
-  }
-}
+import { FakeSocket } from './fake-socket';
+import { BACKOFF_MS, type ConnectionHandlers, ValidationConnection } from './validation-connection';
 
 describe('ValidationConnection', () => {
   let sockets: FakeSocket[];
