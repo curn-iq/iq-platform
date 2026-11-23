@@ -84,13 +84,13 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
   de producción.
 - [x] SIMIQ3D: tiempo desde la pregunta hasta ver la escena, en producción (con
   el Servidor PC2).
-- [ ] SIVRI: precisión, exhaustividad, mAP@0.5 y mAP@0.5:0.95, matriz de
+- [x] SIVRI: precisión, exhaustividad, mAP@0.5 y mAP@0.5:0.95, matriz de
   confusión y curvas de pérdida, del entrenamiento con las etiquetas
   corregidas.
-- [ ] SIVRI: resultados de la lógica de validación.
+- [x] SIVRI: diagnóstico técnico de la lógica de validación. La evaluación con referencia docente sigue pendiente.
 - [ ] SUS (meta de 68 o más) y cuestionario tipo Likert de la prueba piloto.
 - [ ] Capturas de cada producto en `figuras/` (falta DataIQ).
-- [ ] SIVRI: figuras del entrenamiento con las etiquetas corregidas (curvas de
+- [x] SIVRI: figuras del entrenamiento con las etiquetas corregidas (curvas de
   pérdida, matriz de confusión) y un ejemplo de validación de una mesa.
 - [ ] No repetir lo que la retroalimentación atribuye al documento y este no
   dice: el desarrollo guiado por pruebas (TDD) no está en el Formato 115.

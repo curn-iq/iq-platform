@@ -100,11 +100,30 @@ y la captura de Mastectomía en `figuras/simiq3d-chat-mastectomia.png`.
 
 ### SIVRI
 
-El backend de SIVRI valida la mesa con el detector y los marcadores ArUco. El
-dataset propio tiene 125 fotos y 1374 cajas en 15 clases. La primera corrida
-del detector (`sivri-r1`, 2026-11-19) obtuvo en la Ronda 3, de prueba, una
-precisión de 0,861, una exhaustividad de 0,843, un mAP@0.5 de 0,889 y un
-mAP@0.5:0.95 de 0,628 (`sivri/docs/dataset.md`). Esas cifras corresponden a
-las etiquetas anteriores a la corrección del 2026-11-21 (mangos intercambiados
-y cajas cortas); las del entrenamiento con las etiquetas corregidas las
-reemplazan.
+**Detección.** En el dataset corregido de 125 fotos y 1487 cajas, YOLO26n
+se entrenó durante 120 épocas en CPU sobre las 55 fotos de Ronda 1. Los
+pesos elegidos con las 35 fotos de Ronda 2 se evaluaron una vez sobre las
+35 fotos de Ronda 3. En esta última ronda la precisión fue 0,794, la
+exhaustividad 0,862, el mAP@0.5 0,887 y el mAP@0.5:0.95 0,614. Las
+disecciones con y sin garra obtuvieron AP@0.5 de 0,956 y 0,931. Las tres
+rondas se capturaron el mismo día. [Curvas del entrenamiento](../figuras/sivri-r2-curves.png) · [Matriz de confusión de validación](../figuras/sivri-r2-confusion.png).
+
+**Reconocimiento y ubicación.** Con los pesos de `sivri-r2` y las cinco
+mesas del Excel local de DataIQ se hallaron los cuatro marcadores en 33
+de las 35 fotos de Ronda 3. La técnica indicada por la captura quedó
+primera en 24 de esas 33 (72,7 %) y entre las mostradas en 26 (78,8 %).
+Las fotos son tomas repetidas de los montajes. Al fijar la técnica del
+archivo, 10 de 13 fotos evaluables rotuladas «Bien Armada» recibieron
+algún aviso. Hubo 20 indicaciones de ausencia y 9 de movimiento.
+Al sustituir YOLO por las cajas anotadas quedaron 10 de movimiento en
+cinco fotos. Esto identifica tanto omisiones del detector como desacuerdos
+entre centros y celdas. Las fotos bien armadas de Ronda 3 también sirvieron
+de referencia para definir la cuadrícula. [Resultados por ronda y situación](../evidencias/sivri-spatial-2026-11-22.csv).
+
+En IMG_1925 (Mastectomía, Error A) ambos recorridos ubicaron al Farabeuf
+fuera de su zona. Con las cajas anotadas se indicó mover la Kelly. Con
+YOLO se reportó ausente. Las variantes A/B carecen de un registro
+independiente de los errores introducidos. La medición espacial es un
+diagnóstico técnico. La exactitud frente al criterio docente, la latencia
+desde un celular y la usabilidad con estudiantes quedan por medir.
+[Ejemplo de Mastectomía](../figuras/sivri-spatial-example.png).

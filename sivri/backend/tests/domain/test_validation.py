@@ -1,5 +1,6 @@
 import pytest
 
+from app.domain.classes import ClassEntry, ClassMap
 from app.domain.validation import (
     Status,
     ValidationSettings,
@@ -14,6 +15,7 @@ from tests.domain.helpers import (
     item,
     seen,
     technique,
+    uid,
 )
 
 # Una mesa de 4 × 4: la Kelly en la fila 2, columna 3; la Allis en la fila 1,
@@ -132,7 +134,7 @@ def test_two_equal_instruments_are_matched_to_their_nearest_position():
     assert [o.status for o in result.objects] == [Status.IN_PLACE, Status.IN_PLACE]
 
 
-def test_one_instrument_too_many_leaves_the_nearest_matched_and_one_extra():
+def test_a_duplicate_of_an_expected_instrument_does_not_add_an_alert():
     placed = [
         seen(ALLIS, 0.5, 0.5),
         seen(KELLY, 1.5, 2.5),
@@ -144,7 +146,48 @@ def test_one_instrument_too_many_leaves_the_nearest_matched_and_one_extra():
 
     kelly = next(o for o in result.objects if o.label == KELLY)
     assert kelly.status is Status.IN_PLACE
-    assert len(result.extras) == 1
+    assert not result.extras
+    assert result.percent == 1.0
+
+
+def test_two_misplaced_copies_generate_one_move():
+    placed = [seen(KELLY, 0.5, 0.5), seen(KELLY, 3.5, 3.5)]
+    result = validate_technique(TABLE, CLASSES, placed)
+    assert statuses(result)[KELLY] is Status.MOVE
+    assert not result.extras
+
+
+def test_duplicate_in_the_margin_wins_over_a_closer_misplaced_copy():
+    outside = seen(KELLY, 1.5, 1.899)
+    # La esquina aceptada puede estar más lejos del centro que el vecino exterior.
+    inside = seen(KELLY, 1.01, 2.01)
+    for placed in ([inside, outside], [outside, inside]):
+        result = validate_technique(TABLE, CLASSES, placed)
+        assert statuses(result)[KELLY] is Status.DOUBTFUL
+        assert not result.extras
+
+
+def test_an_unexpected_class_repeated_produces_one_extra():
+    low = seen("Pinza Kocher", 1.5, 1.5, 0.6)
+    high = seen("Pinza Kocher", 0.5, 0.5, 0.9)
+    result = validate_technique(TABLE, CLASSES, [low, high])
+    assert [obj.detection for obj in result.extras] == [high.detection]
+
+
+def test_stacked_dissection_forceps_keep_distinct_identities():
+    toothed = "Pinza de disección con garra"
+    smooth = "Pinza de disección sin garra"
+    classes = ClassMap(ClassEntry(name, uid(name)) for name in (toothed, smooth))
+    table = technique(
+        "Disección", 4, 4, item(1, toothed, (1, 1)), item(2, smooth, (1, 2))
+    )
+    observed = [seen(toothed, 0.5, 0.5), seen(toothed, 0.5, 0.5)]
+    result = validate_technique(table, classes, observed)
+    assert statuses(result) == {toothed: Status.IN_PLACE, smooth: Status.MISSING}
+    assert not result.extras
+    result = validate_technique(table, classes, observed + [seen(smooth, 0.5, 1.5)])
+    assert result.percent == 1.0
+    assert not result.extras
 
 
 def test_an_instrument_without_a_class_in_the_model_is_not_expected():
