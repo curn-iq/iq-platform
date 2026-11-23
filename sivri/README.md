@@ -11,13 +11,13 @@ por tiempo quirúrgico.
 
 - **Qué valida:** la **mesa de Mayo** de las cinco técnicas de **Cirugía
   General** de DataIQ (Colecistectomía, Eventrorrafia, Hemicolectomía derecha,
-  Mastectomía y Tiroidectomía). Cada una tiene entre 9 y 12 objetos.
+  Mastectomía y Tiroidectomía). Cada una tiene entre 10 y 13 objetos.
 - **Qué reconoce:** los instrumentos de esas mesas (lista en
   [`docs/dataset.md`](docs/dataset.md)). Cada clase del modelo es un
   instrumento del catálogo de DataIQ.
 - **De dónde salen las imágenes:** un dataset propio, con fotos de las mesas
   reales tomadas por el programa de Instrumentación Quirúrgica y etiquetadas
-  por el equipo de ING, publicado en Kaggle. La captura del 2026-11-18 se dividió por ronda completa en
+  por el equipo de ING, con publicación prevista en Kaggle. La captura del 2026-11-18 se dividió por ronda completa en
   entrenamiento, validación y prueba. Detalle y protocolo de fotos en
   [`docs/dataset.md`](docs/dataset.md).
 - **Cómo reconoce:** en tiempo real sobre el video de la cámara (decidido por
@@ -131,10 +131,12 @@ emparejar cada detección con su posición esperada y darle un estado a cada
 objeto. Para cada una de las cinco técnicas, con su propia cuadrícula (filas y
 columnas de DataIQ):
 
-1. **Emparejar.** Cada instrumento detectado se empareja con una posición
-   esperada del mismo instrumento, con el algoritmo húngaro (el emparejamiento
-   que minimiza la distancia total). Así se resuelve qué detección corresponde
-   a cuál cuando hay dos instrumentos iguales en la mesa.
+1. **Emparejar.** Se asignan detecciones a posiciones esperadas de la misma
+   clase con el algoritmo húngaro. Cuando hay copias, se priorizan las posiciones
+   cubiertas dentro de la celda o su margen y se desempata por distancia al
+   centro. Una clase ajena a la técnica genera un solo aviso de sobrante. Las
+   repeticiones de una clase esperada se ignoran una vez asignadas sus posiciones
+   (regla de cantidad decidida por Mauricio el 2026-11-21).
 2. **Medir.** De cada pareja, dónde cae el **centro** de la caja del
    instrumento respecto de sus celdas esperadas (un objeto puede ocupar varias
    celdas). Cuenta el centro y no la caja entera porque un instrumento suele

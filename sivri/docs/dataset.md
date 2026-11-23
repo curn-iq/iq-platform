@@ -10,7 +10,7 @@ Las imágenes no se guardan en el repo.
 
 Todas las imágenes son propias: fotos de las mesas de Mayo de Cirugía General
 tomadas por el programa de Instrumentación Quirúrgica con su instrumental, sobre
-su mesa real. El equipo de ING las etiqueta. El dataset se publica en Kaggle
+su mesa real. El equipo de ING las etiqueta. Se prevé publicar el dataset en Kaggle
 (decidido por Mauricio el 2026-10-13), así el proyecto controla las imágenes,
 sus etiquetas y su división, y otros pueden reutilizarlo.
 
@@ -148,9 +148,11 @@ dos veces** (unas 240 fotos de grupos en vez de 120). Con eso:
 
 Los arreglos se documentan en
 [DataIQ](../../dataiq/README.md#mesas-de-mayo-de-cirugía-general). La lista
-ordenada de las 15 clases de YOLO y su correspondencia con el catálogo está en
-[`classes.csv`](../backend/classes.csv). Una caja puede representar
-instrumentos apilados que se etiquetaron juntos, como las pinzas de disección.
+ordenada de las 16 clases y su correspondencia con el catálogo está en
+[`classes.csv`](../backend/classes.csv). El 2026-11-21 se corrigieron los
+mangos en las 125 fotos, se ampliaron 79 cajas y, por decisión de Mauricio
+Lugo, se etiquetó cada pinza de disección por separado. El dataset tiene
+1487 cajas, incluidas 125 de disección con garra y 125 sin garra.
 
 ## Resultados del detector YOLO26n
 
@@ -158,10 +160,17 @@ Corrida `sivri-r1` del 2026-11-19. Entrenamiento en CPU durante 120 épocas
 con entrada de 640 px. Las cifras corresponden a los pesos `best.pt` elegidos
 con la Ronda 2. La prueba del detector se ejecutó una vez con la Ronda 3.
 
-| Grupo | Fotos | Precisión | Exhaustividad | mAP@0.5 | mAP@0.5:0.95 |
-|---|---:|---:|---:|---:|---:|
-| Validación | 35 | 0,781 | 0,834 | 0,862 | 0,616 |
-| Prueba | 35 | 0,861 | 0,843 | 0,889 | 0,628 |
+| Corrida | Grupo | Fotos | Precisión | Exhaustividad | mAP@0.5 | mAP@0.5:0.95 |
+|---|---|---:|---:|---:|---:|---:|
+| sivri-r1 | Validación | 35 | 0,781 | 0,834 | 0,862 | 0,616 |
+| sivri-r1 | Prueba | 35 | 0,861 | 0,843 | 0,889 | 0,628 |
+| sivri-r2 | Validación | 35 | 0,801 | 0,874 | 0,900 | 0,635 |
+| sivri-r2 | Prueba | 35 | 0,794 | 0,862 | 0,887 | 0,614 |
+
+La corrida `sivri-r2` del 2026-11-21 partió de YOLO26n preentrenado, con
+la misma receta durante 120 épocas. Se seleccionaron los pesos con Ronda 2
+y se tomó una única medición final del detector por corrida en Ronda 3.
+El cambio de etiquetas y de número de clases afecta la comparación global.
 
 ### Validación por clase
 
@@ -182,6 +191,30 @@ con la Ronda 2. La prueba del detector se ejecutó una vez con la Ronda 3.
 | Pinza Rochester | 0,877 | 0,672 |
 | Pinza Kocher | 0,617 | 0,472 |
 | Separador de Senn Miller | 0,887 | 0,649 |
+
+### Resultados por clase de sivri-r2
+
+La tabla previa conserva los nombres publicados en r1. Los dos mangos
+estaban intercambiados en aquella corrida y la disección era una sola clase.
+
+| Clase | AP50 validación | AP50:95 validación | AP50 prueba | AP50:95 prueba |
+|---|---:|---:|---:|---:|
+| Mango de bisturí N.° 3 | 0,979 | 0,544 | 0,959 | 0,577 |
+| Mango de bisturí N.° 4 | 0,990 | 0,588 | 0,954 | 0,541 |
+| Tijera de Metzenbaum | 0,991 | 0,687 | 0,896 | 0,672 |
+| Tijera de Mayo | 0,975 | 0,771 | 0,987 | 0,674 |
+| Pinza de disección con garra | 0,950 | 0,530 | 0,956 | 0,551 |
+| Separador de Farabeuf | 0,989 | 0,655 | 0,993 | 0,778 |
+| Pinza Kelly | 0,773 | 0,580 | 0,666 | 0,494 |
+| Pinza Mosquito | 0,608 | 0,455 | 0,855 | 0,704 |
+| Pinza de Allis | 0,981 | 0,774 | 0,942 | 0,738 |
+| Pinza de Babcock | 0,818 | 0,599 | 0,813 | 0,588 |
+| Pinza de Moynihan | 0,611 | 0,561 | 0,917 | 0,622 |
+| Pinza Kelly Adson | 0,995 | 0,858 | 0,725 | 0,497 |
+| Pinza Rochester | 0,943 | 0,743 | 0,913 | 0,627 |
+| Pinza Kocher | 0,913 | 0,672 | 0,752 | 0,570 |
+| Separador de Senn Miller | 0,924 | 0,639 | 0,933 | 0,675 |
+| Pinza de disección sin garra | 0,957 | 0,510 | 0,931 | 0,524 |
 
 ## Fuentes públicas revisadas
 
