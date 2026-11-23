@@ -28,6 +28,13 @@
   text-align: right;
 }
 
+// Un dato de la cámara: la voz de la máquina
+:host(.data) .note {
+  font-family: var(--font-data);
+  font-size: 14px;
+  color: var(--tinta-3);
+}
+
 // Las filas que se proyectan: separadas por un filete de 1 px
 :host ::ng-deep .row {
   padding: 18px 0;

@@ -1,0 +1,23 @@
+@if (flow().error; as error) {
+  <!-- Las páginas de estado se agregan con los estados -->
+  <p class="pending">{{ error }}</p>
+} @else {
+  <div class="screen">
+    <header class="bar">
+      <a class="exit" routerLink="/"><span aria-hidden="true">‹</span> Salir</a>
+      <span class="status">EN VIVO</span>
+    </header>
+
+    <div class="stage-box">
+      <app-board-stage
+        mode="live"
+        [marks]="marks()"
+        description="La cámara sobre la mesa que se está armando."
+      />
+    </div>
+
+    <app-framing-panel [flow]="flow()" (ready)="check.pressReady()" />
+
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ announcement() }}</div>
+  </div>
+}

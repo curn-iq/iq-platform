@@ -110,14 +110,21 @@ export class CheckService {
     });
   }
 
-  /** Empieza: abre la cámara sobre `video`. `techniqueId` es opcional: sin él, SIVRI reconoce la técnica. */
-  start(video: HTMLVideoElement, techniqueId?: string): void {
-    this.video = video;
+  /** Empieza: abre la cámara. `techniqueId` es opcional: sin él, SIVRI reconoce la técnica. */
+  start(techniqueId?: string): void {
     this.techniqueId = techniqueId;
     this.state.set(initialFlow);
     this.liveResult.set(null);
     this.fixed.set(null);
     this.apply();
+  }
+
+  /**
+   * El `<video>` donde se muestra la cámara. Cambia cuando la pantalla pasa del video en vivo
+   * al cuadro fijo y vuelve, así que se puede llamar varias veces (también con `null`).
+   */
+  setVideo(video: HTMLVideoElement | null): void {
+    this.video = video;
     this.attach(this.camera.stream());
   }
 

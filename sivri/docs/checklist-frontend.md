@@ -48,8 +48,8 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 
 - [x] Computador: la página del nodo 217:2320, con el código QR (SVG estático de `https://dataiq-frontend.vercel.app/sivri`) y «Descargar los marcadores (PDF)» enlazado al archivo `marcadores-aruco.pdf` de la carpeta de SIVRI del Drive del proyecto
 - [x] Celular: entrada (224:2592)
-- [ ] Celular: encuadrar la mesa (223:2421)
-- [ ] Celular: mientras arma (sin mockup en la ronda 2; ver «Por confirmar»)
+- [x] Celular: encuadrar la mesa (223:2421)
+- [x] Celular: mientras arma (sin mockup en la ronda 2; ver «Por confirmar»)
 - [ ] Celular: resultado (221:2463)
 - [ ] Celular: pieza por mover (223:2566)
 - [ ] Celular: dos técnicas muy cerca (sin mockup en la ronda 2; ver «Por confirmar»)
