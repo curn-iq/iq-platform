@@ -39,18 +39,19 @@ def test_two_classes_for_the_same_instrument_are_rejected():
         resolve([("Pinza Moninjan", None), ("Pinza de Moynihan", None)], INSTRUMENTS)
 
 
-def test_the_classes_file_has_the_15_instruments_of_the_five_tables_once():
+def test_the_classes_file_has_the_16_instruments_of_the_five_tables_once():
     rows = read_rows(DEFAULT_FILE)
     names = [name for name, _ in rows]
-    assert rows[4] == ("Pinza de disección", "Pinza de disección con garra")
+    assert rows[4] == ("Pinza de disección con garra", None)
+    assert rows[15] == ("Pinza de disección sin garra", None)
     assert rows[7] == ("Pinza Mosquito", "Pinza Mosquito curva")
 
-    assert len(names) == 15 == len(set(names))
+    assert len(names) == 16 == len(set(names))
     # Las hojas de bisturí van montadas en su mango: no son clase.
     assert not any(n.startswith("Hoja de bisturí") for n in names)
     with DEFAULT_FILE.open(encoding="utf-8", newline="") as f:
         indices = [int(r["indice"]) for r in csv.DictReader(f)]
-    assert indices == list(range(15))
+    assert indices == list(range(16))
 
 
 def test_explicit_mapping_preserves_model_label():

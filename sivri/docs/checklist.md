@@ -13,21 +13,28 @@ proyecto de grado). Se marca cada pieza al terminarla.
 
 - [x] Alcance del MVP: la mesa de Mayo de las cinco técnicas de Cirugía General
 - [x] Revisión de datasets públicos: ninguno cubre las mesas del MVP
-- [x] Dataset propio con fotos del programa de IQ, publicado en Kaggle
+- [x] Dataset propio con fotos del programa de IQ
 - [x] Instrumentos de las cinco mesas ([`dataset.md`](dataset.md))
-- [ ] Pedido de fotos al programa de IQ, con fechas acordadas
-- [ ] Herramienta de etiquetado y reparto del trabajo
+- [x] Pedido de fotos al programa de IQ, con fechas acordadas (sesión del
+  2026-11-18, tres rondas; [`dataset.md`](dataset.md))
+- [x] Herramienta de etiquetado y reparto del trabajo (etiquetado
+  semiautomático del 2026-11-19 y revisión de cajas con SAM 2.1 del
+  2026-11-21; [`dataset.md`](dataset.md))
 - [ ] Licencia del dataset en Kaggle
 - [x] División de los datos: tres sesiones, por sesión
   ([`dataset.md`](dataset.md))
 - [x] Protocolo de fotos ([`dataset.md`](dataset.md))
 - [x] Dónde corre YOLO: en el backend, sobre 2 o 3 cuadros por segundo del
   video de la cámara (ver el README)
-- [ ] Prueba temprana de la demora: YOLO26 de fábrica, la cámara de un celular
+- [x] Prueba temprana de la demora: YOLO26 de fábrica, la cámara de un celular
   y un backend mínimo; medir cuánto tarda la respuesta desde Colombia. Medido
   el 2026-11-18: YOLO26n de fábrica a 640 px en la CPU del Servidor PC1 tarda
-  unos 24 ms por cuadro (mediana de 10, sin GPU); falta medir la respuesta
-  completa desde un celular
+  unos 24 ms por cuadro (mediana de 10, sin GPU). El 2026-11-22, desde el
+  celular de Mauricio con datos móviles, `POST /validate` por Funnel con la
+  foto completa de Tiroidectomía bien armada (IMG_1942, Ronda 3) respondió en
+  unos 6 a 10 s, estimados sin cronómetro, con la subida de la foto incluida;
+  reconoció Tiroidectomía con sus 13 instrumentos, sin avisos de falta ni de
+  mover. La demora del video en vivo se mide con el frontend
 - [x] Licencia de SIVRI: AGPL-3.0 solo en `sivri/` (ver el README)
 - [x] Agregar `sivri/LICENSE` (AGPL-3.0) y la excepción en la sección
   «Licencia» del README raíz
@@ -37,17 +44,22 @@ proyecto de grado). Se marca cada pieza al terminarla.
 ## 3. Diseño y desarrollo
 
 - [x] Etiquetar las fotos de IQ del 2026-11-18
-- [ ] Dividir los datos y publicar el dataset en Kaggle
+- [x] Dividir el dataset por ronda completa
+- [ ] Registrar la publicación verificable del dataset en Kaggle
 - [x] Entrenar YOLO26n y registrar las [métricas de validación](dataset.md#resultados-del-detector-yolo26n)
 - [x] Lógica de validación (ver «Cómo se valida la mesa» en el README):
   marcadores y cuadrícula, emparejamiento, estados y porcentaje por técnica,
   con pruebas automatizadas (`sivri/backend/app/domain/`, `tests/domain/`)
-- [x] Alinear la proyección y las 15 clases con las mesas de DataIQ (ver
+- [x] Verificar las 16 clases y las 57 posiciones esperadas de la semilla local de DataIQ (ver
   [README del backend](../backend/README.md#decisiones-de-la-implementación)).
 - [x] Comparar el margen 0,10 y 0,20 en la Ronda 2 y conservar 0,10
   (ver [diagnóstico](../backend/README.md#diagnóstico-de-la-retroalimentación)).
 - [x] Contrastar el detector y las cajas anotadas en las rondas 2 y 3
-- [ ] Confirmar con IQ las anotaciones de los errores de Ronda 3
+- [x] Contrastar `sivri-r2` y las cajas anotadas en 70 fotos, con la regla de duplicados y las celdas aprobadas
+- [x] Verificar esas celdas y los 16 mapeos en el entorno de PC1 (2026-11-22:
+  las 57 celdas del DataIQ local coinciden con la semilla, 16 clases cargadas y
+  una foto de Ronda 3 por Funnel, por HTTPS y WebSocket con renovación del token)
+- [ ] Confirmar con IQ las anotaciones de los errores de Ronda 3 (diferido para después de la entrega)
 - [x] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ,
   y CORS para el origen del shell: la página se sirve allí y manda los cuadros
   al Servidor PC1, que es otro dominio). Hecho el 2026-11-18 en
@@ -71,9 +83,11 @@ proyecto de grado). Se marca cada pieza al terminarla.
   con systemd de usuario (ver [README del backend](../backend/README.md#vista-previa-en-pc1)).
 - [x] Verificar una sesión WSS de más de cinco minutos por Funnel público,
   con renovación y rechazo del JWT vencido
-- [ ] Servidor PC1 para las sesiones del piloto: el PC de escritorio de Mauricio (decidido
+- [x] Servidor PC1 para las sesiones del piloto: el PC de escritorio de Mauricio (decidido
   el 2026-11-18) con Tailscale Funnel (dirección HTTPS fija, plan gratis); SIVRI
-  pide el catálogo a DataIQ una vez por sesión (ya lo hace)
+  pide el catálogo a DataIQ una vez por sesión (ya lo hace). Comprobado el
+  2026-11-22 con los servicios de systemd, los pesos de `sivri-r2` y una foto
+  enviada desde un celular
 - [ ] Frontend de SIVRI, servido bajo `/sivri/` en el mismo origen que el
   shell (rewrite del proyecto del shell hacia el de SIVRI). Es el destino de
   «Comprobar con la cámara» en todas las técnicas de DataIQ, así que dice qué
