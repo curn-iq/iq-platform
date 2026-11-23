@@ -37,7 +37,7 @@ Mockups: sección «SIVRI · Mockups», ronda 2, del Figma del proyecto (archivo
 
 #### Cámara y conexión
 
-- [ ] Cámara trasera con `getUserMedia` (`facingMode: 'environment'`); errores de permiso (`NotAllowedError`) y de equipo sin cámara (`NotFoundError`); se apaga al salir de la pantalla o al ocultarse la pestaña
+- [x] Cámara trasera con `getUserMedia` (`facingMode: 'environment'`); errores de permiso (`NotAllowedError`) y de equipo sin cámara (`NotFoundError`); se apaga al salir de la pantalla o al ocultarse la pestaña
 - [ ] Envío del cuadro completo desde un `canvas`: JPEG de calidad 0,75 y 640 px de lado mayor, 2 o 3 por segundo y uno a la vez (no se manda otro hasta recibir el resultado o un error)
 - [ ] Cliente del WebSocket: primer mensaje `{"token": …}`, cuadros binarios contados para conocer su `frame_number`, renovación del token en la misma conexión, errores por cuadro (`invalid_image`, `too_large`, `catalog_unavailable`) sin cortar, cierres 4400, 4401 y 4404, y reconexión con espera creciente cuando vuelve la red
 - [ ] El resultado se dibuja sobre el cuadro que se mandó (guardado por `frame_number`), no sobre el video de ahora
