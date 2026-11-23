@@ -19,3 +19,9 @@ export function mediaQuery(query: string): Signal<boolean> {
 
 /** Con `prefers-reduced-motion`, nada viaja ni se anima. */
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+/**
+ * Un computador (con puntero fino y que pasa el puntero por encima): SIVRI solo explica y lleva
+ * al celular, sin abrir la cámara (`DESIGN.md`, «SIVRI: celular y computador (mockups)»).
+ */
+export const DESKTOP_QUERY = '(hover: hover) and (pointer: fine)';

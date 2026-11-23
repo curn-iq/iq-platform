@@ -1,0 +1,49 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--tinta);
+  color: var(--superficie);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition:
+    background-color 0.25s var(--ease-fade),
+    transform 0.35s var(--ease-enter),
+    box-shadow 0.35s var(--ease-enter);
+}
+
+:host(:hover) {
+  background: var(--tinta-2);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-button-hover);
+}
+
+:host(:focus-visible) {
+  outline: 2.5px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+// Desactivado: filete con texto tinta-3, sin sombra ni movimiento
+:host([disabled]),
+:host([aria-disabled='true']) {
+  background: var(--filete);
+  color: var(--tinta-3);
+  box-shadow: none;
+  transform: none;
+  cursor: default;
+}
+
+// El botón ocupa el ancho en el celular
+:host(.block) {
+  display: flex;
+  width: 100%;
+}

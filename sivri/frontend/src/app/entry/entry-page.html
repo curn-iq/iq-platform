@@ -1,0 +1,116 @@
+<div class="page">
+  <section class="hero">
+    <h1 class="title">La mesa armada, revisada por la cámara.</h1>
+    <div class="intro">
+      <p class="lead">
+        SIVRI mira la mesa de Mayo desde arriba, reconoce cada pieza y la compara con la técnica que
+        el programa de Instrumentación Quirúrgica publicó en DataIQ. Dice qué está en su lugar y qué
+        hay que mover.
+      </p>
+      @if (!desktop()) {
+        <a appButton class="block open" routerLink="/camara">Abrir la cámara</a>
+      }
+      <a appArrowLink routerLink="." fragment="lo-que-hace-falta">Cómo se prepara la mesa</a>
+    </div>
+  </section>
+
+  <img
+    class="wide"
+    src="fotos/quirofano-simulacion-1500.webp"
+    srcset="fotos/quirofano-simulacion-800.webp 800w, fotos/quirofano-simulacion-1500.webp 1500w"
+    sizes="100vw"
+    width="1500"
+    height="855"
+    alt="Quirófano de simulación: una camilla vestida con campo azul y, al pie, la mesa con su bandeja de acero."
+    fetchpriority="high"
+  />
+
+  @if (desktop()) {
+    <section class="phone">
+      <img
+        class="phone-photo"
+        src="fotos/mesa-de-mayo-vestida-1500.webp"
+        srcset="
+          fotos/mesa-de-mayo-vestida-800.webp   800w,
+          fotos/mesa-de-mayo-vestida-1500.webp 1500w
+        "
+        sizes="(min-width: 1100px) 52vw, 100vw"
+        width="1500"
+        height="855"
+        alt="Mesa de Mayo vestida con la funda azul."
+        loading="lazy"
+      />
+      <div class="phone-text">
+        <h2 class="h2">Se usa desde el celular</h2>
+        <p>
+          La mesa se mira desde arriba, con el celular paralelo a ella y los cuatro marcadores en
+          las esquinas. La cámara del computador no alcanza a verla así.
+        </p>
+        <p>Abre esta dirección en el navegador del celular, o escanea el código.</p>
+        <div class="address">
+          <img
+            class="qr"
+            src="qr-sivri.svg"
+            width="96"
+            height="96"
+            alt="Código QR con la dirección de SIVRI"
+          />
+          <p class="url">{{ address }}</p>
+        </div>
+      </div>
+    </section>
+  }
+
+  <section id="lo-que-hace-falta" class="needs">
+    <div class="needs-head">
+      <h2 class="h2 big">Lo que hace falta antes de empezar.</h2>
+      <p class="lead">
+        Lo mismo que en una práctica del laboratorio, más cuatro marcadores impresos. Con eso, SIVRI
+        ubica la mesa con precisión y sabe dónde cae cada pieza.
+      </p>
+    </div>
+
+    <app-group name="La mesa" note="Como en el laboratorio" [columns]="3">
+      <div class="row">
+        <h3 class="row-title">Los cuatro marcadores</h3>
+        <p class="row-text">Impresos, uno en cada esquina, encima del campo.</p>
+        <a appArrowLink [href]="markersUrl" target="_blank" rel="noopener">
+          Descargar los marcadores (PDF)
+        </a>
+      </div>
+      <div class="row">
+        <h3 class="row-title">El instrumental de la técnica</h3>
+        <p class="row-text">Armado como lo publicó el programa de IQ en DataIQ.</p>
+        <a appArrowLink [href]="techniquesUrl">Ver las mesas en DataIQ</a>
+      </div>
+      <div class="row">
+        <h3 class="row-title">La luz del laboratorio</h3>
+        <p class="row-text">Sin flash ni sombras fuertes sobre la mesa.</p>
+      </div>
+    </app-group>
+
+    <app-group
+      name="Las técnicas"
+      [note]="desktop() ? 'Mesa de Mayo de Cirugía General' : 'Cirugía General'"
+      [columns]="3"
+    >
+      <div class="row">
+        <h3 class="row-title">Colecistectomía, Eventrorrafia y Hemicolectomía derecha</h3>
+        <p class="row-text">SIVRI reconoce la técnica: no hace falta elegirla.</p>
+      </div>
+      <div class="row">
+        <h3 class="row-title">Mastectomía y Tiroidectomía</h3>
+        <p class="row-text">Las otras especialidades vienen después.</p>
+      </div>
+      <div class="row">
+        <h3 class="row-title">Lo que te dice</h3>
+        <p class="row-text">
+          Qué está en su lugar y, de lo demás, a dónde va: la zona de la mesa, lo que tiene al lado
+          y su número del diagrama.
+        </p>
+      </div>
+    </app-group>
+  </section>
+
+  <app-site-footer />
+</div>
