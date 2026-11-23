@@ -43,6 +43,38 @@ def test_yolo_turns_boxes_and_classes_into_detections_with_the_instrument_names(
     ]
 
 
+def test_each_instrument_can_have_its_own_confidence():
+    # La Kelly a 0,91 pasa el umbral general; la Allis a 0,55 no pasa el suyo de 0,6.
+    model = FakeModel()
+    detector = YoloDetector(
+        "sivri.pt",
+        0.4,
+        512,
+        "cpu",
+        model=model,
+        class_confidence={"Pinza de Allis": 0.6},
+    )
+
+    detections = detector.detect(np.zeros((100, 100, 3), np.uint8))
+
+    assert [d.label for d in detections] == ["Pinza Kelly"]
+
+    low = YoloDetector(
+        "sivri.pt",
+        0.4,
+        512,
+        "cpu",
+        model=FakeModel(),
+        class_confidence={"Pinza de Allis": 0.1},
+    )
+    low.detect(np.zeros((100, 100, 3), np.uint8))
+    assert low._model.calls[0]["conf"] == 0.1
+    assert [d.label for d in low.detect(np.zeros((100, 100, 3), np.uint8))] == [
+        "Pinza Kelly",
+        "Pinza de Allis",
+    ]
+
+
 def test_the_fake_detector_gives_what_it_was_given_or_nothing():
     image = np.zeros((10, 10, 3), np.uint8)
     seen = [Detection("Pinza Kelly", Box(0, 0, 1, 1), 0.9)]
