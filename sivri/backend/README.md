@@ -394,3 +394,42 @@ invirtió el orden de dos piezas (por ejemplo, los dos mangos de bisturí), que
 ninguna asignación fija de celdas cubre. Las fotos de la Ronda 3 ya habían
 servido para las celdas del 2026-11-21, así que esta medición describe la
 concordancia con las fotos de referencia y no es una prueba independiente.
+Cuenta centros de cajas en las tres rondas; el diagnóstico de la sección
+siguiente usa el validador completo, foto por foto y solo con las rondas 2 y
+3, por eso sus cifras son otras.
+
+## Diagnóstico local con las celdas recalculadas (2026-11-23)
+
+Se repitió el diagnóstico del 2026-11-22 sobre las mismas 70 fotos, con los
+pesos de `sivri-r2` y los mismos parámetros. Cambiaron las celdas de 19 de los
+57 objetos y el criterio para ordenar y mostrar técnicas, que ahora descuenta
+los tipos de instrumento sobrantes. Los resultados recogen ambos cambios en
+conjunto. Cada flecha indica el recuento del 2026-11-22 y el del 2026-11-23.
+
+| Ronda | Fotos con cuatro ArUco | Técnica correcta primera con YOLO | Dos técnicas mostradas con YOLO | Técnica correcta primera con cajas anotadas | Dos técnicas mostradas con cajas anotadas |
+|---|---:|---:|---:|---:|---:|
+| 2 | 31/35 | 26 → 30 | 6 → 3 | 27 → 31 | 5 → 0 |
+| 3 | 33/35 | 24 → 30 | 2 → 3 | 33 → 33 | 2 → 2 |
+| **Total** | **64/70** | **50 → 60** | **8 → 6** | **60 → 64** | **7 → 2** |
+
+Una foto puede contar en ambas columnas de su fuente si SIVRI muestra dos
+técnicas y sitúa la correcta en primer lugar. En Eventrorrafia, la técnica
+correcta pasó de primera en 4 de 14 fotos a primera en 12 de 14 con YOLO.
+
+Para contar los avisos se fijó la técnica del índice en las fotos «Bien
+armada» con cuatro marcadores. En ambas fechas hubo cero sobrantes con ambas
+fuentes y cero faltantes con las cajas anotadas.
+
+| Ronda | Fotos evaluables «Bien armada» | Mover con YOLO | Faltar con YOLO | Fotos con aviso con YOLO | Mover con cajas anotadas | Fotos con aviso con cajas anotadas |
+|---|---:|---:|---:|---:|---:|---:|
+| 2 | 13/15 | 15 → 6 | 25 → 25 | 13 → 13 | 28 → 7 | 13 → 7 |
+| 3 | 13/15 | 9 → 0 | 20 → 20 | 10 → 10 | 10 → 0 | 5 → 0 |
+| **Total** | **26/30** | **24 → 6** | **45 → 45** | **23 → 23** | **38 → 7** | **18 → 7** |
+
+De las 45 indicaciones de faltante con YOLO el 2026-11-23, 11 correspondieron
+a la pinza de disección sin garra y 10 a la pinza de disección con garra.
+Las fotos «Bien armada» de las tres rondas intervinieron en la asignación de
+celdas. Los conteos de movimiento miden la concordancia espacial con esos
+montajes. Los errores intencionales de A/B siguen sin referencia docente.
+Estas cifras son avisos del validador por foto en las rondas 2 y 3; la
+sección anterior cuenta centros de cajas en las tres rondas.
