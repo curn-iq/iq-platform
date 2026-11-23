@@ -40,6 +40,18 @@
   display: inline-block;
 }
 
+.selector,
+.trigger {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // El botón cerrado: la píldora de vidrio de siempre
 .trigger {
   display: inline-flex;
@@ -151,6 +163,17 @@
   letter-spacing: -0.03em;
   text-align: left;
   cursor: pointer;
+}
+
+// En horizontal el selector ya muestra el nombre de la técnica.
+@media (width <= 820px) and (height <= 520px) {
+  .name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
 }
 
 // Pantalla baja: solo el nombre y el selector
