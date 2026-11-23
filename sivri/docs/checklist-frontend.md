@@ -58,7 +58,7 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 
 #### Cierre
 
-- [ ] Accesibilidad y movimiento: foco visible, orden de tabulación, lector de pantalla (el resultado se anuncia con `aria-live` cortés y sin repetirse en cada cuadro), objetivos táctiles de 44 px y `prefers-reduced-motion`; revisado con `web-design-guidelines`
+- [x] Accesibilidad y movimiento: foco visible, orden de tabulación, lector de pantalla (el resultado se anuncia con `aria-live` cortés y sin repetirse en cada cuadro), objetivos táctiles de 44 px y `prefers-reduced-motion`; revisado con `web-design-guidelines` (enlace para saltar la barra, áreas seguras abajo, el ancla fuera de la barra, cifras tabulares y porcentaje con `Intl`)
 - [ ] Peso: `npm run build` contra los presupuestos, con lo medido anotado aquí
 - [ ] Despliegue, como SIMIQ3D: `vercel.json` con la ruta `/sivri/:path*`, CSP con `connect-src 'self'` más las direcciones `https://` y `wss://` del backend, y `Permissions-Policy: camera=(self)`; `.github/workflows/sivri-frontend.yml` (build y pruebas en cada PR, despliegue en `main`, con `shared/shell/**` y `shared/design/**` en sus rutas); en `dataiq/frontend/vercel.json`, los rewrites de `/sivri/` y `/sivri/:path*` hacia el proyecto de SIVRI (cierra la pieza pendiente de la [fase 9 de DataIQ](../../dataiq/docs/checklist-frontend.md)); comprobar que la cámara abre detrás del rewrite
 - [ ] `README.md` del frontend, `DESIGN.md` con lo nuevo que se decida y `CLAUDE.md` al día en la misma rama

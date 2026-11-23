@@ -139,7 +139,8 @@
   gap: 40px;
   padding: 64px var(--space-gutter) 72px;
   background: var(--fondo);
-  scroll-margin-top: 16px;
+  // El ancla no queda bajo la barra del shell
+  scroll-margin-top: calc(var(--size-navbar) + 16px);
 }
 
 .needs-head {
@@ -149,6 +150,7 @@
 
 .row-title {
   margin: 0 0 6px;
+  overflow-wrap: anywhere;
   font-size: 17px;
   font-weight: 650;
   letter-spacing: -0.01em;
@@ -160,10 +162,6 @@
   color: var(--tinta-2);
   font-size: 15px;
   line-height: 1.55;
-}
-
-.row a {
-  min-height: 32px;
 }
 
 // --- De 760 px en adelante ---
