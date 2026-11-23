@@ -104,12 +104,34 @@ def technique_in(text: str, vocabulary: Vocabulary) -> str | None:
     return None
 
 
+# «Kocher» es también una incisión y una maniobra: «colecistectomía abierta por
+# incisión subcostal derecha de Kocher» no nombra la Pinza Kocher (respuesta en
+# producción del 2026-11-22: el revisor la cambió por «La Pinza Kocher no va en la
+# mesa de Mayo de Colecistectomía»). Después de «pinza» sí es el instrumento.
+_PROCEDURE_EPONYM = re.compile(
+    r"\b(?:incision(?:es)?|maniobra)\b[^.;:]{0,40}?\b(kocher)\b"
+)
+_TOOL_BEFORE = re.compile(r"\bpinzas?(?: de)? $")
+
+
+def _not_instruments(text: str) -> str:
+    """El texto canónico con lo que se parece a un instrumento y no lo es tapado
+    por asteriscos del mismo largo, para no mover las posiciones: «mesa de Mayo»
+    y el epónimo de una incisión o una maniobra («incisión de Kocher»)."""
+    text = text.replace("mesa de mayo", "mesa ** ****")
+    for match in reversed(list(_PROCEDURE_EPONYM.finditer(text))):
+        start, end = match.span(1)
+        if not _TOOL_BEFORE.search(text[:start]):
+            text = text[:start] + "*" * (end - start) + text[end:]
+    return text
+
+
 def instruments_at(text: str, vocabulary: Vocabulary) -> list[tuple[int, str]]:
     """Dónde nombra el texto cada instrumento (la posición en el texto canónico)
     y cuál, en orden. Donde dos nombres empiezan igual, cuenta el más largo:
     «Kelly Adson» no es además la Kelly. «mesa de Mayo» no es la Tijera de
     Mayo."""
-    text = canonical(text).replace("mesa de mayo", "mesa ** ****")
+    text = _not_instruments(canonical(text))
     found: list[tuple[int, int, str]] = []
     for name, aliases in vocabulary.instruments.items():
         for key in instrument_keys(name, aliases):
@@ -135,7 +157,7 @@ def instrument_in(text: str, vocabulary: Vocabulary) -> str | None:
     """El instrumento cuyo nombre (o alias, o nombre sin «pinza de») aparece en el
     texto. Si coinciden varios, gana el más largo: «Kelly Adson» antes que
     «Kelly». «mesa de Mayo» no es la Tijera de Mayo."""
-    text = canonical(text).replace("mesa de mayo", "")
+    text = _not_instruments(canonical(text))
     best: tuple[int, str] | None = None
     for name, aliases in vocabulary.instruments.items():
         for key in instrument_keys(name, aliases):
