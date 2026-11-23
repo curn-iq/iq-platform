@@ -31,6 +31,20 @@ def test_an_instrument_that_is_not_in_that_table_is_replaced_by_where_it_goes():
     assert reviewed.problems[0].kind == "mesa"
 
 
+def test_the_kocher_incision_is_not_the_kocher_forceps():
+    # Respuesta en producción del 2026-11-22: el revisor cambiaba esta frase por
+    # «La Pinza Kocher no va en la mesa de Mayo de Colecistectomía».
+    text = (
+        "La colecistectomía es la extirpación de la vesícula biliar por vía "
+        "abierta (incisión subcostal derecha de Kocher). La maniobra de Kocher "
+        "no se usa aquí."
+    )
+    tool = check("Tras la incisión, la pinza Kocher va arriba en la mesa.")
+
+    assert check(text).text == text
+    assert tool.problems[0].kind == "mesa"
+
+
 def test_a_wrong_diagram_number_or_zone_is_replaced_by_dataiq():
     number = check("La Pinza Kelly va en el centro (n.º 4 del diagrama).")
     zone = check("La Pinza Kelly va abajo a la izquierda.")
