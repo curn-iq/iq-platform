@@ -1,7 +1,29 @@
 // Tema de SIVRI sobre los tokens de shared/design/ (ver «Sistema visual
 // compartido» en CLAUDE.md). Solo sobrescribe propiedades CSS, nunca define
-// estilos de componentes. El contenido sin verde de marca se agrega con las
-// pantallas (DESIGN.md, «SIVRI: celular y computador (mockups)»).
+// estilos de componentes.
+//
+// SIVRI no lleva el verde de marca en el contenido (DESIGN.md, «SIVRI: celular y
+// computador (mockups)», decidido por Juan el 2026-11-22): el botón primario es
+// tinta con texto blanco, el inactivo es filete con texto `tinta-3`, los enlaces
+// con flecha van en tinta y el número de pieza en `tinta-3`. El verde queda solo en
+// el imagotipo de la barra (`--color-brand`), que está fuera de `.content`.
+//
+// El acento se cambia solo dentro de `.content`, el contenedor de las pantallas,
+// para que la barra compartida conserve el suyo.
+.content {
+  --color-accent: var(--tinta);
+  --color-accent-strong: var(--tinta-2);
+  --color-accent-soft: var(--filete);
+  --color-accent-soft-hover: var(--filete-2);
+  // El foco sigue al acento: tinta, no verde
+  --color-focus: var(--tinta);
+  // La cámara: el radial claro alrededor de la mesa, de `fondo` a `filete-2`
+  --color-canvas-center: var(--fondo);
+  --color-canvas-middle: color-mix(in srgb, var(--fondo) 45%, var(--filete-2));
+  --color-canvas-edge: var(--filete-2);
+  accent-color: var(--tinta);
+  caret-color: var(--tinta);
+}
 
 // Con «reducir movimiento», todo es inmediato
 @media (prefers-reduced-motion: reduce) {
