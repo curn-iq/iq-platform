@@ -1,0 +1,7 @@
+@if (!layout.immersive()) {
+  <a class="skip" href="" (click)="skipToContent($event)">Saltar al contenido</a>
+  <app-navbar />
+}
+<main class="content" id="contenido" tabindex="-1" #content>
+  <router-outlet />
+</main>

@@ -1,0 +1,17 @@
+<p class="eyebrow">{{ eyebrow() }}</p>
+<h1 class="title" tabindex="-1">{{ piece().label }}</h1>
+@if (piece().legendNumber !== null) {
+  <p class="legend">n.º {{ piece().legendNumber }} en el diagrama de la técnica</p>
+}
+<p class="instruction">{{ instruction() }}</p>
+
+<nav class="nav" aria-label="Piezas por corregir">
+  <button appArrowLink noArrow class="back" type="button" (click)="back.emit()">
+    <span class="chevron" aria-hidden="true">‹</span> Resultado
+  </button>
+  @if (next(); as following) {
+    <button appArrowLink class="forward" type="button" (click)="advance.emit()">
+      Siguiente: {{ following.label }}
+    </button>
+  }
+</nav>

@@ -337,7 +337,7 @@ Estas cifras cuentan indicaciones durante el diagnóstico.
 
 - Configurar el DataIQ y el origen del shell que se usarán para el piloto.
 - Medir con un celular y revisar los casos de retroalimentación con IQ.
-- El frontend de SIVRI (la cámara y el dibujo sobre el video).
+- Probar el frontend de SIVRI ([`../frontend/README.md`](../frontend/README.md)) con un celular y contra este backend.
 
 ## Diagnóstico local con 16 clases del 2026-11-22
 

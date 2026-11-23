@@ -1,0 +1,80 @@
+<div class="stage" #box role="img" [attr.aria-label]="description() || null">
+  @if (mode() === 'live') {
+    <video
+      #video
+      class="media"
+      playsinline
+      muted
+      [muted]="true"
+      autoplay
+      (loadedmetadata)="onVideoMetadata($event)"
+      (resize)="onVideoMetadata($event)"
+    ></video>
+  } @else if (imageUrl(); as url) {
+    <img class="media" [src]="url" alt="" />
+  }
+
+  <div class="marks" aria-hidden="true">
+    @for (item of drawn(); track item.key) {
+      @switch (item.kind) {
+        @case ('name') {
+          <span
+            class="name"
+            [class.below]="item.below"
+            [style.left.px]="item.rect.left"
+            [style.top.px]="item.below ? item.rect.top + item.rect.height + 2 : item.rect.top"
+            >{{ item.text }}</span
+          >
+        }
+        @case ('piece') {
+          <div
+            class="piece"
+            [style.left.px]="item.rect.left"
+            [style.top.px]="item.rect.top"
+            [style.width.px]="item.rect.width"
+            [style.height.px]="item.rect.height"
+          ></div>
+          <span
+            class="tag"
+            [class.below]="item.below"
+            [style.left.px]="item.rect.left"
+            [style.top.px]="item.below ? item.rect.top + item.rect.height : item.rect.top"
+            >{{ item.text }}</span
+          >
+        }
+        @case ('missing-marker') {
+          <div
+            class="missing"
+            [style.left.px]="item.rect.left"
+            [style.top.px]="item.rect.top"
+            [style.width.px]="item.rect.width"
+            [style.height.px]="item.rect.height"
+          ></div>
+        }
+      }
+    }
+
+    @if (arrows().length > 0) {
+      <svg class="arrows">
+        @for (arrow of arrows(); track $index) {
+          <line
+            [attr.x1]="arrow.from.x"
+            [attr.y1]="arrow.from.y"
+            [attr.x2]="arrow.to.x"
+            [attr.y2]="arrow.to.y"
+          />
+          <polygon [attr.points]="arrow.head" />
+        }
+      </svg>
+      @for (arrow of arrows(); track $index) {
+        <span
+          class="tag go"
+          [class.ends]="arrow.labelEnds"
+          [style.left.px]="arrow.labelAt.x"
+          [style.top.px]="arrow.labelAt.y"
+          >VA AQUÍ</span
+        >
+      }
+    }
+  </div>
+</div>

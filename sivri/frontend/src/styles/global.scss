@@ -1,0 +1,16 @@
+// Reglas globales de SIVRI que no son del tema (`theme.scss` solo sobrescribe
+// propiedades). Lo de «reducir movimiento» ya está en shared/design/base.css.
+
+// Lo táctil: sin la espera del doble toque ni el resplandor del sistema
+button,
+a,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Los controles nativos y el cursor de texto siguen al acento del tema
+.content {
+  accent-color: var(--color-accent);
+  caret-color: var(--color-accent);
+}
