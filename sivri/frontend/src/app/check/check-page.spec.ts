@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Layout } from '../core/layout/layout';
+import { ShellNavigation } from '../core/session/shell';
 import { initialFlow, type FlowState } from '../domain/flow';
 import { readFrame } from '../domain/frame-reading';
 import { markerStatus } from '../domain/markers';
@@ -22,16 +23,20 @@ function fakeCheck() {
     back: vi.fn(),
     next: vi.fn(),
     reviewAgain: vi.fn(),
+    restart: vi.fn(),
     stop: vi.fn(),
   };
 }
 
 describe('CheckPage', () => {
+  const goToLogin = vi.fn();
   let check: ReturnType<typeof fakeCheck>;
 
   async function render(tecnica?: string) {
     check = fakeCheck();
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), { provide: ShellNavigation, useValue: { goToLogin } }],
+    });
     TestBed.overrideComponent(CheckPage, {
       set: { providers: [{ provide: CheckService, useValue: check }] },
     });
@@ -208,6 +213,37 @@ describe('CheckPage', () => {
       expect(check.next).toHaveBeenCalledOnce();
       panel.querySelectorAll<HTMLButtonElement>('nav button')[0].click();
       expect(check.back).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('con un error', () => {
+    it('muestra la página de estado y no la cámara', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, { error: 'no-connection' });
+      expect(root.querySelector('app-error-page h1')?.textContent).toBe(
+        'No hay conexión con SIVRI.',
+      );
+      expect(root.querySelector('app-board-stage')).toBeNull();
+      expect(root.querySelector('.exit')).toBeNull();
+    });
+
+    it('«Intentar de nuevo» vuelve a empezar y «Revisar de nuevo» vuelve a encuadrar', async () => {
+      const { fixture, root } = await render();
+      await update(fixture, { error: 'no-connection' });
+      root.querySelector<HTMLButtonElement>('app-error-page button')!.click();
+      expect(check.restart).toHaveBeenCalledOnce();
+
+      await update(fixture, { error: 'not-recognized' });
+      root.querySelector<HTMLButtonElement>('app-error-page button')!.click();
+      expect(check.reviewAgain).toHaveBeenCalledOnce();
+    });
+
+    it('con la sesión terminada, «Ingresar» lleva al ingreso del shell y vuelve a la cámara', async () => {
+      goToLogin.mockClear();
+      const { fixture, root } = await render();
+      await update(fixture, { error: 'session-ended' });
+      root.querySelector<HTMLButtonElement>('app-error-page button')!.click();
+      expect(goToLogin).toHaveBeenCalledWith('/camara');
     });
   });
 });
