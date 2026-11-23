@@ -191,18 +191,14 @@ Mauricio que usan los demás proyectos. El workflow
 [`sivri-frontend.yml`](../../.github/workflows/sivri-frontend.yml) corre el build
 y las pruebas en cada PR y, en cada push a `main` que toque el frontend o lo que
 su build lee de fuera (`shared/design/`, `shared/shell/`), construye en GitHub
-Actions y publica con el CLI de Vercel. Mientras `VERCEL_ORG_ID` o
-`VERCEL_PROJECT_ID` del workflow valgan `POR_DEFINIR`, el despliegue se omite.
+Actions y publica con el CLI de Vercel en `https://sivri-frontend.vercel.app`.
 
 - **La ruta completa.** El proyecto del shell trae la app con un rewrite
-  `/sivri/:path*` hacia `https://<proyecto de SIVRI>/sivri/:path*`
+  `/sivri/:path*` hacia `https://sivri-frontend.vercel.app/sivri/:path*`
   (`dataiq/frontend/vercel.json`); por eso la app se publica dentro de `sivri/` y
-  `vercel.json` manda a `sivri/index.html` toda ruta que no sea un archivo. El
-  rewrite se agrega cuando el proyecto de Vercel exista y su dirección sea del
-  equipo (decidido por Juan el 2026-11-23); hasta entonces `/sivri/` del shell
-  muestra «No encontrada».
-- **Encabezados.** Valen los del proyecto que responde: con el rewrite, el shell
-  excluye `sivri` de los suyos. `vercel.json` pone `Permissions-Policy: camera=(self)` y una CSP
+  `vercel.json` manda a `sivri/index.html` toda ruta que no sea un archivo.
+- **Encabezados.** Valen los del proyecto que responde: el shell excluye `sivri`
+  de los suyos. `vercel.json` pone `Permissions-Policy: camera=(self)` y una CSP
   con `connect-src 'self'` más la dirección `https://` y `wss://` del backend de
   SIVRI. Al cambiar la dirección del backend (`environments/`), se cambia también
   ahí. `img-src` admite `blob:` (el cuadro que se mandó) y `data:` (la textura de
