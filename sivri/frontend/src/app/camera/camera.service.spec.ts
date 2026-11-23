@@ -116,6 +116,25 @@ describe('CameraService', () => {
     expect(getUserMedia).toHaveBeenCalledTimes(2);
   });
 
+  it('si la pestaña se oculta mientras se pide el permiso, no queda encendida', async () => {
+    let grant!: () => void;
+    getUserMedia.mockImplementationOnce(() => {
+      const made = fakeStream();
+      streams.push(made);
+      return new Promise((resolve) => (grant = () => resolve(made.stream)));
+    });
+    const camera = create();
+    const opening = camera.open();
+    setHidden(true);
+    grant();
+    await vi.waitFor(() => expect(streams[0].stop).toHaveBeenCalledOnce());
+    expect(camera.stream()).toBeNull();
+
+    setHidden(false);
+    expect(await opening).toBe(streams[1].stream);
+    expect(camera.stream()).toBe(streams[1].stream);
+  });
+
   it('si ya se cerró, volver a la pestaña no la abre', async () => {
     const camera = create();
     await camera.open();

@@ -1,4 +1,5 @@
 import { DOCUMENT } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   DestroyRef,
   effect,
@@ -286,8 +287,14 @@ export class CheckService {
     let retry = false;
     try {
       this.connection?.renewToken(await this.tokens.renew());
-    } catch {
-      // Un 401 (la sesión terminó) ya lo atendió `unauthorizedInterceptor`; otra falla, se reintenta
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        // La sesión de DataIQ terminó: no se reintenta. `unauthorizedInterceptor` solo lleva al
+        // ingreso si la sesión figuraba abierta, así que aquí se dice siempre
+        if (this.connection) this.dispatch({ type: 'session-ended' });
+        return;
+      }
+      // Otra falla (la red), se reintenta
       retry = true;
     }
     if (!this.connection) return;

@@ -284,6 +284,15 @@ describe('CheckService', () => {
       expect(tokens.renew).toHaveBeenCalledTimes(2);
       expect(sockets[0].sent).toContain(JSON.stringify({ token: 'token-2' }));
     });
+
+    it('si DataIQ responde 401 al renovarlo, la sesión terminó y no lo reintenta', async () => {
+      await started();
+      tokens.renew.mockRejectedValue(new HttpErrorResponse({ status: 401 }));
+      await vi.advanceTimersByTimeAsync(240_000);
+      expect(service.flow().error).toBe('session-ended');
+      await vi.advanceTimersByTimeAsync(60_000);
+      expect(tokens.renew).toHaveBeenCalledOnce();
+    });
   });
 
   it('al salir apaga la cámara y cierra la conexión', async () => {

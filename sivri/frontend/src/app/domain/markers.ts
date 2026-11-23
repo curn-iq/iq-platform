@@ -97,14 +97,21 @@ export function estimateMissingMarker(
  * (hacia la derecha de la mesa) y `rows` (hacia abajo de la mesa). Con la cámara paralela a
  * la mesa son (1, 0) y (0, 1); si el celular está girado, se giran con él. `null` si no se
  * ven los cuatro marcadores.
+ *
+ * Los marcadores vienen en fracciones del cuadro, y en un cuadro que no es cuadrado una fracción
+ * de ancho no mide lo mismo que una de alto: antes de normalizar se pasan a píxeles con el
+ * tamaño del cuadro (`frame`), o la dirección sale torcida cuando la mesa está girada.
  */
 export function boardAxes(
   markers: readonly Marker[],
+  frame: { width: number; height: number } = { width: 1, height: 1 },
 ): { columns: { x: number; y: number }; rows: { x: number; y: number } } | null {
   const by = new Map(markers.map((m) => [m.id, m]));
   const [m0, m1, m2, m3] = MARKER_IDS.map((id) => by.get(id));
   if (!m0 || !m1 || !m2 || !m3) return null;
-  const unit = (x: number, y: number) => {
+  const unit = (dx: number, dy: number) => {
+    const x = dx * frame.width;
+    const y = dy * frame.height;
     const length = Math.hypot(x, y);
     return length === 0 ? null : { x: x / length, y: y / length };
   };

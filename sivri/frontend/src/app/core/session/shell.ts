@@ -8,8 +8,8 @@ export const APP_BASE_PATH = '/sivri';
 /**
  * La pantalla de ingreso del shell, con `?volver=` a la ruta de esta app. El
  * shell solo vuelve a rutas de su mismo origen: en producción lo es, y en
- * desarrollo (shell en el puerto 4200, esta app en el 4300) hay que volver a
- * mano. `path` es la ruta del router de esta app, sin la base («/tecnicas/…»).
+ * desarrollo (shell en el puerto 4200, esta app en el 4400) hay que volver a
+ * mano. `path` es la ruta del router de esta app, sin la base («/camara»).
  */
 export function loginUrl(path: string): string {
   const back = `${APP_BASE_PATH}${path.startsWith('/') ? path : `/${path}`}`;

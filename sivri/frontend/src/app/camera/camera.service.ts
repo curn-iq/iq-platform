@@ -81,27 +81,48 @@ export class CameraService {
     if (current?.active) return current;
     if (!this.devices) throw new CameraError('no-camera');
     try {
-      const stream = await this.devices.getUserMedia({
-        audio: false,
-        video: {
-          // La cámara trasera si hay; con una sola, esa
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-      if (!this.wanted) {
-        // Se cerró mientras se pedía el permiso: no se deja abierta
+      for (;;) {
+        const stream = await this.devices.getUserMedia({
+          audio: false,
+          video: {
+            // La cámara trasera si hay; con una sola, esa
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        });
+        if (!this.wanted) {
+          // Se cerró mientras se pedía el permiso: no se deja abierta
+          stream.getTracks().forEach((track) => track.stop());
+          throw new CameraError('no-camera');
+        }
+        if (!this.document.hidden) {
+          this.current.set(stream);
+          return stream;
+        }
+        // La pestaña se ocultó mientras se pedía el permiso: se apaga y se vuelve a pedir al
+        // volver, para que la cámara no quede encendida en segundo plano
         stream.getTracks().forEach((track) => track.stop());
-        throw new CameraError('no-camera');
+        await this.whenVisible();
+        if (!this.wanted) throw new CameraError('no-camera');
       }
-      this.current.set(stream);
-      return stream;
     } catch (error) {
       throw error instanceof CameraError
         ? error
         : new CameraError(cameraErrorKind(error), { cause: error });
     }
+  }
+
+  /** Se cumple cuando la pestaña vuelve a verse. */
+  private whenVisible(): Promise<void> {
+    return new Promise((resolve) => {
+      const onChange = () => {
+        if (this.document.hidden) return;
+        this.document.removeEventListener('visibilitychange', onChange);
+        resolve();
+      };
+      this.document.addEventListener('visibilitychange', onChange);
+    });
   }
 
   private release(): void {
