@@ -148,6 +148,15 @@ el detalle por ronda y técnica está en
 [`../evidencias/sivri-reconocimiento-2026-11-23.csv`](../evidencias/sivri-reconocimiento-2026-11-23.csv)
 y [`../evidencias/sivri-avisos-bien-armada-2026-11-23.csv`](../evidencias/sivri-avisos-bien-armada-2026-11-23.csv).
 
+Casi la mitad de esos faltantes eran pinzas de disección que el modelo sí veía,
+pero con confianza menor que el umbral de 0,35. Con un umbral propio para los
+instrumentos que el modelo ve con poca confianza, elegido en la Ronda 2, los
+faltantes de la Ronda 3, medida una sola vez, bajaron de 20 a 15 y las fotos
+«Bien armada» con algún aviso, de 10 a 8 de 13, sin detecciones falsas nuevas;
+los faltantes de las pinzas de disección pasaron de 21 a 2 en las dos rondas
+(2026-11-23,
+[umbral por instrumento](../../sivri/backend/README.md#umbral-de-confianza-por-instrumento-2026-11-23)).
+
 En el diagnóstico del 2026-11-22, en IMG_1925 (Mastectomía, Error A) ambos recorridos ubicaron al Farabeuf
 fuera de su zona. Con las cajas anotadas se indicó mover la Kelly. Con
 YOLO se reportó ausente. Las variantes A/B carecen de un registro

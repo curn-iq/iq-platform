@@ -19,6 +19,7 @@ class YoloDetector:
         image_size: int = 640,
         device: str = "cpu",
         model=None,
+        class_confidence: dict[str, float] | None = None,
     ) -> None:
         if model is None:
             from ultralytics import YOLO
@@ -26,6 +27,9 @@ class YoloDetector:
             model = YOLO(weights)
         self._model = model
         self._confidence = confidence
+        # Un umbral por instrumento (los que no están usan `confidence`): el modelo
+        # predice con el más bajo y cada detección se filtra con el de su clase.
+        self._class_confidence = class_confidence or {}
         self._image_size = image_size
         self._device = device
 
@@ -33,7 +37,7 @@ class YoloDetector:
         result = self._model.predict(
             image,
             imgsz=self._image_size,
-            conf=self._confidence,
+            conf=min([self._confidence, *self._class_confidence.values()]),
             device=self._device,
             verbose=False,
         )[0]
@@ -45,5 +49,7 @@ class YoloDetector:
             result.boxes.conf.tolist(),
             strict=True,
         ):
-            detections.append(Detection(names[int(cls)], Box(*box), float(conf)))
+            label = names[int(cls)]
+            if conf >= self._class_confidence.get(label, self._confidence):
+                detections.append(Detection(label, Box(*box), float(conf)))
         return detections
