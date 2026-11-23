@@ -14,11 +14,12 @@ describe('App', () => {
     }).compileComponents();
   });
 
-  it('pone la barra arriba y las pantallas en `.content`, debajo', async () => {
+  it('pone el enlace para saltar, la barra y las pantallas en `.content`, en ese orden', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const root = fixture.nativeElement as HTMLElement;
     expect(Array.from(root.children).map((e) => e.tagName.toLowerCase())).toEqual([
+      'a',
       'app-navbar',
       'main',
     ]);
@@ -40,5 +41,15 @@ describe('App', () => {
     const root = fixture.nativeElement as HTMLElement;
     expect(root.querySelector('app-navbar')).toBeNull();
     expect(root.querySelector('main.content')).not.toBeNull();
+  });
+
+  it('ofrece saltar la barra y lleva el foco a la pantalla', async () => {
+    const fixture = TestBed.createComponent(App);
+    document.body.append(fixture.nativeElement);
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    root.querySelector<HTMLAnchorElement>('a.skip')!.click();
+    expect(document.activeElement).toBe(root.querySelector('main'));
+    root.remove();
   });
 });

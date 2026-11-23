@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 28px var(--space-gutter) 48px;
+  padding: 28px var(--space-gutter) max(48px, env(safe-area-inset-bottom));
 }
 
 .eyebrow {
@@ -21,7 +21,7 @@
   text-wrap: balance;
 }
 
-.title:focus {
+.title:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -44,6 +44,7 @@
 // El número de la pieza en el diagrama: en `tinta-3`, no en verde
 .num {
   min-width: 1.4em;
+  font-variant-numeric: tabular-nums;
   color: var(--tinta-3);
   font-weight: 500;
 }

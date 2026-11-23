@@ -4,7 +4,7 @@
   align-items: flex-start;
   gap: 16px;
   max-width: 640px;
-  padding: 72px var(--space-gutter) 64px;
+  padding: 72px var(--space-gutter) max(64px, env(safe-area-inset-bottom));
 }
 
 .eyebrow {
@@ -23,7 +23,7 @@
   text-wrap: balance;
 }
 
-.title:focus {
+.title:focus:not(:focus-visible) {
   outline: none;
 }
 

@@ -14,6 +14,9 @@ import { AppButton } from '../../ui/button';
 import { ArrowLink } from '../../ui/arrow-link';
 import { Group } from '../../ui/group';
 
+/** El porcentaje como se escribe en español: «80 %». */
+const percentFormat = new Intl.NumberFormat('es', { style: 'percent', maximumFractionDigits: 0 });
+
 /** Una fila de «Por mover», «Falta» o «Sobra»: la pieza y a qué lleva su enlace. */
 interface Row {
   readonly piece: Piece;
@@ -63,7 +66,7 @@ export class ResultPanel {
     this.reading().techniques.map((technique) => ({
       id: technique.techniqueId,
       name: technique.name,
-      detail: `${technique.percent} % · ${technique.inPlace} de ${technique.expected} en su lugar`,
+      detail: `${percentFormat.format(technique.percent / 100)} · ${technique.inPlace} de ${technique.expected} en su lugar`,
     })),
   );
 

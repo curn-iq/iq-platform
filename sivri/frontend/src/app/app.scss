@@ -11,3 +11,26 @@
   flex-direction: column;
   background: var(--color-bg);
 }
+
+.content:focus {
+  outline: none;
+}
+
+// Aparece al enfocarlo con el teclado, sobre la barra
+.skip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--tinta);
+  color: var(--superficie);
+  font-weight: 650;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
