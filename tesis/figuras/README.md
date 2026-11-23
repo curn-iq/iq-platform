@@ -11,6 +11,9 @@ catálogos o de internet no se suben: tienen derechos de autor.
 
 | Archivo | Qué muestra | Sección | Fuente |
 |---|---|---|---|
+| `dataiq-catalogo.png` | El catálogo de técnicas de DataIQ, por especialidad | Resultados (DataIQ) | Captura de producción sin cuenta (2026-11-22) |
+| `dataiq-tecnica-datos-clinicos.png` | La ficha de una técnica (Tiroidectomía): datos clínicos y fuente | Resultados (DataIQ) | Captura de producción sin cuenta (2026-11-22) |
+| `dataiq-mesa-de-mayo-tiroidectomia.png` | La mesa de Mayo de Tiroidectomía en DataIQ, con su diagrama numerado y su leyenda | Resultados (DataIQ) | Captura de producción con la cuenta de prueba (2026-11-22) |
 | `simiq3d-catalogo-16-modelos.png` | Los 16 modelos 3D finales del instrumental | Desarrollo de SIMIQ3D; Resultados | Render de los GLB de `simiq3d/models/glb/` en Blender (2026-11-21) |
 | `simiq3d-modelado-rochester-foto-y-modelo.jpg` | El contorno de la pinza Rochester trazado sobre la foto enderezada, y el modelo resultante | Desarrollo de SIMIQ3D | Foto de IQ IMG_1929 (Tiroidectomía, ronda 1) y render del modelo |
 | `simiq3d-posiciones-medidas-tiroidectomia.jpg` | La foto enderezada con los ArUco y la posición medida de cada instrumento | Desarrollo de DataIQ y de SIMIQ3D | Foto de IQ IMG_1929, medición del 2026-11-21 |

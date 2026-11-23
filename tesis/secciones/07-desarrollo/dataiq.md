@@ -46,6 +46,27 @@ Juan Caraballo, por fases.
 - **Gestión de versiones para el frontend:** las versiones con su contenido,
   sus rechazos y el filtro por técnica, y la actividad de cada cuenta.
 
+### Modelo de datos: identificadores
+
+Reemplaza en «Modelo de datos» la oración «Los identificadores son UUIDv7
+generados por la propia base de datos, de manera que el catálogo conserva la
+misma identidad en cualquier instalación y los módulos SIVRI y SIMIQ3D pueden
+referenciar el instrumental de forma estable.», que no es correcta: la carga
+del catálogo genera los identificadores, así que no son iguales en todas las
+instalaciones.
+
+> Los identificadores son UUIDv7 generados por la propia base de datos: no se
+> repiten entre instalaciones y su orden sigue el de creación, pero cada
+> instalación genera los suyos al cargar el catálogo. Por eso SIVRI y
+> SIMIQ3D no guardan identificadores de DataIQ: mapean el instrumental por su
+> nombre o un alias y lo traducen al identificador de cada entorno con la API
+> de DataIQ.
+
+La justificación de la fila «Identificadores» de la tabla de decisiones
+técnicas del segundo corte (Anexo B) se corrige igual: «No se repiten entre
+instalaciones; SIVRI y SIMIQ3D mapean el instrumental por nombre o alias y lo
+traducen al identificador de cada entorno».
+
 ### Mesas de Mayo medidas en las fotos de IQ
 
 Las mesas de Mayo de las cinco técnicas de Cirugía General se actualizaron con

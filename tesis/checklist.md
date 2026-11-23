@@ -35,9 +35,9 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 
 ## Marco de referencia
 
-- [ ] Gamificación: el párrafo promete «puntaje y registro de progreso», que el
+- [x] Gamificación: el párrafo promete «puntaje y registro de progreso», que el
   MVP no tiene; ajustarlo.
-- [ ] Visualización 3D: decir que el chat, además de interpretar la intención,
+- [x] Visualización 3D: decir que el chat, además de interpretar la intención,
   redacta la respuesta con los datos de DataIQ.
 
 ## Metodología
@@ -47,16 +47,16 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
   objetivo con el número de estudiantes y docentes, y tamaño y tipo de muestra.
   La nota del director pide consultarlo con las estudiantes de IQ (qué
   semestre, asignatura o docentes validan).
-- [ ] Tabla de la metodología por objetivo: dice «Registro de acuerdos
+- [x] Tabla de la metodología por objetivo: dice «Registro de acuerdos
   (Tabla III)» y es la tabla de reuniones del primer corte.
-- [ ] Tabla de la metodología por objetivo y «Análisis de datos»: agregar la
+- [x] Tabla de la metodología por objetivo y «Análisis de datos»: agregar la
   métrica de SIMIQ3D (preguntas convertidas en la acción correcta, respuestas
   inventadas, con el registro anónimo de conversaciones).
 - [x] «Uso de inteligencia artificial»: declarar el modelo de lenguaje del chat
   de SIMIQ3D como parte del producto, y los asistentes de IA del desarrollo
   (Claude Code y Codex, con revisión humana; decidido por Mauricio el
   2026-11-21). Juan y Gabriel agregan el suyo en la misma tabla.
-- [ ] «Limitaciones y riesgos»: el origen de los modelos de SIMIQ3D ya está
+- [x] «Limitaciones y riesgos»: el origen de los modelos de SIMIQ3D ya está
   decidido (construidos en Blender con scripts y asistentes de IA, sobre las
   fotos del programa de IQ, y aprobados uno por uno por el equipo).
 - [ ] Consideraciones éticas: el consentimiento informado de quienes participan
@@ -70,7 +70,7 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 - [x] Seguridad: el token dura dos horas (decía doce) y en el navegador va en
   una cookie `HttpOnly`; justificar la autenticación con OWASP ASVS 5.0 nivel 1
   (límite de intentos).
-- [ ] DataIQ, «Modelo de datos»: corregir la justificación de UUIDv7 (los ids
+- [x] DataIQ, «Modelo de datos»: corregir la justificación de UUIDv7 (los ids
   no se repiten entre instalaciones, pero no son iguales en todas; SIVRI y
   SIMIQ3D mapean por nombre).
 - [x] DataIQ: el código, la base y la API están en inglés; el frontend en
@@ -89,12 +89,12 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
   corregidas.
 - [x] SIVRI: diagnóstico técnico de la lógica de validación. La evaluación con referencia docente sigue pendiente.
 - [ ] SUS (meta de 68 o más) y cuestionario tipo Likert de la prueba piloto.
-- [ ] Capturas de cada producto en `figuras/` (falta DataIQ).
+- [x] Capturas de cada producto en `figuras/` (las de DataIQ, del 2026-11-22).
 - [x] SIVRI: figuras del entrenamiento con las etiquetas corregidas (curvas de
   pérdida, matriz de confusión) y un ejemplo de validación de una mesa.
-- [ ] No repetir lo que la retroalimentación atribuye al documento y este no
+- [x] No repetir lo que la retroalimentación atribuye al documento y este no
   dice: el desarrollo guiado por pruebas (TDD) no está en el Formato 115.
-- [ ] Verificación: el texto del Corte 2 cuenta «69 pruebas unitarias»; eran
+- [x] Verificación: el texto del Corte 2 cuenta «69 pruebas unitarias»; eran
   pruebas de dominio, de acceso a datos y de API (47 de integración con
   PostgreSQL). Contarlas de nuevo y nombrarlas bien.
 
@@ -106,7 +106,7 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 
 ## Anexos
 
-- [ ] Anexo C: el enlace al dataset apunta a `dataiq/backend/semilla/`; ahora es
+- [x] Anexo C: el enlace al dataset apunta a `dataiq/backend/semilla/`; ahora es
   `dataiq/backend/seed/tecnicas.xlsx`.
 - [x] Anexo D: registro de avance del tercer corte.
 - [x] Licencia: «MIT, salvo SIVRI bajo AGPL-3.0 por depender de Ultralytics».
