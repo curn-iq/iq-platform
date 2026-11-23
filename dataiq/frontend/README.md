@@ -662,15 +662,15 @@ el build lee `../../shared/design/`, `../../shared/shell/` (la barra) y
     con la barra final y sin nada después;
   - el resto, a `index.html`. Un archivo que existe se sirve antes de cualquier
     rewrite.
-  - `/sivri/` todavía no tiene rewrite: se agrega cuando exista el proyecto de
-    Vercel de SIVRI y su dirección sea del equipo (decidido por Juan el
-    2026-11-23). Entonces va antes del de `index.html`, con la ruta completa y
-    su propia regla para `/sivri/`, como `/simiq3d`, y su ruta se excluye de los
-    encabezados de esta app (`/((?!api/|simiq3d|sivri).*)`): los que valen son
-    los del proyecto que responde, y esta app lleva
-    `Permissions-Policy: camera=()` y un CSP sin el backend de SIVRI, que le
-    quitarían la cámara y el video continuo. Hasta entonces `/sivri/` muestra
-    «No encontrada» del shell.
+  - `/sivri/*` va a `https://sivri-frontend.vercel.app/sivri/*` (el proyecto
+    de SIVRI, en la cuenta de Juan), con la ruta completa y con su propia regla
+    para `/sivri/`, como `/simiq3d`. El rewrite apunta solo a una dirección
+    que ya es de un proyecto del equipo (decidido por Juan el 2026-11-23): una
+    sin dueño entregaría en este origen lo que publique quien la registre, con
+    la cookie de sesión. Su ruta se excluye de los encabezados de esta app
+    (`/((?!api/|simiq3d|sivri).*)`): los que valen son los del proyecto que
+    responde, y esta app lleva `Permissions-Policy: camera=()` y un CSP sin el
+    backend de SIVRI, que le quitarían la cámara y el video continuo.
 - **CSP** (`vercel.json`): todo sale de este mismo origen, salvo las fuentes de
   `fonts.gstatic.com`, porque el build incrusta el CSS de Google Fonts. Las
   excepciones:
