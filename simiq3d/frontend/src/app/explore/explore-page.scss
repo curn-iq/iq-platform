@@ -13,6 +13,7 @@
   height: 100%;
   overflow: hidden;
   // Lo que mide el panel asomado en celular: el campo más el asa
+  --panel: var(--preferred-panel, 400px);
   --dock-peek: calc(var(--field-height, 150px) + 28px);
 }
 
@@ -109,10 +110,18 @@
 }
 
 // Sin técnica abierta, el campo va al centro del dock
+// Al entrar, el campo va encima del historial vacío, en la misma celda. Sin la
+// columna fija, la grilla le abría una segunda columna y el encabezado quedaba
+// en 40 px, con el texto partido (visto por Mauricio el 2026-11-22).
 .bench.empty .field {
   z-index: 2;
   grid-row: 2;
+  grid-column: 1;
   align-self: center;
+}
+
+.bench.empty .chat {
+  grid-column: 1;
 }
 
 .grab {
@@ -149,6 +158,17 @@
   &:focus-visible::after,
   &:active::after {
     opacity: 1;
+  }
+}
+
+.legend-in-dock .dock {
+  visibility: hidden;
+}
+
+// La cabeza reserva el sitio del botón de la leyenda en el escritorio compacto.
+@media (820px < width < 1200px) {
+  .head {
+    right: 190px;
   }
 }
 
@@ -245,6 +265,10 @@
 
 // Pantalla baja (un celular acostado): el dock casi sin margen y la pista fuera
 @media (height <= 520px) {
+  .bench {
+    --panel: min(var(--preferred-panel, 400px), 40vw);
+  }
+
   .dock {
     top: 8px;
     bottom: 8px;
@@ -253,6 +277,8 @@
 
   .head {
     top: 12px;
+    left: calc(var(--panel) + 20px);
+    right: 108px;
   }
 
   .hint {
