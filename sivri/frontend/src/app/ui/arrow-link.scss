@@ -1,0 +1,43 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  // Objetivo táctil de 44 px sin cambiar cómo se ve
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.arrow {
+  flex: none;
+  transition: transform 0.35s var(--ease-enter);
+}
+
+:host(:hover) .arrow {
+  transform: translateX(3px);
+}
+
+:host(:focus-visible) {
+  outline: 2.5px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+:host([disabled]),
+:host([aria-disabled='true']) {
+  color: var(--color-text-subtle);
+  cursor: default;
+}
+
+:host([disabled]) .arrow,
+:host([aria-disabled='true']) .arrow {
+  transform: none;
+}

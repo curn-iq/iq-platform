@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  background: var(--color-dark);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding: 24px var(--space-gutter);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-dark-text-muted);
+}
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-surface);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.source:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.source:focus-visible {
+  outline: 2.5px solid var(--color-surface);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}

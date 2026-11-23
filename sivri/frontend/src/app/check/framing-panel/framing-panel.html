@@ -1,0 +1,16 @@
+<p class="eyebrow">{{ eyebrow() }}</p>
+<h1 class="title">{{ title() }}</h1>
+<p class="lead">{{ lead() }}</p>
+
+<app-group name="Marcadores" [note]="markers().seen + ' de 4'" [mono]="true">
+  <div class="row">
+    <p class="markers-text">{{ markersText() }}</p>
+  </div>
+</app-group>
+
+<button appButton class="block" type="button" [disabled]="!canCommit()" (click)="ready.emit()">
+  {{ committed() ? 'Revisando…' : 'Ya armé la mesa' }}
+</button>
+@if (hint()) {
+  <p class="hint">{{ hint() }}</p>
+}

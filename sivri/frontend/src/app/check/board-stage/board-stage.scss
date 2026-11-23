@@ -1,0 +1,120 @@
+:host {
+  display: block;
+}
+
+// La cámara clara: alrededor de la mesa, un radial de `fondo` a `filete-2` (DESIGN.md, «La cámara»)
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 90% at 50% 40%,
+    var(--color-canvas-center) 0%,
+    var(--color-canvas-middle) 62%,
+    var(--color-canvas-edge) 100%
+  );
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+// Mientras arma: el nombre de lo que se ve, en Martian Mono, sin caja ni color
+.name {
+  position: absolute;
+  transform: translateY(-100%);
+  margin-top: -3px;
+  padding: 2px 6px;
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.name.below {
+  transform: none;
+  margin-top: 0;
+}
+
+// Lo que hay que corregir: solo esto lleva `alerta-noche`
+.piece {
+  position: absolute;
+  border: 2px solid var(--color-misplaced);
+  border-radius: 4px;
+}
+
+.tag {
+  position: absolute;
+  transform: translateY(-100%);
+  padding: 2px 8px;
+  border-radius: 3px 3px 0 0;
+  background: var(--color-misplaced);
+  color: var(--color-dark);
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tag.below {
+  transform: none;
+  border-radius: 0 0 3px 3px;
+}
+
+// «VA AQUÍ» en la punta de la flecha, debajo de ella
+.tag.go {
+  transform: translate(-50%, 6px);
+  border-radius: 3px;
+}
+
+.tag.go.ends {
+  transform: translate(-100%, 6px);
+}
+
+.arrows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.arrows line {
+  stroke: var(--color-misplaced);
+  stroke-width: 3;
+  stroke-dasharray: 6 6;
+  stroke-linecap: round;
+}
+
+.arrows polygon {
+  fill: none;
+  stroke: var(--color-misplaced);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+// El marcador que falta, donde debería verse
+.missing {
+  position: absolute;
+  border: 2px dashed var(--color-text);
+  border-radius: 4px;
+  // El halo blanco lo despega de cualquier fondo, claro u oscuro
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-surface) 90%, transparent);
+}

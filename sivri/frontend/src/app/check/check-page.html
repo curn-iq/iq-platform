@@ -1,0 +1,55 @@
+@if (flow().error; as error) {
+  <app-error-page
+    [kind]="error"
+    (restart)="check.restart()"
+    (review)="check.reviewAgain()"
+    (login)="signIn()"
+  />
+} @else {
+  <div class="screen">
+    <header class="bar">
+      <a class="exit" routerLink="/"><span aria-hidden="true">‹</span> Salir</a>
+      <span class="status">{{ frozen() ? 'CUADRO FIJO' : 'EN VIVO' }}</span>
+    </header>
+
+    <div class="stage-box">
+      <app-board-stage
+        [mode]="frozen() ? 'frozen' : 'live'"
+        [frame]="check.fixedFrame()"
+        [marks]="marks()"
+        [description]="
+          frozen()
+            ? 'El cuadro de la mesa sobre el que se hizo la revisión.'
+            : 'La cámara sobre la mesa que se está armando.'
+        "
+      />
+    </div>
+
+    @switch (flow().screen) {
+      @case ('result') {
+        <app-result-panel
+          [reading]="flow().result!"
+          (openPiece)="check.openPiece($event)"
+          (again)="check.reviewAgain()"
+        />
+      }
+      @case ('piece') {
+        @if (currentPiece(); as piece) {
+          <app-piece-panel
+            [piece]="piece"
+            [index]="flow().pieceIndex"
+            [total]="pending().length"
+            [next]="nextPiece()"
+            (back)="check.back()"
+            (advance)="check.next()"
+          />
+        }
+      }
+      @default {
+        <app-framing-panel [flow]="flow()" (ready)="check.pressReady()" />
+      }
+    }
+
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ announcement() }}</div>
+  </div>
+}

@@ -1,0 +1,9 @@
+<p class="eyebrow">{{ copy().eyebrow }}</p>
+<h1 class="title" #title tabindex="-1">{{ copy().title }}</h1>
+<p class="text">{{ copy().text }}</p>
+<div class="actions">
+  <button appButton class="block" type="button" (click)="act()">{{ copy().primary.label }}</button>
+  @if (copy().link; as link) {
+    <a appArrowLink [href]="link.href">{{ link.label }}</a>
+  }
+</div>
