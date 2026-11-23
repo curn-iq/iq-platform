@@ -1,6 +1,7 @@
 # Frontend de SIVRI: build y pruebas en cada PR; en main, el despliegue a Vercel
 # (producción). El navegador llega a la app por el rewrite /sivri/ del proyecto del
-# shell (sivri/frontend/README.md, «Despliegue»).
+# shell, que se agrega cuando exista el proyecto de Vercel (sivri/frontend/README.md,
+# «Despliegue»).
 
 name: SIVRI frontend
 
