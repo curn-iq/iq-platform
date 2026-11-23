@@ -169,12 +169,9 @@ def validate_technique(
 ) -> TechniqueResult:
     """Compara lo detectado con la mesa de la técnica.
 
-    1. Empareja, clase por clase, cada instrumento detectado con una posición
-       esperada del mismo instrumento (algoritmo húngaro: la asignación que
-       minimiza la distancia total; así se resuelve cuál es cuál cuando hay dos
-       iguales).
-    2. Da un estado a cada pareja según dónde cae el centro de la caja.
-    3. Lo esperado que no apareció, falta; lo que apareció y no se esperaba, sobra.
+    1. Empareja por clase y posición. Ante varias detecciones, prioriza
+       cubrir las posiciones aceptables y desempata por distancia.
+    2. Evalúa las posiciones esperadas. Cada tipo ajeno genera un solo aviso.
     """
     expected_by_class: dict[str, list[ExpectedObject]] = defaultdict(list)
     for expected in expected_objects(technique, classes):
@@ -206,15 +203,28 @@ def validate_technique(
     for key in expected_by_class.keys() | found_by_class.keys():
         wanted = expected_by_class.get(key, [])
         seen = found_by_class.get(key, [])
+        if not wanted:
+            extras.append(extra(max(seen, key=lambda item: item.detection.confidence)))
+            continue
         pairs: list[tuple[int, int]] = []
-        if wanted and seen:
+        if seen:
             costs = np.array(
                 [[_cost(*position(item), e) for item in seen] for e in wanted]
             )
+            if len(seen) > 1:
+                # Una sola indicación de mover pesa más que cualquier diferencia
+                # en la suma de distancias entre emparejamientos de esta clase.
+                penalty = min(costs.shape) * costs.max() + 1
+                for i, expected in enumerate(wanted):
+                    for j, item in enumerate(seen):
+                        x, y = position(item)
+                        if all(
+                            _distance(x, y, c) > settings.margin for c in expected.cells
+                        ):
+                            costs[i, j] += penalty
             rows, columns = linear_sum_assignment(costs)
             pairs = list(zip(rows.tolist(), columns.tolist(), strict=True))
         matched_expected = {i for i, _ in pairs}
-        matched_found = {j for _, j in pairs}
         for i, j in pairs:
             e, item = wanted[i], seen[j]
             status, found, move_rows, move_columns = _judge(
@@ -251,9 +261,6 @@ def validate_technique(
                         ),
                     )
                 )
-        extras.extend(
-            extra(item) for j, item in enumerate(seen) if j not in matched_found
-        )
 
     objects.sort(key=lambda o: (o.legend_number is None, o.legend_number or 0, o.label))
     extras.sort(key=lambda o: o.label or "")

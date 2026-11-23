@@ -1,7 +1,8 @@
 <div
   class="bench"
   [class.empty]="welcome()"
-  [style.--panel.px]="chatWidth()"
+  [class.legend-in-dock]="compact() && legendOpen() && mayo()"
+  [style.--preferred-panel.px]="chatWidth()"
   [style.--field-height.px]="fieldHeight()"
 >
   <main class="canvas">

@@ -71,5 +71,6 @@ instrumento la celda donde cae su posición medida.
 
 La primera corrida (`sivri-r1`, 2026-11-19) entrenó YOLO26n en CPU durante 120
 épocas, con entrada de 640 px. Como esa corrida usó las etiquetas con los
-mangos intercambiados y las cajas cortas, el detector se entrena de nuevo con
-las etiquetas corregidas y las dos clases de disección.
+mangos intercambiados y las cajas cortas, el 2026-11-21 se completó `sivri-r2` con
+1487 cajas, 16 clases y la misma división por ronda. Se eligieron los pesos
+con la Ronda 2. Las dos disecciones tienen cajas individuales en las 125 fotos.

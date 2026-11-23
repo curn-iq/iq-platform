@@ -11,6 +11,9 @@ catálogos o de internet no se suben: tienen derechos de autor.
 
 | Archivo | Qué muestra | Sección | Fuente |
 |---|---|---|---|
+| `dataiq-catalogo.png` | El catálogo de técnicas de DataIQ, por especialidad | Resultados (DataIQ) | Captura de producción sin cuenta (2026-11-22) |
+| `dataiq-tecnica-datos-clinicos.png` | La ficha de una técnica (Tiroidectomía): datos clínicos y fuente | Resultados (DataIQ) | Captura de producción sin cuenta (2026-11-22) |
+| `dataiq-mesa-de-mayo-tiroidectomia.png` | La mesa de Mayo de Tiroidectomía en DataIQ, con su diagrama numerado y su leyenda | Resultados (DataIQ) | Captura de producción con la cuenta de prueba (2026-11-22) |
 | `simiq3d-catalogo-16-modelos.png` | Los 16 modelos 3D finales del instrumental | Desarrollo de SIMIQ3D; Resultados | Render de los GLB de `simiq3d/models/glb/` en Blender (2026-11-21) |
 | `simiq3d-modelado-rochester-foto-y-modelo.jpg` | El contorno de la pinza Rochester trazado sobre la foto enderezada, y el modelo resultante | Desarrollo de SIMIQ3D | Foto de IQ IMG_1929 (Tiroidectomía, ronda 1) y render del modelo |
 | `simiq3d-posiciones-medidas-tiroidectomia.jpg` | La foto enderezada con los ArUco y la posición medida de cada instrumento | Desarrollo de DataIQ y de SIMIQ3D | Foto de IQ IMG_1929, medición del 2026-11-21 |
@@ -21,3 +24,6 @@ catálogos o de internet no se suben: tienen derechos de autor.
 | `sivri-etiquetas-tiroidectomia.jpg` | Las cajas etiquetadas de una mesa bien armada | Desarrollo de SIVRI | Foto de IQ IMG_1929 y sus etiquetas corregidas |
 | `sivri-revision-sam-ronda-1.jpg` | Revisión de las cajas con SAM 2.1: caja vigente y caja propuesta | Desarrollo de SIVRI | Revisión del 2026-11-21 (asistencia de Codex) |
 | `sivri-cajas-ampliadas.jpg` | Cajas ampliadas (en verde) donde la anterior (en rojo) cortaba el instrumento | Desarrollo de SIVRI | Corrección del 2026-11-21 (asistencia de Claude Code) |
+| `sivri-r2-curves.png` | Pérdidas y métricas por época | Ultralytics, entrenamiento sivri-r2 del 2026-11-21 |
+| `sivri-r2-confusion.png` | Matriz normalizada de las 16 clases en validación | Ultralytics, corrida sivri-r2 |
+| `sivri-spatial-example.png` | Celda del Farabeuf y la Kelly según las anotaciones y YOLO | IMG_1925, contraste con la semilla de DataIQ del 2026-11-22 |

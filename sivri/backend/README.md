@@ -17,7 +17,7 @@ Capas, como el backend de SIMIQ3D. Todo se corre desde `sivri/backend`.
 | `app/ports/` | Lo que el dominio necesita de afuera: detector, marcadores, catálogo, mapeo de clases, tokens |
 | `app/adapters/inbound/` | La API (FastAPI) y el comando que carga el mapeo de clases |
 | `app/adapters/outbound/` | OpenCV (marcadores), YOLO26 y el detector de pruebas, el catálogo de DataIQ, la validación de tokens (JWKS) y la base (SQLAlchemy) |
-| `classes.csv` | Las 15 clases del modelo: el instrumento y su número al entrenar |
+| `classes.csv` | Las 16 clases del modelo: el instrumento y su número al entrenar |
 | `migrations/` | Alembic: una tabla, `class_mappings` |
 
 ## Qué expone
@@ -220,8 +220,8 @@ confirmar por Mauricio):
   según la decisión de Mauricio del 2026-11-19 documentada en
   [DataIQ](../../dataiq/README.md#mesas-de-mayo-de-cirugía-general). Si falta un
   marcador no se valida.
-- **Emparejar:** clase por clase, con el algoritmo húngaro, minimizando la
-  distancia del centro de la caja al centro de las celdas esperadas.
+- **Emparejar.** Se aplica la regla de copias y posiciones descrita en
+  [Cómo se valida la mesa](../README.md#cómo-se-valida-la-mesa).
 - **Margen técnico:** 10 % del lado de la celda (`CELL_MARGIN`). Un objeto de varias
   celdas no tiene margen en el borde entre ellas.
 - **Porcentaje:** instrumentos «en su lugar» o «dudosos» sobre los esperados: un
@@ -230,9 +230,8 @@ confirmar por Mauricio):
 - **Muy cerca:** se muestran las dos técnicas cuando su porcentaje difiere en 5
   puntos o menos (`CLOSE_GAP`); el README no da la cifra.
 - **Qué se espera:** un instrumento por componente de cada objeto, solo si es clase
-  del modelo. La clase «Pinza de disección» representa las dos disecciones apiladas y
-  se mapea a la de con garra. La de sin garra queda como componente del
-  catálogo de DataIQ.
+  del modelo. La pinza de disección con garra y la sin garra se evalúan
+  como dos instrumentos incluso cuando aparecen apilados.
 - **Cuándo está «armada» la mesa:** el backend siempre valida y devuelve el
   porcentaje; la página decide qué mostrar mientras el estudiante arma (nombrar lo
   que ve) y cuándo mostrar la técnica.
@@ -339,3 +338,28 @@ Estas cifras cuentan indicaciones durante el diagnóstico.
 - Configurar el DataIQ y el origen del shell que se usarán para el piloto.
 - Medir con un celular y revisar los casos de retroalimentación con IQ.
 - Probar el frontend de SIVRI ([`../frontend/README.md`](../frontend/README.md)) con un celular y contra este backend.
+
+## Diagnóstico local con 16 clases del 2026-11-22
+
+Se procesaron los JPG normalizados de las rondas 2 y 3 con `sivri-r2`,
+confianza 0,35, entrada YOLO de 640 px y cuadro reducido a 1280 px en el
+lado mayor. El margen de celda y la ampliación del marco fueron de 0,10.
+Se cargaron en memoria las cinco mesas de la semilla local de DataIQ y se
+cotejaron las 30 asignaciones aprobadas el 2026-11-21. Contienen 57 objetos
+reconocibles. El ensayo usó el validador con la regla de duplicados.
+
+| Ronda | Fotos con cuatro ArUco | Técnica correcta primera | Presente entre las mostradas | Bien armadas con algún aviso¹ |
+|---|---:|---:|---:|---:|
+| 2 | 31/35 | 26/31 | 27/31 | 13/13 |
+| 3 | 33/35 | 24/33 | 26/33 | 10/13 |
+
+¹ Para diagnosticar ubicación se tomaron los resultados de la técnica
+indicada en el índice de fotos. En las 13 mesas bien armadas evaluables de
+Ronda 3 aparecieron 20 avisos de ausencia y 9 de movimiento. Con las cajas
+anotadas quedaron 10 de movimiento en cinco fotos. En Ronda 2 quedaron
+28 avisos de movimiento con las cajas anotadas, 17 de ellos sobre disecciones.
+La referencia de las fotos bien armadas contribuyó a definir las celdas. Los
+errores intencionales de A/B carecen de confirmación de IQ. La concordancia
+con las cajas permite localizar discrepancias del detector y de la geometría.
+Sin un registro de los errores puestos en A y B, estas fotos no miden la
+precisión ni la exhaustividad frente a errores confirmados.

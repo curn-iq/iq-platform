@@ -55,6 +55,8 @@ export class Viewer {
   );
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly scene = signal<MayoScene | undefined>(undefined);
+  /** La próxima pieza señalada se tocó en la escena, no en la leyenda ni en el chat. */
+  private pickedInScene = false;
 
   constructor() {
     // Sin `matchMedia` (jsdom en las pruebas) no hay preferencia
@@ -71,6 +73,10 @@ export class Viewer {
           new MayoScene(this.canvas().nativeElement, {
             reducedMotion,
             onPick: (itemId) => {
+              // Tocada en la escena, la pieza ya está a la vista: se señala sin
+              // mover la cámara, para no perder el acercamiento (pedido por
+              // Mauricio el 2026-11-22).
+              if (itemId !== this.selected()) this.pickedInScene = true;
               this.selected.set(itemId);
               this.tapped.emit(itemId);
             },
@@ -93,7 +99,14 @@ export class Viewer {
       }
       untracked(() => this.show(scene, items));
     });
-    effect(() => this.scene()?.highlight(this.selected(), true));
+    effect(() => {
+      const scene = this.scene();
+      const selected = this.selected();
+      // Desde la leyenda o el chat, la cámara va hacia la pieza.
+      const travel = !this.pickedInScene;
+      this.pickedInScene = false;
+      scene?.highlight(selected, travel);
+    });
     effect(() => this.scene()?.setFreeArea(this.freeArea()));
     effect(() => this.scene()?.setView(this.view()));
     inject(DestroyRef).onDestroy(() => this.scene()?.dispose());

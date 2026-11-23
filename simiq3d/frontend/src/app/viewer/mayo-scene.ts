@@ -85,6 +85,7 @@ const TRAVEL_MS = 900;
 const ZOOM_MS = 350;
 // Cuánto se aleja el punto de giro del centro de la mesa al acercar con el puntero
 const TARGET_RADIUS = 0.45;
+const MAX_DISTANCE = 2.2;
 // Un toque que se mueve más que esto es un giro, no un toque
 const TAP_PX = 6;
 
@@ -224,7 +225,6 @@ export class MayoScene {
     this.controls.screenSpacePanning = false;
     this.controls.maxTargetRadius = TARGET_RADIUS;
     this.controls.minDistance = 0.15;
-    this.controls.maxDistance = 2.2;
     // Sin bajar del borde de la mesa
     this.controls.maxPolarAngle = 1.32;
     this.controls.addEventListener('change', this.requestFrame);
@@ -335,6 +335,7 @@ export class MayoScene {
     if (animated) {
       this.moveCamera(position, target);
     } else {
+      this.travel = null;
       this.camera.position.copy(position);
       this.controls.target.copy(target);
       this.requestFrame();
@@ -473,44 +474,44 @@ export class MayoScene {
 
     const group = new Group();
     group.userData['itemId'] = item.itemId;
-    // Materiales propios de la pieza: así se apaga o se tiñe sola
-    const steel = new MeshStandardMaterial({
-      color: token('--color-steel-light'),
-      metalness: 0.74,
-      roughness: 0.32,
-      envMapIntensity: 0.88,
-      // El sombreado que trae cada modelo (oclusión ambiental horneada en sus vértices): oscurece
-      // ranuras, muescas y cuellos, que con un acero liso no se distinguirían
-      vertexColors: true,
-    });
-    const blade = new MeshStandardMaterial({
-      color: token('--color-steel-glint'),
-      metalness: 0.8,
-      roughness: 0.26,
-      envMapIntensity: 0.88,
-      // El sombreado que trae cada modelo (oclusión ambiental horneada en sus vértices): oscurece
-      // ranuras, muescas y cuellos, que con un acero liso no se distinguirían
-      vertexColors: true,
-    });
-
-    for (const material of [steel, blade]) {
+    // Cada pieza conserva sus materiales para el resaltado y la atenuación.
+    const materials: MeshStandardMaterial[] = [];
+    const coat = (part: Object3D, color: string, roughness: number) => {
+      const material = new MeshStandardMaterial({
+        color: token(color),
+        metalness: 0.94,
+        roughness,
+        envMap: this.scene.environment,
+        envMapIntensity: 0.92,
+        vertexColors: true,
+      });
+      // El reflejo de la sala recorre el bisel al girar el instrumental.
+      material.envMapRotation.set(0.18, 0.5, 0.04);
       material.onBeforeCompile = (shader) => {
-        // La oclusión del GLB acentúa el relieve del metal a escala de mesa.
+        // La oclusión horneada en el GLB oscurece los huecos entre estrías y dientes.
         shader.vertexShader = shader.vertexShader.replace(
           '#include <color_vertex>',
           `#include <color_vertex>
           #if defined(USE_COLOR) || defined(USE_COLOR_ALPHA)
-            vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(1.35));
+            vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.05));
           #endif`,
         );
       };
-    }
-
-    models.forEach((model, i) => {
-      const material = /^scalpel_blade_/.test(item.models[i].file) ? blade : steel;
-      model?.traverse((node) => {
+      materials.push(material);
+      part.traverse((node) => {
         if (node instanceof Mesh) node.material = material;
       });
+    };
+
+    models.forEach((model, i) => {
+      if (!model) return;
+      if (/^scalpel_blade_/.test(item.models[i].file)) {
+        coat(model, '--color-steel', 0.19);
+      } else {
+        coat(model, '--color-steel-box', 0.25);
+      }
+      const screw = model.getObjectByName('pivot_screw');
+      if (screw) coat(screw, '--color-steel-shade', 0.21);
     });
 
     // Las hojas se cuelgan del `blade_mount` de su mango, sin moverlas ni girarlas
@@ -597,7 +598,7 @@ export class MayoScene {
       );
       number.renderOrder = 5;
     }
-    return { item, group, bounds, materials: [steel, blade], shadow, number };
+    return { item, group, bounds, materials, shadow, number };
   }
 
   /** Proyecta el contorno real sobre la funda una vez, al armar la pieza. */
@@ -721,7 +722,19 @@ export class MayoScene {
       (MAYO_TABLE_SIZE.width + (portrait ? 0.22 : 0.06)) / 2 / (Math.tan(horizontal / 2) * usefulW);
     const toFitDepth = (MAYO_TABLE_SIZE.depth + 0.06) / 2 / (Math.tan(vertical / 2) * usefulH);
     const top = this.view === 'top';
-    const distance = Math.max(toFitWidth, toFitDepth) * (top ? 1.12 : 1.32);
+    let distance = Math.max(toFitWidth, toFitDepth) * (top ? 1.12 : 1.32);
+    const desktop =
+      matchMedia('(width > 820px) and (height > 520px)').matches &&
+      !matchMedia('(pointer: coarse)').matches;
+    if (!top && desktop) {
+      // En perspectiva el fondo de la bandeja se ve acortado. Al acercarla,
+      // el borde delantero necesita más margen lateral junto a la leyenda.
+      distance = Math.max(toFitWidth * 1.26, toFitDepth * 1.1);
+    }
+    // Cuando el chat deja una franja estrecha en una tableta vertical, los
+    // controles deben admitir la distancia que se acaba de calcular.
+    this.controls.maxDistance =
+      this.free.left > 0 && portrait ? Math.max(MAX_DISTANCE, distance) : MAX_DISTANCE;
     // Corre la mesa al centro del espacio libre
     const seenW = 2 * distance * Math.tan(horizontal / 2);
     const seenH = 2 * distance * Math.tan(vertical / 2);

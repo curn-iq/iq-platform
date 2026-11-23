@@ -185,9 +185,9 @@ describe('ExplorePage', () => {
     divider.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true }));
     await TestBed.inject(ApplicationRef).whenStable();
     expect(divider.getAttribute('aria-valuenow')).toBe('424');
-    expect(page.querySelector<HTMLElement>('.bench')!.style.getPropertyValue('--panel')).toBe(
-      '424px',
-    );
+    expect(
+      page.querySelector<HTMLElement>('.bench')!.style.getPropertyValue('--preferred-panel'),
+    ).toBe('424px');
   });
 
   it('la respuesta del chat señala el instrumento en su mesa y abre su ficha', async () => {
