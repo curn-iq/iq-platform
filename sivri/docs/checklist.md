@@ -26,15 +26,11 @@ proyecto de grado). Se marca cada pieza al terminarla.
 - [x] Protocolo de fotos ([`dataset.md`](dataset.md))
 - [x] Dónde corre YOLO: en el backend, sobre 2 o 3 cuadros por segundo del
   video de la cámara (ver el README)
-- [x] Prueba temprana de la demora: YOLO26 de fábrica, la cámara de un celular
+- [ ] Prueba temprana de la demora: YOLO26 de fábrica, la cámara de un celular
   y un backend mínimo; medir cuánto tarda la respuesta desde Colombia. Medido
   el 2026-11-18: YOLO26n de fábrica a 640 px en la CPU del Servidor PC1 tarda
-  unos 24 ms por cuadro (mediana de 10, sin GPU). El 2026-11-22, desde el
-  celular de Mauricio con datos móviles, `POST /validate` por Funnel con la
-  foto completa de Tiroidectomía bien armada (IMG_1942, Ronda 3) respondió en
-  unos 6 a 10 s, estimados sin cronómetro, con la subida de la foto incluida;
-  reconoció Tiroidectomía con sus 13 instrumentos, sin avisos de falta ni de
-  mover. La demora del video en vivo se mide con el frontend
+  unos 24 ms por cuadro (mediana de 10, sin GPU); falta medir la respuesta
+  completa desde un celular
 - [x] Licencia de SIVRI: AGPL-3.0 solo en `sivri/` (ver el README)
 - [x] Agregar `sivri/LICENSE` (AGPL-3.0) y la excepción en la sección
   «Licencia» del README raíz
