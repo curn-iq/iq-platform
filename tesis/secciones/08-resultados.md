@@ -128,19 +128,27 @@ exhaustividad 0,862, el mAP@0.5 0,887 y el mAP@0.5:0.95 0,614. Las
 disecciones con y sin garra obtuvieron AP@0.5 de 0,956 y 0,931. Las tres
 rondas se capturaron el mismo día. [Curvas del entrenamiento](../figuras/sivri-r2-curves.png) · [Matriz de confusión de validación](../figuras/sivri-r2-confusion.png).
 
-**Reconocimiento y ubicación.** Con los pesos de `sivri-r2` y las cinco
-mesas del Excel local de DataIQ se hallaron los cuatro marcadores en 33
-de las 35 fotos de Ronda 3. La técnica indicada por la captura quedó
-primera en 24 de esas 33 (72,7 %) y entre las mostradas en 26 (78,8 %).
-Las fotos son tomas repetidas de los montajes. Al fijar la técnica del
-archivo, 10 de 13 fotos evaluables rotuladas «Bien Armada» recibieron
-algún aviso. Hubo 20 indicaciones de ausencia y 9 de movimiento.
-Al sustituir YOLO por las cajas anotadas quedaron 10 de movimiento en
-cinco fotos. Esto identifica tanto omisiones del detector como desacuerdos
-entre centros y celdas. Las fotos bien armadas de Ronda 3 también sirvieron
-de referencia para definir la cuadrícula. [Resultados por ronda y situación](../evidencias/sivri-spatial-2026-11-22.csv).
+**Reconocimiento y ubicación.** En las rondas 2 y 3, 64 de 70 fotos tenían
+los cuatro marcadores necesarios para evaluar la mesa. El 2026-11-22, la
+técnica registrada quedó primera con YOLO en 50 de esas 64 fotos. El
+2026-11-23, al incorporar los instrumentos sobrantes al cálculo del parecido
+y recalcular las celdas de las cinco mesas, quedó primera en 60 de 64
+(30 de 31 en Ronda 2 y 30 de 33 en Ronda 3). Las fotos en que se mostraron
+dos técnicas pasaron de 8 a 6. Con las cajas anotadas, la técnica correcta
+quedó primera en 60 de 64 fotos el primer día y en las 64 el segundo.
+Al fijar la técnica registrada en las 26 fotos evaluables «Bien armada»,
+los avisos de movimiento con YOLO bajaron de 24 a 6. En ambas fechas hubo
+45 avisos de faltante, ninguno de sobrante y 23 fotos con algún aviso.
+Con las cajas anotadas, los avisos de movimiento bajaron de 38 a 7, todos
+los restantes en Ronda 2. Las fotos son tomas repetidas de los montajes y las
+«Bien armada» de las tres rondas se usaron para recalcular las celdas. La
+comparación espacial mide la concordancia con esas referencias.
+[Diagnóstico por ronda](../../sivri/backend/README.md#diagnóstico-local-con-las-celdas-recalculadas-2026-11-23);
+el detalle por ronda y técnica está en
+[`../evidencias/sivri-reconocimiento-2026-11-23.csv`](../evidencias/sivri-reconocimiento-2026-11-23.csv)
+y [`../evidencias/sivri-avisos-bien-armada-2026-11-23.csv`](../evidencias/sivri-avisos-bien-armada-2026-11-23.csv).
 
-En IMG_1925 (Mastectomía, Error A) ambos recorridos ubicaron al Farabeuf
+En el diagnóstico del 2026-11-22, en IMG_1925 (Mastectomía, Error A) ambos recorridos ubicaron al Farabeuf
 fuera de su zona. Con las cajas anotadas se indicó mover la Kelly. Con
 YOLO se reportó ausente. Las variantes A/B carecen de un registro
 independiente de los errores introducidos. La medición espacial es un

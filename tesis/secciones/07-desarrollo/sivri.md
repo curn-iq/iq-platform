@@ -70,8 +70,10 @@ las fotos «Bien armada» aparecían indicaciones de mover piezas bien puestas,
 porque las celdas salían de una sola foto por técnica y el programa de IQ no
 armó la mesa igual en cada ronda. El 2026-11-23 Mauricio Lugo decidió
 recalcularlas con las fotos «Bien armada» de las tres rondas: cada instrumento
-suma las celdas vecinas donde también se puso, y con las cajas anotadas las
-indicaciones falsas de mover bajaron de 49 a 18 (`sivri/backend/README.md`).
+suma las celdas vecinas donde también se puso. Contando los centros de las
+cajas anotadas de las tres rondas (466 centros), las indicaciones falsas de
+mover bajaron de 49 a 18 (`sivri/backend/README.md`); los resultados por foto
+de las rondas 2 y 3 están en la sección de resultados.
 Ese mismo día se corrigió el reconocimiento de la técnica, que ahora descuenta
 los instrumentos que sobran para cada una.
 

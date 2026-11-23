@@ -1,0 +1,37 @@
+round,technique,source,photos,evaluable,correct_first_22,two_shown_22,correct_first_23,two_shown_23
+2,Todas,yolo,35,31,26,6,30,3
+2,Todas,annotation,35,31,27,5,31,0
+2,Colecistectomía,yolo,7,7,7,0,7,0
+2,Colecistectomía,annotation,7,7,7,0,7,0
+2,Eventrorrafia,yolo,7,7,3,4,6,3
+2,Eventrorrafia,annotation,7,7,5,4,7,0
+2,Hemicolectomía derecha,yolo,7,7,7,0,7,0
+2,Hemicolectomía derecha,annotation,7,7,7,0,7,0
+2,Mastectomía,yolo,7,3,2,2,3,0
+2,Mastectomía,annotation,7,3,1,1,3,0
+2,Tiroidectomía,yolo,7,7,7,0,7,0
+2,Tiroidectomía,annotation,7,7,7,0,7,0
+3,Todas,yolo,35,33,24,2,30,3
+3,Todas,annotation,35,33,33,2,33,2
+3,Colecistectomía,yolo,7,6,6,0,6,0
+3,Colecistectomía,annotation,7,6,6,0,6,0
+3,Eventrorrafia,yolo,7,7,1,1,6,2
+3,Eventrorrafia,annotation,7,7,7,2,7,0
+3,Hemicolectomía derecha,yolo,7,6,4,0,4,0
+3,Hemicolectomía derecha,annotation,7,6,6,0,6,2
+3,Mastectomía,yolo,7,7,7,0,7,0
+3,Mastectomía,annotation,7,7,7,0,7,0
+3,Tiroidectomía,yolo,7,7,6,1,7,1
+3,Tiroidectomía,annotation,7,7,7,0,7,0
+2+3,Todas,yolo,70,64,50,8,60,6
+2+3,Todas,annotation,70,64,60,7,64,2
+2+3,Colecistectomía,yolo,14,13,13,0,13,0
+2+3,Colecistectomía,annotation,14,13,13,0,13,0
+2+3,Eventrorrafia,yolo,14,14,4,5,12,5
+2+3,Eventrorrafia,annotation,14,14,12,6,14,0
+2+3,Hemicolectomía derecha,yolo,14,13,11,0,11,0
+2+3,Hemicolectomía derecha,annotation,14,13,13,0,13,2
+2+3,Mastectomía,yolo,14,10,9,2,10,0
+2+3,Mastectomía,annotation,14,10,8,1,10,0
+2+3,Tiroidectomía,yolo,14,14,13,1,14,1
+2+3,Tiroidectomía,annotation,14,14,14,0,14,0
