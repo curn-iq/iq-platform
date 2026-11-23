@@ -7,7 +7,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--tinta);
+  color: var(--color-text);
   font: inherit;
   font-size: 15.5px;
   font-weight: 650;
@@ -26,14 +26,14 @@
 }
 
 :host(:focus-visible) {
-  outline: 2.5px solid var(--tinta);
+  outline: 2.5px solid var(--color-focus);
   outline-offset: 3px;
   border-radius: var(--radius-xs);
 }
 
 :host([disabled]),
 :host([aria-disabled='true']) {
-  color: var(--tinta-3);
+  color: var(--color-text-subtle);
   cursor: default;
 }
 
