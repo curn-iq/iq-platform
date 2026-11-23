@@ -31,6 +31,16 @@ class Config(BaseSettings):
     # él no ve nada.
     fake_detections: str = ""
     confidence: float = 0.35
+    # Umbral propio de los instrumentos que el modelo ve con poca confianza; los
+    # demás usan `confidence`. Medidos con los pesos de sivri-r2 en la Ronda 2
+    # (2026-11-23): con 0,35 se descartaban casi la mitad de las pinzas de
+    # disección bien detectadas. Al cambiar los pesos se vuelven a medir.
+    class_confidence: dict[str, float] = {
+        "Pinza de disección sin garra": 0.11,
+        "Pinza de disección con garra": 0.17,
+        "Mango de bisturí N.° 3": 0.28,
+        "Pinza Kelly Adson": 0.33,
+    }
     image_size: int = 640
     device: str = "cpu"
 
