@@ -1,4 +1,9 @@
-# Frontend de SIMIQ3D
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-frontend-oscuro.svg">
+    <img src="../../diseno/marca/modulos/simiq3d-frontend.svg" alt="SIMIQ3D, FrontEnd" width="288">
+  </picture>
+</p>
 
 Aplicación web en Angular con el chat y el visor 3D de SIMIQ3D: el estudiante
 pregunta por una técnica y ve su mesa de Mayo en 3D, la gira y toca cada

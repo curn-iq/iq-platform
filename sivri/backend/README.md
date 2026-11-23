@@ -1,4 +1,9 @@
-# Backend de SIVRI
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/sivri-backend-oscuro.svg">
+    <img src="../../diseno/marca/modulos/sivri-backend.svg" alt="SIVRI, BackEnd" width="173">
+  </picture>
+</p>
 
 Reconoce el instrumental en cada cuadro de la cámara, ubica la mesa con los cuatro
 marcadores ArUco y valida cada instrumento contra la mesa de Mayo de la técnica,
