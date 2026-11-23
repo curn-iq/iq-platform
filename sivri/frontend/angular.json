@@ -33,7 +33,8 @@
             "styles": [
               "../../shared/design/tokens.css",
               "../../shared/design/base.css",
-              "src/styles/theme.scss"
+              "src/styles/theme.scss",
+              "src/styles/global.scss"
             ],
             "baseHref": "/sivri/"
           },

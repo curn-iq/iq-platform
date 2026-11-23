@@ -36,7 +36,7 @@
 
 .lead {
   margin: 0;
-  color: var(--tinta-2);
+  color: var(--color-text-muted);
   font-size: 17px;
   line-height: 1.55;
 }
@@ -47,7 +47,7 @@
   display: grid;
   gap: 28px;
   padding: 40px var(--space-gutter) 40px;
-  background: var(--fondo);
+  background: var(--color-bg);
 }
 
 .intro {
@@ -83,7 +83,7 @@
   gap: 32px;
   align-items: center;
   padding: 72px var(--space-gutter);
-  background: var(--superficie);
+  background: var(--color-surface);
 }
 
 .phone-photo {
@@ -103,7 +103,7 @@
 
 .phone-text p {
   margin: 0;
-  color: var(--tinta-2);
+  color: var(--color-text-muted);
   font-size: 15.5px;
   line-height: 1.6;
 }
@@ -124,7 +124,7 @@
 
 .url {
   margin: 0;
-  color: var(--tinta) !important;
+  color: var(--color-text) !important;
   font-family: var(--font-data);
   font-size: 13px !important;
   line-height: 1.4 !important;
@@ -138,7 +138,7 @@
   flex-direction: column;
   gap: 40px;
   padding: 64px var(--space-gutter) 72px;
-  background: var(--fondo);
+  background: var(--color-bg);
   // El ancla no queda bajo la barra del shell
   scroll-margin-top: calc(var(--size-navbar) + 16px);
 }
@@ -159,7 +159,7 @@
 
 .row-text {
   margin: 0 0 6px;
-  color: var(--tinta-2);
+  color: var(--color-text-muted);
   font-size: 15px;
   line-height: 1.55;
 }

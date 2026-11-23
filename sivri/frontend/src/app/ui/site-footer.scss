@@ -23,7 +23,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--superficie);
+  color: var(--color-surface);
   font-weight: 600;
   text-decoration: none;
 }
@@ -34,7 +34,7 @@
 }
 
 .source:focus-visible {
-  outline: 2.5px solid var(--superficie);
+  outline: 2.5px solid var(--color-surface);
   outline-offset: 3px;
   border-radius: var(--radius-xs);
 }
