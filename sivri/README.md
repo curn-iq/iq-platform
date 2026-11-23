@@ -172,8 +172,9 @@ mesas armadas con errores a propósito, que tienen anotado cuál es el error.
 sivri/
 ├── LICENSE            AGPL-3.0
 ├── backend/           API, validación de la mesa y su base (README propio)
-├── frontend/
+├── frontend/          la app del celular y la página del computador (README propio)
 └── docs/
     ├── dataset.md     de dónde salen las imágenes y qué instrumentos reconoce
-    └── checklist.md   avance por actividad de DSRM
+    ├── checklist.md   avance por actividad de DSRM
+    └── checklist-frontend.md   avance del frontend
 ```
