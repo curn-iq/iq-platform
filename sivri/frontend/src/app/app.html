@@ -1,4 +1,6 @@
-<app-navbar />
+@if (!layout.immersive()) {
+  <app-navbar />
+}
 <main class="content">
   <router-outlet />
 </main>

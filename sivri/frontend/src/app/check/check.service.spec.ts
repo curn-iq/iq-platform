@@ -40,7 +40,8 @@ describe('CheckService', () => {
 
   /** Arranca y deja la conexión abierta, con la cámara lista. */
   async function started(techniqueId?: string) {
-    service.start(video, techniqueId);
+    service.setVideo(video);
+    service.start(techniqueId);
     await settle();
     sockets[0].open();
   }
@@ -102,7 +103,8 @@ describe('CheckService', () => {
 
   it('no conecta mientras la cámara no esté lista', async () => {
     camera.open.mockReturnValue(new Promise(() => undefined));
-    service.start(video);
+    service.setVideo(video);
+    service.start();
     await settle();
     expect(service.flow().screen).toBe('permission');
     expect(sockets).toHaveLength(0);
@@ -186,7 +188,8 @@ describe('CheckService', () => {
 
   it('una cámara bloqueada o ausente se dice y no conecta', async () => {
     camera.open.mockRejectedValue(new CameraError('camera-blocked'));
-    service.start(video);
+    service.setVideo(video);
+    service.start();
     await settle();
     expect(service.flow().error).toBe('camera-blocked');
     expect(sockets).toHaveLength(0);
@@ -206,7 +209,8 @@ describe('CheckService', () => {
 
   it('se muestra en el video lo que abre la cámara', async () => {
     const media = {} as MediaStream;
-    service.start(video);
+    service.setVideo(video);
+    service.start();
     stream.set(media);
     TestBed.tick();
     expect(video.srcObject).toBe(media);
@@ -245,7 +249,8 @@ describe('CheckService', () => {
 
     it('si DataIQ responde 401 al pedir el token, la sesión terminó', async () => {
       tokens.get.mockRejectedValue(new HttpErrorResponse({ status: 401 }));
-      service.start(video);
+      service.setVideo(video);
+      service.start();
       await settle();
       expect(service.flow().error).toBe('session-ended');
     });

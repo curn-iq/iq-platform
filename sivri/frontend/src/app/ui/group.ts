@@ -8,7 +8,11 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'app-group',
-  host: { '[class.multi]': 'columns() > 1', '[style.--cols]': 'columns()' },
+  host: {
+    '[class.multi]': 'columns() > 1',
+    '[class.data]': 'mono()',
+    '[style.--cols]': 'columns()',
+  },
   template: `
     <header class="head">
       <h2 class="name">{{ name() }}</h2>
@@ -27,4 +31,6 @@ export class Group {
   readonly note = input<string>();
   /** Desde 900 px de ancho, las filas se reparten en tantas columnas. */
   readonly columns = input(1);
+  /** La nota es un dato de la cámara (Martian Mono): «3 de 4». */
+  readonly mono = input(false);
 }

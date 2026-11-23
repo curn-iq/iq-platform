@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  flex: 1;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  min-height: 100svh;
+  margin: 0 auto;
+}
+
+// La barra de estado sobre el radial claro de la cámara: «Salir» y «EN VIVO» en tinta
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px var(--space-gutter);
+  padding-top: max(4px, env(safe-area-inset-top));
+  background: var(--color-canvas-center);
+}
+
+.exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--tinta);
+  font-size: 15.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.exit:focus-visible {
+  outline: 2.5px solid var(--tinta);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+.status {
+  color: var(--tinta-3);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+}
+
+.stage-box {
+  height: min(56svh, 118vw);
+  min-height: 260px;
+}
+
+app-board-stage {
+  height: 100%;
+}
+
+.pending {
+  padding: 40px var(--space-gutter);
+}
+
+// Solo para el lector de pantalla
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
