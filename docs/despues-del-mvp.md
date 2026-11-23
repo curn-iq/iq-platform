@@ -137,6 +137,10 @@ Formas de evaluarlo que van más allá de lo que pide el MVP (revisadas el
   mesa que nunca ha armado, la arma en la mesa real y SIVRI le da el puntaje.
   Une los tres módulos y es descriptiva (sin grupo de control); depende de que
   SIVRI esté listo y de su propio error.
+- **Juicio de expertos del cuestionario de pertinencia pedagógica**
+  (`tesis/anexos/e-instrumentos.md`, E.2): docentes de IQ valoran cada ítem
+  antes de aplicarlo. En el MVP el cuestionario se aplica como lo redactó el
+  equipo (decidido por Mauricio el 2026-11-23).
 - **Índice de validez de contenido (I-CVI)** de los modelos 3D: de 3 a 5
   docentes califican de 1 a 4 la fidelidad de cada modelo; pasa con
   I-CVI ≥ 0,83 (Lynn, 1986; Polit y Beck, 2006).
