@@ -1,4 +1,9 @@
-# Backend de SIMIQ3D
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-backend-oscuro.svg">
+    <img src="../../diseno/marca/modulos/simiq3d-backend.svg" alt="SIMIQ3D, BackEnd" width="288">
+  </picture>
+</p>
 
 La API del chat de SIMIQ3D: recibe la pregunta del estudiante, la responde con
 datos del catálogo de DataIQ y le dice al visor qué mostrar. También entrega

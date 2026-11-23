@@ -1,4 +1,9 @@
-# Servidor PC2
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-servidor-pc2-oscuro.svg">
+    <img src="../../diseno/marca/modulos/simiq3d-servidor-pc2.svg" alt="SIMIQ3D, Servidor PC2" width="288">
+  </picture>
+</p>
 
 El PC de escritorio con GPU (AMD RX 6600 XT de 8 GB) donde corre el modelo de
 lenguaje del chat de SIMIQ3D. Por qué un PC propio y no un servicio en la nube:

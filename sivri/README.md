@@ -1,4 +1,9 @@
-# SIVRI
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../diseno/marca/modulos/sivri-oscuro.svg">
+    <img src="../diseno/marca/modulos/sivri.svg" alt="SIVRI" width="173">
+  </picture>
+</p>
 
 Sistema Inteligente de Visión y Retroalimentación para Instrumentación Quirúrgica.
 

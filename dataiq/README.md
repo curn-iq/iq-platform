@@ -1,4 +1,9 @@
-# DataIQ
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../diseno/marca/modulos/dataiq-oscuro.svg">
+    <img src="../diseno/marca/modulos/dataiq.svg" alt="DataIQ" width="225">
+  </picture>
+</p>
 
 Plataforma y dataset estructurado de técnicas quirúrgicas: catálogo de
 instrumental normalizado, especialidades, técnicas y posiciones de mesa.

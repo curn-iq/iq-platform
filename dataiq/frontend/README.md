@@ -1,4 +1,9 @@
-# Frontend de DataIQ y del shell de IQ Platform
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/dataiq-frontend-oscuro.svg">
+    <img src="../../diseno/marca/modulos/dataiq-frontend.svg" alt="DataIQ, FrontEnd" width="225">
+  </picture>
+</p>
 
 Aplicación web en Angular que reúne el **shell de navegación** del ecosistema
 (inicio, catálogo, cuenta) y **DataIQ** (consulta y gestión de técnicas). SIVRI

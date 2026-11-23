@@ -1,4 +1,9 @@
-# SIMIQ3D
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../diseno/marca/modulos/simiq3d-oscuro.svg">
+    <img src="../diseno/marca/modulos/simiq3d.svg" alt="SIMIQ3D" width="288">
+  </picture>
+</p>
 
 Sistema Interactivo de Modelado e Instrumentación Quirúrgica 3D.
 
