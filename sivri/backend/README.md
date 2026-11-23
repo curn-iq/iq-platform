@@ -433,3 +433,29 @@ celdas. Los conteos de movimiento miden la concordancia espacial con esos
 montajes. Los errores intencionales de A/B siguen sin referencia docente.
 Estas cifras son avisos del validador por foto en las rondas 2 y 3; la
 sección anterior cuenta centros de cajas en las tres rondas.
+
+## Umbral de confianza por instrumento (2026-11-23)
+
+Decidido por Mauricio el 2026-11-23. El modelo `sivri-r2` ve las pinzas de
+disección con confianza baja: con un solo umbral de 0,35 se descartaba casi la
+mitad de las bien detectadas, y eran 21 de los 45 faltantes de YOLO en las
+mesas «Bien armada». Cada instrumento puede tener su propio umbral
+(`CLASS_CONFIDENCE`; los demás usan `CONFIDENCE`): el modelo predice con el más
+bajo y cada detección se filtra con el de su clase. Los valores se eligieron en
+la Ronda 2 (con asistencia de Codex), buscando recuperar cajas sin sumar
+detecciones falsas: 0,11 para la pinza de disección sin garra, 0,17 para la con
+garra, 0,28 para el mango de bisturí N.° 3 y 0,33 para la Kelly Adson. Al
+cambiar los pesos se vuelven a medir.
+
+Con el mismo diagnóstico de la sección anterior (técnica del índice fijada en
+las fotos «Bien armada»), comparado con el umbral único de 0,35:
+
+| Ronda | Faltantes con YOLO | Fotos «Bien armada» con algún aviso | Sobrantes en todas las fotos | Técnica correcta primera |
+|---|---:|---:|---:|---:|
+| 2 (donde se eligieron los umbrales) | 25 → 9 | 13 → 10 de 13 | 3 → 3 | 30 → 30 de 31 |
+| 3 (prueba, medida una vez) | 20 → 15 | 10 → 8 de 13 | 0 → 0 | 30 → 30 de 33 |
+
+En las dos rondas, los faltantes de las pinzas de disección pasaron de 21 a 2.
+Los que quedan son sobre todo del mango N.° 3 (el modelo lo llama N.° 4), la
+Kocher y la Kelly Adson (las llama Rochester): errores de clase que un umbral
+no corrige.
