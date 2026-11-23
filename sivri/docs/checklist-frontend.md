@@ -22,7 +22,7 @@ Mockups: sección «SIVRI · Mockups», ronda 2, del Figma del proyecto (archivo
 
 #### Base
 
-- [ ] Proyecto Angular 22 en `sivri/frontend` (sin SSR, sin `zone.js`, SCSS, Vitest), con `index.html` en español, `baseHref` `/sivri/`, puerto 4400 y `proxy.conf.json` hacia DataIQ (8000) para `/api/dataiq`; presupuesto del código inicial con aviso a los 300 KB y error a los 500 KB
+- [x] Proyecto Angular 22 en `sivri/frontend` (sin SSR, sin `zone.js`, SCSS, Vitest), con `index.html` en español, `baseHref` `/sivri/`, puerto 4400 y `proxy.conf.json` hacia DataIQ (8000) para `/api/dataiq`; presupuesto del código inicial con aviso a los 300 KB y error a los 500 KB
 - [ ] `src/shared-shell` (enlace a `shared/shell/`, guardado en Git como enlace simbólico) y `src/styles/theme.scss` con el tema de SIVRI: sin verde de marca en el contenido (botón primario en tinta, enlaces con flecha en tinta, número de pieza en `tinta-3`); `shared/design/` no se toca
 - [ ] `src/environments/`: URL del shell y dirección del backend de SIVRI, directa y no por el mismo origen (Vercel no pasa WebSockets): `http://127.0.0.1:8002` y `ws://127.0.0.1:8002/ws/validate` en desarrollo; la del Servidor PC1 en producción
 - [ ] `npm run api:types`: tipos de DataIQ (`/auth/module-token`, `/auth/me`) y de SIVRI (`/techniques`, `/validate`) desde su OpenAPI; los mensajes del WebSocket, escritos a mano en `data/`

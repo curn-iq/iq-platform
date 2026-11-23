@@ -1,0 +1,5 @@
+// La pantalla abierta con todo el alto de la ventana
+:host {
+  display: block;
+  min-height: 100svh;
+}
