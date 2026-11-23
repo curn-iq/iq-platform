@@ -1,4 +1,9 @@
-# Frontend de SIVRI
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/sivri-frontend-oscuro.svg">
+    <img src="../../diseno/marca/modulos/sivri-frontend.svg" alt="SIVRI, FrontEnd" width="173">
+  </picture>
+</p>
 
 Aplicación web en Angular que usa el estudiante en el celular: abre la cámara,
 manda cuadros al backend de SIVRI por un WebSocket y le dice qué está en su

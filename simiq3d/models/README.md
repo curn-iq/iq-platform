@@ -1,4 +1,9 @@
-# Modelos 3D de SIMIQ3D
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-modelos-oscuro.svg">
+    <img src="../../diseno/marca/modulos/simiq3d-modelos.svg" alt="SIMIQ3D, Modelos 3D" width="288">
+  </picture>
+</p>
 
 Los 16 instrumentos de las cinco mesas de Cirugía General se reconstruyeron
 sobre las fotos de IQ del 2026-11-18, por decisión de Mauricio. Cada fila de
