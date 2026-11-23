@@ -55,3 +55,12 @@ svg {
 .surface-line {
   stroke: var(--color-surface);
 }
+
+// La Q de SIMIQ3D: los mismos extremos que la «Q» de la barra (`brand-q.scss`)
+.q-start {
+  stop-color: var(--color-brand-q-start);
+}
+
+.q-end {
+  stop-color: var(--color-brand-q-end);
+}
