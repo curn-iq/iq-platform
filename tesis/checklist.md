@@ -6,29 +6,95 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 
 ## Antes de empezar
 
-- [ ] Pedir al director la rúbrica del Formato 40, para revisar el documento
-  criterio por criterio.
+- [x] Conseguir la rúbrica del Formato 40 y revisar el documento criterio por
+  criterio (2026-11-23: autoevaluación con sus 30 subcriterios; se corrigieron
+  el Abstract, la metodología, los resultados por objetivo, la discusión, el
+  marco conceptual, las referencias, las recomendaciones y las conclusiones).
+
+## Para armar el documento (quien arma la entrega)
+
+- [x] `tesis/` autocontenido (2026-11-23, decidido por Mauricio): el texto de
+  cada sección está completo, sin instrucciones de reemplazo sobre el Drive;
+  los anexos A y B se copiaron del texto entregado en el segundo corte; las
+  referencias (53), las tablas (28) y las figuras (36) están numeradas con
+  `herramientas/numerar.py`.
+
+**Decisiones de Mauricio (el equipo no las toma)**
+- [ ] Título. La «s» de más («sEcosistema») ya no está en `00-resumen.md`;
+  falta decidir si se delimita.
+  Propuesta: «Ecosistema tecnológico basado en inteligencia artificial para el
+  aprendizaje autónomo de la distribución de instrumental quirúrgico en la mesa
+  de Mayo: caso del programa de Instrumentación Quirúrgica de la CURN». Si
+  cambia, cambia igual en la portada y en la nota de Vo.Bo.
+- [ ] Población y muestra. Si el programa presenta la plataforma en una clase
+  (Mauricio ya preguntó a IQ), esa clase es la población y se anota en
+  `secciones/06-metodologia.md`. Si solo hay jurados, la SUS y el cuestionario
+  quedan como limitación y no se aplican; entonces se cambia la redacción de
+  «se aplican después de la entrega» en `04-objetivos.md`, `06-metodologia.md`,
+  `08-resultados.md`, `09-discusion.md`, `10-conclusiones.md` y
+  `anexos/e-instrumentos.md`.
+  Hoy el texto dice que el programa presenta el 2026-11-26, después de la
+  entrega, y que por eso la población y la muestra no se cuantifican.
+- [x] Aviso de privacidad: `docs/privacidad.md` pasó a la versión 1.1 y ahora
+  incluye SIVRI (decidido por Mauricio el 2026-11-23; las cuentas existentes son
+  de prueba). Sigue pendiente construir la aceptación nueva del aviso cuando
+  cambia la versión (`dataiq/docs/checklist-backend.md`) antes de que se registre
+  un usuario real.
+
+**Contenido que falta**
+- [ ] SUS: los 10 ítems en español están en `anexos/e-instrumentos.md` (E.1),
+  pero vienen de una transcripción de un formulario en línea que cita a
+  Sevilla-Gonzalez et al.,
+  no del Apéndice multimedia 2 del artículo (el sitio exige verificación de
+  navegador). Contrastarlos con el apéndice antes de aplicar la escala.
+- [x] Cuestionario de pertinencia (E.2): el juicio de expertos queda para
+  después del MVP (decidido por Mauricio el 2026-11-23).
+- [x] Participantes del diagnóstico: tres estudiantes de IQ y su docente
+  tutora, las mismas en todo el proyecto (confirmado por Mauricio el
+  2026-11-23).
+- [x] Objetivo 6 reformulado: «Diseñar la prueba piloto…» (aprobado por
+  Mauricio el 2026-11-23), en objetivos, metodología, resultados,
+  conclusiones y Anexo D.
+- [ ] Consentimiento (E.3): si la CURN tiene un formato propio, ese manda.
+- [ ] Fila de Juan Caraballo en la tabla de uso de IA de la metodología
+  (hay un comentario HTML donde va). Y la de Gabriel Garces, si usó asistentes.
+
+**Para quien arma el documento**
+- [x] Las 20 figuras con archivo se ven en GitHub (2026-11-23), incluidas
+  las capturas nuevas de la API, de las 129 pruebas, de los dos prototipos y
+  el diagrama entidad-relación del tercer corte.
+- [ ] Las 16 figuras que faltan (bloques **[Imagen]**): las tres del segundo
+  corte (ciclo de aprendizaje, mesa de Mastectomía y modelo entidad-relación
+  del primer corte, en el Formato 115 del Drive), las fotos del laboratorio de
+  SIVRI, las pantallas de SIVRI y de SIMIQ3D en el celular y en producción,
+  Blender, Figma, «Nosotros» y la revisión de versiones.
+- [x] Referencias comprobadas el 2026-11-23 con Crossref y las páginas de los
+  artículos; los documentos en línea, con su fecha de consulta; se corrigió la
+  DOI de Chheang et al. Pendiente solo el equipo con
+  que se midieron los 1,12 ms de Frey et al. (la discusión no lo afirma).
 
 ## Resumen (prioridad alta, criterio 2)
 
-- [ ] Resumen estructurado de 400 a 500 palabras, en español y en inglés, con
+- [x] Resumen estructurado de 400 a 500 palabras, en español y en inglés, con
   palabras clave. Se redacta al final, con los resultados reales.
 
 ## Planteamiento del problema
 
-- [ ] Redactar el alcance de cada módulo: SIVRI se usa en el laboratorio
+- [x] Redactar el alcance de cada módulo: SIVRI se usa en el laboratorio
   (práctica sin docente al lado) y SIMIQ3D atiende a quien no tiene una mesa;
   hoy el texto dice solo «fuera del laboratorio».
 
 ## Objetivos (prioridad alta, criterios 5, 9 y 10)
 
-- [ ] Explicitar la estrategia por fases (por ejemplo, «Fase 1: datos y backend,
+- [x] Explicitar la estrategia por fases (por ejemplo, «Fase 1: datos y backend,
   DataIQ»; «Fase 2: visión y 3D, SIVRI y SIMIQ3D») y, en la entrega final,
   mostrar SIVRI y SIMIQ3D funcionando o ajustar los objetivos 4 a 6 a lo
   desarrollado.
-- [ ] Objetivo 4: no presentar como terminado lo que no lo estaba en el Corte 2
+- [x] Objetivo 4: no presentar como terminado lo que no lo estaba en el Corte 2
   (decía «desarrollo completo» de DataIQ con solo el backend y prototipos).
-- [ ] Objetivo 5: agregar las métricas de la lógica de validación de SIVRI
+- [ ] Objetivo 5 (2026-11-23: se agregó la métrica del chat; las de los errores
+  de SIVRI quedan como limitación, porque los errores de la Ronda 3 no se
+  registraron): agregar las métricas de la lógica de validación de SIVRI
   (exhaustividad y precisión de los errores sobre las mesas con errores puestos
   a propósito, y técnicas reconocidas) y la métrica del chat de SIMIQ3D, no solo
   mAP y SUS.
@@ -43,6 +109,9 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 ## Metodología
 
 - [ ] Población, muestra y tipo de muestreo de la prueba piloto y de la SUS
+  (2026-11-23: quedan definidos la población y el muestreo por conveniencia;
+  el número de participantes se registra al aplicar la SUS, después de la
+  entrega)
   (prioridad alta, criterio 7; hoy dice «se definirán»): universo, población
   objetivo con el número de estudiantes y docentes, y tamaño y tipo de muestra.
   La nota del director pide consultarlo con las estudiantes de IQ (qué
@@ -59,7 +128,7 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 - [x] «Limitaciones y riesgos»: el origen de los modelos de SIMIQ3D ya está
   decidido (construidos en Blender con scripts y asistentes de IA, sobre las
   fotos del programa de IQ, y aprobados uno por uno por el equipo).
-- [ ] Consideraciones éticas: el consentimiento informado de quienes participan
+- [x] Consideraciones éticas: el consentimiento informado de quienes participan
   en la prueba piloto.
 
 ## Desarrollo
@@ -100,9 +169,9 @@ rúbrica del Formato 40. Cada ítem se marca al terminarlo, en el mismo PR.
 
 ## Discusión, conclusiones y recomendaciones (entrega final, criterios 10 a 12)
 
-- [ ] Discusión por triangulación (no existía en el Corte 2).
-- [ ] Seis conclusiones, una por objetivo.
-- [ ] Recomendaciones desde las limitaciones (`docs/despues-del-mvp.md`).
+- [x] Discusión por triangulación (no existía en el Corte 2).
+- [x] Seis conclusiones, una por objetivo.
+- [x] Recomendaciones desde las limitaciones (`docs/despues-del-mvp.md`).
 
 ## Anexos
 

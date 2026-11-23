@@ -1,5 +1,8 @@
 # Anexo D. Registro de avance del tercer corte
 
+<!--
+Notas de trabajo (no forman parte del informe).
+
 ## Qué lleva
 
 Con el mismo orden del anexo B:
@@ -16,10 +19,11 @@ Con el mismo orden del anexo B:
 - Las decisiones, con quién y cuándo: los README y `docs/arquitectura.md`
   («decidido por … el AAAA-MM-DD»).
 - El avance: las checklists de cada módulo.
+-->
 
-## Texto
+## D.1 Actividades del corte
 
-### D.1 Actividades del corte
+**TABLA XXIV. Actividades del tercer corte**
 
 | Periodo | Actividad | Producto | Responsable |
 |---|---|---|---|
@@ -37,11 +41,23 @@ Con el mismo orden del anexo B:
 | 20–21 nov | Modelado de los 16 instrumentos sobre las fotos | Modelos 3D y mesas de SIMIQ3D | Mauricio Lugo, con asistencia de Claude Code y de Codex |
 | hasta 20 nov | Póster del proyecto, en la plantilla de la universidad (90 × 120 cm) | Póster de la presentación del 2026-11-20 | Guebriel Garces |
 | 21 nov | Página «Nosotros» de la plataforma | Frontend de DataIQ | Juan Caraballo |
+| 21–22 nov | Recorrido por chat de las cinco mesas en producción y ajustes del chat (respuestas completas de una mesa, negritas, la incisión de Kocher) | SIMIQ3D en producción | Mauricio Lugo, con asistencia de Claude Code |
+| 22 nov | Marca de IQ Platform (imagotipo y favicon) en la barra compartida | Shell de DataIQ y SIMIQ3D | Juan Caraballo |
+| 22–23 nov | Acabado de acero del instrumental, encuadre en todos los tamaños de pantalla y cámara al tocar una pieza | Visor de SIMIQ3D | Mauricio Lugo, con asistencia de Codex y de Claude Code |
+| 22–23 nov | Detector con 16 clases (`sivri-r2`), validación sin avisos por instrumentos repetidos y prueba del backend desde un celular | Backend de SIVRI en el Servidor PC1 | Mauricio Lugo, con asistencia de Codex y de Claude Code |
+| 23 nov | Frontend de SIVRI para comprobar la mesa con la cámara del celular, y su despliegue | SIVRI en producción | Juan Caraballo |
+| 23 nov | Correcciones tras probar SIVRI con las fotos «Bien armada»: reconocimiento de la técnica, celdas de las cinco mesas desde las tres rondas, umbral de confianza por instrumento y revisión de las etiquetas de la Kelly con un reentrenamiento de prueba | Backend de SIVRI, mesas de DataIQ y dataset | Mauricio Lugo, con asistencia de Claude Code y de Codex |
+| 22–23 nov | Correcciones del Formato 115 señaladas en la retroalimentación del segundo corte y resultados del tercer corte | `tesis/` | Mauricio Lugo, con asistencia de Claude Code |
+| 23 nov | Instrumentos de la evaluación con usuarios (SUS, cuestionario de pertinencia y consentimiento) y aviso de privacidad 1.1 | `tesis/anexos/e-instrumentos.md`, `docs/privacidad.md` | Mauricio Lugo, con asistencia de Claude Code |
+
+*Fuente: elaboración propia.*
 
 El detalle de cada cambio está en los PR del repositorio y en los releases
 `corte-3.*`.
 
-### D.2 Cambios respecto al segundo corte
+## D.2 Cambios respecto al segundo corte
+
+**TABLA XXV. Cambios respecto al segundo corte**
 
 | Antes | Ahora | Motivo |
 |---|---|---|
@@ -54,7 +70,11 @@ El detalle de cada cambio está en los PR del repositorio y en los releases
 | Mesas de Mayo de los documentos de IQ | Mesas con las listas nuevas de IQ, las fotos y la posición medida de cada instrumento | Las listas y fotos de la visita del 2026-11-18 |
 | Repositorio bajo licencia MIT | MIT, salvo SIVRI bajo AGPL-3.0 | SIVRI depende de Ultralytics |
 
-### D.3 Decisiones técnicas adoptadas
+*Fuente: elaboración propia.*
+
+## D.3 Decisiones técnicas adoptadas
+
+**TABLA XXVI. Decisiones técnicas del tercer corte**
 
 | Fecha | Decisión | Quién |
 |---|---|---|
@@ -70,8 +90,24 @@ El detalle de cada cambio está en los PR del repositorio y en los releases
 | 2026-11-21 | Cada instrumento de la mesa es su propio objeto de la leyenda | Mauricio Lugo |
 | 2026-11-21 | Las pinzas de disección con y sin garra son dos clases del detector | Mauricio Lugo |
 | 2026-11-21 | Lo que va a la tesis se prepara en el repositorio (`tesis/`) | Mauricio Lugo |
+| 2026-11-21 | En una mesa importa qué instrumento está y dónde, no cuántas veces aparece | Mauricio Lugo |
+| 2026-11-22 | La validación de las mesas con errores se presenta como diagnóstico técnico, sin consultar a IQ los errores de la Ronda 3 en esta entrega | Mauricio Lugo |
+| 2026-11-23 | El frontend de SIVRI se despliega en un proyecto de Vercel propio, en la cuenta de Juan Caraballo | Juan Caraballo |
+| 2026-11-23 | SIVRI valida con el DataIQ de producción, donde se inicia la sesión | Mauricio Lugo |
+| 2026-11-23 | Las celdas de las cinco mesas se toman de las fotos «Bien armada» de las tres rondas | Mauricio Lugo |
+| 2026-11-23 | El reconocimiento de la técnica descuenta los instrumentos que sobran para ella | Mauricio Lugo |
+| 2026-11-23 | Umbral de confianza propio para los instrumentos que el detector ve con poca confianza | Mauricio Lugo |
+| 2026-11-23 | Se mantiene el detector `sivri-r2`: el reentrenamiento con las etiquetas de la Kelly revisadas no lo mejoró | Mauricio Lugo |
+| 2026-11-23 | La Escala de Usabilidad del Sistema y la prueba piloto se aplican después de la entrega del informe, cuando el programa presente la plataforma | Mauricio Lugo |
+| 2026-11-23 | Se precisan la pregunta de investigación (cómo puede el ecosistema apoyar el aprendizaje autónomo y qué desempeño técnico alcanza) y los objetivos 1, 5 y 6: el 1 diagnostica las necesidades de práctica y de verificación; la SUS pasa del objetivo 5 al 6, y el 6 pasa de implementar la prueba piloto a diseñarla, porque su aplicación es posterior a la entrega del informe | Mauricio Lugo |
+| 2026-11-23 | El título se delimita a las mesas de Mayo y de reserva, las que registra DataIQ | Mauricio Lugo |
+| 2026-11-23 | El aviso de privacidad pasa a la versión 1.1, con SIVRI y el contexto del chat, sin construir antes la aceptación nueva del aviso porque las cuentas existentes son de prueba | Mauricio Lugo |
 
-### D.4 Reuniones
+*Fuente: elaboración propia.*
+
+## D.4 Reuniones
+
+**TABLA XXVII. Reuniones del tercer corte**
 
 | Fecha | Con quién | Tema y resultado |
 |---|---|---|
@@ -80,7 +116,22 @@ El detalle de cada cambio está en los PR del repositorio y en los releases
 | 2026-11-18 | Estudiantes de Instrumentación Quirúrgica, en el laboratorio | Fotos de las mesas de Mayo de las cinco técnicas y del instrumental (la visita del 2026-11-17 se aplazó un día) |
 | 2026-11-20 | Presentación del proyecto | Póster (Guebriel Garces) y vista previa de la plataforma |
 
-### D.5 Dificultades y cómo se resolvieron
+*Fuente: elaboración propia.*
+
+## D.5 Cambios pedidos por el programa de Instrumentación Quirúrgica
+
+**TABLA XXVIII. Cambios pedidos por el programa de Instrumentación Quirúrgica**
+
+| Fecha | Qué pidió u observó el programa | Qué se hizo |
+|---|---|---|
+| 2026-10-16 | Les gustaron los prototipos de las pantallas | Se mantuvo su dirección en el frontend |
+| 2026-11-05 | El instrumental de los modelos 3D no era del todo correcto | Visita al laboratorio el 2026-11-18, fotos de las cinco mesas y los 16 modelos rehechos sobre ellas |
+| 2026-11-19 y 2026-11-20 | Listas nuevas del instrumental de las cinco técnicas de Cirugía General, y la de Tiroidectomía completada con el mango N.° 4 y las dos pinzas de disección | Mesas de Mayo de DataIQ, modelos de SIMIQ3D y clases de SIVRI actualizados con esas listas |
+| 2026-11-20 | Una interfaz llamativa, con lila y más vida | SIMIQ3D cambió el color de acento a lila, el fondo y el encabezado del chat, conservando la disposición y las formas |
+
+*Fuente: elaboración propia.*
+
+## D.6 Dificultades y cómo se resolvieron
 
 - **Infraestructura sin tarjeta de crédito.** Google Cloud exigió un pago
   anticipado desde Colombia. Se migró a servicios gratuitos (Vercel y Neon) y a
@@ -105,7 +156,20 @@ El detalle de cada cambio está en los PR del repositorio y en los releases
   mide.
 - **Etiquetas del dataset.** Los mangos N.° 3 y N.° 4 estaban intercambiados y
   algunas cajas no cubrían el instrumento entero; se corrigieron con un modelo
-  de segmentación y revisión humana, y el detector se entrena de nuevo.
+  de segmentación y revisión humana, y el detector se entrenó de nuevo
+  (`sivri-r2`).
+- **Avisos de mover en mesas bien armadas.** Al probar el frontend de SIVRI con
+  las fotos «Bien armada», el sistema pedía mover piezas bien puestas: las
+  celdas salían de una sola foto por técnica y el programa de IQ no armó la mesa
+  igual en cada ronda. Se recalcularon con las fotos de las tres rondas. Una
+  Tiroidectomía bien armada salía empatada con Mastectomía porque el parecido
+  no descontaba los instrumentos que sobraban; se corrigió el cálculo.
+- **Piezas que el detector veía con poca confianza.** Casi la mitad de los
+  faltantes eran pinzas de disección que el modelo sí veía, por debajo del
+  umbral de 0,35. Se fijó un umbral propio por instrumento, elegido en la
+  Ronda 2. Reetiquetar la Kelly y entrenar de nuevo no mejoró el detector, que
+  sigue confundiendo la Kocher y la Kelly Adson con la Rochester y los dos
+  mangos entre sí: eso pide más fotos.
 - **Modelos viejos en el navegador.** Tras publicar los modelos nuevos, los
   navegadores seguían mostrando los anteriores, guardados en caché. Cada modelo
   se publica ahora con una huella de su contenido en el nombre.

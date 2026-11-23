@@ -1,5 +1,8 @@
 # Anexo C. Enlaces de acceso a los productos
 
+<!--
+Notas de trabajo (no forman parte del informe).
+
 ## Qué lleva
 
 Una tabla con el enlace público de cada producto: el repositorio, cada
@@ -12,17 +15,20 @@ aplicación desplegada, la documentación de cada API y el dataset.
 - El dataset de DataIQ: `dataiq/backend/seed/tecnicas.xlsx`.
 - Los cambios de cada corte: los
   [Releases](https://github.com/curn-iq/iq-platform/releases).
+-->
 
-## Texto
+La Tabla XXIII reúne el enlace público de cada producto del
+ecosistema. Los enlaces se comprobaron el 2026-11-22. En el segundo corte el
+dataset estaba en `dataiq/backend/semilla/`, que desde el tercer corte se
+llama `dataiq/backend/seed/`.
 
-Reemplaza la tabla de enlaces del segundo corte. El enlace al dataset de ese
-corte apuntaba a `dataiq/backend/semilla/`, que desde el tercer corte se llama
-`dataiq/backend/seed/`. Enlaces comprobados el 2026-11-22.
+**TABLA XXIII. Enlaces de acceso a los productos**
 
 | Producto | Contenido | Enlace |
 |---|---|---|
 | Plataforma | DataIQ y SIMIQ3D en producción | <https://dataiq-frontend.vercel.app/> |
 | SIMIQ3D | Visor 3D y chat de la mesa de Mayo | <https://dataiq-frontend.vercel.app/simiq3d/> |
+| SIVRI | Validación de la mesa armada con la cámara del celular | <https://dataiq-frontend.vercel.app/sivri/> |
 | API de DataIQ | Documentación interactiva | <https://dataiq-backend.vercel.app/docs> |
 | API de SIMIQ3D | Documentación interactiva | <https://simiq3d-backend.vercel.app/docs> |
 | Repositorio del proyecto | Código de los tres módulos; licencia MIT, salvo SIVRI bajo AGPL-3.0 por depender de Ultralytics | <https://github.com/curn-iq/iq-platform> |
@@ -36,3 +42,5 @@ corte apuntaba a `dataiq/backend/semilla/`, que desde el tercer corte se llama
 | Historial de cambios | Solicitudes de cambio integradas | <https://github.com/curn-iq/iq-platform/pulls?q=is%3Apr+is%3Amerged> |
 | Prototipos navegables | Recorrido por rol de la capa de navegación y de DataIQ | <https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK> |
 | Código de los prototipos | Archivos de las pantallas | <https://github.com/curn-iq/iq-platform/tree/main/diseno/mockups> |
+
+*Fuente: elaboración propia.*

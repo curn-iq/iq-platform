@@ -1,15 +1,17 @@
 # Tesis (Formato 115)
 
-Este directorio reúne **todo lo que va al trabajo de grado**: el texto nuevo
-o corregido de cada sección del Formato 115, las figuras, los resultados de
-las evaluaciones y las referencias. Lo trabaja el equipo de Ingeniería de
+Este directorio es **el informe del trabajo de grado**: el texto completo de
+cada sección del Formato 115, las figuras, los resultados de las evaluaciones
+y las referencias. Lo trabaja el equipo de Ingeniería de
 Sistemas, cada quien en la sección que le toca, con el mismo flujo de PR que
 el resto del repositorio. Lo decidió Mauricio el 2026-11-21: el equipo trabaja
 en GitHub y el Drive solo guarda el documento entregado en cada corte.
 
-El documento oficial sigue siendo el Formato 115 en Google Drive
-(`ENTREGABLES/`, carpeta «Tesis ING-IQ - CURN»). Al cerrar cada corte, el
-contenido de este directorio se pasa a esa copia y se entrega desde allí.
+Desde el tercer corte, este directorio es la fuente que se evalúa (decidido
+por Mauricio el 2026-11-23): el texto de cada sección está completo aquí,
+incluidos los anexos de los cortes anteriores, y no depende de la copia del
+Drive (`ENTREGABLES/`, carpeta «Tesis ING-IQ - CURN»), que guarda lo entregado
+en el primer y el segundo corte.
 
 ## Cómo está organizado
 
@@ -29,11 +31,11 @@ tesis/
 │   ├── 04-objetivos.md
 │   ├── 05-marco-de-referencia.md
 │   ├── 06-metodologia.md
-│   ├── 07-desarrollo/           un archivo por módulo
+│   ├── 07-desarrollo/           un archivo por módulo, en este orden
 │   │   ├── dataiq.md
+│   │   ├── plataforma.md        lo común: shell, sesión e infraestructura
 │   │   ├── simiq3d.md
-│   │   ├── sivri.md
-│   │   └── plataforma.md        lo común: shell, sesión e infraestructura
+│   │   └── sivri.md
 │   ├── 08-resultados.md
 │   ├── 09-discusion.md
 │   ├── 10-conclusiones.md
@@ -42,17 +44,17 @@ tesis/
 ├── anexos/
 │   ├── a-b-cortes-anteriores.md lo que ya se entregó en los Cortes 1 y 2
 │   ├── c-enlaces.md             enlaces a los productos
-│   └── d-tercer-corte.md        registro de avance del tercer corte
+│   ├── d-tercer-corte.md        registro de avance del tercer corte
+│   └── e-instrumentos.md        SUS, cuestionario de pertinencia y consentimiento
+├── herramientas/                numerar.py: numera referencias, tablas y figuras
 ├── figuras/                     imágenes listas para el documento, con su índice
 └── evidencias/                  resultados exportados de las evaluaciones
 ```
 
-Cada archivo de `secciones/` tiene tres partes:
-
-1. **Qué lleva:** lo que pide el Formato 115 en esa sección.
-2. **Fuentes en el repositorio:** de dónde salen los datos. La tesis cita esos
-   documentos; no copia cifras que puedan cambiar.
-3. **Texto:** la redacción para el documento, lista para pasarla al Drive.
+Cada archivo empieza con un comentario HTML, que GitHub no muestra, con las
+notas de trabajo: **qué lleva** la sección según el Formato 115 y **de dónde
+salen sus datos** en el repositorio. Después del comentario va el texto del
+informe.
 
 ## Cómo se trabaja
 
@@ -69,10 +71,14 @@ Cada archivo de `secciones/` tiene tres partes:
 - **Registro formal**, con los términos ya definidos en el repositorio y en
   el Formato 115. Cada decisión dice quién la tomó y cuándo.
 - **Numeración:** tablas en números romanos y figuras en arábigos, por orden
-  de aparición; las referencias en estilo IEEE, numeradas por orden de cita.
-  La numeración final se fija al pasar el texto al Drive: aquí se nombra la
-  tabla o figura por su contenido (por ejemplo, «la tabla de resultados del
-  detector»).
+  de aparición; las referencias en estilo IEEE, numeradas por orden de la
+  primera cita. Una tabla o figura nueva se escribe con una clave
+  («**TABLA [t:clave]. Título**», «*Figura [f:clave]. Pie*») y se cita con
+  ella («la Tabla [t:clave]», «la Fig. [f:clave]»); una referencia nueva se
+  agrega al final de la lista con el número siguiente. Después se corre, desde
+  la raíz del repositorio, `python3 -I tesis/herramientas/numerar.py`, que
+  numera y renumera todo y avisa si una referencia no se cita o una clave no
+  tiene título.
 - **Figuras:** en `figuras/`, en PNG, con un nombre que diga qué muestran
   (`simiq3d-mesa-tiroidectomia.png`) y una fila en
   [`figuras/README.md`](figuras/README.md) con la sección y la fuente.
@@ -80,12 +86,21 @@ Cada archivo de `secciones/` tiene tres partes:
   métricas, CSV del banco de preguntas). No van datos personales, ni el
   registro de conversaciones en crudo, ni las fotos del programa de IQ.
 
-## Cómo se pasa al Drive
+## Lo que este directorio no hace
 
-Al cerrar un corte, quien arma la entrega:
+Este directorio no produce el Formato 115 con su diseño: no tiene la
+plantilla, la portada, la tabla de contenido ni las imágenes pegadas. Quien
+arma el documento con la plantilla toma el texto, las tablas y las figuras de
+aquí, sin cambiar su contenido ni su numeración.
 
-1. Revisa en `checklist.md` que no quede nada abierto para ese corte.
-2. Copia el texto de cada sección a la copia del Formato 115 del Drive, en el
-   mismo orden, y fija la numeración de tablas, figuras y referencias.
-3. Inserta las figuras de `figuras/`.
-4. Lo registra en el anexo del corte (`anexos/d-tercer-corte.md`).
+## Espacios para imágenes
+
+Las figuras que ya están en `figuras/` se muestran en el texto con su pie
+debajo. Donde todavía falta la imagen hay un bloque así:
+
+> **[Imagen]** Qué captura hay que tomar.
+>
+> *Fig. N. Pie de figura. Fuente.*
+
+Cuando la imagen exista, se guarda en `figuras/` con su fila en el índice y el
+bloque se cambia por `![Pie](../figuras/archivo.png)` con el pie debajo.
