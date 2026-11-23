@@ -8,11 +8,16 @@
       "source": "/simiq3d/:path*",
       "destination": "https://simiq3d-frontend.vercel.app/simiq3d/:path*"
     },
+    { "source": "/sivri/", "destination": "https://sivri-frontend.vercel.app/sivri/" },
+    {
+      "source": "/sivri/:path*",
+      "destination": "https://sivri-frontend.vercel.app/sivri/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
-      "source": "/((?!api/|simiq3d).*)",
+      "source": "/((?!api/|simiq3d|sivri).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",

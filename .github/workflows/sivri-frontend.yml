@@ -1,7 +1,6 @@
 # Frontend de SIVRI: build y pruebas en cada PR; en main, el despliegue a Vercel
 # (producción). El navegador llega a la app por el rewrite /sivri/ del proyecto del
-# shell, que se agrega cuando exista el proyecto de Vercel (sivri/frontend/README.md,
-# «Despliegue»).
+# shell (sivri/frontend/README.md, «Despliegue»).
 
 name: SIVRI frontend
 
@@ -55,37 +54,22 @@ jobs:
       # No son secretos: identifican la cuenta y el proyecto de Vercel. El proyecto
       # está en la cuenta de Juan, no en la de Mauricio como los demás, y se publica
       # con su propio token (VERCEL_TOKEN_SIVRI; sivri/frontend/README.md,
-      # «Despliegue»). Mientras alguno valga POR_DEFINIR, el despliegue se omite.
-      VERCEL_ORG_ID: POR_DEFINIR
-      VERCEL_PROJECT_ID: POR_DEFINIR
+      # «Despliegue»)
+      VERCEL_ORG_ID: team_Bu7P8uYJOf2NcesWrlwBSqDa
+      VERCEL_PROJECT_ID: prj_mzsIrVAVpNfOsTrc3CSnnslu4LxW
     steps:
-      - name: Proyecto de Vercel
-        id: project
-        working-directory: .
-        run: |
-          if [ "$VERCEL_ORG_ID" = "POR_DEFINIR" ] || [ "$VERCEL_PROJECT_ID" = "POR_DEFINIR" ]; then
-            echo "::notice::Faltan VERCEL_ORG_ID o VERCEL_PROJECT_ID del proyecto de Vercel de SIVRI: no se despliega."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
       - uses: actions/checkout@v7
-        if: steps.project.outputs.ready == 'true'
       - uses: actions/setup-node@v7
-        if: steps.project.outputs.ready == 'true'
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: sivri/frontend/package-lock.json
       - run: npm ci
-        if: steps.project.outputs.ready == 'true'
       - run: npm run build
-        if: steps.project.outputs.ready == 'true'
       # El shell trae la app con la ruta completa (/sivri/…), así que se publica
       # dentro de sivri/, con vercel.json (encabezados y rutas) al lado. Vercel no la
       # construye: el build lee ../../shared/ (design y shell).
       - name: Carpeta que se publica
-        if: steps.project.outputs.ready == 'true'
         run: |
           mkdir -p "$RUNNER_TEMP/deploy/sivri"
           cp -r dist/sivri/browser/. "$RUNNER_TEMP/deploy/sivri/"
@@ -93,5 +77,4 @@ jobs:
       # El plan Hobby no conecta repos de una organización de GitHub: por eso
       # se despliega con el CLI y un token
       - working-directory: ${{ runner.temp }}/deploy
-        if: steps.project.outputs.ready == 'true'
         run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN_SIVRI }}
