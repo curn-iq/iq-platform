@@ -64,7 +64,7 @@ proyecto de grado). Se marca cada pieza al terminarla.
   `Authorization: Bearer` (pieza 10 de la checklist de DataIQ)
   - [x] DataIQ: `POST /auth/module-token` entrega el token corto (5 minutos)
   - [x] SIVRI lo valida con el JWKS y lo reenvía a DataIQ para pedir el catálogo
-  - [ ] El frontend de SIVRI lo pide y lo renueva antes de que venza
+  - [x] El frontend de SIVRI lo pide y lo renueva antes de que venza (`ModuleTokenService` y renovación por la misma conexión; falta probarlo contra el backend real)
 - [x] Vista previa HTTPS/WSS en PC1 con un JWT real de DataIQ local (ver
   [README del backend](../backend/README.md#vista-previa-en-pc1)).
 - [x] Habilitar el arranque de la vista previa y sus contenedores en PC1
