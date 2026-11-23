@@ -60,7 +60,7 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 
 - [x] Accesibilidad y movimiento: foco visible, orden de tabulación, lector de pantalla (el resultado se anuncia con `aria-live` cortés y sin repetirse en cada cuadro), objetivos táctiles de 44 px y `prefers-reduced-motion`; revisado con `web-design-guidelines` (enlace para saltar la barra, áreas seguras abajo, el ancla fuera de la barra, cifras tabulares y porcentaje con `Intl`)
 - [x] Peso: `npm run build` contra los presupuestos. Medido el 2026-11-22: código inicial de 339,8 kB (90,7 kB comprimido), con la barra compartida (la entrada, 8,5 kB, y la cámara, 44,7 kB, se cargan aparte); ningún componente pasa los 4 kB de estilo. Pasa el error de 500 kB y **avisa** a los 300 kB: la barra compartida más el router y `HttpClient` de Angular suman unos 140 kB crudos, así que el aviso de 300 kB no se puede cumplir sin quitar la barra (SIMIQ3D subió el suyo a 340 kB por lo mismo). Por confirmar: subir el aviso a 350 kB
-- [ ] Despliegue, como SIMIQ3D: `vercel.json` con la ruta `/sivri/:path*`, CSP con `connect-src 'self'` más las direcciones `https://` y `wss://` del backend, y `Permissions-Policy: camera=(self)`; `.github/workflows/sivri-frontend.yml` (build y pruebas en cada PR, despliegue en `main`, con `shared/shell/**` y `shared/design/**` en sus rutas); en `dataiq/frontend/vercel.json`, los rewrites de `/sivri/` y `/sivri/:path*` hacia el proyecto de SIVRI (cierra la pieza pendiente de la [fase 9 de DataIQ](../../dataiq/docs/checklist-frontend.md)); comprobar que la cámara abre detrás del rewrite
+- [x] Despliegue, como SIMIQ3D: `vercel.json` con la ruta `/sivri/:path*`, CSP con `connect-src 'self'` más las direcciones `https://` y `wss://` del backend, y `Permissions-Policy: camera=(self)`; `.github/workflows/sivri-frontend.yml` (build y pruebas en cada PR, despliegue en `main`, con `shared/shell/**` y `shared/design/**` en sus rutas); en `dataiq/frontend/vercel.json`, los rewrites de `/sivri/` y `/sivri/:path*` hacia el proyecto de SIVRI (cierra la pieza pendiente de la [fase 9 de DataIQ](../../dataiq/docs/checklist-frontend.md))
 - [ ] `README.md` del frontend, `DESIGN.md` con lo nuevo que se decida y `CLAUDE.md` al día en la misma rama
 
 ### Dependencias de otros
@@ -68,6 +68,7 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 Lo que no es de esta fase pero la limita.
 
 - [ ] Proyecto de Vercel de SIVRI (`VERCEL_PROJECT_ID`): lo crea quien opera la plataforma
+- [ ] Comprobar que la cámara abre detrás del rewrite: los encabezados que valen son los del proyecto que responde (`camera=(self)` y el CSP con `wss://`), y el shell ya excluye `sivri` de los suyos. Se prueba con el proyecto de Vercel creado y el primer despliegue; la dirección `sivri-frontend.vercel.app` del rewrite es la del proyecto por crear
 - [ ] Backend del piloto en el Servidor PC1: debe usar el JWKS y el catálogo del DataIQ de producción, y `CORS_ORIGINS` debe incluir el origen del shell (y `http://localhost:4400` en desarrollo); configuración de Mauricio
 - [ ] Probar en un celular real: la cámara solo abre con HTTPS o en `localhost`; en desarrollo se prueba en el computador con el detector de pruebas (`DETECTOR=fake`) y en el celular con el despliegue de vista previa
 
