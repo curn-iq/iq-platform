@@ -61,6 +61,8 @@ proyecto de grado). Se marca cada pieza al terminarla.
   tres rondas (2026-11-23; ver [celdas recalculadas](../backend/README.md#celdas-recalculadas-con-las-tres-rondas-2026-11-23))
 - [x] Publicar las celdas recalculadas en el DataIQ del Servidor PC1 y en producción
   (`seed.update_mayo --apply`, 2026-11-23; los 57 objetos coinciden con el Excel en los dos)
+- [x] Umbral de confianza por instrumento (2026-11-23; ver
+  [umbral por instrumento](../backend/README.md#umbral-de-confianza-por-instrumento-2026-11-23))
 - [ ] Confirmar con IQ las anotaciones de los errores de Ronda 3 (diferido para después de la entrega)
 - [x] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ,
   y CORS para el origen del shell: la página se sirve allí y manda los cuadros
