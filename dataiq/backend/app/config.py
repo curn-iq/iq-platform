@@ -33,7 +33,7 @@ class Config(BaseSettings):
     cors_origins: list[str] = []
 
     # Versión de la política de tratamiento de datos que acepta quien se registra
-    policy_version: str = "1.0"
+    policy_version: str = "1.1"
 
 
 config = Config()
