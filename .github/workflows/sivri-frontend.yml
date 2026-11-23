@@ -52,18 +52,19 @@ jobs:
     # Un despliegue a la vez: si llegan dos pushes seguidos, el segundo espera
     concurrency: vercel-produccion-sivri-frontend
     env:
-      # No son secretos: identifican la cuenta y el proyecto de Vercel
-      VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
-      # POR DEFINIR: el id del proyecto de Vercel de SIVRI (lo crea quien opera la
-      # plataforma). Mientras tenga este valor, el despliegue se omite.
+      # No son secretos: identifican la cuenta y el proyecto de Vercel. El proyecto
+      # está en la cuenta de Juan, no en la de Mauricio como los demás, y se publica
+      # con su propio token (VERCEL_TOKEN_SIVRI; sivri/frontend/README.md,
+      # «Despliegue»). Mientras alguno valga POR_DEFINIR, el despliegue se omite.
+      VERCEL_ORG_ID: POR_DEFINIR
       VERCEL_PROJECT_ID: POR_DEFINIR
     steps:
       - name: Proyecto de Vercel
         id: project
         working-directory: .
         run: |
-          if [ "$VERCEL_PROJECT_ID" = "POR_DEFINIR" ]; then
-            echo "::notice::Falta VERCEL_PROJECT_ID del proyecto de Vercel de SIVRI: no se despliega."
+          if [ "$VERCEL_ORG_ID" = "POR_DEFINIR" ] || [ "$VERCEL_PROJECT_ID" = "POR_DEFINIR" ]; then
+            echo "::notice::Faltan VERCEL_ORG_ID o VERCEL_PROJECT_ID del proyecto de Vercel de SIVRI: no se despliega."
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -93,4 +94,4 @@ jobs:
       # se despliega con el CLI y un token
       - working-directory: ${{ runner.temp }}/deploy
         if: steps.project.outputs.ready == 'true'
-        run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@64.0.2 deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN_SIVRI }}

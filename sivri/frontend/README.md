@@ -184,13 +184,15 @@ borra `shared/shell`. En el CI (Linux) el enlace funciona solo.
 
 ## Despliegue
 
-Un proyecto de Vercel aparte (`sivri-frontend`, en la cuenta de Mauricio) sirve la
-app como sitio estático. El workflow
+Un proyecto de Vercel aparte (`sivri-frontend`, en la cuenta de Juan, decidido por Juan el 2026-11-23) sirve
+la app como sitio estático. Se publica con su propio token, el secreto
+`VERCEL_TOKEN_SIVRI` del repositorio, no con el `VERCEL_TOKEN` de la cuenta de
+Mauricio que usan los demás proyectos. El workflow
 [`sivri-frontend.yml`](../../.github/workflows/sivri-frontend.yml) corre el build
 y las pruebas en cada PR y, en cada push a `main` que toque el frontend o lo que
 su build lee de fuera (`shared/design/`, `shared/shell/`), construye en GitHub
-Actions y publica con el CLI de Vercel. Mientras `VERCEL_PROJECT_ID` del workflow
-valga `POR_DEFINIR`, el despliegue se omite.
+Actions y publica con el CLI de Vercel. Mientras `VERCEL_ORG_ID` o
+`VERCEL_PROJECT_ID` del workflow valgan `POR_DEFINIR`, el despliegue se omite.
 
 - **La ruta completa.** El proyecto del shell trae la app con un rewrite
   `/sivri/:path*` hacia `https://<proyecto de SIVRI>/sivri/:path*`
