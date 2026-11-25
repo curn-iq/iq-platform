@@ -56,7 +56,7 @@ type CanvasState = 'empty' | 'uncovered' | 'missing' | 'table';
 /**
  * La pantalla de exploración, `/simiq3d` y `/simiq3d/tecnicas/:id`: un banco de
  * trabajo con el chat como panel lateral y la mesa de Mayo en 3D como lienzo
- * («SIMIQ3D: explorar en 3D» en `DESIGN.md`).
+ * («SIMIQ3D: explorar en 3D» en `design/README.md`).
  */
 @Component({
   selector: 'app-explore-page',

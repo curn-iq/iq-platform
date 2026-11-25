@@ -29,7 +29,7 @@ export const publishedNotice = (technique: string): string =>
   `«${technique}» se publicó y ya está en el catálogo.`;
 
 /**
- * El último paso del editor, según «Editor de técnica (página)» de `DESIGN.md` y Resuelto 55 de
+ * El último paso del editor, según «Editor de técnica (página)» de `design/README.md` y Resuelto 55 de
  * `dataiq/docs/checklist-frontend.md`. A la izquierda, el resumen de las cuatro secciones con su marca,
  * lo que dice cada una y «Completar» en las que bloquean. A la derecha, la tarjeta de envío: un
  * colaborador lo manda a revisión (`POST /versions/{id}/submit`); un revisor o un admin publica lo suyo

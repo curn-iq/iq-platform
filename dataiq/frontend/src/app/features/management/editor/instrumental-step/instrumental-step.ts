@@ -31,7 +31,7 @@ import { EditorState } from '../editor-state';
 const VISIBLE_SUGGESTIONS = 8;
 
 /**
- * El paso «Instrumental» del editor, según «Editor de técnica (página)» de `DESIGN.md` y Resuelto 53 de
+ * El paso «Instrumental» del editor, según «Editor de técnica (página)» de `design/README.md` y Resuelto 53 de
  * `dataiq/docs/checklist-frontend.md`. A la derecha, «En esta técnica»: los objetos de la técnica
  * agrupados por la categoría de su primer instrumento, cada uno con su botón de quitar. A la izquierda,
  * una tarjeta con los **sugeridos** de la especialidad (lo que usan sus otras técnicas y esta no tiene,

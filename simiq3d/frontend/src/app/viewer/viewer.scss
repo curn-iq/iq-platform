@@ -1,4 +1,4 @@
-// El lienzo de la escena y sus capas de estado («Lienzo de SIMIQ3D» en DESIGN.md)
+// El lienzo de la escena y sus capas de estado («Lienzo de SIMIQ3D» en design/README.md)
 :host {
   position: relative;
   display: block;
@@ -243,7 +243,7 @@ canvas {
   }
 }
 
-// El número de la pieza señalada, que la sigue en pantalla («Insignia de la pieza» en DESIGN.md)
+// El número de la pieza señalada, que la sigue en pantalla («Insignia de la pieza» en design/README.md)
 .badge {
   position: absolute;
   top: 0;

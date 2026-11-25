@@ -15,7 +15,7 @@ export function steelDrawingFor(name: string) {
 let nextGradient = 0;
 
 /**
- * El dibujo en acero de un instrumento, a la derecha de su entrada (`DESIGN.md`, «Catálogo de
+ * El dibujo en acero de un instrumento, a la derecha de su entrada (`design/README.md`, «Catálogo de
  * instrumental (página)»): el mismo que lo representa en la mesa del detalle (`drawingFor()` elige el
  * dibujo por palabras clave de su nombre). Solo lo tiene un instrumento con dibujo propio y de acero: lo
  * que no tiene no se dibuja ni se le presta el de otro. Es decorativo (`aria-hidden`).

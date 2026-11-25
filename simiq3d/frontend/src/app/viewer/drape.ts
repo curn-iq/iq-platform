@@ -1,7 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute } from 'three';
 
 /**
- * La funda de la mesa de Mayo, como las reales (`DESIGN.md`, «Bandeja y funda»):
+ * La funda de la mesa de Mayo, como las reales (`design/README.md`, «Bandeja y funda»):
  * una sola tela tensa sobre la bandeja que pasa redondeada por los bordes, baja
  * unos centímetros por tres lados y cae por el extremo libre, el contrario al
  * poste, con pliegues que crecen hacia abajo. Medidas en metros.

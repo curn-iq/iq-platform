@@ -12,7 +12,7 @@ import { TableMarks } from './table-marks';
  * las dos mesas y atenúa las demás; también al revés, señalando una pieza. Las marcas encima del
  * diagrama dicen de dónde salió cada pieza y adónde llegó (`app-table-marks`). Sin cambios, o en una
  * técnica nueva (`isNew`), solo está la propuesta. Ver «Versiones por revisar (página)» en
- * `DESIGN.md`; los cambios salen de `domain/version-diff.ts`.
+ * `design/README.md`; los cambios salen de `domain/version-diff.ts`.
  */
 @Component({
   selector: 'app-review-table',

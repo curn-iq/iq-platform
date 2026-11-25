@@ -16,7 +16,7 @@ export interface ErrorCopy {
 
 /**
  * Lo que dice cada estado de error: páginas de texto con titular, párrafo y una acción, sin
- * pictogramas (`DESIGN.md`, «SIVRI: celular y computador (mockups)»). Los tres primeros son los
+ * pictogramas (`design/README.md`, «SIVRI: celular y computador (mockups)»). Los tres primeros son los
  * de los mockups (sin conexión, cámara bloqueada y técnica fuera del alcance).
  */
 export const ERROR_COPY: Record<ErrorKind, ErrorCopy> = {

@@ -39,7 +39,7 @@ export interface ReviewedVersion {
  * vuelve a Por revisar. Si otro revisor ya decidió (409), el interceptor lo avisa y `conflict`
  * pide a la pantalla que vuelva a mirar la versión. El host no tiene caja (`display: contents`): los
  * botones y los paneles se acomodan en la cuadrícula de la cabecera. Ver «Versiones por revisar
- * (página)» en `DESIGN.md`.
+ * (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-review-decision',

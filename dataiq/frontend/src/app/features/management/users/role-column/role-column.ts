@@ -13,7 +13,7 @@ import { SearchField } from '../../../../shared/ui/search-field/search-field';
 import { PersonRow } from '../person-row/person-row';
 
 /**
- * Una columna del tablero de Usuarios y roles, según «Usuarios y roles (página)» de `DESIGN.md`:
+ * Una columna del tablero de Usuarios y roles, según «Usuarios y roles (página)» de `design/README.md`:
  * el nombre del rol con su cifra y lo que puede. Admin, Revisores y Colaboradores listan a todos.
  *
  * Usuarios son muchos y se buscan: en lugar de la lista, la cifra de cuentas con ese rol, su propio

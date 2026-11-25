@@ -12,7 +12,7 @@ import type { TechniqueSummary } from '../../data/api/models';
 
 /**
  * En celular, la técnica se elige en una hoja que sube desde abajo, no en el
- * desplegable nativo («Hoja inferior» en `DESIGN.md`).
+ * desplegable nativo («Hoja inferior» en `design/README.md`).
  */
 @Component({
   selector: 'app-technique-sheet',

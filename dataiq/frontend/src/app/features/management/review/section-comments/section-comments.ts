@@ -23,7 +23,7 @@ import { ReviewComments } from '../review-comments';
  * Los comentarios de una sección de la revisión, al pie de su hoja: los que ya se escribieron, cada
  * uno con su botón para quitarlo; el redactor del que se está escribiendo (sobre un campo, un
  * objeto o la sección entera) y «Comentar la sección». Ver «Versiones por revisar (página)» en
- * `DESIGN.md`; los comentarios viven en `ReviewComments`.
+ * `design/README.md`; los comentarios viven en `ReviewComments`.
  */
 @Component({
   selector: 'app-section-comments',

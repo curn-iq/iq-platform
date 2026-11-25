@@ -10,7 +10,7 @@ import {
   SceneChange,
 } from '../domain/chat';
 
-/** El aviso cuando el chat no responde («Chat no disponible» en `DESIGN.md`). */
+/** El aviso cuando el chat no responde («Chat no disponible» en `design/README.md`). */
 export interface ChatNotice {
   title: string;
   line: string;

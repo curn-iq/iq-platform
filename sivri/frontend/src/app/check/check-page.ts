@@ -27,7 +27,7 @@ import { ResultPanel } from './result-panel/result-panel';
 /**
  * La cámara: el estudiante apunta a la mesa, la arma y SIVRI la compara. Sin la barra del
  * shell: lleva su propia barra de estado («Salir» y «EN VIVO») y el video aprovecha el alto
- * (`DESIGN.md`, «SIVRI: celular y computador (mockups)»). Pide cuenta.
+ * (`design/README.md`, «SIVRI: celular y computador (mockups)»). Pide cuenta.
  *
  * Opcional: `?tecnica=<id de DataIQ>` valida esa técnica en vez de reconocer de cuál de las
  * cinco es la mesa; si SIVRI no la valida, se dice «técnica fuera del alcance».

@@ -19,7 +19,7 @@ import { SearchField } from '../../../../shared/ui/search-field/search-field';
 const NO_MATCH = 'Nadie con ese nombre o correo.';
 
 /**
- * El buscador general de Usuarios y roles, según «Usuarios y roles (página)» de `DESIGN.md`: busca
+ * El buscador general de Usuarios y roles, según «Usuarios y roles (página)» de `design/README.md`: busca
  * a cualquier persona por nombre o correo, sin importar el rol ni las tildes. Los resultados salen
  * en un desplegable con el tramo que coincide resaltado y la pastilla del rol a la derecha; el
  * desplegable muestra hasta `MAX_SEARCH_RESULTS` y dice cuántas coincidencias más hay. Elegir una

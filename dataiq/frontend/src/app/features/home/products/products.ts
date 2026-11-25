@@ -31,7 +31,7 @@ interface Product {
   href?: string;
 }
 
-// Los textos son los de `diseno/mockups/inicio.html`. «Conocer…» lleva a la herramienta,
+// Los textos son los del mockup de inicio. «Conocer…» lleva a la herramienta,
 // como el menú Herramientas (decidido por Juan el 2026-10-31).
 const PRODUCTS: readonly Product[] = [
   {
@@ -78,7 +78,7 @@ const PRODUCTS: readonly Product[] = [
  * escritorio la sección queda fija bajo la barra y el carril se traslada
  * horizontalmente con el scroll, con tres trazos de progreso; en celular (y con
  * movimiento reducido) el carril es un desplazamiento horizontal con
- * `scroll-snap`. Ver «Carril» en `DESIGN.md`.
+ * `scroll-snap`. Ver «Carril» en `design/README.md`.
  */
 @Component({
   selector: 'app-home-products',

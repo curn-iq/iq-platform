@@ -15,7 +15,7 @@ import type { SceneView } from '../../viewer/mayo-scene';
  * Los controles de vista, abajo a la derecha: «3D · Arriba», y acercar, alejar y
  * centrar la mesa, todos con ícono. En celular (y con la pantalla baja) son un solo botón
  * que despliega los íconos de ubicar en posición original, 3D y arriba; el zoom lo hace
- * el pellizco («Controles de vista» en `DESIGN.md`).
+ * el pellizco («Controles de vista» en `design/README.md`).
  */
 @Component({
   selector: 'app-view-controls',

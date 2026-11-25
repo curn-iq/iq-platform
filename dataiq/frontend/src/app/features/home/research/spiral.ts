@@ -1,5 +1,5 @@
 /**
- * La espiral de «Lo que dice la investigación» (ver «Layout» en `DESIGN.md`): un pulso
+ * La espiral de «Lo que dice la investigación» (ver «Composición» en `design/README.md`): un pulso
  * de luz sube en espiral, cada vuelta más rápido, y al cerrar cada vuelta se suma un
  * logro. Aquí está la geometría y el tiempo, sin el DOM: el componente solo la pinta.
  * Las coordenadas son las del dibujo (900 × 640).

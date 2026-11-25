@@ -21,7 +21,7 @@ const HINT_TECHNIQUES = 2;
  * El desplegable de un menú de la barra: a la izquierda su nombre y su línea, al
  * centro las opciones y a la derecha una vista previa que responde a la opción
  * señalada. Lo dibuja `Navbar` en un overlay. Ver «Desplegables» en
- * «Navigation» de `DESIGN.md`.
+ * «Navegación» de `design/README.md`.
  */
 @Component({
   selector: "app-nav-panel",

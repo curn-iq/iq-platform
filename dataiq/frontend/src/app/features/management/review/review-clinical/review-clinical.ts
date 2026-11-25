@@ -14,7 +14,7 @@ const CHANGE_TAGS: Readonly<Record<FieldChange, string>> = {
  * Datos clínicos de la revisión: todos los campos de la versión, con lo publicado y lo propuesto
  * lado a lado y los cambiados marcados («+ Agregado», «Modificado» o «Quitado»). Sin versión
  * publicada (`publishedLabel` nulo) solo está la propuesta. Ver «Versiones por revisar (página)» en
- * `DESIGN.md`; la comparación sale de `domain/version-diff.ts`.
+ * `design/README.md`; la comparación sale de `domain/version-diff.ts`.
  */
 @Component({
   selector: 'app-review-clinical',

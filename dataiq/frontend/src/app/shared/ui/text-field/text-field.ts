@@ -17,8 +17,8 @@ import { FieldError } from '../field-error/field-error';
 let nextId = 0;
 
 /**
- * Un campo de texto de formulario, según «Inputs / Fields» y «Ingresar / Crear cuenta
- * (página)» de `DESIGN.md`: etiqueta de 14 px 600 en `tinta-2` sobre una caja de 48 px,
+ * Un campo de texto de formulario, según «Campos» y «Ingresar / Crear cuenta
+ * (página)» de `design/README.md`: etiqueta de 14 px 600 en `tinta-2` sobre una caja de 48 px,
  * `superficie`, 10 px de radio y filete `filete-2`; foco: filete de 2 px en `marca`.
  * Es un control de Signal Forms: `<app-text-field label="Correo" [formField]="form.email" />`.
  *
@@ -31,7 +31,7 @@ let nextId = 0;
  * contraseña que se está mostrando) ni mayúscula automática.
  *
  * `badge` suma junto a la etiqueta la pastilla «Falta» y `optional`, el texto «Opcional», según «Editor de
- * técnica (página)» de `DESIGN.md`; quien los usa decide cuándo mostrarlos. `readonly` deja ver el valor
+ * técnica (página)» de `design/README.md`; quien los usa decide cuándo mostrarlos. `readonly` deja ver el valor
  * sin cambiarlo (nombre y especialidad de una técnica ya creada, o una versión en revisión), sobre
  * `fondo`.
  *

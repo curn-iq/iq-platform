@@ -7,7 +7,7 @@ import { HeroStage } from '../hero-stage/hero-stage';
 /**
  * La portada del inicio: el titular a la izquierda con la acción principal (Crear
  * cuenta gratis) y, a la derecha, el escenario de la mesa en sus tres vistas. Ver
- * «Layout» y «Escenario de la mesa» en `DESIGN.md`.
+ * «Composición» y «Escenario de la mesa» en `design/README.md`.
  */
 @Component({
   selector: 'app-home-hero',

@@ -46,7 +46,7 @@ export interface TabItem {
 
 /**
  * Pestañas con la raya de 2 px en `tinta` que se desliza bajo la elegida (`.45s expo`),
- * según «Detalle de técnica (página)» en `DESIGN.md`. Cada pestaña es un enlace, y
+ * según «Detalle de técnica (página)» en `design/README.md`. Cada pestaña es un enlace, y
  * la hoja que muestra va en un `role="tabpanel"` con `id="panel-<key>"` y
  * `aria-labelledby="tab-<key>"`. Las flechas, Inicio y Fin pasan de una a otra; en
  * celular la tira se desplaza hasta la elegida y sus bordes se desvanecen.

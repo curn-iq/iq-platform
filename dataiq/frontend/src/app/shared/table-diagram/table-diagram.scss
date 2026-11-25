@@ -1,4 +1,4 @@
-// Diagrama de mesa: ver «Detalle de técnica» y «Tertiary» (acero) en DESIGN.md. En el
+// Diagrama de mesa: ver «Detalle de técnica» y «Terciario» (acero) en design/README.md. En el
 // detalle la mesa es un diagrama sereno (superficie con filete, rejilla fina, sin
 // paño), no el objeto firma.
 
@@ -27,7 +27,7 @@ svg {
 }
 
 // ---------- Vista previa de la puerta de cuenta ----------
-// Ver «Puerta de cuenta» en DESIGN.md: la mesa, centrada y con celdas de 104 px en toda
+// Ver «Puerta de cuenta» en design/README.md: la mesa, centrada y con celdas de 104 px en toda
 // técnica (así que mide según sus columnas), se recorta a sus primeras dos filas y media
 // y se difumina hacia abajo. Sin números ni leyenda; la tarjeta de la puerta va debajo.
 
@@ -107,7 +107,7 @@ $preview-cell: 104px;
   fill: transparent;
 }
 
-// «Pieza en diagrama» de DESIGN.md: sombra suave, y al señalarla sube y se despega. La
+// «Pieza en diagrama» de design/README.md: sombra suave, y al señalarla sube y se despega. La
 // sombra en reposo es una sola para toda la capa: con una por pieza, atenuar las demás
 // recalculaba cada sombra en cada cuadro. Las zonas de clic de las piezas van encima.
 .shapes {

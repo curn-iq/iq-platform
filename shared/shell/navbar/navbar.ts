@@ -51,7 +51,7 @@ interface PanelComponent {
  * ¿Por qué IQ Platform?, Ayuda), el enlace directo «Nosotros» y, a la derecha,
  * Ingresar y Crear cuenta o «Mi cuenta» si hay sesión. Cada botón abre su panel, un overlay de CDK; solo hay
  * uno abierto a la vez y se cierra con Escape, con un clic fuera, al elegir una
- * opción o al cambiar de página. Ver «Navigation» en `DESIGN.md`.
+ * opción o al cambiar de página. Ver «Navegación» en `design/README.md`.
  */
 @Component({
   selector: "app-navbar",

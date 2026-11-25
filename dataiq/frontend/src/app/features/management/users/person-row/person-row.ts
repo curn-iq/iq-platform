@@ -4,7 +4,7 @@ import { Avatar } from '../../../../shared/ui/avatar/avatar';
 
 /**
  * La fila de una persona en el tablero de Usuarios y roles, según «Usuarios y roles (página)» de
- * `DESIGN.md`: su avatar, el nombre (que puede partirse en dos renglones) y el correo, del que solo
+ * `design/README.md`: su avatar, el nombre (que puede partirse en dos renglones) y el correo, del que solo
  * se recorta la parte local. Es un botón: al elegirla, su ficha se abre a la derecha. La elegida va
  * en `marca-claro`.
  *

@@ -6,7 +6,7 @@ interface Group {
   questions: readonly { question: string; answer: string }[];
 }
 
-// Los textos son los de `diseno/mockups/inicio.html`.
+// Los textos son los del mockup de inicio.
 const GROUPS: readonly Group[] = [
   {
     title: 'Cuenta',
@@ -56,7 +56,7 @@ const GROUPS: readonly Group[] = [
  * Técnicas, Herramientas), cada uno con sus preguntas, en las columnas 7-12. Son
  * `<details>`: se abren con el teclado y sin JavaScript. A esta sección llevan
  * «Preguntas frecuentes» de la barra y del pie. Ver «Titular Lateral» en
- * `DESIGN.md`.
+ * `design/README.md`.
  */
 @Component({
   selector: 'app-home-faq',

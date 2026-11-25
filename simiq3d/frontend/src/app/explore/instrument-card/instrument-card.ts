@@ -14,7 +14,7 @@ import type { TableItem } from '../../domain/mayo-table';
  * La ficha del instrumento: una nota sobre la escena, sin taparla. Lleva el
  * número del diagrama (el de la insignia de la pieza), el nombre y la primera
  * oración de la descripción que tiene en DataIQ; el resto, con «Ver más». Un objeto de varios instrumentos (el mango con su hoja)
- * muestra la de cada uno. Ver «Ficha del instrumento» en `DESIGN.md`.
+ * muestra la de cada uno. Ver «Ficha del instrumento» en `design/README.md`.
  */
 @Component({
   selector: 'app-instrument-card',

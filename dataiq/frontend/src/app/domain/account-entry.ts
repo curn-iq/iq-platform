@@ -18,7 +18,7 @@ export function accountModeOf(segment: string | null | undefined): AccountMode |
 
 /**
  * El saludo de la mitad izquierda cuando se entró directo, sin una técnica que abrir
- * (ver «Ingresar / Crear cuenta (página)» en `DESIGN.md`): según la hora al ingresar, y
+ * (ver «Ingresar / Crear cuenta (página)» en `design/README.md`): según la hora al ingresar, y
  * «Mucho gusto.» al crear la cuenta. `hour` es la hora local, de 0 a 23.
  */
 export function greeting(mode: AccountMode, hour: number): string {

@@ -10,7 +10,7 @@ interface MiniCell {
 
 /**
  * La mesa en miniatura del catálogo de instrumental («Dónde va», ver «Catálogo
- * de instrumental» en `DESIGN.md`): una rejilla de celdas de 22 px (18 px en
+ * de instrumental» en `design/README.md`): una rejilla de celdas de 22 px (18 px en
  * celular) con las celdas de **un** objeto encendidas en `marca`, y la primera
  * como círculo con su número. Todas las mesas van a la misma escala, así que una
  * mesa ancha se desplaza dentro de su marco, con el borde desvanecido.

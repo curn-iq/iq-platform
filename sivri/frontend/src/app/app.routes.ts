@@ -4,7 +4,7 @@ import { sessionGuard } from './core/session/session.guard';
 
 /**
  * Relativas a `/sivri/`. La entrada es pública. La cámara pide cuenta y no se abre desde un
- * computador (`DESIGN.md`, «SIVRI: celular y computador (mockups)»).
+ * computador (`design/README.md`, «SIVRI: celular y computador (mockups)»).
  */
 export const routes: Routes = [
   {

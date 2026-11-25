@@ -36,7 +36,7 @@ const TABS: readonly Tab[] = [
 ];
 
 /**
- * El escenario de la portada, según «Escenario de la mesa» de `DESIGN.md`: la
+ * El escenario de la portada, según «Escenario de la mesa» de `design/README.md`: la
  * misma mesa de ejemplo en tres vistas (referencia, 3D y cámara). El selector
  * cambia solo cada 5,5 s con un trazo de progreso bajo la pestaña activa; se
  * pausa con el puntero encima o el foco dentro y se detiene al interactuar. Con

@@ -16,7 +16,7 @@ import { SearchField } from '../../../../../shared/ui/search-field/search-field'
 
 /**
  * El panel «Agregar a la mesa» de los pasos de las mesas, según «Editor de técnica (página)» de
- * `DESIGN.md`: el catálogo de instrumentos en compacto (buscador por nombre o alias y la lista por
+ * `design/README.md`: el catálogo de instrumentos en compacto (buscador por nombre o alias y la lista por
  * categoría) y, si se le pasan, los instrumentos «más usados» como atajos. No guarda nada: avisa con
  * `picked` qué instrumento se eligió y con `closed` que se terminó («Listo» o Escape). Queda abierto tras
  * cada elección para agregar varios seguidos; lo que ya está en la mesa (`present`) se marca y no se repite.

@@ -109,7 +109,7 @@ export function isCurrentLink(
   return currentUrl.split(/[?#]/)[0] === link.target.route;
 }
 
-// Los textos son los de `diseno/mockups/inicio.html`. «Nosotros» no es una
+// Los textos son los del mockup de inicio. «Nosotros» no es una
 // opción de «¿Por qué IQ Platform?»: es un enlace directo (`NAV_LINKS`). Las
 // opciones que llevan al inicio van a su sección (`#camino`…).
 export const NAV_MENUS: readonly NavMenu[] = [

@@ -5,7 +5,7 @@ import { SearchField } from '../../../../shared/ui/search-field/search-field';
 
 /**
  * El índice del catálogo de instrumental (`instrumental.html`, «Catálogo de instrumental (página)» en
- * `DESIGN.md`): la columna de 300 px del detalle de técnica, con el buscador y «Nuevo instrumento» fijos
+ * `design/README.md`): la columna de 300 px del detalle de técnica, con el buscador y «Nuevo instrumento» fijos
  * arriba, una línea que explica la cifra y las categorías con sus instrumentos, cada uno con las
  * técnicas en que va. El elegido va en `marca-claro`; al buscar por alias, el alias que coincidió sale
  * bajo el nombre. En celular se pliega en un selector que dice la categoría y el instrumento abiertos.

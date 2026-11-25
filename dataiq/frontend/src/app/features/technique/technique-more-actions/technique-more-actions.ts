@@ -22,7 +22,7 @@ import { TechniqueInProgress } from '../technique-in-progress';
 
 /**
  * «Más acciones» del detalle de una técnica: tres puntos que abren un panel de 320 px como el de Mi
- * cuenta (ver «Detalle de técnica (página)» en `DESIGN.md`), con «Archivar técnica» (Resuelto 21 de
+ * cuenta (ver «Detalle de técnica (página)» en `design/README.md`), con «Archivar técnica» (Resuelto 21 de
  * `dataiq/docs/checklist-frontend.md`). Solo lo ve un revisor o un admin. Archivar pide confirmación
  * en el mismo panel, que dice qué deja de verse y que las versiones quedan en el historial.
  *

@@ -75,7 +75,7 @@ let nextGradient = 0;
 /**
  * La mesa de Mayo de ejemplo del inicio (`DEMO_TABLE`): la portada y las
  * ventanas de los tres productos la dibujan, con las piezas de acero del
- * diagrama de mesa sobre la grilla. Según «Escenario de la mesa» de `DESIGN.md`
+ * diagrama de mesa sobre la grilla. Según «Escenario de la mesa» de `design/README.md`
  * es el objeto firma: el paño verde lo pone quien la usa; aquí van las piezas,
  * su número, la rejilla y las detecciones de la cámara.
  *

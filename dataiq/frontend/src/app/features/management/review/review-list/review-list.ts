@@ -39,7 +39,7 @@ type ReviewView = 'pending' | 'reviewed';
  * la pantalla, porque crece con el tiempo.
  *
  * Los textos, de Juan, 2026-11-02 (Resueltos 57 y 58 de `dataiq/docs/checklist-frontend.md`). Ver
- * «Versiones por revisar (página)» en `DESIGN.md`.
+ * «Versiones por revisar (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-review-list',

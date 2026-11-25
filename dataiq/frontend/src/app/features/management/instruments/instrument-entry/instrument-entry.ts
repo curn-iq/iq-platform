@@ -43,7 +43,7 @@ export type EntryMode = 'read' | 'edit' | 'description' | 'new';
 
 /**
  * La entrada de un instrumento del catálogo (`instrumental.html`, «Catálogo de instrumental (página)» en
- * `DESIGN.md`): la ruta con su categoría, el nombre, en cuántas técnicas va, la descripción con su fuente,
+ * `design/README.md`): la ruta con su categoría, el nombre, en cuántas técnicas va, la descripción con su fuente,
  * «También se escribe así» con los alias, su dibujo en acero si lo tiene y «Dónde va». Editar no cambia de
  * pantalla: cada bloque se vuelve editable en su sitio, «Dónde va» queda atenuado y una barra fija dice en
  * qué técnicas publicadas se verá el cambio. Un nombre o un alias que ya es de otro instrumento se avisa y

@@ -29,7 +29,7 @@ export interface SutureRowChange {
 }
 
 /**
- * «Suturas por plano» del paso de datos clínicos, según «Editor de técnica (página)» de `DESIGN.md` y
+ * «Suturas por plano» del paso de datos clínicos, según «Editor de técnica (página)» de `design/README.md` y
  * Resuelto 29 de `dataiq/docs/checklist-frontend.md`: una fila por plano con su plano, sutura,
  * calibre y aguja, separadas por filete. Todas se editan en su sitio y cada una tiene su botón de quitar
  * de 28 px; «Agregar plano» (contorno punteado) suma una fila vacía y le da el foco al plano. A una fila

@@ -4,7 +4,7 @@ export const NEW_TECHNIQUE_TITLE = 'Técnica nueva';
 /** Lo que dice bajo el nombre cuando la API responde 409: ya hay una técnica así en la especialidad. */
 export const TECHNIQUE_NAME_TAKEN = 'Ya hay una técnica con ese nombre en la especialidad.';
 
-/** El titular de «Técnica nueva»: sigue lo que se escribe en el nombre (Resuelto 28 y «Editor de técnica» de `DESIGN.md`). */
+/** El titular de «Técnica nueva»: sigue lo que se escribe en el nombre (Resuelto 28 y «Editor de técnica» de `design/README.md`). */
 export function newTechniqueTitle(name: string): string {
   return name.trim() || NEW_TECHNIQUE_TITLE;
 }

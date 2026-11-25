@@ -14,7 +14,7 @@ import type { FormValueControl } from '@angular/forms/signals';
 let nextId = 0;
 
 /**
- * Un área de texto de formulario, según «Editor de técnica (página)» de `DESIGN.md`: la misma etiqueta
+ * Un área de texto de formulario, según «Editor de técnica (página)» de `design/README.md`: la misma etiqueta
  * y la misma caja del campo de texto, pero de al menos 104 px de alto (156 px con `tall`) y que se
  * puede alargar a mano. `badge` suma junto a la etiqueta la pastilla «Falta»; `optional`, el texto
  * «Opcional». `readonly` deja ver el texto sin cambiarlo, sobre `fondo`. Es un control de Signal Forms

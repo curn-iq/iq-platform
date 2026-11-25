@@ -39,7 +39,7 @@ import { ModelLibrary } from './model-library';
 /**
  * La mesa de Mayo en Three.js. Es lo único de la app que sabe que existe
  * Three.js; se descarga aparte, al abrir la mesa. Materiales, luz y cámara: ver
- * «Escena 3D de SIMIQ3D (material)» en `DESIGN.md`.
+ * «Escena 3D de SIMIQ3D (material)» en `design/README.md`.
  *
  * Solo dibuja cuando algo cambia (girar, cargar, señalar, cambiar de tamaño), no
  * 60 veces por segundo: ahorra batería en el celular.

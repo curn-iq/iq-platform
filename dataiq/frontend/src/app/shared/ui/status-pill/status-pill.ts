@@ -13,7 +13,7 @@ export const STATUS_PILL_LABELS: Readonly<Record<StatusPillKind, string>> = {
 
 /**
  * Pastilla de estado de una versión, con su ícono, según «Mis borradores (página)» de
- * `DESIGN.md`: Borrador con anillo `filete-2`, En revisión en `marca-claro` y Devuelta en
+ * `design/README.md`: Borrador con anillo `filete-2`, En revisión en `marca-claro` y Devuelta en
  * `tinta` con texto blanco (nunca rojo). Aprobada, la de «Revisadas por mí», va en `marca-claro`
  * con un visto (Resuelto 58 de `dataiq/docs/checklist-frontend.md`).
  */

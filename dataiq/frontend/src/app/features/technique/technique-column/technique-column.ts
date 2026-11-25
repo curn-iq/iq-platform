@@ -8,7 +8,7 @@ import { SearchField } from '../../../shared/ui/search-field/search-field';
 
 /**
  * La columna de técnicas del detalle (`tecnica.html`, «Detalle de técnica» en
- * `DESIGN.md`): buscador y todas las técnicas agrupadas por especialidad, con la
+ * `design/README.md`): buscador y todas las técnicas agrupadas por especialidad, con la
  * actual marcada. Elegir otra navega sin salir de la página y conserva la pestaña
  * abierta, para comparar la misma hoja entre técnicas. En celular se pliega en un
  * selector que dice la especialidad y la técnica de la página.

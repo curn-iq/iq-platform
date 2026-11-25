@@ -19,7 +19,7 @@ const PLACEHOLDER_ROWS = 6;
 
 /**
  * La puerta de cuenta de las pestañas Instrumental, Mesa de Mayo y Mesa de reserva sin
- * sesión (ver «Puerta de cuenta» en `DESIGN.md`): un vistazo difuminado hacia abajo y,
+ * sesión (ver «Puerta de cuenta» en `design/README.md`): un vistazo difuminado hacia abajo y,
  * debajo, la tarjeta con «Crear cuenta gratis» y «Ya tengo cuenta». Los dos llevan a la
  * cuenta con la técnica, y al ingresar se vuelve a ella (`?volver=`).
  *

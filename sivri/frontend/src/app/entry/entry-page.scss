@@ -1,4 +1,4 @@
-// La entrada: el estilo de la página «Nosotros» (DESIGN.md, «SIVRI: celular y computador
+// La entrada: el estilo de la página «Nosotros» (design/README.md, «SIVRI: celular y computador
 // (mockups)»): titular grande con la entradilla al lado, foto a todo el ancho, grupos abiertos
 // por un filete de 2 px. Sin íconos, chips, píldoras ni tarjetas.
 :host {
@@ -10,7 +10,7 @@
   flex-direction: column;
 }
 
-// El titular de «Nosotros» (DESIGN.md, «Typography»)
+// El titular de «Nosotros» (design/README.md, «Tipografía»)
 .title {
   margin: 0;
   font-size: clamp(40px, 23.4px + 4.16vw, 69px);
@@ -191,7 +191,7 @@
 }
 
 @media (min-width: 1101px) {
-  // El titular junto a la entradilla (DESIGN.md, «Headline de Nosotros»)
+  // El titular junto a la entradilla (design/README.md, «Headline de Nosotros»)
   .title {
     font-size: clamp(56px, 8vw - 32px, 90px);
   }

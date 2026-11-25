@@ -21,7 +21,7 @@ import { Button } from '../../../../shared/ui/button/button';
 import { SearchField } from '../../../../shared/ui/search-field/search-field';
 
 /**
- * El panel de «Editar una publicada» (ver «Mis borradores (página)» en `DESIGN.md`): las técnicas
+ * El panel de «Editar una publicada» (ver «Mis borradores (página)» en `design/README.md`): las técnicas
  * publicadas agrupadas por especialidad, con un buscador sin tildes. Las que ya tienen una versión
  * en curso salen atenuadas, porque cada técnica tiene una sola: «Ya está en curso» si es de quien
  * pregunta y «En curso por …» si es de otra persona. Elegir una crea la versión nueva

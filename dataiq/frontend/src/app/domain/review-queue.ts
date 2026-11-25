@@ -79,7 +79,7 @@ export function formatSent(sent: Date, now: Date): string {
 
 /**
  * La línea bajo el título de «Por revisar»: cuántas esperan y cuánto lleva la más antigua. En voz
- * impersonal (`PRODUCT.md`), no como el mockup («esperan tu revisión»).
+ * impersonal (`design/README.md`, «La web pública»), no como el mockup («esperan tu revisión»).
  */
 export function queueSummary(rows: readonly QueueRow[], now: Date): string {
   if (rows.length === 0) return 'Nada por revisar.';

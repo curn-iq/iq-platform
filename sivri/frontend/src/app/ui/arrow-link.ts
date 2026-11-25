@@ -2,7 +2,7 @@ import { booleanAttribute, Component, input } from '@angular/core';
 
 /**
  * El enlace con flecha: texto en tinta 650 y una flecha de 16 px que avanza 3 px al pasar. En
- * SIVRI va en tinta y no en verde (`DESIGN.md`, «SIVRI: celular y computador (mockups)»). Se usa
+ * SIVRI va en tinta y no en verde (`design/README.md`, «SIVRI: celular y computador (mockups)»). Se usa
  * sobre `<a appArrowLink>` y `<button appArrowLink>`.
  */
 @Component({

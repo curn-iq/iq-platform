@@ -3,7 +3,7 @@ import { legendEntries } from '../../domain/legend';
 import type { Table } from '../../domain/table';
 
 /**
- * La leyenda numerada de una mesa, según «Detalle de técnica» de `DESIGN.md`:
+ * La leyenda numerada de una mesa, según «Detalle de técnica» de `design/README.md`:
  * cada objeto con su número y su nombre, enlazada con `app-table-diagram`. Se
  * enlazan con `[(highlighted)]` y `[(focused)]`: señalar un número (con el puntero o el
  * teclado) marca su fila aquí y levanta su pieza en la mesa, y al revés.

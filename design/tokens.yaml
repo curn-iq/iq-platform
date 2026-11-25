@@ -1,0 +1,471 @@
+# Tokens del sistema de diseño de IQ Platform: colores, tipografía, radios,
+# espacios y componentes, con los nombres de design/README.md. Los valores que
+# usa el código están en shared/design/tokens.css y coinciden con los de aquí.
+name: IQ Platform
+description: Campo estéril. La misma mesa de Mayo real, vista como referencia, en 3D y por la cámara.
+colors:
+  fondo: "#f3f6f6"
+  superficie: "#ffffff"
+  hover-neutro: "#e6eded"
+  filete: "#dbe4e6"
+  filete-2: "#c4d1d4"
+  tinta: "#0a1b22"
+  tinta-2: "#364b53"
+  tinta-3: "#566a72"
+  marca: "#0d6a5e"
+  marca-hondo: "#08463e"
+  marca-claro: "#ddefeb"
+  marca-claro-hover: "#cfe7e1"
+  niebla-marca: "#b8dcd4"
+  pano: "#1d7564"
+  pano-azul: "#2a78c2"
+  niebla-pano: "#e6f3f0"
+  brillo-pano: "rgba(255, 255, 255, .12)"
+  sombra-pano: "rgba(0, 0, 0, .14)"
+  menta: "#38e2b3"
+  alerta-noche: "#ff6b6b"
+  noche: "#061217"
+  noche-2: "#0c1e24"
+  filete-noche: "#1d353d"
+  niebla-noche: "#a9bec5"
+  acero-brillo: "#fbfdfd"
+  acero: "#b3bec4"
+  acero-caja: "#9eaab0"
+  acero-sombra: "#8b979d"
+  acero-raya: "#66737a"
+  acero-linea: "#4f5c63"
+  acero-filo: "#3f4b52"
+  acero-luz: "#e4eaed"
+  acero-cierre: "#d3dbdf"
+  hoja-sombra: "#aab5bb"
+  tela-plana: "#eef3f3"
+  bandeja-fondo: "#dde4e7"
+  noche-visor: "#10272e"
+  vista-3d-borde: "#e7eef0"
+  bandeja-borde: "#c9d3d7"
+  canto-pano: "#0e463c"
+  quirofano: "#1b5f86"
+  quirofano-hondo: "#113f5a"
+  quirofano-claro: "#e0ecf4"
+  quirofano-claro-hover: "#d0e2ee"
+  fondo-quirofano: "#f1f5f8"
+  filete-quirofano: "#d8e2e9"
+  filete-2-quirofano: "#c1cfd9"
+  tinta-2-quirofano: "#344a57"
+  tinta-3-quirofano: "#4e6470"
+  hover-quirofano: "#e3ebf1"
+  lienzo-centro: "#f7fafc"
+  lienzo-medio: "#e8eff4"
+  lienzo-borde: "#dce5ec"
+typography:
+  display:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(60px, 13.6vw, 236px)"
+    fontWeight: 650
+    lineHeight: 0.98
+    letterSpacing: "-0.04em"
+  headline:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(46px, 5.6vw, 100px)"
+    fontWeight: 650
+    lineHeight: 0.96
+    letterSpacing: "-0.04em"
+  headline-section:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(38px, 4.2vw, 68px)"
+    fontWeight: 650
+    lineHeight: 1
+    letterSpacing: "-0.04em"
+  headline-product:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(40px, 3.6vw, 60px)"
+    fontWeight: 650
+    lineHeight: 1
+    letterSpacing: "-0.04em"
+  headline-panel:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "40px"
+    fontWeight: 650
+    lineHeight: 1
+    letterSpacing: "-0.04em"
+  numero-riel:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "30px"
+    fontWeight: 650
+    lineHeight: 1
+    letterSpacing: "-0.03em"
+  title:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "26px"
+    fontWeight: 650
+    letterSpacing: "-0.03em"
+  title-ventana:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "24px"
+    fontWeight: 650
+    letterSpacing: "-0.03em"
+  lema:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(19px, 1.5vw, 23px)"
+    fontWeight: 550
+    lineHeight: 1.35
+    letterSpacing: "-0.015em"
+  title-columna:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "20px"
+    fontWeight: 650
+    letterSpacing: "-0.02em"
+  title-menu:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "18px"
+    fontWeight: 650
+    letterSpacing: "-0.01em"
+  pregunta:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "17px"
+    fontWeight: 600
+    letterSpacing: "-0.01em"
+  body-large:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "18px"
+    fontWeight: 400
+    lineHeight: 1.6
+  body:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: 1.6
+  label:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "15.5px"
+    fontWeight: 650
+    lineHeight: 1.4
+  label-ventana:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "11.5px"
+    fontWeight: 650
+  data:
+    fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12.5px"
+    fontWeight: 400
+    lineHeight: 1.4
+  data-detection:
+    fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "14px"
+    fontWeight: 600
+  data-escena:
+    fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.4
+  title-lienzo:
+    fontFamily: "Host Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "19px"
+    fontWeight: 650
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
+rounded:
+  trazo-fino: "2px"
+  trazo: "3px"
+  xs: "6px"
+  sm: "8px"
+  control-sm: "9px"
+  md: "10px"
+  lg: "12px"
+  xl: "14px"
+  ventana: "16px"
+  panel: "20px"
+  escenario: "24px"
+  pill: "99px"
+spacing:
+  lado: "clamp(20px, 4.4vw, 64px)"
+  medianil: "24px"
+  barra: "72px"
+  barra-movil: "64px"
+  seccion: "clamp(72px, 10vh, 112px)"
+  seccion-compacta: "clamp(64px, 9vh, 104px)"
+  carril: "48px"
+  columna-tecnicas: "300px"
+components:
+  button-primary:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: "0 18px"
+    height: "42px"
+  button-primary-hover:
+    backgroundColor: "{colors.marca-hondo}"
+    textColor: "{colors.superficie}"
+  button-primary-large:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.lg}"
+    padding: "0 26px"
+    height: "56px"
+  button-light:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.lg}"
+    padding: "0 26px"
+    height: "56px"
+  button-light-hover:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  button-soft:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: "0 18px"
+    height: "42px"
+  button-soft-hover:
+    backgroundColor: "{colors.marca-claro-hover}"
+    textColor: "{colors.marca-hondo}"
+  button-soft-small:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.md}"
+    padding: "0 12px"
+    height: "38px"
+  button-ghost:
+    textColor: "{colors.tinta-2}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
+    height: "40px"
+  button-ghost-hover:
+    backgroundColor: "{colors.hover-neutro}"
+    textColor: "{colors.tinta}"
+  button-icon-sm:
+    backgroundColor: "{colors.fondo}"
+    rounded: "{rounded.control-sm}"
+    size: "34px"
+  link-arrow:
+    textColor: "{colors.marca}"
+    typography: "{typography.label}"
+  nav-item:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
+    height: "40px"
+  nav-item-open:
+    backgroundColor: "{colors.hover-neutro}"
+    textColor: "{colors.tinta}"
+  nav-item-current:
+    textColor: "{colors.marca-hondo}"
+  menu-link:
+    textColor: "{colors.tinta}"
+    typography: "{typography.title-columna}"
+    padding: "16px 4px"
+  menu-link-hover:
+    textColor: "{colors.marca}"
+    padding: "16px 4px 16px 12px"
+  view-selector-tab:
+    textColor: "{colors.tinta-3}"
+    rounded: "{rounded.md}"
+    padding: "12px 18px 0"
+    height: "46px"
+  view-selector-tab-selected:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+  search-field:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    typography: "{typography.body}"
+    rounded: "{rounded.xl}"
+    padding: "0 20px 0 54px"
+    height: "60px"
+  filter-option:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.md}"
+    padding: "10px 14px"
+    height: "46px"
+  filter-option-selected:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  filter-chip:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.pill}"
+    padding: "8px 16px"
+    height: "40px"
+  filter-chip-selected:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+  tecnica-row:
+    textColor: "{colors.tinta-2}"
+    padding: "11px 0"
+  tecnica-row-active:
+    textColor: "{colors.marca}"
+  tecnica-row-catalogo:
+    textColor: "{colors.tinta}"
+    padding: "17px 4px"
+  tecnica-row-catalogo-active:
+    textColor: "{colors.marca}"
+    padding: "17px 4px 17px 10px"
+  tecnica-tab:
+    textColor: "{colors.tinta-3}"
+    padding: "10px 0 12px"
+  tecnica-tab-selected:
+    textColor: "{colors.tinta}"
+  lado-item:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.sm}"
+    padding: "8px 10px"
+  lado-item-current:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  mesa-diagrama:
+    backgroundColor: "{colors.superficie}"
+    rounded: "{rounded.xl}"
+  leyenda-item:
+    textColor: "{colors.tinta-2}"
+    padding: "8px 6px"
+    height: "44px"
+  leyenda-item-active:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.tinta}"
+  sin-mesa:
+    textColor: "{colors.tinta-3}"
+    rounded: "{rounded.xl}"
+    height: "220px"
+  faq-group:
+    textColor: "{colors.tinta}"
+    typography: "{typography.title-ventana}"
+    padding: "22px 0"
+  faq-item:
+    textColor: "{colors.tinta}"
+    typography: "{typography.pregunta}"
+    padding: "14px 0"
+  perfil-row:
+    textColor: "{colors.tinta}"
+    padding: "24px 0"
+  demo-tag:
+    textColor: "{colors.tinta-3}"
+    typography: "{typography.data}"
+  detection-label:
+    backgroundColor: "{colors.menta}"
+    textColor: "{colors.noche}"
+    typography: "{typography.data-detection}"
+  detection-label-error:
+    backgroundColor: "{colors.alerta-noche}"
+    textColor: "{colors.noche}"
+    typography: "{typography.data-detection}"
+  modulo-etiqueta:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.pill}"
+    padding: "3px 10px"
+  chat-mensaje-propio:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.lg}"
+    padding: "10px 14px"
+  chat-accion:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-3}"
+    typography: "{typography.data-escena}"
+    rounded: "{rounded.sm}"
+    padding: "4px 10px 4px 8px"
+  chat-opcion:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+    rounded: "{rounded.pill}"
+    padding: "0 14px"
+    height: "34px"
+  chat-opcion-hover:
+    backgroundColor: "{colors.marca-claro-hover}"
+    textColor: "{colors.marca-hondo}"
+  chat-sugerencia:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.pill}"
+    padding: "0 12px"
+    height: "32px"
+  chat-sugerencia-hover:
+    backgroundColor: "{colors.hover-neutro}"
+    textColor: "{colors.tinta}"
+  campo-pregunta:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.xl}"
+    padding: "8px 8px 8px 14px"
+  boton-enviar:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.md}"
+    size: "40px"
+  boton-enviar-disabled:
+    backgroundColor: "{colors.filete}"
+    textColor: "{colors.tinta-3}"
+  boton-historial:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.control-sm}"
+    padding: "0 10px"
+    height: "34px"
+  ultima-respuesta:
+    backgroundColor: "{colors.fondo}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.lg}"
+    padding: "10px 12px"
+  selector-tecnica:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "0 36px 0 14px"
+    height: "38px"
+  selector-escala-opcion:
+    textColor: "{colors.tinta-3}"
+    rounded: "{rounded.xs}"
+    padding: "0 10px"
+    height: "26px"
+  selector-escala-opcion-elegida:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+  leyenda-lienzo-boton:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "0 12px 0 14px"
+    height: "38px"
+  leyenda-lienzo:
+    backgroundColor: "{colors.superficie}"
+    rounded: "{rounded.ventana}"
+    width: "300px"
+  leyenda-lienzo-pieza:
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.md}"
+    padding: "9px 10px"
+  leyenda-lienzo-pieza-actual:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  ficha-instrumento:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.ventana}"
+    padding: "18px 18px 16px"
+    width: "360px"
+  control-vista:
+    textColor: "{colors.tinta-2}"
+    rounded: "{rounded.control-sm}"
+    padding: "0 12px"
+    height: "36px"
+  control-vista-activo:
+    backgroundColor: "{colors.marca-claro}"
+    textColor: "{colors.marca-hondo}"
+  insignia-pieza:
+    backgroundColor: "{colors.marca}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.pill}"
+    size: "26px"
+  aviso-error:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.tinta}"
+    rounded: "{rounded.lg}"
+    padding: "12px 14px"
+  aviso-confirmacion:
+    backgroundColor: "{colors.tinta}"
+    textColor: "{colors.superficie}"
+    rounded: "{rounded.lg}"
+    padding: "12px 18px"

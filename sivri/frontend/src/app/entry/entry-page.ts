@@ -12,7 +12,7 @@ import { SiteFooter } from '../ui/site-footer';
  * La entrada a SIVRI. Es pública: no pide cuenta, y es el destino de «Comprobar con la cámara»
  * de DataIQ. En el celular explica qué hace falta y lleva a la cámara. En el computador solo
  * explica y lleva al celular, con la dirección y un código QR: la cámara del computador no ve
- * la mesa desde arriba (`DESIGN.md`, «SIVRI: celular y computador (mockups)»).
+ * la mesa desde arriba (`design/README.md`, «SIVRI: celular y computador (mockups)»).
  */
 @Component({
   selector: 'app-entry-page',

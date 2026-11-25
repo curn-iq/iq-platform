@@ -20,8 +20,8 @@ import {
 
 /**
  * El menú de la barra en celular (≤ 1240 px): un panel a pantalla completa bajo
- * la barra con un grupo plegable por menú. Ver «Celular» en «Navigation» de
- * `DESIGN.md`. Se crea al abrirlo, así que las técnicas de cada especialidad se
+ * la barra con un grupo plegable por menú. Ver «Celular» en «Navegación» de
+ * `design/README.md`. Se crea al abrirlo, así que las técnicas de cada especialidad se
  * piden entonces (y lo que falló la última vez se vuelve a pedir).
  */
 @Component({

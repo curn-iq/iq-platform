@@ -19,7 +19,7 @@ import { Typing } from './typing';
  * (cuando termina de escribirse), el aviso si el chat no respondió y
  * las sugerencias para empezar. En escritorio es el panel lateral del banco de
  * trabajo; en celular es el historial, que entra desde la izquierda («Chat de
- * SIMIQ3D» en `DESIGN.md`).
+ * SIMIQ3D» en `design/README.md`).
  */
 @Component({
   selector: 'app-chat-history',

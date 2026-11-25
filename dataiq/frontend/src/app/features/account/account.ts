@@ -40,7 +40,7 @@ import { LoginIllustration } from './login-illustration';
 import { RegisterIllustration } from './register-illustration';
 import { emptyRegistration, registrationSchema } from './registration-form';
 
-/** Cuánto dura el cambio de lado de las mitades (FLIP), según «Ingresar / Crear cuenta (página)» de `DESIGN.md`. */
+/** Cuánto dura el cambio de lado de las mitades (FLIP), según «Ingresar / Crear cuenta (página)» de `design/README.md`. */
 const SWAP_MS = 700;
 
 /** Las pestañas: enlaces a cada pantalla, que conservan `?volver=`. */
