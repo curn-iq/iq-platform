@@ -35,13 +35,35 @@ Decidido por Mauricio el 2026-10-15:
 
 ## Modelos 3D
 
-Decidido por Mauricio el 2026-10-15: **modelos propios, modelados a mano en
-Blender**. Blender es gratis para cualquier uso y lo que se crea con él es de
-quien lo hace, así que los modelos pueden ir en el repo y servirse en la web.
-(Primero se planeó modelarlos con Claude y la skill
-[blender-image-to-3d](https://github.com/majidmanzarpour/blender-game-skills);
-se descartó el mismo día porque exige que más integrantes del equipo tengan
-Claude Pro.)
+Los 16 instrumentos de las cinco mesas se modelaron sobre las fotos que el
+equipo tomó con el programa de IQ en el laboratorio el 2026-11-18 (decidido por
+Mauricio el 2026-11-20). Son modelos propios, hechos en Blender: Blender es
+gratis para cualquier uso y lo que se crea con él es de quien lo hace, así que
+los modelos pueden ir en el repo y servirse en la web.
+
+Cómo se hacen, un instrumento a la vez:
+
+1. La foto se endereza con los cuatro marcadores ArUco y se pone a escala con
+   su cuadrado negro de 6 cm.
+2. Se traza el contorno del instrumento sobre la foto y se extruye con su ancho
+   real. El espesor, que una foto desde arriba no muestra, se infiere.
+3. Lo que la foto no deja ver (dientes, estrías, puntas) se toma de imágenes de
+   referencia del instrumental.
+4. Mauricio revisa cada modelo contra la foto y las referencias y lo aprueba
+   antes de pasar al siguiente.
+
+Se modeló en Blender controlado por MCP for Blender, con Claude Code y Codex, y
+con scripts propios para enderezar la foto, trazar el contorno, comparar la
+silueta del modelo con la de la foto y hornear la oclusión ambiental. Todo
+queda en el repo: el `.blend` y el GLB de cada instrumento, y en
+[`models/modelos.csv`](models/modelos.csv) sus medidas y su fuente (la foto,
+una referencia o inferido).
+
+**El primer juego de modelos** (23 instrumentos modelados a mano en Blender por
+Guebriel con las medidas del catálogo de instrumental del CICR, integrados el
+2026-10-30) se reemplazó porque, en la presentación del 2026-11-05, la tutora
+de las estudiantes de IQ señaló que el instrumental de los modelos no era del
+todo correcto.
 
 Por qué no otras fuentes (revisadas el 2026-10-15):
 
@@ -50,30 +72,6 @@ Por qué no otras fuentes (revisadas el 2026-10-15):
 | Tiendas de pago (Unity Asset Store, TurboSquid, CGTrader) | Sus licencias prohíben redistribuir los modelos o dejar que se extraigan del producto; un visor web le entrega el archivo al navegador y el repo es público. Además, sus paquetes son genéricos: no traen Rochester, Babcock, Farabeuf ni Senn Miller, ni distinguen la pinza de disección con o sin garra |
 | Modelos gratis de Sketchfab (CC BY) | La licencia sirve, pero lo que hay es genérico (bisturís, «forceps», un portaagujas), cada uno en un estilo y algunos de más de un millón de caras |
 | Generadores de imagen a 3D (Meshy, Tripo) | Fallan en objetos delgados y metálicos con puntas finas, y la punta es justo lo que distingue un instrumento de otro: lo que inventen no sale de una fuente |
-
-Cómo se hacen:
-
-- **Por familias.** Los instrumentos de las mesas comparten forma, así que se
-  modela una base por familia y cada instrumento es una variante:
-
-  | Familia | Instrumentos | Qué cambia |
-  |---|---|---|
-  | Pinzas con anillos y cremallera | Kelly, Kelly Adson, Mosquito curva, Kocher, Rochester, Allis, Babcock, Lahey, Moynihan, portaagujas | La punta |
-  | Tijeras | Mayo, Metzenbaum | El largo y la punta |
-  | Pinzas de disección | Con garra, sin garra | Los dientes |
-  | Bisturí | Mangos N.° 3, 4 y 7; hojas #10, #10-11, #15 y #20 | Las medidas |
-  | Separadores | Farabeuf, Senn Miller | La forma |
-
-- **Referencias:** fotos de catálogo de cada instrumento (fabricantes y
-  distribuidores de instrumental quirúrgico), puestas como imagen de fondo en
-  Blender. Las medidas salen de la ficha del fabricante (el largo total suele
-  venir en ella) o de la foto, a escala con ese largo. Las imágenes son de
-  terceros: no se suben al repo, solo su enlace.
-- **Todo queda en el repo:** el `.blend` de cada familia, el GLB de cada
-  instrumento y una tabla con sus medidas principales (largo total, largo de
-  la punta, ancho de los anillos…), cada una con su fuente (el enlace a la
-  foto o a la ficha) o marcada como inferida. Así cada modelo se puede
-  revisar en un PR y corregir.
 
 Las convenciones de cada modelo (escala, origen, orientación, nombres), qué
 medidas son reales y cuáles inferidas, y cómo se mapea cada modelo a su
@@ -364,7 +362,7 @@ El avance, por actividad de DSRM, está en
 ## Stack
 
 El backend lo desarrolla Mauricio y los modelos 3D, Guebriel (reparto del
-2026-10-20); el frontend, también Mauricio (reparto del frontend acordado por
+2026-10-20; los 16 modelos sobre las fotos, Mauricio, ver «Modelos 3D»); el frontend, también Mauricio (reparto del frontend acordado por
 Mauricio y Juan Caraballo el 2026-11-01: Juan lleva el del shell y DataIQ). Requisito: **el visor
 corre en el navegador, sin instalar nada** (WebGL), como lo fundamenta el
 Formato 115 en su marco teórico.

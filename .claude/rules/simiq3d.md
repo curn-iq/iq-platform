@@ -11,7 +11,8 @@ Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
 - **Alcance del MVP:** la mesa de Mayo de las cinco técnicas de Cirugía
   General de DataIQ, sin tiempos quirúrgicos (DataIQ no los tiene: el chat no
   ordena ni agrupa las piezas por tiempos). La mesa es de tamaño provisional,
-  la misma para todas, y todos los instrumentos apuntan igual.
+  la misma para todas; cada instrumento va con la posición y el giro que
+  guarda DataIQ, con el giro ajustado al eje cardinal más cercano.
 - **SIMIQ3D no es evaluación:** explora y consulta. Practicar con puntaje es
   función de SIVRI.
 - **El tutor conversa y DataIQ manda en la mesa:** el código decide de qué se
