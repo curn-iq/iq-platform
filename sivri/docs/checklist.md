@@ -75,12 +75,12 @@ proyecto de grado). Se marca cada pieza al terminarla.
   sobra: la zona de la mesa, lo que tiene al lado y el número del diagrama, sin
   filas ni celdas (`message` en la respuesta; `app/domain/location.py`). Hecho el
   2026-11-18
-- [ ] Autenticación del celular ante SIVRI: la cookie de sesión no llega al
+- [x] Autenticación del celular ante SIVRI: la cookie de sesión no llega al
   dominio del Servidor PC1; la página pide a DataIQ un token corto y lo manda en
   `Authorization: Bearer` (pieza 10 de la checklist de DataIQ)
   - [x] DataIQ: `POST /auth/module-token` entrega el token corto (5 minutos)
   - [x] SIVRI lo valida con el JWKS y lo reenvía a DataIQ para pedir el catálogo
-  - [x] El frontend de SIVRI lo pide y lo renueva antes de que venza (`ModuleTokenService` y renovación por la misma conexión; falta probarlo contra el backend real)
+  - [x] El frontend de SIVRI lo pide y lo renueva antes de que venza (`ModuleTokenService` y renovación por la misma conexión; probado desde el celular con el frontend publicado y el backend del Servidor PC1 el 2026-11-23)
 - [x] Vista previa HTTPS/WSS en PC1 con un JWT real de DataIQ local (ver
   [README del Servidor PC1](../servidor-pc1/README.md)).
 - [x] Habilitar el arranque de la vista previa y sus contenedores en PC1
@@ -92,7 +92,7 @@ proyecto de grado). Se marca cada pieza al terminarla.
   pide el catálogo a DataIQ una vez por sesión (ya lo hace). Comprobado el
   2026-11-22 con los servicios de systemd, los pesos de `sivri-r2` y una foto
   enviada desde un celular
-- [ ] Frontend de SIVRI, servido bajo `/sivri/` en el mismo origen que el
+- [x] Frontend de SIVRI, servido bajo `/sivri/` en el mismo origen que el
   shell (rewrite del proyecto del shell hacia el de SIVRI). Es el destino de
   «Comprobar con la cámara» en todas las técnicas de DataIQ, así que dice qué
   mesas valida (la de Mayo de las cinco técnicas de Cirugía General). Avance en
@@ -117,4 +117,4 @@ proyecto de grado). Se marca cada pieza al terminarla.
 
 ## 6. Comunicación
 
-- [ ] Resultados de SIVRI en el informe (Formato 115)
+- [x] Resultados de SIVRI en el informe (Formato 115 del tercer corte)
