@@ -157,7 +157,7 @@ export interface components {
         /**
          * ChatRequest
          * @description Un pedido: de qué trató la respuesta, para entender un seguimiento
-         *     (README de SIMIQ3D, «Chat»).
+         *     (simiq3d/docs/chat.md).
          */
         ChatRequest: {
             kind: components["schemas"]["RequestKind"];

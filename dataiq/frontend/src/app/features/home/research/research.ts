@@ -47,7 +47,7 @@ function toViews(motes: readonly Mote[]): MoteView[] {
  * luz que sube cada vez más rápido y suma un logro por vuelta. La animación corre
  * solo mientras se ve y, con movimiento reducido, se queda quieta en su dibujo
  * completo. En celular los logros van como lista bajo la espiral. Ver
- * `spiral.ts` y «Layout» en `DESIGN.md`.
+ * `spiral.ts` y «Composición» en `design/README.md`.
  */
 @Component({
   selector: 'app-home-research',

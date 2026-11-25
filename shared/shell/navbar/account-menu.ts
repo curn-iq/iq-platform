@@ -15,7 +15,7 @@ import { NavLink } from "./nav-link";
 /**
  * El panel de «Mi cuenta»: quién es la persona, su rol y los accesos de gestión
  * que el rol permite, y al final «Cerrar sesión». Lo dibuja `Navbar` en un overlay anclado a la
- * derecha, bajo la barra. Ver «Mi cuenta (menú)» en `DESIGN.md`.
+ * derecha, bajo la barra. Ver «Mi cuenta (menú)» en `design/README.md`.
  */
 @Component({
   selector: "app-account-menu",

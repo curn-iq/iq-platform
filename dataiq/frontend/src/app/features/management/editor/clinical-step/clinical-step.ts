@@ -11,7 +11,7 @@ import { MISSING_BADGE } from '../missing-badge';
 import { SutureRowChange, SutureRows } from '../suture-rows/suture-rows';
 
 /**
- * El paso «Datos clínicos» del editor, según «Editor de técnica (página)» de `DESIGN.md`: dos tarjetas
+ * El paso «Datos clínicos» del editor, según «Editor de técnica (página)» de `design/README.md`: dos tarjetas
  * (Descripción: para qué sirve, indicaciones, complicaciones, técnica quirúrgica y la fuente; Preparación:
  * CUPS, anestesia, ropa, posición del paciente, equipos biomédicos, suturas y equipo médico-quirúrgico).
  * Los obligatorios vacíos llevan la pastilla «Falta» y los demás dicen «Opcional» (la regla es la de

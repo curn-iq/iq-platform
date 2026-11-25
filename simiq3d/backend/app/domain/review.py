@@ -1,5 +1,6 @@
-"""La revisión de lo que escribe el tutor, frase por frase (README de SIMIQ3D,
-«Chat»). Solo se revisan los límites duros, los que el modelo no puede cruzar
+"""La revisión de lo que escribe el tutor, frase por frase
+(simiq3d/docs/chat.md). Solo se revisan los límites duros, los que el modelo no
+puede cruzar
 aunque explique con su conocimiento general:
 
 - la mesa de Mayo: un instrumento que no va en esa mesa, o su número del

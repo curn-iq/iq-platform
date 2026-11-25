@@ -26,13 +26,13 @@ const LEAVE_MS = 280;
 /** Cuánto dura el lavado de la fila que llega (`arrive` en `person-row.scss`). */
 const ARRIVE_MS = 1200;
 
-/** El punto de corte donde la ficha pasa debajo del tablero (`DESIGN.md`). */
+/** El punto de corte donde la ficha pasa debajo del tablero (`design/README.md`). */
 const NARROW_QUERY = '(max-width: 1100px)';
 
 /**
  * Usuarios y roles (`/gestion/usuarios`, `usuarios.html`), para el admin: las personas por rol, un
  * buscador, la ficha de la elegida y el cambio de rol. Los textos, de Juan (Resuelto 63 de
- * `dataiq/docs/checklist-frontend.md`). Ver «Usuarios y roles (página)» en `DESIGN.md`.
+ * `dataiq/docs/checklist-frontend.md`). Ver «Usuarios y roles (página)» en `design/README.md`.
  *
  * Pide `GET /users` una vez, con todas las cuentas; cambiar un rol (`PATCH /users/{id}/role`)
  * reemplaza esa cuenta en la lista y no vuelve a pedirla. Suspender y el historial de roles no

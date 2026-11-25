@@ -1,7 +1,7 @@
 /**
  * Los dibujos del instrumental y de los objetos planos, tomados del mockup de
- * la técnica (`diseno/mockups/tecnica.html`) como datos: la plantilla los pinta
- * como SVG, sin `innerHTML` (ver «Seguridad» en el README).
+ * la técnica como datos: la plantilla los pinta como SVG, sin `innerHTML` (ver
+ * «Seguridad» en el README).
  *
  * Cada pieza de acero está en coordenadas locales: vertical, con la punta en
  * `y = 0` y los anillos o el mango hacia `y = 100`. Cada objeto plano está

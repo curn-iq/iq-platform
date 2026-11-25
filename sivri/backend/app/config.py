@@ -49,8 +49,8 @@ class Config(BaseSettings):
     max_image_side: int = 1280
     max_upload_bytes: int = 8_000_000
 
-    # Puntos de partida de la validación (README de SIVRI, «Cómo se valida la
-    # mesa»); se ajustan con las fotos de la sesión de validación.
+    # Puntos de partida de la validación (sivri/docs/validacion.md, «Puntos de
+    # partida»); se ajustan con las fotos de la sesión de validación.
     board_padding: float = Field(default=0.10, ge=0, allow_inf_nan=False)
     cell_margin: float = 0.10
     close_gap: float = 0.05

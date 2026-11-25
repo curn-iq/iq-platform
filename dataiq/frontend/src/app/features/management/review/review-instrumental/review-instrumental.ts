@@ -8,7 +8,7 @@ const KIND_LABELS = { added: 'Agregado', removed: 'Quitado' } as const;
  * Instrumental de la revisión: qué objetos se agregaron o se quitaron frente a la versión
  * publicada (cada uno por el nombre de su leyenda) y, debajo, todos los de la propuesta. Sin
  * cambios lo dice en una franja con visto; en una técnica nueva (`isNew`) solo lista los objetos.
- * Ver «Versiones por revisar (página)» en `DESIGN.md`.
+ * Ver «Versiones por revisar (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-review-instrumental',

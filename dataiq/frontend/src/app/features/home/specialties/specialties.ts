@@ -7,7 +7,7 @@ import { HomeCatalog } from '../home-catalog';
  * «Técnicas por especialidad.»: el catálogo a lo ancho, una columna por
  * especialidad con sus técnicas como filas. Tocar una técnica abre su detalle (los
  * datos clínicos son libres; el resto pide cuenta allí mismo). Las técnicas y las
- * especialidades salen de la API. Ver «Catálogo por especialidad» en `DESIGN.md`.
+ * especialidades salen de la API. Ver «Catálogo por especialidad» en `design/README.md`.
  */
 @Component({
   selector: 'app-home-specialties',

@@ -65,15 +65,15 @@ Las pruebas de los backends necesitan su PostgreSQL local corriendo
 
 ## Convenciones
 
-- **Idioma** (decidido por el equipo el 2026-10-13): nombres en inglés en el
+- **Idioma**: nombres en inglés en el
   código, la base de datos (tablas, columnas, enums), la API (rutas y campos
   JSON) y el frontend. Comentarios, docstrings, mensajes de error, etiquetas
   de Swagger, la interfaz, las URL y la documentación, en español.
-- **Documentación:** registro formal; quien la lee no estuvo en la
-  conversación, así que cada decisión dice quién, qué, cómo y con qué
-  instrumento, con los términos ya definidos en el repo y en el Formato 115.
-  Cada decisión lleva quién la tomó y cuándo («decidido por … el
-  AAAA-MM-DD»). El avance (hecho, pendiente) solo va en las checklists.
+- **Documentación:** registro formal y corto; quien la lee no estuvo en la
+  conversación, así que dice qué es y por qué, con los términos ya definidos
+  en el repo. Sin atribuciones ni fechas de decisión («decidido por …»): quién
+  y cuándo quedan en el PR. El avance (hecho, pendiente), con sus fechas y
+  responsables, solo va en las checklists.
 - **Avance:** cada área tiene su checklist, que se lee al empezar y se marca
   al terminar cada pieza: `dataiq/docs/checklist-backend.md`,
   `dataiq/docs/checklist-frontend.md`, `simiq3d/docs/checklist.md` (por
@@ -83,19 +83,18 @@ Las pruebas de los backends necesitan su PostgreSQL local corriendo
 - **Git:** todo entra por PR a `main` con CI; no hay rama `dev` y `main` es
   producción. Commits con Conventional Commits en español
   (`feat(dataiq): …`). El título del PR es la línea que aparece en el release
-  semanal (proceso en el README).
-- **Infraestructura gratuita y sin tarjeta de crédito** (decidido el
-  2026-10-14): no proponer servicios que la exijan. Qué corre dónde y por
+  semanal (proceso en [`CONTRIBUTING.md`](CONTRIBUTING.md)).
+- **Infraestructura gratuita y sin tarjeta de crédito**: no proponer servicios que la exijan. Qué corre dónde y por
   qué: [`docs/arquitectura.md`](docs/arquitectura.md).
 
 ## Sistema visual compartido
 
-Decidido por Juan el 2026-10-15 y el 2026-10-27: `shared/design/tokens.css`
-tiene los tokens base de `DESIGN.md` como propiedades CSS (no variables de
+`shared/design/tokens.css`
+tiene los tokens base de `design/tokens.yaml` como propiedades CSS (no variables de
 Sass) y los nombres por uso (`--color-accent`). Cada frontend tiene su tema en
 `src/styles/theme.scss`, que solo sobrescribe propiedades. Los componentes
-usan solo los nombres por uso, y todo color nuevo se anota en `DESIGN.md`. El
-método de diseño de los mockups está en `.claude/rules/diseno.md`.
+usan solo los nombres por uso, y todo color nuevo se anota en `design/README.md`. El
+método de diseño está en `.claude/rules/design.md`.
 
 ## Trampas
 
@@ -123,26 +122,27 @@ método de diseño de los mockups está en `.claude/rules/diseno.md`.
 
 ## Dónde vive cada cosa
 
-Cada tipo de información tiene un solo lugar (decidido por Mauricio el
-2026-10-13).
+Cada tipo de información tiene un solo lugar.
 
 | Información | Dónde |
 |---|---|
-| Qué es el proyecto, su fase y el proceso de releases | [`README.md`](README.md) |
+| Qué es el producto, para quién, su estado y cómo empezar | [`README.md`](README.md) |
+| Cómo se contribuye (ramas, commits, PR, pruebas y releases) | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | Cómo funciona y cómo se corre cada módulo | El README del módulo |
 | Arquitectura e infraestructura, con su porqué | [`docs/arquitectura.md`](docs/arquitectura.md) |
 | Esquema de la base de DataIQ | [`dataiq/docs/esquema.dbml`](dataiq/docs/esquema.dbml), su diagrama (`diagramabd.png`, dbdiagram.io) y la migración, que cambian juntos |
-| La barra superior de todo el shell (DataIQ y SIMIQ3D) | `shared/shell/`, con su contrato en `shared/shell/shell-host.ts`; «Barra compartida» en [`DESIGN.md`](DESIGN.md). Un cambio de la barra se hace ahí, una sola vez |
+| La barra superior de todo el shell (DataIQ y SIMIQ3D) | `shared/shell/`, con su contrato en `shared/shell/shell-host.ts`; «Barra compartida» en [`design/README.md`](design/README.md). Un cambio de la barra se hace ahí, una sola vez |
 | Roles y flujos | [`docs/flujos.md`](docs/flujos.md) |
 | Aviso de privacidad | [`docs/privacidad.md`](docs/privacidad.md) |
 | Lo que queda para después del MVP | [`docs/despues-del-mvp.md`](docs/despues-del-mvp.md) |
-| Producto y diseño visual | [`PRODUCT.md`](PRODUCT.md) y [`DESIGN.md`](DESIGN.md) |
+| Producto (para quién y principios) | [`README.md`](README.md), «Para quién» |
+| Diseño visual y sistema de diseño | [`design/README.md`](design/README.md); las pantallas, en el [Figma del proyecto](https://www.figma.com/design/jHEduZTQNBs4CCJEWB8u5v/) |
 | Avance | Las checklists (ver «Convenciones») |
 | Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub |
 | La tesis (Formato 115), entregas por corte, documentos fuente y fotos de IQ | Google Drive del proyecto, carpeta «Tesis ING/IQ - CURN»; su `README` dice qué hay en cada carpeta |
 
 El Drive no se modifica salvo pedido explícito de quien trabaja con el
-agente. Sus carpetas (decidido por Mauricio el 2026-11-24): `01 - Entregables`
+agente. Sus carpetas: `01 - Entregables`
 (el Formato 115 de cada corte), `02 - Fuentes de IQ` (documentos de técnicas,
 fotos del laboratorio y listas de instrumental), `03 - Diseño` (planificación,
 stack y diagrama de la base de cada módulo), `04 - Datos y modelos` (catálogo,

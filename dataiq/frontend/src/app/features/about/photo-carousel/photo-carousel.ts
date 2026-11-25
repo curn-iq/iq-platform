@@ -31,7 +31,7 @@ const SIZES = '(width > 1100px) 100vw, (width > 760px) calc(100vw - 72px), calc(
  * mouse o deslizando, en los dos sentidos (las fotos siguen al puntero mientras se arrastran), y con las
  * flechas del teclado cuando tiene el foco. Con
  * `prefers-reduced-motion` no avanza solo y el cambio es instantáneo. Ver «Nosotros (página)» en
- * `DESIGN.md`.
+ * `design/README.md`.
  */
 @Component({
   selector: 'app-photo-carousel',

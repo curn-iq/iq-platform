@@ -76,7 +76,7 @@ hecho y cómo se corre: [`backend/README.md`](../backend/README.md).
 
 ### El modelo entiende y DataIQ responde
 
-Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
+Decidido por Mauricio el 2026-11-03 (simiq3d/docs/chat.md).
 
 - [x] Comprobar que Qwen3-VL 8B, en Ollama, pide varias consultas en un mismo
   turno y elige bien entre los pedidos, con las preguntas de la conversación
@@ -130,7 +130,7 @@ Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
 
 ### La redacción
 
-Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat», «La
+Decidido por Mauricio el 2026-11-03 (simiq3d/docs/chat.md, «La
 redacción»).
 
 - [x] Prueba con las 8 preguntas de la conversación del celular, antes de
@@ -175,7 +175,7 @@ redacción»).
 
 ### El tutor
 
-Decidido por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»): el chat por
+Decidido por Mauricio el 2026-11-03 (simiq3d/docs/chat.md): el chat por
 pedidos no conversaba. El diseño salió de comparar las respuestas de Gemini,
 ChatGPT y Claude al mismo prompt.
 
@@ -236,7 +236,7 @@ ChatGPT y Claude al mismo prompt.
 
 ### La respuesta a medida que se escribe
 
-Acordado por Mauricio el 2026-11-03 (README de SIMIQ3D, «Chat»).
+Acordado por Mauricio el 2026-11-03 (simiq3d/docs/chat.md).
 
 - [x] Para qué sirve cada pieza de la mesa en los datos del modelo (la frase
   de su descripción en DataIQ que lo dice): en producción, el 2026-11-03, el

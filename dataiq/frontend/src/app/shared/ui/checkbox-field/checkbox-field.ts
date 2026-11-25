@@ -16,7 +16,7 @@ let nextId = 0;
 
 /**
  * Una casilla de verificación de formulario, según «Ingresar / Crear cuenta (página)» de
- * `DESIGN.md` (la de aceptar el aviso de privacidad): su texto va dentro, con enlaces si hace
+ * `design/README.md` (la de aceptar el aviso de privacidad): su texto va dentro, con enlaces si hace
  * falta (`<app-checkbox-field [formField]="form.accepted">Acepto el <a …>aviso</a>.</app-checkbox-field>`).
  * Es un control de Signal Forms. Un error de validación se dice bajo el texto una vez tocada la
  * casilla o intentado enviar el formulario, y la casilla se marca con un contorno de 2 px en `tinta`

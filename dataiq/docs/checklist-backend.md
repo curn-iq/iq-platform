@@ -262,10 +262,10 @@ aquí para que quien opere el backend las decida.
 ## Ajuste de las mesas de Mayo
 
 - [x] Cargar las cinco mesas de Mayo de Cirugía General a partir de las fotos
-  de IQ en PostgreSQL local (ver [fuente y criterio](../README.md#mesas-de-mayo-de-cirugía-general)).
+  de IQ en PostgreSQL local (ver [fuente y criterio](catalogo.md#mesas-de-mayo-de-cirugía-general)).
 
 - [x] Preparar una carga específica que conserva las versiones anteriores en
-  bases existentes (ver [README](../README.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
+  bases existentes (ver [catálogo](catalogo.md#publicar-las-mesas-actualizadas-en-una-base-existente)).
 - [x] Citar en la fuente de las cinco técnicas la lista de IQ y las fotos del
   2026-11-18 de las que sale la mesa de Mayo; `seed.update_mayo` la publica
   junto con la mesa

@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "Si usas este software, cítalo con estos datos."
+type: software
+title: "IQ Platform: ecosistema educativo de Instrumentación Quirúrgica"
+abstract: >-
+  Ecosistema educativo para aprender, fuera del laboratorio, cómo se distribuye
+  el instrumental quirúrgico en la mesa de cada técnica. Reúne DataIQ (catálogo
+  de técnicas con sus mesas), SIMIQ3D (la mesa en 3D, con chat) y SIVRI
+  (revisión de la mesa armada con la cámara del celular).
+authors:
+  - family-names: "Caraballo Nieves"
+    given-names: "Juan José"
+    affiliation: "Corporación Universitaria Rafael Núñez"
+  - family-names: "Garcés Ravel"
+    given-names: "Guebriel Gabriel"
+    affiliation: "Corporación Universitaria Rafael Núñez"
+  - family-names: "Lugo Granados"
+    given-names: "Mauricio José"
+    affiliation: "Corporación Universitaria Rafael Núñez"
+repository-code: "https://github.com/curn-iq/iq-platform"
+url: "https://dataiq-frontend.vercel.app"
+license:
+  - MIT
+  - AGPL-3.0-only
+keywords:
+  - instrumentación quirúrgica
+  - educación en salud
+  - visión por computador
+  - visualización 3D
+  - modelos de lenguaje

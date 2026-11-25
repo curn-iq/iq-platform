@@ -4,7 +4,7 @@
  * `dataiq/docs/checklist-frontend.md`): se entra con navegación completa, no con el router.
  */
 
-/** La mesa de Mayo de la técnica en SIMIQ3D (`simiq3d/frontend/README.md`, «Rutas»). */
+/** La mesa de Mayo de la técnica en SIMIQ3D (`simiq3d/docs/frontend.md`, «Rutas»). */
 export function simiq3dTechniqueUrl(techniqueId: string): string {
   return `/simiq3d/tecnicas/${encodeURIComponent(techniqueId)}`;
 }

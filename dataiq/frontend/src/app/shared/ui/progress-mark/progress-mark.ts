@@ -18,7 +18,7 @@ export const PROGRESS_LABELS: Readonly<Record<MarkStatus, string>> = {
 };
 
 /**
- * La marca de avance de una sección (22 px), según «Mis borradores (página)» de `DESIGN.md`:
+ * La marca de avance de una sección (22 px), según «Mis borradores (página)» de `design/README.md`:
  * completa, llena en `marca` con un visto blanco; en curso, medio llena; pendiente, solo el
  * anillo `filete-2`; y la técnica que no tiene esa mesa, una raya `tinta-3`. Al cargar se
  * traza: `column` y `row` la escalonan (90 ms por columna y 45 ms por fila); sin

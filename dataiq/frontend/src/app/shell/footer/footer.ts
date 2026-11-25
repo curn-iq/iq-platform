@@ -24,7 +24,7 @@ function footerOptions(id: NavMenuId): readonly NavOption[] {
 /**
  * El pie oscuro: el imagotipo con su frase y cuatro columnas, las mismas de la barra
  * (Herramientas, Especialidades, ¿Por qué IQ Platform?, Ayuda). Ver «Pie» en
- * «Navigation» de `DESIGN.md`.
+ * «Navegación» de `design/README.md`.
  */
 @Component({
   selector: 'app-footer',

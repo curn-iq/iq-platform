@@ -11,7 +11,7 @@
 // (`kocher_forceps.ff785f3f26.glb`) y `manifest.json` dice cuál corresponde a cada
 // uno. El visor pide el de la huella: si el modelo cambia, cambia su nombre y el
 // navegador no puede seguir usando la copia vieja de su caché
-// (simiq3d/frontend/README.md, «Modelos 3D»).
+// (simiq3d/docs/frontend.md, «Modelos 3D»).
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
@@ -30,7 +30,7 @@ const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = resolve(frontend, '..', 'models', 'glb');
 const output = join(frontend, 'public', 'models');
 const gltfpack = join(frontend, 'node_modules', 'gltfpack', 'cli.js');
-// Presupuesto de cada modelo (simiq3d/frontend/README.md, «Decisiones»)
+// Presupuesto de cada modelo (simiq3d/docs/frontend.md, «Decisiones»)
 const MAX_BYTES = 150 * 1024;
 
 mkdirSync(output, { recursive: true });

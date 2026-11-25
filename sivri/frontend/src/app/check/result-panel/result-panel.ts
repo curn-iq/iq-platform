@@ -28,7 +28,7 @@ interface Row {
 /**
  * El resultado fijado: cuántas piezas están en su lugar y, por grupos, lo que hay que corregir.
  * Con dos técnicas muy cerca no se elige una por el estudiante: se muestran las dos y «Ver dónde
- * va» queda desactivado hasta que una gane (`DESIGN.md`, «SIVRI: celular y computador»).
+ * va» queda desactivado hasta que una gane (`design/README.md`, «SIVRI: celular y computador»).
  */
 @Component({
   selector: 'app-result-panel',

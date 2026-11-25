@@ -43,7 +43,7 @@ import { SectionComments } from './section-comments/section-comments';
  *
  * Una versión que ya no está en revisión (la decidió otro revisor) o que es propia no se revisa: lo
  * dice, cada caso con su mensaje (la propia lleva al editor, desde donde se publica). El revisor comenta (`SectionComments`, `ReviewComments`) y decide (`ReviewDecision`, Resuelto
- * 60 de `dataiq/docs/checklist-frontend.md`). Ver «Versiones por revisar (página)» en `DESIGN.md`.
+ * 60 de `dataiq/docs/checklist-frontend.md`). Ver «Versiones por revisar (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-review',

@@ -1,5 +1,6 @@
-"""De qué se habló en cada respuesta del chat, como pedidos (README de SIMIQ3D,
-«Chat»): `POST /chat` los devuelve y el frontend los manda de vuelta con la
+"""De qué se habló en cada respuesta del chat, como pedidos
+(simiq3d/docs/chat.md): `POST /chat` los devuelve y el frontend los manda de
+vuelta con la
 siguiente pregunta, para que un seguimiento («¿y para qué sirve?») se entienda
 por lo que se preguntó antes (`app/domain/focus.py`)."""
 

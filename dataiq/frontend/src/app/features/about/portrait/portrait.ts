@@ -6,7 +6,7 @@ import { aboutImageLoader, PORTRAIT_SRCSET, TeamMember } from '../about-photos';
  * El retrato de una persona del equipo (componente «Integrante» del Figma): la foto 4:5 con radio 16, el
  * nombre y la carrera, sin tarjeta, borde ni sombra. No es un enlace. Con un puntero fino, al señalarlo
  * la foto se acerca a 1.04 dentro del recorte y el nombre pasa a `marca-hondo`; en pantallas táctiles no
- * cambia nada. Ver «Nosotros (página)» en `DESIGN.md`.
+ * cambia nada. Ver «Nosotros (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-portrait',

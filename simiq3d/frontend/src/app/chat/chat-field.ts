@@ -8,7 +8,7 @@ const MAX_HEIGHT_PX = 120;
  * El campo de pregunta, la acción principal de la pantalla. Sin técnica abierta
  * es la bienvenida: «Elige una técnica para verla en 3D», con una opción por
  * técnica. Debajo va el aviso del registro de conversaciones, que es el aviso de
- * privacidad del chat (`simiq3d/README.md`, «Backend y base de datos»).
+ * privacidad del chat (`simiq3d/backend/README.md`, «Qué guarda»).
  */
 @Component({
   selector: 'app-chat-field',

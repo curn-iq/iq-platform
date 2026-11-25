@@ -10,7 +10,7 @@ import { TeamGroupSection } from './team-group/team-group';
  * La página «Nosotros» (`/nosotros`): quiénes hacen IQ Platform. Pública y sin API. Va, de arriba
  * abajo, la presentación (titular, entradilla y «Ver cómo funciona»), el carrusel, «Los dos
  * programas» y «Conoce al equipo»; cada sección entra en su casilla de la fase 10 de
- * `dataiq/docs/checklist-frontend.md`. Ver «Nosotros (página)» en `DESIGN.md`.
+ * `dataiq/docs/checklist-frontend.md`. Ver «Nosotros (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-about',

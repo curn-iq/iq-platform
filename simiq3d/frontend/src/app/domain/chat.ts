@@ -89,7 +89,7 @@ const NOTHING: SceneChange = { technique: null, instrument: null, card: false, l
 
 /**
  * Qué cambia en el visor con cada `action` de `POST /chat`
- * (`simiq3d/frontend/README.md`, «El chat»). Sale solo de la acción y de sus ids,
+ * (`simiq3d/docs/frontend.md`, «El chat»). Sale solo de la acción y de sus ids,
  * nunca del texto. `answer`, `clarify` y `no_answer` no cambian el visor aunque
  * traigan ids: decir que un instrumento no va en una mesa no es señalarlo.
  */

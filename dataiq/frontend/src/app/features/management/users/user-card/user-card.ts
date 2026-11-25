@@ -34,7 +34,7 @@ const ROLE_OPTIONS: readonly SegmentOption[] = ROLES.map((role) => ({
 }));
 
 /**
- * La ficha de una persona en Usuarios y roles, según «Usuarios y roles (página)» de `DESIGN.md`
+ * La ficha de una persona en Usuarios y roles, según «Usuarios y roles (página)» de `design/README.md`
  * y Resuelto 63 de `dataiq/docs/checklist-frontend.md`: su nombre y correo, el selector de rol,
  * y «Cuenta» con cuándo se registró, qué versión del aviso de privacidad aceptó y su actividad en
  * DataIQ.

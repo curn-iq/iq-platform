@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/dataiq-frontend-oscuro.svg">
-    <img src="../../diseno/marca/modulos/dataiq-frontend.svg" alt="DataIQ, FrontEnd" width="225">
+    <source media="(prefers-color-scheme: dark)" srcset="../../design/brand/modules/dataiq-frontend-dark.svg">
+    <img src="../../design/brand/modules/dataiq-frontend.svg" alt="DataIQ, FrontEnd" width="225">
   </picture>
 </p>
 
@@ -9,611 +9,24 @@ Aplicación web en Angular que reúne el **shell de navegación** del ecosistema
 (inicio, catálogo, cuenta) y **DataIQ** (consulta y gestión de técnicas). SIVRI
 y SIMIQ3D tienen su propio frontend; desde aquí solo se enlazan. SIVRI es
 AGPL-3.0 ([`sivri/README.md`](../../sivri/README.md)): esta app (MIT) no
-importa código de `sivri/`.
+importa código de `sivri/`. En producción: <https://dataiq-frontend.vercel.app>.
 
-Este README dice cómo está hecho y cómo se corre. El avance por fases y lo que
-falta decidir están en
-[`../docs/checklist-frontend.md`](../docs/checklist-frontend.md).
+## Stack
 
-Fuentes:
+- Angular 22: componentes standalone, signals, sin `zone.js`, TypeScript 6 y
+  SCSS; solo Angular CDK, sin Angular Material.
+- SPA sin SSR, desplegada como sitio estático en Vercel.
+- Tipos de la API generados del `/openapi.json` del backend (`openapi-typescript`).
+- Pruebas con Vitest.
 
-- Producto: [`PRODUCT.md`](../../PRODUCT.md). Diseño visual: [`DESIGN.md`](../../DESIGN.md).
-- Mockups: [`diseno/mockups/`](../../diseno/mockups/) y sus briefs en
-  [`.impeccable/surfaces/`](../../.impeccable/surfaces/).
-- Roles y flujos: [`docs/flujos.md`](../../docs/flujos.md).
-- Cómo se habla con la API (sesión, proxy, encabezados):
-  [`../README.md`, «Cómo lo usa el frontend»](../README.md#cómo-lo-usa-el-frontend).
-- API: `/docs` del backend; rutas y esquemas en
-  [`../backend/app/adapters/inbound/api/`](../backend/app/adapters/inbound/api/).
+## Correrlo
 
-## Decisiones
-
-| Decisión | Detalle |
-|---|---|
-| Tecnología | Angular 22: componentes standalone, signals, sin `zone.js`, TypeScript 6, pruebas con Vitest, estilos en SCSS |
-| Alcance | Shell + DataIQ en una sola app. El shell queda aislado en `app/shell/` para poder separarlo si algún día hace falta |
-| Idioma | Código en inglés, como el backend y la API. Interfaz, documentación y URL en español |
-| Renderizado | SPA sin SSR, desplegada como sitio estático en Vercel |
-| Carga | Cada sección se carga al visitarla (lazy loading); el inicio no arrastra la gestión. Presupuestos en `angular.json` (principio «Liviano» de `PRODUCT.md`; el motivo de las cifras, en Resuelto 64 de la [checklist](../docs/checklist-frontend.md)): el código inicial avisa a los 380 KB y falla a los 500 KB; el estilo de cada componente avisa a los 8 KB y falla a los 12 KB |
-| Estado | Servicios con signals por funcionalidad. Sin NgRx |
-| Lecturas | `httpResource` / `resource` (estables desde 22.0) |
-| Formularios | Signal Forms (estables desde 22.0) |
-| Caché HTTP | Sin `ETag` a mano: el navegador revalida con el `ETag` y el `Cache-Control` de la API |
-| Sistema visual | Tokens base compartidos como propiedades CSS en `shared/design/` y el tema de DataIQ en `src/styles/theme.scss`, que solo las sobrescribe (ver «Sistema visual compartido» en `CLAUDE.md`) |
-| Componentes | Propios, según `DESIGN.md`. Sin Angular Material; solo Angular CDK: drag-drop (mesa del editor), overlay (desplegables y paneles) y a11y |
-| Tipos de la API | Generados del `/openapi.json` de FastAPI (`openapi-typescript`), para que no se desfasen del backend |
-| Sesión | Cookie `HttpOnly` que pone la API; el frontend nunca ve el token. La cuenta y el rol salen de `GET /auth/me`. El rol solo decide qué se muestra; quien permite o niega es la API |
-| Acceso a la API | URL relativa `/api/dataiq`, por el mismo origen: `proxy.conf.json` en desarrollo y rewrites de Vercel en producción. Sin CORS ni `withCredentials` |
-| Seguridad | Encabezado `X-IQ-Client: web` en todas las peticiones (contra CSRF). CSP estricta en Vercel; nada de `innerHTML` con datos de la API ni `bypassSecurityTrust…` |
-
-## Arquitectura
-
-Estructura por funcionalidad, con una separación ligera inspirada en la
-arquitectura hexagonal del backend: solo `data/` sabe que existe HTTP y cómo
-son las rutas de la API.
-
-```
-src/
-├── public/nosotros/        las fotos de «Nosotros» en WebP, con variantes de ancho
-│                           (`<nombre>-<ancho>.webp`): carrusel 800, 1500 y 2400 px;
-│                           programas 750 y 1423 px; retratos 480 y 840 px (Resuelto 71)
-├── styles/                 theme.scss: el tema de DataIQ sobre los tokens de shared/design/
-└── app/
-    ├── core/               servicios únicos de toda la app
-    │   ├── http/           provideApi(): provideHttpClient(withFetch()), base /api/dataiq,
-    │   │                   interceptores: X-IQ-Client y errores
-    │   ├── notice/         NoticeService: los avisos que hay en pantalla (error o confirmación)
-    │   ├── pending-reviews/ PendingReviews: las versiones de otros que esperan revisión (Por revisar y la cifra de los menús)
-    │   ├── session/        SessionService (la cuenta y su estado), sessionGuard, roleGuard(min), guestGuard
-    │   └── title/          PageTitleStrategy: el título de la pestaña del navegador
-    ├── domain/             reglas puras, sin Angular: Role y hasAtLeast(), VersionState
-    │                       y transiciones, avance por sección, técnicas agrupadas
-    │                       por especialidad, búsqueda sin tildes, pestañas del detalle, lector de Markdown,
-    │                       filas de Mis borradores, fechas de edición, pasos del editor,
-    │                       filas de Por revisar y de Revisadas por mí,
-    │                       diferencia entre la publicada y la propuesta,
-    │                       índice, «Dónde va» y borrador del catálogo de instrumental,
-    │                       columnas, búsqueda, actividad y cambio de rol de Usuarios y roles
-    ├── data/
-    │   ├── api/            tipos generados del OpenAPI
-    │   └── *.repository.ts un adaptador por recurso (techniques, versions, catalog,
-    │                       auth, users)
-    ├── shared/
-    │   ├── ui/             button, arrow link, avatar, brand mark, not-found, tabs con raya (enlaces o botones), segmented control,
-    │   │                   status pill, progress mark (22 px), search field, text field, textarea field, select field, chip list, checkbox field, field error,
-    │   │                   demo tag, floating panel,
-    │   │                   notice stack (los avisos: error y confirmación)
-    │   ├── media-query.ts  mediaQuery(): una señal con lo que dice una media query (celular, movimiento reducido)
-    │   └── table-diagram/  ★ el diagrama de mesa en SVG; ver abajo
-    ├── shell/              barra con desplegables, menú de celular, Mi cuenta, pie, aviso de sesión sin comprobar
-    └── features/
-        ├── home/  catalog/  technique/  account/  privacy/  about/
-        └── management/
-            ├── drafts/  editor/  review/  instruments/  users/
-```
-
-**Reglas de dependencia**: `features` usa `data`, `domain`, `shared` y `core`;
-`data` usa `domain`; `domain` no usa nada de Angular ni de la API. Ninguna
-funcionalidad importa a otra.
-
-**Modelos**: la API ya habla inglés, así que los repositorios devuelven los
-tipos generados tal cual. Un repositorio solo transforma cuando la forma de la
-API no le sirve a la pantalla (p. ej. agrupar los objetos por mesa para el
-diagrama), y esa transformación vive en `data/`, no en el componente.
-
-**Repositorios** (`data/*.repository.ts`): uno por recurso, con un método por
-operación de la API. `techniques` incluye las especialidades; `catalog`, el
-instrumental. `POST /auth/token` y el JWKS no tienen método: no son del
-navegador.
-
-- Las **lecturas** devuelven un `httpResource` (se crean en un contexto de
-  inyección, p. ej. al declarar el campo del componente). Reciben el `id` o el
-  filtro como función (`() => id()`, normalmente una señal): si devuelve
-  `undefined`, el recurso no pide nada. `VersionsFilter` traduce `reviewedByMe`
-  a `reviewed_by_me` y manda cada estado como un parámetro repetido.
-- `VersionsRepository.listWithContent(filtro)` pide la lista con el contenido y los rechazos de cada versión, como `get()`, en una sola petición (`GET /versions?include=content`); `list()` sigue pidiendo solo el resumen.
-- Las **escrituras** y `AuthRepository` (que no se muestra en una pantalla)
-  devuelven `Observable`.
-- `data/` no puede usar `core/`, así que no conoce la base de la API: la recibe
-  del token `API_BASE_URL`, que `core/http` provee con `/api/dataiq`.
-- Para probarlos: `provideRepositoryTesting()` (`data/testing.ts`) con
-  `HttpTestingController`; un recurso se prueba con `TestBed.tick()`. La base
-  de prueba (`TEST_API_BASE`) es distinta a `/api/dataiq` a propósito: así se
-  comprueba que cada repositorio usa la que recibe.
-
-**El diagrama de mesa es la pieza central.** Aparece en el detalle de técnica,
-en la puerta de cuenta (vista previa recortada), en el editor (con arrastrar y
-soltar), en la revisión (dos mesas lado a lado) y en el catálogo de
-instrumental (miniatura). Se construye una sola vez, con variantes, antes que
-las pantallas que lo usan. El tamaño de cada mesa viene de `zones` (`rows`,
-`columns`); `used: false` es una mesa que la técnica no lleva.
-
-- **Modelo:** `Table` (`domain/table.ts`) es la mesa tal como la dibuja el
-  diagrama: su tamaño y sus `TableItem` (`id`, `legendNumber`, `name`, `components`,
-  `instruments`, `cells`). El `name` es lo que dice la leyenda (`itemName()`, en
-  `domain/`); `instruments` son los componentes que no son suturas, los que se
-  dibujan.
-  `toTables(zones, items)` (`data/tables.ts`) la arma desde `zones` e `items` de la
-  API: deja fuera la mesa con `used: false` y la usada sin tamaño (no se inventa
-  uno) con sus objetos, y reparte cada objeto a su mesa por `zone_id` (el que no
-  tiene mesa es solo del listado). El componente (`shared/table-diagram`,
-  `<app-table-diagram [table]>`) no importa `data/`: recibe la `Table` ya armada.
-- **Grilla:** el SVG mide 100 unidades por celda (`viewBox` de
-  `columnas × 100` por `filas × 100`) y se escala al ancho que le dé quien lo use;
-  la mesa toma la proporción de su grilla (`--aspect`). Las líneas de la rejilla
-  son de 1 px a cualquier ancho (`vector-effect: non-scaling-stroke`) y solo van
-  entre celdas, sin borde.
-- **Objetos:** cada objeto con celdas es **una** pieza (`.piece`, con
-  `data-n` = su número), aunque ocupe varias: una zona de clic por celda y un solo
-  número. Las formas de todas las piezas van en una capa aparte (`.shapes`), debajo
-  de las piezas y con una sola sombra: un número nunca queda tapado por la forma de
-  otra pieza, y atenuar las demás no recalcula una sombra por pieza. La primera
-  celda en orden de lectura (`readingOrder()`, en `domain/table.ts`) es la del
-  número, también en la miniatura. Un objeto sin celda (la fuente no lo ubica) no se dibuja, y uno ubicado
-  sin número se dibuja sin número. `piece-layout.ts` pone el círculo del número:
-  en la esquina inferior derecha de la celda si el objeto ocupa una, y a un lado
-  de la línea que une su primera y su última celda si ocupa varias. El círculo
-  (`noche` al 72 %) mide lo mismo en pantalla a cualquier ancho de la mesa: un
-  `ResizeObserver` mide el dibujo y `--number-scale` sale de ese ancho y del de la
-  mesa en celdas, así que otra mesa en el mismo espacio también lo cambia.
-- **Formas** (decidido por Juan el 2026-10-29; ver «Detalle de técnica» en
-  `DESIGN.md`): los dibujos del mockup (16 de acero y 5 planos) están en
-  `drawings.ts` como **datos**, que la plantilla pinta como SVG: sin `innerHTML`.
-  `shape-catalog.ts` elige el dibujo de cada componente por palabras clave de su
-  nombre (sin tildes ni mayúsculas) y arma las formas del objeto: cada dibujo una
-  sola vez (mango y hoja de bisturí son un bisturí), una compresa con portaagujas
-  es la compresa con su hilo, y lo que no tiene dibujo propio es **un recuadro
-  punteado**, nunca la silueta de otro instrumento. Los dibujos son de cirugía
-  abierta: un nombre con «laparoscópico» no toma el dibujo de su homónimo abierto.
-  Las suturas no se dibujan solas ni suman el recuadro punteado: no son un
-  instrumento sin dibujo; un objeto que solo tiene suturas es el recuadro.
-  `placeShapes()` las coloca:
-  en una celda, lo plano al centro y el acero inclinado 40° encima (si son dos,
-  a los lados); en varias, el acero a lo largo de la línea que une sus celdas.
-  Para dar un dibujo a un instrumento nuevo hay que sumarlo a `DRAWINGS`, a la
-  tabla de palabras clave y, si es de acero, a `SCALE` (`piece-layout.ts`): el
-  tipo `SteelKey` hace que falte una escala no compile. Las claves de los dibujos
-  van en inglés (`scalpel`, `needleHolder`, `drapePack`…), como el resto del código. Cada diagrama tiene sus propios degradados de acero
-  (`id` únicos), porque puede haber dos en una página.
-- **Leyenda enlazada:** `app-table-legend` lista cada objeto con número
-  (nombre = componentes unidos con «y», o «e» ante el sonido /i/: «Compresa e
-  Hilo») por número. Mesa y leyenda comparten
-  `[(highlighted)]`, el número señalado: pasar el puntero o enfocar (Tab) una pieza
-  o una fila lo señala, y el foco manda: si el puntero pasa por otra y se va, vuelve
-  a la enfocada, porque el número con el foco también se comparte con
-  `[(focused)]` (lo guarda quien las use; ver «Detalle de técnica»); la pieza se levanta, las demás se atenúan al 38 % (la tela,
-  al 55 %; nunca los números) y la fila toma `marca-claro`. Quien las use pone un
-  `highlighted` por mesa, porque cada mesa tiene su propia numeración.
-- **Hueco «Sin dato»** (`domain/legend.ts`, decidido por Juan el 2026-10-29): un
-  objeto con número tiene su fila según lo que la fuente dice de él. Con celdas
-  (`placed`) está en la mesa y se señala. Sin celdas pero con componentes
-  (`unplaced`) se sabe qué es, no dónde va: se lista con su nombre, apagado y sin
-  enlace. Sin celdas ni componentes (`gap`) es un número que la fuente da y no
-  deja leer: dice «Sin dato», sin el texto crudo. Las filas apagadas tienen el
-  círculo vacío con filete `filete-2` y no se llegan con Tab: no hay pieza que
-  levantar. Un objeto sin número no tiene fila. La carga inicial de la CURN hoy no
-  trae ningún caso (lo ilegible se corrigió o se propuso, ver
-  [`checklist-backend.md`](../docs/checklist-backend.md)); la regla cubre los que
-  lleguen.
-- **Vista previa** (`variant="preview"`, para la puerta de cuenta; ver «Puerta de
-  cuenta» en `DESIGN.md`): la misma mesa recortada a sus primeras **2,5 filas** y
-  difuminada hacia abajo, centrada y con celdas de **104 px** (en celular, el ancho
-  de la pantalla). Sigue dibujando la grilla y el instrumental, pero sin números,
-  sin enlace con la leyenda (no se señala ni se llega con Tab, y no lleva
-  `data-n`) y oculta a los lectores de pantalla (`aria-hidden`). La geometría sale
-  de CSS: el componente solo fija `--columns`, `--visible-rows` y `data-cropped`, y
-  el 4,5 % de margen y el 91 % del dibujo son variables de Sass en
-  `table-diagram.scss`. El margen de arriba es un `margin` en %, que se mide sobre
-  el ancho, como el alto que le reserva el `aspect-ratio` (un `top` en % se mediría
-  sobre el alto y mostraría más de 2,5 filas). Una mesa de 2 filas o menos se ve entera, sin difuminar.
-  Una mesa sin objetos se dibuja igual (cuadrícula vacía): sin sesión no se
-  revela si la técnica tiene la mesa, y quien decide mostrar la cuadrícula en
-  vez de «Sin mesa» es la página (fase 4).
-- **Miniatura** (`app-table-miniature`, para «Dónde va» del catálogo de
-  instrumental; ver «Catálogo de instrumental» en `DESIGN.md`): es un componente
-  hermano del diagrama, no un SVG, porque lleva su propia estructura: una rejilla
-  de celdas de **22 px** (18 px en celular) con las celdas de **un** objeto
-  encendidas en `marca` y la primera (en orden de lectura) como círculo con su
-  número. Recibe la mesa (`table`, solo para su tamaño), el objeto (`item`) y el
-  turno de su fila en la lista (`index`), que escalona cuándo se enciende cada una
-  (70 ms por turno). Todas las mesas van a la **misma escala**: una mesa ancha se
-  desplaza dentro de su marco, con el borde derecho desvanecido. Es decorativa
-  (`aria-hidden`): quien la use pone al lado, en texto, la técnica, la mesa y el
-  número («Mesa de Mayo · n.° 4»). Un objeto con varias celdas lleva un solo
-  número; sin número, sus celdas se encienden sin círculo.
-
-### Inicio (`features/home/`)
-
-El inicio (`/`, `inicio.html`) son seis secciones, cada una un componente con su fondo y su fundido hacia las vecinas (`_section.scss`; ver «The Fondos Neutros Rule» en [`DESIGN.md`](../../DESIGN.md)): la portada (`inicio`), «Tres formas de recorrer una técnica» (`camino`), las técnicas por especialidad (`especialidades`), lo que dice la investigación (`investigacion`), para quién es (`quien`) y las preguntas frecuentes (`preguntas`). Los `id` son los que enlazan la barra y el pie, y cada sección lleva `scroll-margin-top: var(--size-navbar)`. La lista de especialidades llega después de que el router bajó a la sección y empuja lo que sigue, y no todo navegador lo compensa: al llegar, `Home` vuelve a bajar al fragmento, salvo que la persona ya se haya movido.
-
-- **Mesa de ejemplo** (decidido por Juan el 2026-10-31, Resuelto 31 de la [checklist](../docs/checklist-frontend.md)): la API solo entrega las mesas con cuenta, así que la portada y las ventanas de los productos dibujan una **mesa de Mayo de ejemplo** (`demo-table.ts`), que no es de ninguna técnica y se marca «demostración». `app-home-table` la dibuja con los dibujos del acero del diagrama de mesa (`shared/table-diagram`: `DrawingParts` y `SteelGradients` los comparten el diagrama y el inicio) y, si se pide, la capa de la cámara: cajas, etiquetas que no se pisan (`detections.ts`) y el destino «Va aquí» de la pieza fuera de lugar.
-- **Escenario de la portada** (`hero-stage`, con su riel en `stage-rail`): el selector Referencia · 3D · Cámara cambia solo cada 5,5 s, se pausa con el puntero encima o el foco dentro y se detiene al interactuar; con movimiento reducido no corre. Tocar con el dedo no pausa. Mientras cambia sola, la línea de estado va con `aria-live="off"`, para no interrumpir al lector de pantalla cada 5,5 s. Tocar una pieza la elige y el riel la muestra de cerca. La lista «Ver las 10 piezas» se cierra con Escape, y al cerrarse, también al elegir una pieza, el foco vuelve al botón que la abre.
-- **Carril de herramientas** (`products`): en escritorio la sección queda fija y el carril se traslada con el scroll (`rail-scroll.ts`: avance, trazos y traslado); en celular y con movimiento reducido es un desplazamiento horizontal con `scroll-snap`. «Conocer DataIQ» va a `/tecnicas` por el router; «Conocer SIMIQ3D» y «Conocer SIVRI», a `/simiq3d/` y `/sivri/` con navegación completa.
-- **Técnicas por especialidad**: `HomeCatalog` (provisto en `Home`) pide `GET /techniques` y `GET /specialties` una sola vez para esta sección y para la ventana de DataIQ, y las agrupa con `groupBySpecialty()` (`domain/technique-groups.ts`). Cada técnica enlaza a `/tecnicas/:id`.
-- **Espiral de la investigación** (`research`): la geometría y el tiempo están en `spiral.ts` (puro, con pruebas); el componente solo pinta cada cuadro. Corre mientras se ve (`IntersectionObserver`); con movimiento reducido se queda en su dibujo completo.
-
-### Catálogo (`features/catalog/`)
-
-El catálogo (`/tecnicas`, `catalogo.html`) pide `GET /techniques` y `GET /specialties` y los muestra con el filtro de especialidades a la izquierda («Todas» y las de la API, con una placa que se desliza a la elegida) y, a la derecha, el buscador y la lista agrupada. Lo puro vive en `domain/`: `groupBySpecialty()` (`technique-groups.ts`) agrupa, y `filterGroups()` y `highlight()` (`technique-search.ts`) filtran y resaltan sin tildes ni mayúsculas; `plain()` compone el texto (NFC) y quita las tildes **letra por letra**, así que un índice del texto plano vale en el texto compuesto, que es el que resalta `highlight()`. Buscar el nombre de una especialidad trae todas sus técnicas.
-
-- **La especialidad elegida va en la URL** (`?especialidad=<id>`), por eso la barra y el pie llegan al catálogo ya filtrado. `selectedId` es un `linkedSignal` de la URL: la sigue cuando cambia y, al elegir, se pone al momento y la URL la alcanza (`replaceUrl`, sin sumar entradas al historial). Un `id` que no existe es como no haber elegido. La búsqueda no va en la URL.
-- **Al buscar o filtrar** las filas que siguen a la vista se deslizan a su sitio y las nuevas entran subiendo (FLIP, con la Web Animations API). Con movimiento reducido no se anima.
-- **Estados:** mientras llegan las dos listas dice «Cargando…»; si no hay coincidencias, el estado vacío nombra la búsqueda y ofrece «Ver todas las técnicas»; si la API falla no dice «no hay técnicas», porque no se sabe.
-- Cada técnica enlaza a `/tecnicas/:id`, que redirige a su primera pestaña (ver «Detalle de técnica»).
-
-### Detalle de técnica (`features/technique/`)
-
-El detalle (`/tecnicas/:id/:pestana`, `tecnica.html`) es la ventana de DataIQ: a la izquierda la **columna de técnicas** (`technique-column/`, con su buscador compacto y todas las técnicas agrupadas por especialidad, la abierta marcada) y a la derecha el nombre de la técnica con su especialidad, las pestañas y la hoja de la elegida. Pide `GET /techniques/{id}` (los datos clínicos, públicos) y la columna, las mismas dos listas del catálogo.
-
-- **La URL manda.** La pestaña vive en la ruta (`datos-clinicos`, `instrumental`, `mesa-de-mayo`, `mesa-de-reserva`; `domain/technique-tabs.ts`), así que se comparte y Atrás la recuerda. `/tecnicas/:id` redirige a `datos-clinicos` (`app.routes.ts`). Las pestañas son `shared/ui/tabs` (`app-tabs`): enlaces con `role="tab"`, la raya de 2 px que se desliza, flechas/Inicio/Fin, candado en las que piden cuenta; la hoja va en un `role="tabpanel"` con `id="panel-<key>"`. Las teclas solo cuentan solas (`tab-keys.ts`, que también usa el selector de la portada): con un modificador son del navegador, y Alt+Izquierda sigue siendo Atrás.
-- **«No encontrada»** (`shared/ui/not-found`) cuando la API responde 404, la pestaña no es una de las cuatro o el `id` no es un UUID (`domain/uuid.ts`: un id imposible ni se pide, porque la API respondería 422 y el interceptor lo avisaría como error). Cambiar de pestaña no vuelve a pedir la técnica: el `id` que alimenta el `httpResource` es un `computed`, que no cambia con la pestaña.
-- **Si la API no responde** (5xx, sin conexión): el interceptor lo avisa y el aviso se va solo, así que la página también lo dice y no se queda en esqueleto (`aria-busy` vuelve a `false`): el titular dice «No se pudo cargar la técnica» y la hoja, «No se pudo cargar esta hoja.» con «Reintentar», que vuelve a pedir solo lo que falló. Lo mismo si falla `/instruments` o, en las pestañas que piden cuenta, `GET /auth/me`. Al reintentar el recurso conserva el error hasta la respuesta, así que `techniqueFailed` mira también `isLoading()`; y como el botón desaparece, el foco pasa al panel.
-- **Título de la pestaña del navegador:** el nombre de la técnica. El router pone el título genérico de la ruta justo antes de `NavigationEnd`, y un efecto de la página lo cambia por el nombre cuando llega y tras cada navegación (si no, cambiar de pestaña lo devolvería a «Técnica»).
-- **Celular:** la columna se pliega en un selector («Cirugía general · Tiroidectomía») y la tira de pestañas se desplaza hasta la elegida.
-- **Datos clínicos** (`technique-clinical/`): «Para qué sirve» es `description`, sin «demostración» (Resuelto 23); las fichas (anestesia, ropa, posición del paciente, CUPS), los textos largos (indicaciones, complicaciones, técnica quirúrgica) y la fuente salen de `GET /techniques/{id}`, que es público (Resuelto 34). `domain/clinical-sheet.ts` los ordena y descarta lo que falta o está en blanco, con pruebas; el componente solo pinta. Suturas y equipos están en Instrumental (Resuelto 27).
-- **Instrumental** (`technique-instrumental/`, Resuelto 35): los objetos (`itemName`), los equipos y el equipo médico-quirúrgico, y las suturas por plano. Todo sale de `GET /techniques/{id}/instruments`, que pide cuenta: se monta solo con sesión, y es la misma petición de las mesas (pasar de Instrumental a una mesa no la repite). `data/sutures.ts` (`toPlaneSutures()`) separa el `usage` («Piel; Fascia») en una sutura por plano (Resuelto 29; la fase 6 le suma el camino de vuelta para guardar), y `domain/instrumental-sheet.ts` ordena la hoja y escribe cada sutura, con pruebas.
-- **Hojas de mesa** (`technique-table/`, una por Mesa de Mayo y Mesa de reserva): título, indicación, leyenda y diagrama de `shared/table-diagram`, o un recuadro si no hay mesa que dibujar: «Sin mesa de Mayo.» si la versión dice que no la lleva (`isZoneOmitted()`, `used: false`) y «Mesa de Mayo sin arreglo disponible.» si no dice nada de ella o la usa sin tamaño (Resuelto 37). Las mesas salen de `GET /techniques/{id}/instruments` (`toTables()`), que **pide cuenta**: sin sesión no se pide, y la vista previa de la puerta es otra casilla. Se piden solo al abrir una pestaña que lo necesita, y pasar de una mesa a otra no lo repite (el `id` del recurso es un `computed`). La mesa de la pestaña es la zona cuyo nombre es `zone` de la pestaña (`domain/technique-tabs.ts`).
-- **Foco compartido entre mesa y leyenda:** la hoja de mesa guarda `highlighted` (el número señalado) y `focused` (el de lo que tiene el foco) y se los pasa a `app-table-diagram` y a `app-table-legend` con `[(highlighted)]` y `[(focused)]`. Antes cada componente recordaba solo su foco, y una pieza enfocada se soltaba al pasar el puntero por la leyenda y irse (y al revés; hallazgo de la revisión de la fase 3). Cada mesa tiene su numeración: cada hoja tiene sus dos números, y cambiar de técnica los borra (`linkedSignal`).
-- **Puerta de cuenta** (`technique-gate/`, Resuelto 36): sin sesión, Instrumental, Mesa de Mayo y Mesa de reserva muestran un vistazo difuminado y, debajo, la tarjeta («Crear cuenta gratis» y «Ya tengo cuenta»), ambos a `/cuenta/...?volver=<la pestaña>`. El vistazo no lleva datos (la API los entrega solo con cuenta): una cuadrícula vacía con la variante `preview` de `app-table-diagram`, o barras en lugar de objetos, igual en toda técnica, así que no revela si le falta una mesa. Solo aparece cuando ya se sabe que no hay sesión (`SessionService.loaded()`), y sin sesión no se pide `/instruments`. Mientras no se sabe, la hoja dice «Cargando…»; si `GET /auth/me` falló por algo que no es un 401, tampoco se sabe (`loadFailed()`): no hay puerta ni candados, y la hoja ofrece «Reintentar».
-- **«Ver en 3D» y «Comprobar con la cámara»** (cabecera, `domain/module-links.ts`): con sesión son enlaces normales (`href`, no `routerLink`) a `/simiq3d/tecnicas/:id` y `/sivri/`, porque SIMIQ3D y SIVRI son apps aparte servidas en el mismo origen (Resuelto 17) y el router de esta no las conoce; sin sesión, `routerLink` a `/cuenta/crear?volver=<el módulo>`, para que al crear la cuenta se llegue directo a él (Resuelto 65). Están en toda técnica (si el módulo no cubre una, su pantalla lo dice) y no se muestran hasta que `SessionService.loaded()` es verdadero. En desarrollo (`ng serve`) esas dos rutas no existen: hace falta el rewrite de Vercel o los módulos corriendo en el mismo origen.
-- **«Editar técnica»** (`technique-edit-action/`, Resuelto 56): primero en la fila de acciones de la cabecera, solo con rol de colaborador o superior. Las versiones en curso las pide `TechniqueInProgress` (`technique-in-progress.ts`, `GET /versions`, una sola vez por visita al detalle: lo provee `TechniqueDetail`) y, según la de esta técnica, ofrece «Editar técnica» (`POST /techniques/{id}/versions` y va al editor), «Continuar borrador», «Ver versión en revisión» o «En curso por …» sin acción; la regla es pura, en `domain/edit-action.ts` (`editAction()`). Un 409 al crear se dice en el mismo botón, sin el aviso global.
-- **«Más acciones» y «Archivar técnica»** (`technique-more-actions/`, Resuelto 61): tres puntos junto a «Editar técnica», solo para un revisor o un admin (`canArchive()`, en `domain/archive-technique.ts`, con pruebas). Abre un panel de 320 px con «Archivar técnica», que se confirma en el mismo panel (`POST /techniques/{id}/archive`). Con una versión en curso de esa técnica (`hasVersionInProgress()`, sobre la lista de `TechniqueInProgress`) la opción queda atenuada, con su motivo, y sigue siendo enfocable; el 409 de la API (una versión en curso que no se conocía) la deja atenuada también, y si la lista no llegó la opción está disponible. Al archivar avisa con `(archived)`: `TechniqueDetail` se queda con lo que ya tenía cargado, dice «Técnica archivada. Ya no está en el catálogo.» bajo la especialidad (con el foco), y deja de mostrar «Editar técnica», «Más acciones» y los módulos. `TechniqueColumn` recibe `archivedId` y marca esa técnica «Archivada» (y el selector de celular suma « · archivada») mientras la página siga abierta; no hay lista de archivadas (Resuelto 21). Pedir otra pestaña que aún no se había abierto de una técnica archivada puede fallar, porque la API ya no la entrega.
-
-### Cuenta (`features/account/`)
-
-Ingresar y Crear cuenta son una sola pantalla (`AccountEntry`, `cuenta.html`) en **una sola ruta**, `cuenta/:modo` (`ingresar` o `crear`; otro segmento es «No encontrada», por `canMatch`). Con una ruta por pestaña, pasar de una a otra volvería a crear la pantalla y no habría raya que se deslice ni mitades que cambien de lado. El modo y el título de la pestaña del navegador salen de `domain/account-entry.ts` (`accountModeOf()`), que también tiene el saludo según la hora (`greeting()`) y saca de `?volver=` la técnica a la que se iba (`techniqueIdOfReturnUrl()`, de `/tecnicas/:id/…` o de su mesa en SIMIQ3D, `/simiq3d/tecnicas/:id`; un id que no es un UUID ni se pide). Los dos formularios son Signal Forms (`form()` y `[formField]`) y cada pantalla pinta solo el de la pestaña abierta.
-
-- **La mitad izquierda** es la técnica que se quería abrir (`LockedTechnique`): ruta, nombre, especialidad y una vista bloqueada con las cuatro pestañas del detalle y un candado, igual para toda técnica, así que no revela si le falta una mesa (Resuelto 36). Pide `GET /techniques/{id}`, que es público; mientras llega, nombre y especialidad son barras y la mitad dice `aria-busy`. Si la técnica no existe o la API falla, vuelve a ser el saludo: no se queda en blanco ni ofrece un candado sin técnica. Sin técnica (ingreso directo) es el saludo con su ilustración (`LoginIllustration` y `RegisterIllustration`, SVG del mockup, decorativas; no se muestran en celular).
-- **Cambio de lado** (FLIP, 700 ms): solo en el ingreso directo y solo al pasar a Crear cuenta; con una técnica las mitades no se mueven. Depende de la URL (`?volver=`), no de si la técnica cargó, para que la respuesta de la API no las mueva con la persona escribiendo. Cada mitad parte de donde estaba la última vez que se pintó (se vuelve a medir al cambiar el tamaño de la ventana, cancelando el deslizamiento en curso, cuya medida saldría torcida) y no corre con movimiento reducido.
-- **Pestañas:** `shared/ui/tabs` con enlaces a `/cuenta/ingresar` y `/cuenta/crear` que **conservan la consulta** (`TabItem.queryParamsHandling: 'preserve'`), para no perder `?volver=` al cambiar de una a otra, con el ratón o con las flechas.
-- **Campos:** `shared/ui/text-field` (`app-text-field`) es un control de Signal Forms (`FormValueControl<string>`) con su etiqueta, y «Mostrar» / «Ocultar» para las contraseñas, que no le quita el foco a la caja. Un error de validación sale bajo la caja (`app-field-error`, `role="alert"`, sin rojo) solo cuando el campo se tocó: al salir de él o al intentar enviar. `shared/ui/checkbox-field` (`app-checkbox-field`) es lo mismo para una casilla (`FormCheckboxControl`), con su texto dentro y enlaces si hace falta.
-- **Sin Google ni «¿Olvidaste tu contraseña?»** (Resuelto 20).
-- **Ingresar** (Resuelto 43 y 44): valida al enviar igual que el registro (`loginSchema`, en `login-form.ts`): «Escribir el correo.» si falta, «Escribir un correo válido.» si no tiene forma de correo y «Escribir la contraseña.» si falta; la contraseña no se juzga (ni largo mínimo, para no decirle a quien prueba cuál es la regla, ni recorte). Manda `POST /auth/login` con el correo sin espacios de más y la contraseña tal cual, y va a `?volver=` o al catálogo (`returnTarget()`: solo rutas de este origen y nunca la propia cuenta, que lo dejaría en círculos). Cómo se va lo decide `ReturnNavigation` (`core/session/return-navigation.ts`, Resuelto 65), lo mismo en `guestGuard`, al crear la cuenta y cuando la sesión se confirma con la pantalla abierta: a SIMIQ3D o SIVRI (`isModuleUrl()`) con navegación completa (`FullNavigation`, en `core/router/`, que las pruebas reemplazan porque el navegador de prueba no navega), y al resto con el router, que no conoce esas apps y mostraría «No encontrada». Con una contraseña incorrecta (401, que el interceptor deja a la pantalla) dice lo que responde la API, «Correo o contraseña incorrectos», que no delata si el correo existe; no marca ningún campo, deja el correo, **vacía la contraseña y le da el foco** para escribirla de nuevo. Cualquier otro fallo (sin conexión, un error del servidor) ya lo avisó el interceptor y se conserva lo escrito. Cada intento quita los errores del anterior (`NoticeService.dismissErrors()`), porque se quedan hasta cerrarlos y uno viejo seguiría a la persona ya adentro. Al ingresar se vacía el formulario. Un segundo envío mientras va el primero no hace nada. No hay límite de intentos: es un pendiente del backend (`docs/despues-del-mvp.md`).
-- **Crear cuenta** (Resuelto 43 y 46): valida al enviar con Signal Forms (`registrationSchema`, en `registration-form.ts`; la regla pura del correo y los topes, en `domain/registration.ts`): un mensaje bajo cada campo, el foco al primero con error y nada enviado si algo falla. Los campos no llevan `maxlength`: cortaría en silencio una contraseña pegada y la cuenta quedaría con una que la persona no conoce; pasar el tope se dice bajo el campo. La casilla «Soy mayor de 18 años y acepto el aviso de privacidad.» empieza sin marcar y enlaza `/politica-de-datos` en otra pestaña, para no perder lo escrito. Envía `POST /auth/register` con `accepts_policy: true` y el nombre y el correo sin espacios de más (la contraseña, tal cual); la API crea la cuenta pero no inicia sesión, así que ingresa sola con las mismas credenciales y va a `?volver=` o al catálogo (`returnTarget()`). Al crearse se vacía el formulario: la contraseña no se queda en la memoria de la pantalla. Si el ingreso falla, va a Ingresar con el correo puesto y con lo que iba a abrir, y dice «La cuenta se creó, pero no se pudo ingresar. Intentar de nuevo con ese correo y esa contraseña.», para que no se registre otra vez. Un segundo envío mientras va el primero no hace nada.
-- **Correo repetido: mitigación visual temporal** (Resuelto 43). La API responde 409 «Ya hay una cuenta con ese correo», que le dice a quien prueba correos cuáles tienen cuenta (enumeración de usuarios). La petición de registro va en silencio (`QUIET_ERRORS`: el interceptor no muestra el texto de la API) y la pantalla da un aviso neutro, igual para un 409 y para lo que no tiene un texto propio: «No se pudo completar el registro. Verificar los datos e intentar de nuevo.». No marca el campo del correo ni ofrece recuperar la contraseña. Es una mitigación, no la solución: el 409 sigue en el backend, y el pendiente (respuestas uniformes y límite de intentos) está en [`checklist-backend.md`](../docs/checklist-backend.md). Los demás 409 de la aplicación no cambian, y los demás errores del registro (sin conexión, un error del servidor, datos no válidos) dicen lo de siempre.
-
-#### Salir
-
-«Cerrar sesión» está al final del panel de «Mi cuenta» (un botón, no un enlace, con su ícono y
-separado por un filete) y del menú de celular, para cualquier rol (Resuelto 45 de la
-[checklist](../docs/checklist-frontend.md)). Lo hace `SignOut` (`shell/navbar/sign-out.ts`):
-`POST /auth/logout`, que borra la cookie `HttpOnly`; al salir se olvida la cuenta y **se lleva al
-inicio**, como en los mockups, también desde una pantalla de gestión, que ya no es de quien salió.
-La ruta no pide sesión, así que una ya vencida no es un error. Si no se pudo cerrar (sin conexión,
-un error del servidor) el interceptor ya avisó, la cuenta sigue —la cookie sigue, así que no se
-simula una salida que no ocurrió— y se queda donde está para intentarlo de nuevo. Un segundo toque
-mientras va la petición no pide otra vez (`aria-busy`).
-
-### Aviso de privacidad (`features/privacy/`)
-
-El aviso (`/politica-de-datos`) es el texto de [`docs/privacidad.md`](../../docs/privacidad.md), que el registro obliga a aceptar (Resuelto 30 de la [checklist](../docs/checklist-frontend.md)). La ruta, el diseño y el enlace del pie los decidió Juan el 2026-11-01 (Resuelto 41); el diseño está en «Aviso de privacidad (página)» de [`DESIGN.md`](../../DESIGN.md).
-
-- **El texto no se copia.** `angular.json` carga los `.md` como texto (`loader`), la página importa el documento de la raíz del repo y `domain/markdown.ts` (`parseMarkdown()`, sin Angular y con pruebas) lo vuelve nodos: titulares, párrafos, listas con viñetas o numeradas, tablas, negrita, cursiva y enlaces. La plantilla los pinta como elementos, sin `innerHTML`, y un enlace solo se dibuja si va a `https:` o `mailto:`. Cambiar `docs/privacidad.md` cambia la página; `POLICY_VERSION` del backend cambia en el mismo PR (`.claude/rules/dataiq.md`).
-- **Forma del documento.** `readPrivacyDocument()` (`privacy-document.ts`) separa el titular y el párrafo de versión y vigencia, que van a la izquierda, del resto del aviso. Si el documento deja de abrir con un titular de nivel 1 y ese párrafo, falla: su prueba lee el `docs/privacidad.md` real, así que un cambio de forma lo detecta el CI y no un lector. También comprueba que estén las secciones de la autorización y que la tabla de datos tenga tres columnas en todas sus filas.
-- **Enlaces.** Desde el pie («Aviso de privacidad», junto al derecho de autor). El registro lo enlaza en su casilla de aceptación (fase 5).
-
-### Nosotros (`features/about/`)
-
-Página pública (`/nosotros`, sin API) sobre quiénes hacen IQ Platform. Su mockup es el archivo de Figma de la tabla «Rutas»; las decisiones, en los Resueltos 66 a 72 de la [checklist](../docs/checklist-frontend.md) y el diseño, en «Nosotros (página)» de [`DESIGN.md`](../../DESIGN.md). Las fotos están en `public/nosotros/` (ver «Arquitectura»).
-
-- **Presentación:** el titular (`h1`, el único de la página), la entradilla y «Ver cómo funciona» (`ArrowLink` a `/#camino`, que el router baja a la sección del inicio). El tamaño del titular cambia en 1101 px: por debajo va sobre la entradilla; por encima, junto a ella.
-- **Los dos programas:** los datos están en `about-photos.ts` (`PROGRAMS`: nombre, foto y párrafos); cada programa es un `article` con su `h2`. Las fotos usan `NgOptimizedImage` con el mismo cargador (`aboutImageLoader(1423)`, que da `About`) y son decorativas: la marca «foto ilustrativa · Pexels» lleva para los lectores de pantalla el texto completo (Resuelto 74).
-- **Conoce al equipo:** `TEAM` en `about-photos.ts` (programa, lema y las tres personas de cada grupo). Cada grupo es `TeamGroupSection` (`team-group/`): el rótulo, la lista de retratos (en celular, un carril con `scroll-snap`) y el trazo de avance, que sigue al carril con su evento `scroll`. Cada persona es `Portrait` (`portrait/`), con su propio cargador de imágenes; el acercamiento al señalarlo es solo CSS, con `(hover: hover) and (pointer: fine)` (Resuelto 75).
-- **Carrusel** (`photo-carousel/`): las fotos de `about-photos.ts` (`CAROUSEL_PHOTOS`, con su texto alternativo) en `NgOptimizedImage` con `ngSrcset`; el cargador `aboutImageLoader()` arma `/nosotros/<nombre>-<ancho>.webp` y la primera foto lleva `priority`. El estado es una señal con la foto que se ve; cambiar de foto con las flechas o deslizando con el dedo lo detiene (`stopped`); con el mouse, arrastrar solo lo pausa mientras dura (`pointerType`, Resuelto 76); un `effect` programa el siguiente avance a los 3 s y se reinicia con cada cambio, con el puntero (`pointerenter`/`pointerleave`, no el dedo) y con el foco del teclado (`:focus-visible`). El arrastre usa eventos de puntero con captura; mientras dura, `pointermove` escribe la propiedad CSS `--drag` del carrusel sin pasar por Angular y las fotos (la actual y sus vecinas, `.previous` y `.next`) se corren con `transform` (Resuelto 77) y `domain/carousel.ts` (`swipeStep()`, `wrapIndex()`, sin Angular y con pruebas). Con `prefers-reduced-motion` no avanza solo: si el sistema tiene desactivados los efectos de animación (en Windows, «Efectos de animación»), el navegador lo informa y el carrusel no corre; Brave sin ventana también lo informa.
-
-### Gestión del colaborador (`features/management/`)
-
-- **Avance de una versión** (`domain/version-progress.ts`, `versionProgress()`): dice cómo va cada sección (datos clínicos, instrumental, mesa de Mayo y mesa de reserva: `complete`, `in_progress`, `pending` o, solo en las mesas, `no_table`) y qué secciones impiden enviar o publicar (`blocking`, `canSubmit`). La regla es la de Resuelto 22 de la [checklist](../docs/checklist-frontend.md); vive solo ahí y en esta función, que no usa Angular ni la API: recibe el contenido con los nombres de la API (`ProgressSource`), el de `GET /versions/{id}` o el que el editor tiene en pantalla. «Sin mesa» es la mesa que no tiene fila en `zones`. Una mesa que se lleva y aún no tiene objetos está pendiente. La usan Mis borradores y el editor.
-- **Mis borradores** (`features/management/drafts/`, `/gestion/borradores`, Resuelto 47 de la [checklist](../docs/checklist-frontend.md)): la matriz de avance de las versiones en curso propias, con el contenido de cada una en la misma petición (`GET /versions?mine=true&include=content`). `domain/drafts.ts` arma las filas (`toDraftRows()`), filtra, cuenta y escribe la línea de resumen; la pantalla solo pinta. Un borrador con `rejections` es «Devuelta» y su nota es la primera (la API las entrega de la más reciente a la más vieja), con sus saltos de línea (`white-space: pre-line`, nunca `innerHTML`). La nota se abre cuando las marcas terminan de trazarse (950 ms) y se pliega con su botón. Revisor y admin publican lo suyo: sin filtros ni leyenda. Sin nada en curso, la línea «Nada en curso.» y la versión publicada más reciente (`GET /versions?mine=true&state=published`, que solo se pide entonces). «Continuar» y «Ver» llevan al primer paso del editor (`domain/editor-steps.ts`). Si falla la lista no se sabe cuántas hay: lo dice y ofrece «Reintentar». Las fechas de «Editada» salen de `domain/edited-date.ts`, en hora local y sin `Intl`. En `shared/ui/`: `status-pill`, `progress-mark` y `segmented-control`, que la fase 6 reutiliza en el editor. La placa del `segmented-control` se vuelve a medir cuando cambia el ancho del estuche (`ResizeObserver`), no solo el de la ventana.
-- **«Nueva técnica»** (`features/management/editor/new-technique/`, `/gestion/editor/nueva`, Resuelto 48): la primera pantalla del editor pide el nombre y la especialidad (`GET /specialties`) y crea la técnica con su versión 1 (`POST /techniques`). Desde que se crea, el nombre y la especialidad son de solo lectura (Resuelto 28), así que no se crea mientras se escribe: el nombre se confirma al salir del campo o con Enter, y la especialidad al elegirla (`domain/new-technique.ts`: `isReadyToCreate()`). Son dos signals, no un formulario, porque se confirman al salir del campo y no con un envío. Un 409 dice bajo el nombre que ya hay una técnica así en la especialidad y no se vuelve a pedir lo mismo hasta que cambie algo. Al crearla lleva a `/gestion/editor/:versionId/datos-clinicos`. `Editor` (`editor.ts`) muestra esta pantalla cuando la ruta no trae versión; los cinco pasos llegan en las casillas siguientes. En `shared/ui/`: `select-field` y la pastilla `badge` («Falta», «Opcional») de `text-field`.
-- **«Editar una publicada»** (`drafts/edit-published/`): el botón de Mis borradores abre `PublishedPanel`, que se crea al abrirse y pide solo entonces `GET /techniques`, `GET /specialties` y `GET /versions` (la API filtra: a un colaborador le entrega las suyas y a un revisor o admin todas, así que «En curso por …» solo lo ve quien puede). Se cierra con Escape (el foco vuelve al botón) y con un clic fuera. Elegir una técnica pide `POST /techniques/{id}/versions` y lleva a la versión nueva; un 409 se dice bajo la fila con el texto de la API y la deja atenuada.
-- **Cabecera del editor y «Descartar borrador»** (`features/management/editor/`, Resuelto 49): con `versionId`, `Editor` pide `GET /versions/{id}` y pinta la ruta de vuelta, el nombre, la especialidad y versión con la pastilla (`draftStatus()`, de `domain/drafts.ts`) y `MoreActions`. Un `versionId` que no es un UUID ni se pide, y un 404 muestra «No encontrada» (`shared/ui/not-found`). `MoreActions` es un panel con «Descartar borrador» y su confirmación en el mismo panel; las reglas están en `domain/discard-draft.ts` (`canDiscard()`: solo un borrador; `discardDeletesTechnique()`: la versión 1 en borrador es de una técnica nunca publicada y el backend borra también la técnica). `DELETE /versions/{id}` lleva a Mis borradores con el aviso «Borrador descartado.»; si falla, el interceptor avisa y el panel se queda. `_editor-head.scss` reúne lo que comparten esta cabecera y «Técnica nueva».
-- **Editor de 5 pasos y autoguardado** (`features/management/editor/`, Resuelto 50): con una versión, `Editor` pinta la cabecera, la fila de pasos (`editor-steps/`), la hoja del paso abierto y la barra de abajo con Anterior y Siguiente (`sticky`: se queda al borde de la ventana y al final de la página se detiene sobre el pie del sitio, en vez de taparlo). El paso vive en la URL (`:paso`, `domain/editor-steps.ts`: `previousStep()`, `nextStep()`, `stepLabel()`); uno que no existe es «No encontrada» y ni se pide la versión. Lo que dice cada paso sale de `stepSummaries()` (`domain/step-summary.ts`) sobre `versionProgress()`, así que sigue al momento a lo que se edita; las marcas son `shared/ui/progress-mark` con `retrace` (se trazan de nuevo al cambiar de estado) y, en el último paso, el candado y la flecha. Las hojas de los cinco pasos están abajo.
-- **Contenido y guardado** (`editor-state.ts`, `EditorState`, provisto por `Editor`): guarda el `EditorContent` (`domain/editor-content.ts`, con los nombres de la API pero propio del editor: lleva los nombres de mesas y componentes y no los ids de objetos ni las descripciones de equipos) y lo convierte con `toEditorContent()` y `toContentIn()` (`data/version-content.ts`). Cada cambio (`edit()`) se guarda 1 s después del último con `PUT /versions/{id}`; nunca hay dos guardados a la vez, la respuesta no pisa lo que se escribe, si falla queda `failed` (se reintenta con «Reintentar» o con el siguiente cambio), y al salir (`ngOnDestroy`, y el aviso de `beforeunload` con algo sin guardar) se manda lo pendiente. Un texto en blanco va como `null` y lo que la API rechaza por vacío (equipo, dispositivo, sutura sin nombre) no se manda. Una versión que no es un borrador (`domain/edit-version.ts`) se abre en solo lectura. Al descartar el borrador, `MoreActions` llama a `abandon()` para que no se mande un `PUT` a una versión que ya no existe. Las suturas pasan tal como llegan (con `usage`) hasta la casilla de suturas. Las casillas de cada paso cambian el contenido con `EditorState.edit()`.
-- **Paso «Datos clínicos»** (`editor/clinical-step/`, Resuelto 51): dos tarjetas con los campos de la versión (Descripción: para qué sirve, indicaciones, complicaciones, técnica quirúrgica y fuente; Preparación: CUPS, anestesia, ropa, posición, equipos, suturas y equipo médico-quirúrgico). Los obligatorios vacíos llevan «Falta» (son los de `REQUIRED_CLINICAL_FIELDS`, `domain/version-progress.ts`) y los demás, «Opcional». Cada campo escribe en el contenido con `EditorState.edit()`, que lo guarda. El nombre y la especialidad van de solo lectura (Resuelto 28) y salen de la cabecera. Las listas de equipos usan `shared/ui/chip-list` y `domain/name-list.ts` (`addName()` no repite un nombre: la API rechaza las listas con repetidos). Las suturas son una fila por plano (`suture-rows/`, abajo). En solo lectura todo se ve y nada se cambia. En `shared/ui/`: `textarea-field`, `chip-list` y, en `text-field`, `readonly`, `optional` e `inputmode`.
-- **Suturas por plano** (`editor/suture-rows/`, Resuelto 52): una fila por plano con Plano, Sutura, Calibre y Aguja, todas editables en su sitio, con «Agregar plano» y un botón de quitar por fila. `EditorContent.sutures` guarda esas filas (`EditorSuture`); `data/sutures.ts` las convierte: `toSutureRows()` separa los planos de `usage` al leer y `joinPlaneSutures()` junta en una sola sutura las filas con el mismo nombre, calibre y aguja al guardar (la API rechaza una sutura repetida), y no manda las que no tienen nombre. Las reglas de las filas (`domain/suture-rows.ts`): una fila vacía recién agregada no cuenta ni avisa, una con otros datos y sin sutura dice «Falta la sutura.», y el avance (`versionProgress`) cuenta como sutura solo la que tiene nombre.
-- **Paso «Instrumental»** (`editor/instrumental-step/`, Resuelto 53): a la derecha, «En esta técnica» (los objetos agrupados por la categoría de su primer instrumento); a la izquierda, los sugeridos de la especialidad y «Explorar el catálogo». Lee `GET /catalog/full` (`CatalogRepository.full()`) al entrar al paso. Toda la lógica es pura, en `domain/instrumental-picker.ts`: `addInstrument()` crea un objeto con ese instrumento como único componente (sin mesa, número ni celdas; la casilla de las mesas lo ubica), `removeInstrument()` quita los objetos que son solo ese instrumento (los compuestos se quitan desde la lista de lo elegido), `chosenGroups()`, `suggestions()` (lo que usan las otras técnicas publicadas de la especialidad, sin la que se edita ni las que no tienen objetos; `usageDots()` da los tres puntos), `catalogGroups()` y `categoryChips()` (búsqueda por nombre o alias, sin tildes). Todo cambio pasa por `EditorState.edit()`. En solo lectura se ve todo y nada se cambia.
-- **Pasos «Mesa de Mayo» y «Mesa de reserva»** (`editor/table-step/`, Resuelto 54): a la izquierda, los objetos de la mesa con su número y su lugar y «Agregar objeto» (`object-picker/`, el catálogo compacto); a la derecha, el tamaño (filas y columnas, de 2 a 10, en `zones`) y la mesa del detalle (`app-table-diagram`) con una cuadrícula de celdas encima. Un objeto se ubica arrastrándolo (CDK `cdkDrag`; con el dedo, tras una pulsación larga) o tocando (un objeto y luego su celda, o una celda y «Qué va aquí»). La mesa de reserva lleva la casilla «Esta técnica no lleva mesa de reserva» (`used: false`) y los atajos «Más usados», que salen del catálogo. Toda la lógica es pura, en `domain/table-editor.ts`: `addObjectToZone()`, `placeObject()` (mueve, intercambia o traslada un objeto de varias celdas), `clearCell()`, `resizeZone()`, `markNotCarried()`, `editorTable()` (la mesa para el diagrama) y `mostUsedInZone()`. Todo cambio pasa por `EditorState.edit()`. En solo lectura se ve todo y nada se cambia.
-- **Paso «Revisar y enviar» / «Revisar y publicar»** (`editor/review-step/`, Resuelto 55): a la izquierda, el resumen de las cuatro secciones con su marca, lo que dice cada una y «Completar» en las que bloquean; a la derecha, la tarjeta de envío. Un colaborador manda la versión a revisión (`POST /versions/{id}/submit`); un revisor o un admin publica lo suyo (`POST /versions/{id}/publish`) tras una confirmación en la misma tarjeta. El botón se apaga, con el motivo, mientras alguna sección bloquee (Resuelto 22). Las reglas del resumen son puras, en `domain/review-summary.ts` (`reviewSections()`, `blockReason()`); antes de mandar se espera a que termine el guardado (`EditorState.whenSaved()`). En solo lectura se ve el resumen, sin botón.
-
-### Gestión del revisor (`features/management/review/`)
-
-- **Por revisar** (`review/review-list/`, `/gestion/revision`, Resuelto 57 de la [checklist](../docs/checklist-frontend.md)): las versiones en revisión de otras personas (`GET /versions?state=in_review`), la que lleva más esperando primero, como el mockup. Cada fila dice la técnica con su especialidad y versión, el autor, cuándo se envió con su espera («1 oct · hace 5 días», con «hoy» y «ayer»), el tipo («Técnica nueva» si es la versión 1, «Edición de la publicada» si no) y «Revisar», que lleva a `/gestion/revision/:versionId`. La línea de resumen y los textos de las columnas salen de `domain/review-queue.ts` (`toQueueRows()`, `formatSent()`, `queueSummary()`), puro y con pruebas. La API no guarda la fecha del envío: una versión en revisión no se edita, así que su última modificación (`updated_at`) es el envío. Las versiones propias no aparecen, aunque la API se las entregue a un revisor: un revisor o un admin publica lo suyo desde el editor. Sin los chips de las secciones que cambian ni la nota del autor del mockup: los cambios se calculan en la pantalla de revisión y la API no guarda la nota (Resuelto 18). Estados: «Cargando…», «No se pudo cargar Por revisar.» con «Reintentar» y «Nada por revisar.». Cada visita vuelve a pedir la lista, para no mostrar lo que ya decidió otro revisor.
-- **Revisadas por mí** (la otra vista de `review-list/`, Resuelto 58): el control «Por revisar» / «Revisadas por mí» (`shared/ui/segmented-control`) cambia de vista sin tocar la URL. Pide `GET /versions?reviewed_by_me=true&include=content` (`VersionsRepository.listWithContent`) la primera vez que se abre y la vuelve a pedir cada vez que se reabre, sin quitar lo que se ve hasta que llegue; su cifra aparece cuando llega. `domain/reviewed.ts` (`toReviewedRows()`, `formatReviewed()`) deduce el resultado del estado de la versión, porque la API no lo guarda: un borrador con devoluciones es «Devuelta» (con el día y el motivo de la más reciente, con sus saltos de línea, `white-space: pre-line`) y una publicada, reemplazada o archivada es «Aprobada» (`status-pill` con `approved`), sin fecha: la API no guarda cuándo se aprobó. Si el revisor devolvió una versión y otro la aprobó después, sale «Aprobada». Las que volvieron a revisión están en «Por revisar» y no se repiten aquí. Sin botón «Revisar».
-- **La lista se comparte** (`core/pending-reviews/`, `PendingReviews`): una sola petición que usan Por revisar y la cifra del acceso «Por revisar» en «Mi cuenta» y en el menú de celular. No pide nada hasta que la pantalla o un menú llaman a `refresh()` (se crean al abrirse, así que cada apertura la vuelve a pedir y mientras llega se sigue mostrando la anterior), y solo con rol de revisor o superior: un visitante o un colaborador nunca la piden. Al cambiar de cuenta se olvida lo pedido. `count()` es `null` mientras no se sabe (sin cifra, nunca un 0 inventado); si la API falla, `failed()` es `true`.
-
-- **Revisión de una versión** (`review/review.ts`, `/gestion/revision/:versionId`, Resuelto 59): la publicada y la propuesta lado a lado, por sección. Pide la propuesta (`GET /versions/{id}`) y, si es una edición, el resumen de las publicadas (`GET /versions?state=published`) de donde toma la de esa técnica, y esa versión (`GET /versions/{id}`); la API no entrega una diferencia, así que se piden las dos completas y se comparan en el cliente. Una versión que ya no está en revisión, o que es propia, dice «Esta versión ya no está en revisión.» y no pide la publicada. La sección abierta es un signal (abre en la mesa de Mayo), no va en la URL. En `shared/ui/tabs`, las pestañas de la revisión son botones (sin `link`; avisan con `(chosen)`) y llevan una cifra o una nota.
-  - **La diferencia es pura** (`domain/version-diff.ts`, con pruebas): `reviewDiff()` arma `clinicalDiff()` (los doce campos, cada uno «agregado», «modificado», «quitado» o sin cambio), `instrumentalDiff()` (objetos por el nombre de su leyenda que están en una versión y no en la otra) y `zoneDiff()` por mesa (objetos emparejados por mesa y número de leyenda, o por nombre si no tienen número: movido, modificado, agregado o quitado, y el cambio de la mesa entera). `sectionNotes()` dice lo que lleva cada pestaña. Sin versión publicada (`isNew`) nada es un cambio y las pestañas cuentan lo que hay.
-  - **Hojas:** `review-clinical/` (tabla de campos con lo cambiado marcado), `review-instrumental/` (qué se agregó y qué se quitó, y la lista de la propuesta) y `review-table/` (la publicada y la propuesta con `app-table-diagram`, y la lista de cambios). Señalar un cambio, con el puntero o el teclado, levanta su pieza en las dos mesas (`[(highlighted)]` compartido, que también funciona al revés). `table-marks.ts` dibuja encima de cada diagrama, con su misma cuadrícula, de dónde salió cada pieza (contorno punteado) y adónde llegó (anillo `marca`, con el fantasma de su origen y el trayecto con punta). Sin cambios, o en una técnica nueva, solo se dibuja la propuesta. Una mesa que no se dibuja dice «Sin mesa de Mayo.» o «Mesa de Mayo sin arreglo disponible.» (Resuelto 37).
-
-  - **Comentar y decidir** (Resuelto 60): `ReviewComments` (`review/review-comments.ts`) guarda en pantalla los comentarios y la nota general; lo provee `Review`, así que cada revisión empieza sin nada y los comentarios se olvidan al revisar otra versión. Un comentario es de una sección, de un campo clínico o de un objeto de la mesa (`CommentTarget`, en `domain/review-comments.ts`). Los botones «Comentar» están junto a cada cambio de la mesa (`ReviewTable`) y a cada campo cambiado (`ReviewClinical`), que avisan con `(commentRequested)`; tocar una pieza de la mesa propuesta, o Intro con el foco en ella, comenta ese objeto; y «Comentar la sección» está al pie de cada hoja. `SectionComments` dibuja al pie los comentarios de la sección, su redactor (`app-textarea-field`, con el cursor ya en el texto y Escape que lo cierra) y ese botón; los objetos comentados se contornean en la mesa propuesta (`TableMarks`, `commented`).
-  - **Devolver y aprobar** (`review-decision/`): `ReviewDecision` lleva «Devolver con comentarios» y «Aprobar y publicar», cada uno con su panel de confirmación (uno a la vez). Su host es `display: contents`, para que los botones y los paneles se acomoden en la cuadrícula de la cabecera de `Review`. Devolver manda `POST /versions/{id}/reject` con el motivo que arma `buildReason()` (`domain/review-comments.ts`, puro y con pruebas): la nota general primero y una línea por comentario, en el orden de las secciones, con los saltos de línea de cada uno pasados a espacios. Queda apagado sin comentarios ni nota. Aprobar manda `POST /versions/{id}/approve`. Al terminar, `NoticeService` avisa y se vuelve a Por revisar, que vuelve a pedir su lista. Un 409 (otro revisor ya decidió) lo avisa el interceptor y `(conflict)` hace que `Review` vuelva a pedir la versión, que ya no está en revisión.
-
-### Catálogo de instrumental (`features/management/instruments/`)
-
-`/gestion/instrumental/:id?` (Resuelto 62 de la [checklist](../docs/checklist-frontend.md)), para revisor o más. La ruta es una sola con `id` opcional (`instrumentsMatch`, en `app.routes.ts`), así que pasar de un instrumento a otro no recrea la pantalla ni repite la petición.
-
-- **`Instruments`** (la pantalla) pide `GET /catalog/full` una vez (`CatalogRepository.full(cache)`) y de ahí saca los instrumentos, las categorías, las especialidades y las técnicas. Conserva el último catálogo que llegó: tras guardar vuelve a pedirlo con `cache: 'reload'` (`/catalog/full` es privado y dura 300 s en el navegador) y mientras llega sigue mostrando ese y lo que respondió la API. El modo (`read`, `edit`, `description`, `new`) es un signal y no va en la URL; cambiar de instrumento lo reinicia.
-- **`InstrumentIndex`** (`instrument-index/`): la búsqueda por nombre o alias, el botón «Nuevo instrumento» y las categorías con sus instrumentos y la cifra de técnicas en que va cada uno. En celular es un selector.
-- **`InstrumentEntry`** (`instrument-entry/`): la entrada en lectura y en edición. Solo escribe en su borrador (`linkedSignal`); guardar lo hace la pantalla (`saved`). Un nombre o un alias que ya es de otro instrumento bloquea «Guardar»; una descripción pide su fuente (`description_source`), porque la API responde 422 sin ella.
-- **`WhereItGoes`** (`where-it-goes/`): las técnicas publicadas en que va el instrumento, por especialidad, con su mesa en miniatura (`app-table-miniature`) y un enlace a esa mesa. **`InstrumentDrawing`** (`instrument-drawing/`) dibuja el instrumento en acero si tiene dibujo propio.
-- **Guardar:** `PATCH /instruments/{id}` con solo lo que cambió. Crear es `POST /instruments` y, si trae alias, un `PATCH` aparte, porque el `POST` no los recibe.
-- **La lógica es pura** (`domain/instrument-catalog.ts`, con pruebas): `placementIndex()`, `indexGroups()`, `ownerOf()`, `canSave()`, `toCreate()`, `toUpdate()` y los textos de la barra y de los avisos.
-
-### Usuarios y roles (`features/management/users/`)
-
-`/gestion/usuarios` (Resuelto 63 de la [checklist](../docs/checklist-frontend.md)), solo para el admin. Pide `GET /users` una vez, con todas las cuentas (cada una con su registro, la política aceptada y su `activity`), y cambiar un rol (`PATCH /users/{id}/role`) reemplaza esa cuenta en la lista sin volver a pedirla. Suspender y el historial de roles no están en el MVP (`docs/despues-del-mvp.md`).
-
-- **`Users`** (la pantalla) guarda las cuentas (un `linkedSignal` del recurso: «Reintentar» las repone), la persona elegida (no va en la URL) y las que llegaron a Usuarios durante la visita. Coordina la animación del cambio de rol: la fila sale de su columna (280 ms), la cuenta se reemplaza y entra en la nueva con el lavado `marca-claro` (1,2 s); con movimiento reducido el cambio es inmediato; cada temporizador solo limpia la marca de su propia cuenta, para no cortarle la animación a un cambio posterior. Donde la ficha queda bajo el tablero (≤ 1100 px), elegir a alguien baja la página hasta ella y le pasa el foco a su nombre; lo mismo, sin desplazar, al elegir desde el buscador general, porque el resultado desaparece. Elegida desde una fila a lo ancho, el foco se queda en la fila. «Volver a la lista» vuelve a la fila elegida o, si no tiene fila en el tablero (un usuario que no es reciente), al buscador general. La ficha no es una región viva: el lector de pantalla no la lee entera con cada cambio.
-- **`RoleColumn`** (`role-column/`): una columna por rol. Usuarios son muchos, así que su columna lleva la cifra, su buscador (busca solo entre los usuarios y muestra las coincidencias en la misma columna), «Rol cambiado ahora» y «Registrados recientemente». **`PersonRow`** (`person-row/`) es la fila: un `button` con avatar, nombre y correo, del que solo se recorta la parte local.
-- **`UserSearch`** (`user-search/`): el buscador general, de 52 px (`app-search-field` con `size="medium"`), con su desplegable de resultados (hasta 8, con el tramo que coincide en `<mark>`). Se cierra con Escape y con un clic fuera, sin borrar lo escrito: Escape no llega al campo (`preventDefault`), porque Chromium y WebKit vacían un `<input type="search">` con él. La flecha abajo pasa del campo a los resultados (o reabre el desplegable), las flechas los recorren y la flecha arriba desde el primero, o Escape desde cualquiera, devuelve el foco al campo. Cuántos resultados hay se anuncia en una línea `aria-live` oculta.
-- **`UserCard`** (`user-card/`): la ficha. El selector de rol es `app-segmented-control` con `fill`; elegir otro rol abre la confirmación en la misma ficha, con la casilla de verificación que piden Revisor y Admin. Mientras va la petición el selector queda `inert` y el botón dice «Cambiando…». Con éxito avisa con `NoticeService` y entrega la cuenta actualizada (`changed`); con error avisa el interceptor y la confirmación se queda. **La cuenta propia no cambia su rol** (Resuelto 63): si la ficha es la de `SessionService.account()`, el selector queda deshabilitado (`app-segmented-control` con `disabled`: botones deshabilitados y el control al 60 %) y la ficha dice «No se puede cambiar el rol de la cuenta propia.». La API es quien lo impide de verdad (409, para que la plataforma no se quede sin admin); la pantalla solo evita ofrecerlo, y si el 409 llegara igual, el interceptor lo avisa y la ficha no cambia.
-- **La lógica es pura** (`domain/user-board.ts`, con pruebas): `peopleWithRole()`, `recentUsers()`, `summaryLine()`, `searchPeople()` (sin tildes, con tope), `splitEmail()`, `replacePerson()`, `formatPersonDate()`, `activityLine()` y `describeRoleChange()` (lo que dice la confirmación y qué verificación pide). El nombre y el correo sin tildes de cada cuenta se calculan una sola vez (un `WeakMap` por cuenta), así que ordenar y buscar no los normalizan de nuevo con cada tecla. «Ayer» es `isYesterday()` de `domain/edited-date.ts` y el singular o plural de las cifras, `plural()` de `domain/plural.ts`, los mismos de Mis borradores y del editor. `domain/` define su propia `Person` con los campos de `UserOut` que usa: no importa los tipos de la API.
-
-### Glosario (interfaz → código y API)
-
-| Interfaz | Código y API |
-|---|---|
-| técnica, especialidad | technique, specialty |
-| versión; borrador, en revisión, publicada, reemplazada, archivada | version; `draft`, `in_review`, `published`, `superseded`, `archived` |
-| mesa de Mayo, mesa de reserva | zone (la API trae su nombre en `zone`) |
-| celda (fila, columna) | cell (`row`, `column`) |
-| objeto de la mesa, componente | item, component |
-| número de leyenda, texto de la fuente | `legend_number`, `source_text` |
-| instrumental, alias, categoría | instrument, `aliases`, category |
-| sutura, equipo biomédico, dispositivo médico | suture, equipment, device |
-| usuario, colaborador, revisor, admin | `user`, `contributor`, `reviewer`, `admin` |
-| devolución (motivo) | rejection (`reason`) |
-
-### Rutas
-
-Las URL son parte de la interfaz: van en español. Las rutas de la API son
-relativas a `/api/dataiq`.
-
-| Ruta | Mockup | Acceso | API |
-|---|---|---|---|
-| `/` | `inicio.html` | público | `GET /techniques`, `GET /specialties` |
-| `/tecnicas?especialidad=` | `catalogo.html` | público | `GET /techniques`, `GET /specialties` |
-| `/tecnicas/:id` → `/tecnicas/:id/:pestana` | `tecnica.html` | público; instrumental y mesas con puerta de cuenta | `GET /techniques/{id}`, `GET /techniques/{id}/instruments` |
-| `/nosotros` | Figma, archivo `jHEduZTQNBs4CCJEWB8u5v`: «Sobre nosotros» en escritorio (1440), tablet (834) y mobile (390) | público | ninguna |
-| `/politica-de-datos` | (sin mockup; ver `DESIGN.md`) | público | ninguna |
-| `/cuenta/ingresar`, `/cuenta/crear` (`?volver=`) | `cuenta.html` | público; quien ya tiene sesión va a donde iba | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`, `POST /auth/logout` |
-| `/gestion/borradores` | `borradores.html` | colaborador o más | `GET /versions?mine=true&include=content`, `POST /techniques`, `POST /techniques/{id}/versions`, `DELETE /versions/{id}` |
-| `/gestion/editor/nueva`, `/gestion/editor/:versionId/:paso` (`datos-clinicos`, `instrumental`, `mesa-de-mayo`, `mesa-de-reserva`, `revisar`) | `editor.html` | colaborador o más | `GET`/`PUT /versions/{id}`, `POST .../submit`, `POST .../publish`, `GET /catalog/full`, `GET /specialties` |
-| `/gestion/revision`, `/gestion/revision/:versionId` | `revision.html` | revisor o más | `GET /versions?state=in_review`, `GET /versions?reviewed_by_me=true`, `GET /versions?state=published`, `GET /versions/{id}`, `POST .../approve`, `POST .../reject` |
-| `/gestion/instrumental/:id?` | `instrumental.html` | revisor o más | `GET`/`POST /instruments`, `PATCH /instruments/{id}`, `GET /catalog/full` |
-| `/gestion/usuarios` | `usuarios.html` | admin | `GET /users`, `PATCH /users/{id}/role` |
-
-Cada ruta carga su pantalla al visitarla (`loadComponent`, en
-`app/app.routes.ts`), y las de gestión llevan su `roleGuard`. El título de la
-pestaña es `title` de la ruta más « · IQ Platform» (`PageTitleStrategy`), como
-en los mockups; el inicio lleva solo «IQ Platform». Las rutas con dato (técnica,
-editor, revisión) llevan un título genérico («Técnica», «Editar técnica»,
-«Revisar versión») hasta que su pantalla ponga el nombre real; el detalle de técnica ya lo pone. El router
-(`provideAppRouter`, en `core/router/`) tiene `anchorScrolling`: los enlaces de la
-barra y del pie a `/#camino`, `/#investigacion`, `/#preguntas` y `/#quien` bajan a
-esa sección del inicio, también desde otra página y al tocar de nuevo el mismo
-enlace. El router calcula la posición por su cuenta y no mira `scroll-margin-top`,
-así que `provideAppRouter` le da el alto real de la barra con `setOffset`, para que
-la sección no quede bajo ella (`scroll-margin-top`, que también lleva cada sección,
-es para el desplazamiento del navegador). Mientras una
-pantalla no se construye, su ruta carga un marcador vacío. Una ruta que no
-existe (`**`, la última) abre «No encontrada»: el aviso es
-`shared/ui/not-found`, que la fase 4 reutiliza para una técnica que no existe.
-
-La técnica va por su `id` (UUID): la API no tiene slug (el mockup usa
-`#tec-<slug>`). Al iniciar sesión se vuelve a la ruta de `?volver=` (solo si es
-una ruta propia: ver «Sesión»).
-
-### Barra (`shell/navbar/`)
-
-La barra (`Navbar`) tiene la marca y cuatro menús; cada botón abre su
-desplegable (`NavPanel`), un overlay de CDK a todo el ancho bajo la barra. Solo
-hay uno abierto a la vez; se cierra con Escape (el foco vuelve a su botón), con
-un clic fuera, al elegir una opción o al cambiar de página por otro camino
-(Atrás, un guard, la sesión vencida). Si el foco estaba en el panel, al cerrarse
-vuelve a su botón. Con el teclado el foco entra al primer enlace, y aunque el
-panel queda al final del documento, Tab lo recorre como si estuviera tras su
-botón: Mayús+Tab desde la primera opción vuelve al botón y Tab desde la última
-sigue con lo que viene después. Un segundo clic sobre «Especialidades» lleva al
-catálogo. El contenido de Herramientas, ¿Por qué IQ Platform? y Ayuda está en
-`nav-menus.ts`, con el destino de cada opción (`NavTarget`): rutas de esta app
-(los fragmentos del inicio: `/#camino`, `/#investigacion`, `/#preguntas`,
-`/#quien`) y `/simiq3d/` y `/sivri/` como enlaces normales, con navegación
-completa (Resuelto 17): son otras apps, servidas en el mismo origen por los
-rewrites de Vercel (fase 9). La barra, el menú de celular y el pie dibujan esos
-enlaces con la directiva `NavLink` (`nav-link.ts`, `<a [appNavLink]>`), que abre
-las rutas con el router y deja `href` al navegador. Con `npm start` esas dos rutas no existen: el router
-las toma por una ruta desconocida y abre «No encontrada».
-
-- **Nosotros:** después de los cuatro menús va «Nosotros», un enlace directo a
-  `/nosotros` (sin desplegable ni flecha; Resuelto 66 de la
-  [checklist](../docs/checklist-frontend.md)). Está en `NAV_LINKS` de `nav-menus.ts`
-  (`NavDirectLink`), no en `NAV_MENUS`, y lleva `aria-current` en su página
-  (`isCurrentLink()`, que mira `ShellHost.currentUrl`), con el texto `marca-hondo` en
-  650 como cualquier sección actual. Como la barra es compartida, SIMIQ3D también lo
-  muestra: su host arma el destino con la URL del shell y lo abre con navegación
-  completa.
-- **Esconderse al bajar:** si el host da `autoHide` en `true` (DataIQ lo hace solo en `/nosotros`), la barra se esconde al bajar por la página y vuelve al subir (`barHiddenAfterScroll()` en `nav-menus.ts`, con pruebas). Con un desplegable o el menú de celular abiertos, o con el foco en ella, se queda. Solo escucha el scroll de la ventana mientras `autoHide` está en `true`. SIMIQ3D no da `autoHide` y su barra no cambia (decidido por Juan el 2026-11-20).
-- **Peso:** el overlay de CDK (78 KB) y el desplegable se cargan con import
-  dinámico la primera vez que se abre un menú: la barra está en todas las
-  páginas y no debe engordar el código inicial.
-- **Especialidades** salen de la API (`SpecialtiesNav`): las especialidades son
-  las de `Specialties`, que ya pidió el pie al cargar la app, y sus técnicas
-  (`GET /techniques`) se piden la primera vez que se abre ese desplegable. Cada
-  una lleva a `/tecnicas?especialidad=<id>`: el parámetro es el `id` de la
-  especialidad.
-- «Especialidades» lleva `aria-current` en `/tecnicas` y en el detalle de
-  técnica. Mientras llegan las especialidades, el desplegable dice «Cargando…»;
-  si la API falla, queda vacío (el interceptor ya avisó), y abrirlo de nuevo (o
-  abrir el menú de celular) vuelve a pedir lo que falló.
-- **Sesión:** a la derecha, un visitante ve Ingresar (`/cuenta/ingresar`) y Crear
-  cuenta (`/cuenta/crear`), sin `?volver=`: es un ingreso directo. Con sesión va
-  «Mi cuenta» (avatar con iniciales), que abre `AccountMenu`, un panel anclado a la
-  derecha con nombre, correo, rol y los accesos de gestión del rol
-  (`management-links.ts`: Mis borradores, Por revisar, Instrumental, Usuarios y
-  roles; la página actual lleva `aria-current`). Hasta que `SessionService.loaded()`
-  es `true` no se muestra ni lo uno ni lo otro. Solo la API dice si hay sesión: si `GET /auth/me`
-  falla por algo que no es un 401 (sin conexión, 5xx en un arranque en frío), `loaded()` sigue en
-  `false`, `loadFailed()` pasa a `true` y se vuelve a preguntar al cambiar de página
-  (`provideSession`). El panel se cierra si la sesión
-  cambia (p. ej. vence) y si la ventana cruza los 760 px, donde la barra cambia de
-  alto: al abrirlo de nuevo se ancla a la altura nueva. Al final lleva «Cerrar sesión»
-  (ver «Salir», abajo). «Por revisar» lleva junto a su nombre la cifra de las versiones de
-  otras personas que esperan revisión, en el panel y en el menú de celular (`PendingReviews`, ver
-  «Gestión del revisor»; Resuelto 57). Mis borradores e Instrumental no llevan cifra todavía.
-- **Celular (≤ 1240 px):** los cuatro botones se esconden y aparece el botón de
-  menú (`MobileMenu`), un panel a pantalla completa bajo la barra con un grupo
-  plegable por menú y las mismas opciones. Se cierra con el botón, con Escape
-  (el foco vuelve al botón), al elegir una opción, al cambiar de página o si la
-  ventana vuelve a pasar de 1240 px; abrirlo cierra el desplegable de escritorio y
-  al revés, y si la ventana llega a 1240 px o menos con un desplegable abierto, este se
-  cierra. Tras los cuatro grupos va «Nosotros», una fila simple de la misma altura
-  y con el mismo filete que el resumen de un grupo, sin flecha y con `aria-current`
-  en su página. Al
-  final lleva, según la sesión, Crear cuenta gratis e Ingresar, o quién es y los
-  mismos accesos de gestión. En la barra compacta quedan Ingresar y «Mi cuenta»
-  solo con el avatar.
-
-### Pie (`shell/footer/`)
-
-El pie oscuro (`Footer`) va en todas las páginas, bajo `<main>`, que crece para
-que el pie quede abajo aunque la página sea corta. Lleva la marca con su frase y
-las cuatro columnas de la barra (Herramientas, Especialidades, ¿Por qué IQ
-Platform?, Ayuda) con los mismos destinos, tomados de `nav-menus.ts`; la columna
-«¿Por qué IQ Platform?» termina con «Nosotros» (el enlace directo de la barra, por
-su `footerColumn` en `NAV_LINKS`). En el MVP no lleva «Términos de uso»
-(Resuelto 26), y Ayuda solo «Preguntas frecuentes» y «Para docentes» (la opción
-que va solo en la barra lleva `inFooter: false` en `nav-menus.ts`); «Aviso de privacidad», que abre su
-página, va en la franja de abajo, junto al derecho de autor. Las especialidades las da `Specialties` (`GET /specialties`,
-una sola petición al cargar la app, porque el pie está en todas las páginas, que
-comparte con el desplegable de la barra) y dicen «Cargando…» mientras llegan. Si
-fallaron (p. ej. un 5xx en un arranque en frío), se vuelven a pedir al cambiar
-de página.
-
-### Errores de la API
-
-Todos traen `{"detail": ...}`. El interceptor los traduce a un aviso:
-
-- **401**: no hay sesión o venció (dura 2 horas). Si la petición salió con
-  sesión, se limpia la cuenta y se lleva a `/cuenta/ingresar?volver=<ruta
-  actual>`. Un visitante no tiene sesión que vencer: ver las excepciones abajo.
-- **403**: el rol no alcanza (o falta `X-IQ-Client`, que sería un error del
-  frontend).
-- **409**: otro cambio llegó primero o el estado no lo permite (otro revisor
-  ya decidió, ya hay una versión en curso, la técnica tiene una versión en
-  curso). `detail` trae el texto para mostrar.
-- **422**: `detail` es una lista. Del dominio llega como lista de textos (lo
-  que no cuadra en el contenido); de la validación de FastAPI, como lista de
-  objetos con el campo que falló.
-
-Qué texto se muestra (`core/http/error-message.ts`): el `detail` de la API,
-que ya viene en español, si es un texto o una lista de textos. Si no lo es (la
-lista de objetos de FastAPI trae mensajes en inglés) o falta, un texto de
-respaldo con la misma voz impersonal. Sin respuesta (estado 0) dice que no hay
-conexión, y un 5xx lleva un texto fijo, sin mostrar lo que responda el
-servidor. El resto de códigos (p. ej. el 404, que cada pantalla trata a su
-manera) no genera aviso. El error siempre vuelve a quien hizo la petición.
-Una petición que lleva `HANDLED_STATUSES` (`data/http-context.ts`) no avisa de esos códigos, porque la pantalla los dice por su cuenta (el 409 de `create` y `createVersion`, que se leen bajo el campo o la fila); los demás códigos de la misma petición, entre ellos el 401, siguen su camino.
-
-- Un 401 que no es una sesión vencida no avisa, no redirige ni olvida la
-  cuenta; lo trata la pantalla:
-  - el de `GET /auth/me` (visitante) y el de `POST /auth/login` (contraseña mal
-    puesta);
-  - el de un visitante, p. ej. la vista previa de la puerta de cuenta en una
-    página pública: no lo saca de ahí;
-  - el de una petición que salió antes de ingresar o salir
-    (`SessionService.generation` cambió): viene de la cookie vieja y no debe
-    borrar la sesión nueva.
-- Varias peticiones que fallan a la vez dan un solo aviso, y quien ya está en
-  `/cuenta/…` no se vuelve a enviar a ingresar. Si la navegación falla, se queda
-  donde está.
-- Los demás 401 también olvidan la cuenta (`SessionService.clear()`).
-
-**Avisos**: el interceptor y cualquier pantalla (p. ej. «Guardado») los dan a
-`NoticeService` (`core/notice/`) con `show('error' | 'confirmation', mensajes)`.
-`App` los pasa a `shared/ui/notice-stack`, que solo dibuja: recibe la lista y
-avisa con `dismissed` cuál quitar, así que no importa `core/`. El error es
-neutro (nunca rojo) y se queda hasta cerrarlo; la confirmación es oscura y se va
-sola a los 3,2 s. Un error igual a uno a la vista no se repite, y caben tres
-(`MAX_ERRORS`): si llega otro, se va el más antiguo. Una confirmación igual a
-una a la vista la reemplaza y vuelve a contar su tiempo. Un aviso sin mensajes
-no se muestra. Aspecto y razones: «Avisos» en
-[`DESIGN.md`](../../DESIGN.md).
-
-### Sesión
-
-`SessionService` (`core/session/`) guarda la cuenta en un signal. Se pide a la
-API al arrancar (`provideSession()`), pero **el arranque no espera la
-respuesta**: el backend puede tardar segundos en arrancar en frío y las páginas
-públicas no deben quedar en blanco. Hasta que llega, `loaded()` es `false` (el
-shell lo usa para no mostrar «Ingresar» un instante a quien sí tiene sesión).
-Solo el 401 dice que es un visitante, y es definitivo. Si la API no respondió
-(sin conexión o un 5xx en un arranque en frío) no se sabe si hay sesión:
-`loaded()` sigue en `false`, `loadFailed()` pasa a `true` y el próximo `load()`
-vuelve a preguntar; lo llama `provideSession()`, al cambiar de
-página. Ingresar, salir o `clear()` también ponen `loaded()` en `true`, y una
-respuesta tardía de `GET /auth/me` no pisa un ingreso hecho mientras tanto.
-
-**Estado** (`status()`, decidido por Juan el 2026-11-01, Resuelto 42 de la
-[checklist](../docs/checklist-frontend.md)): `loading` (se está comprobando),
-`authenticated`, `unauthenticated` (solo el 401: el JWT dura 2 horas y no se renueva, así
-que no hay nada que intentar antes) y `verification_unavailable` (sin conexión, un 5xx
-o un tiempo agotado). Esto último **no** dice que la sesión haya vencido: nunca cierra la
-sesión ni manda a ingresar. `GET /auth/me` espera 15 s como máximo (`timeout`) y pasa a
-no disponible, para que una API colgada no deje la app esperando. Ese tiempo agotado se
-corta fuera de `HttpClient`, así que el interceptor no lo ve y lo avisa el propio servicio.
-
-**Comprobación con espera** (`verified()`, la que usan los guards): emite cuando ya se sabe
-(sesión o 401). Si la API no responde **no emite**: la navegación queda pendiente con su
-URL (nada de la pantalla protegida se crea ni se pide), y `verificationBlocked()` pasa a
-`true`, con lo que `App` muestra el aviso «No se pudo comprobar la sesión» (ver abajo).
-Mientras espera, vuelve a preguntar sola **en silencio** (`QUIET_ERRORS`: un reintento
-automático no repite el aviso de error) a los 5, 10, 20 y 30 s (y cada 30 s después), al
-volver la conexión (`online`) y cuando se pide con `retry()` («Reintentar», que sí avisa si
-falla; si se pide mientras va una pregunta en silencio y esa falla, se pregunta otra vez con
-aviso, para que el toque no se pierda). Al responder, la navegación sigue a la ruta que se había pedido; si otra
-navegación la cancela, deja de preguntar y el aviso se va. Quien ya tiene su información en
-pantalla no la pierde: la espera es una navegación pendiente, no destruye lo que se ve.
-
-- `login()` y `logout()` devuelven `Observable` y actualizan la cuenta solo si
-  la API respondió bien. `clear()` la olvida sin llamar a la API (la usa el
-  interceptor ante un 401).
-- `sessionGuard` y `roleGuard(minimo)` **esperan** a que se sepa si hay sesión
-  (`verified()`). Al visitante (401) lo llevan a `/cuenta/ingresar?volver=<ruta>`. A quien
-  tiene sesión pero no alcanza el rol, `roleGuard` lo lleva al inicio con el
-  aviso de que no hay permiso (`NO_PERMISSION`, el mismo texto de respaldo del
-  403). Es solo para no mostrar pantallas que no se pueden usar: la API decide en cada
-  petición, y el rol que guarda el navegador nunca da un permiso por sí solo.
-- `guestGuard`, en la ruta de la cuenta (`/cuenta/ingresar`, `/cuenta/crear`): a quien ya
-  se sabe que tiene sesión lo lleva a donde iba (`?volver=`, por `returnTarget()`; nunca a otra pantalla
-  de la cuenta, que lo devolvería en círculos) o al catálogo, **sin ningún aviso**: decirle a
-  una URL que ya hay una sesión sería dar información de más. Quien quiera crear otra cuenta
-  cierra antes la sesión desde «Mi cuenta». **No espera** a `GET /auth/me`: el formulario es lo
-  que necesita quien no tiene sesión y no se deja en blanco por un servidor que tarda, ni un
-  cambio de pestaña depende de esa respuesta. Si llega con la pantalla abierta y sí hay sesión,
-  `AccountEntry` hace lo mismo que el guard (Resuelto 46).
-- **Aviso de sesión sin comprobar** (`shell/session-unavailable/`): lo muestra `App` arriba de
-  la ruta mientras `verificationBlocked()`, así ninguna pantalla lo resuelve por su cuenta. Dice
-  que no se pudo comprobar la sesión y que la página se abre en cuanto responda el servidor, y
-  ofrece «Reintentar» (`aria-busy` mientras comprueba). Los textos los aprobó Juan el
-  2026-11-01 (Resuelto 42).
-- Un `403` es acceso denegado: avisa y conserva la sesión. Un 5xx, la falta de conexión o
-  un tiempo agotado tampoco la cierran (lo prueban el interceptor y el servicio).
-- `?volver=` lo puede escribir cualquiera, así que quien lo use al ingresar tiene
-  que pasarlo por `safeReturnUrl()`: solo acepta rutas de esta misma app (no
-  `//sitio`, `https://…`, `\` ni caracteres de control).
-
-## Correr el frontend
-
-Hace falta Node.js y el backend corriendo (ver [`../README.md`](../README.md)).
+Hace falta Node.js y el backend corriendo (ver [`../backend/README.md`](../backend/README.md#correrlo)).
 Todo se corre desde `dataiq/frontend`:
 
 ```sh
 npm install
-npm start      # http://localhost:4200
-npm test       # Vitest
-npm run build  # producción, con los presupuestos de angular.json
+npm start          # http://localhost:4200
 npm run api:types  # regenera los tipos de la API (necesita uv)
 ```
 
@@ -631,7 +44,7 @@ absoluta que arme apunta a la raíz del sitio y no a `/api/dataiq`. Por eso:
 `npm run api:types` genera `src/app/data/api/schema.d.ts` con
 `openapi-typescript` (versión fija) a partir de `app.openapi()` del backend, el
 mismo documento que sirve `/openapi.json`: no hace falta que el backend esté
-corriendo, pero sí `uv` (ver [`../README.md`](../README.md)). El archivo se
+corriendo, pero sí `uv` (ver [`../backend/README.md`](../backend/README.md#correrlo)). El archivo se
 versiona, para que el build no necesite el backend; cuando cambie una ruta o un
 esquema de la API, se regenera y se sube en el mismo PR. El CI
 ([`dataiq-frontend.yml`](../../.github/workflows/dataiq-frontend.yml)) lo
@@ -642,7 +55,14 @@ declara TypeScript 5 como peer, y el proyecto usa TypeScript 6: el `overrides` d
 
 Para probar cada rol hay una cuenta de desarrollo por rol, solo en la base
 local: cuáles son y cómo se crean, en
-[`../README.md`, «Correr el backend»](../README.md#correr-el-backend).
+[`../backend/README.md`, «Correrlo»](../backend/README.md#correrlo).
+
+## Pruebas
+
+```sh
+npm test       # Vitest
+npm run build  # producción, con los presupuestos de angular.json
+```
 
 ## Despliegue
 
@@ -670,7 +90,7 @@ el build lee `../../shared/design/`, `../../shared/shell/` (la barra) y
   - `/sivri/*` va a `https://sivri-frontend.vercel.app/sivri/*` (el proyecto
     de SIVRI, en la cuenta de Juan), con la ruta completa y con su propia regla
     para `/sivri/`, como `/simiq3d`. El rewrite apunta solo a una dirección
-    que ya es de un proyecto del equipo (decidido por Juan el 2026-11-23): una
+    que ya es de un proyecto del equipo: una
     sin dueño entregaría en este origen lo que publique quien la registre, con
     la cookie de sesión. Su ruta se excluye de los encabezados de esta app
     (`/((?!api/|simiq3d|sivri).*)`): los que valen son los del proyecto que
@@ -698,3 +118,33 @@ el build lee `../../shared/design/`, `../../shared/shell/` (la barra) y
   ([changelog de Vercel](https://vercel.com/changelog/cdn-origin-timeout-increased-to-two-minutes)).
   El chat de SIMIQ3D corta el modelo de lenguaje a los 60 segundos
   (`llm_timeout`) y responde con las plantillas.
+
+## Estructura
+
+```
+frontend/
+├── public/        imágenes de «Nosotros» y de la marca, y el favicon
+├── scripts/       generación de los tipos de la API
+└── src/
+    ├── styles/        el tema de DataIQ sobre los tokens de shared/design/
+    ├── shared-shell/  enlace a la barra compartida de shared/shell/
+    └── app/
+        ├── core/      sesión, interceptores y títulos
+        ├── data/      la única capa que habla con la API
+        ├── domain/    reglas puras de la interfaz
+        ├── features/  una carpeta por sección (inicio, catálogo, técnica, cuenta, gestión…)
+        ├── shared/    componentes compartidos (diagrama de la mesa, avisos…)
+        └── shell/     la barra y el pie del shell
+```
+
+## Más documentación
+
+- Qué es DataIQ: [`../README.md`](../README.md).
+- Decisiones y arquitectura por dentro (secciones, rutas, barra, errores, sesión):
+  [`../docs/frontend.md`](../docs/frontend.md).
+- Cómo se habla con la API (sesión, proxy, encabezados):
+  [`../backend/README.md`, «Cómo lo usa el frontend»](../backend/README.md#cómo-lo-usa-el-frontend).
+- Sistema de diseño: [`design/README.md`](../../design/README.md); las pantallas,
+  en el [Figma del proyecto](https://www.figma.com/design/jHEduZTQNBs4CCJEWB8u5v/).
+- Roles y flujos: [`docs/flujos.md`](../../docs/flujos.md).
+- Avance por fases: [`../docs/checklist-frontend.md`](../docs/checklist-frontend.md).

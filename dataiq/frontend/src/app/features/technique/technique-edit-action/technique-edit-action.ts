@@ -13,7 +13,7 @@ import { TechniqueInProgress } from '../technique-in-progress';
 const IN_PROGRESS_FALLBACK = 'La técnica ya tiene una versión en curso';
 
 /**
- * El botón de editar del detalle de una técnica, según «Detalle de técnica (página)» de `DESIGN.md` y
+ * El botón de editar del detalle de una técnica, según «Detalle de técnica (página)» de `design/README.md` y
  * Resuelto 24 de `dataiq/docs/checklist-frontend.md`: solo para un colaborador, un revisor o un admin.
  * Pide las versiones en curso (`GET /versions`, que a un colaborador le trae las suyas y a un revisor o
  * admin todas) y, según la de esta técnica, ofrece «Editar técnica» (crea una versión nueva,

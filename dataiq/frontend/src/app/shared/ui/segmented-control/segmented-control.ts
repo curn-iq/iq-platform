@@ -23,7 +23,7 @@ export interface SegmentOption {
 }
 
 /**
- * Control segmentado, según «Mis borradores (página)» de `DESIGN.md`: botones en un estuche
+ * Control segmentado, según «Mis borradores (página)» de `design/README.md`: botones en un estuche
  * con filete y radio 12, con la placa `marca-claro` que se desliza bajo el elegido (`.45s
  * expo`). Cada botón lleva `aria-pressed` y su cifra en tabulares. En celular (≤ 760 px)
  * pasa a chips de 40 px que se desplazan, el elegido lleno en `marca`. La opción elegida es

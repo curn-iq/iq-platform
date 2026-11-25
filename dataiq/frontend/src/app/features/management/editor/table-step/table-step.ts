@@ -84,7 +84,7 @@ interface Choice {
 }
 
 /**
- * Los pasos «Mesa de Mayo» y «Mesa de reserva» del editor, según «Editor de técnica (página)» de `DESIGN.md`
+ * Los pasos «Mesa de Mayo» y «Mesa de reserva» del editor, según «Editor de técnica (página)» de `design/README.md`
  * y Resuelto 54 de `dataiq/docs/checklist-frontend.md`. A la izquierda, los objetos de la mesa con su
  * número (el de la leyenda; cada mesa tiene el suyo) y su lugar; a la derecha, la mesa con su tamaño. Un
  * objeto se ubica **arrastrándolo** a una celda (CDK; con el dedo, tras una pulsación larga para no

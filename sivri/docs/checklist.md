@@ -47,9 +47,9 @@ proyecto de grado). Se marca cada pieza al terminarla.
   marcadores y cuadrícula, emparejamiento, estados y porcentaje por técnica,
   con pruebas automatizadas (`sivri/backend/app/domain/`, `tests/domain/`)
 - [x] Verificar las 16 clases y las 57 posiciones esperadas de la semilla local de DataIQ (ver
-  [README del backend](../backend/README.md#decisiones-de-la-implementación)).
+  [puntos de partida](validacion.md#puntos-de-partida)).
 - [x] Comparar el margen 0,10 y 0,20 en la Ronda 2 y conservar 0,10
-  (ver [diagnóstico](../backend/README.md#diagnóstico-de-la-retroalimentación)).
+  (ver [diagnóstico](diagnosticos.md#diagnóstico-de-la-retroalimentación)).
 - [x] Contrastar el detector y las cajas anotadas en las rondas 2 y 3
 - [x] Contrastar `sivri-r2` y las cajas anotadas en 70 fotos, con la regla de duplicados y las celdas aprobadas
 - [x] Verificar esas celdas y los 16 mapeos en el entorno de PC1 (2026-11-22:
@@ -58,11 +58,11 @@ proyecto de grado). Se marca cada pieza al terminarla.
 - [x] Reconocer la técnica descontando lo que sobra para cada una (2026-11-23: una
   Tiroidectomía bien armada salía empatada con Mastectomía)
 - [x] Recalcular las celdas de las cinco mesas con las fotos «Bien armada» de las
-  tres rondas (2026-11-23; ver [celdas recalculadas](../backend/README.md#celdas-recalculadas-con-las-tres-rondas-2026-11-23))
+  tres rondas (2026-11-23; ver [celdas recalculadas](diagnosticos.md#celdas-recalculadas-con-las-tres-rondas-2026-11-23))
 - [x] Publicar las celdas recalculadas en el DataIQ del Servidor PC1 y en producción
   (`seed.update_mayo --apply`, 2026-11-23; los 57 objetos coinciden con el Excel en los dos)
 - [x] Umbral de confianza por instrumento (2026-11-23; ver
-  [umbral por instrumento](../backend/README.md#umbral-de-confianza-por-instrumento-2026-11-23))
+  [umbral por instrumento](diagnosticos.md#umbral-de-confianza-por-instrumento-2026-11-23))
 - [ ] Confirmar con IQ las anotaciones de los errores de Ronda 3 (diferido para después de la entrega)
 - [x] Backend de SIVRI (API, su base de datos, validación del JWT de DataIQ,
   y CORS para el origen del shell: la página se sirve allí y manda los cuadros
@@ -82,9 +82,9 @@ proyecto de grado). Se marca cada pieza al terminarla.
   - [x] SIVRI lo valida con el JWKS y lo reenvía a DataIQ para pedir el catálogo
   - [x] El frontend de SIVRI lo pide y lo renueva antes de que venza (`ModuleTokenService` y renovación por la misma conexión; falta probarlo contra el backend real)
 - [x] Vista previa HTTPS/WSS en PC1 con un JWT real de DataIQ local (ver
-  [README del backend](../backend/README.md#vista-previa-en-pc1)).
+  [README del Servidor PC1](../servidor-pc1/README.md)).
 - [x] Habilitar el arranque de la vista previa y sus contenedores en PC1
-  con systemd de usuario (ver [README del backend](../backend/README.md#vista-previa-en-pc1)).
+  con systemd de usuario (ver [README del Servidor PC1](../servidor-pc1/README.md)).
 - [x] Verificar una sesión WSS de más de cinco minutos por Funnel público,
   con renovación y rechazo del JWT vencido
 - [x] Servidor PC1 para las sesiones del piloto: el PC de escritorio de Mauricio (decidido
@@ -102,7 +102,7 @@ proyecto de grado). Se marca cada pieza al terminarla.
 
 - [x] Probar el analizador con los pesos entrenados y una foto de Ronda 3
 - [x] Reproducir fotos de IQ por WebSocket con YOLO26n en localhost y
-  registrar el [tiempo de respuesta local](../backend/README.md#ensayo-local-del-websocket)
+  registrar el [tiempo de respuesta local](diagnosticos.md#ensayo-local-del-websocket)
 - [ ] Una mesa de Mayo real de Cirugía General, de punta a punta
 
 ## 5. Evaluación sumativa

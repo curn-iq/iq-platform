@@ -1,4 +1,4 @@
-"""Cómo se valida la mesa (README de SIVRI, «Cómo se valida la mesa»).
+"""Cómo se valida la mesa (sivri/docs/validacion.md, «Cómo se valida la mesa»).
 
 Detectar, emparejar cada detección con su posición esperada y darle un estado a
 cada objeto («planogram compliance»). Todo en unidades de celda: el área ampliada

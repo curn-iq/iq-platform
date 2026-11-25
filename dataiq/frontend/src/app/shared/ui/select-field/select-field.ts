@@ -21,7 +21,7 @@ export interface SelectOption {
 }
 
 /**
- * Un selector de formulario, según «Editor de técnica (página)» de `DESIGN.md`: la misma caja
+ * Un selector de formulario, según «Editor de técnica (página)» de `design/README.md`: la misma caja
  * de 48 px del campo de texto, con la flecha de la casa en vez de la nativa y su texto vacío
  * en `tinta-2`. Es un control de Signal Forms (`<app-select-field label="Especialidad"
  * [options]="…" [formField]="form.specialty" />`) y también se usa con `[value]` y

@@ -16,7 +16,7 @@ import { PieceChoice, partsOf, TableItem, TablePart } from '../../domain/mayo-ta
  * con el número del diagrama de IQ y el nombre de cada uno, sin filas ni
  * columnas. Cada instrumento es una fila, también los que IQ arma juntos en un
  * mismo objeto (comparten número). Señalar uno marca su objeto a la vez en la
- * escena (`DESIGN.md`, «Leyenda plegable»).
+ * escena (`design/README.md`, «Leyenda plegable»).
  */
 @Component({
   selector: 'app-legend',

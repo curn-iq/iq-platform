@@ -16,7 +16,7 @@ export function mediaQuery(query: string): Signal<boolean> {
   return matches.asReadonly();
 }
 
-/** Celular: el punto de corte de 760 px de «Layout» en `DESIGN.md`. */
+/** Celular: el punto de corte de 760 px de «Composición» en `design/README.md`. */
 export const MOBILE_QUERY = '(max-width: 760px)';
 
 /** Con `prefers-reduced-motion`, nada corre solo. */

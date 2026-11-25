@@ -47,7 +47,7 @@ const ARROW_LENGTH = 76;
 /**
  * El escenario de la cámara: el video en vivo (`live`) o el cuadro que se mandó (`frozen`),
  * recortado a lo que cabe (`object-fit: cover`), con las marcas encima. Alrededor, el radial
- * claro de `DESIGN.md` («La cámara»). Las marcas vienen en fracciones del cuadro; aquí se pasan
+ * claro de `design/README.md` («La cámara»). Las marcas vienen en fracciones del cuadro; aquí se pasan
  * a píxeles contando el recorte.
  *
  * En `frozen` el resultado se dibuja sobre el cuadro que se mandó, no sobre el video de ahora.

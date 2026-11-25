@@ -24,7 +24,7 @@ import { HomeSpecialties } from './specialties/specialties';
  * una con `scroll-margin-top: var(--size-navbar)` para no quedar bajo la barra fija
  * (el router descuenta la barra por su lado, ver `provideAppRouter`). Las secciones
  * alternan `fondo` y `superficie` con un fundido entre ellas (ver «The
- * Fondos Neutros Rule» en `DESIGN.md`).
+ * Fondos Neutros Rule» en `design/README.md`).
  *
  * `HomeCatalog` pide las técnicas una sola vez para la ventana de DataIQ y para las
  * especialidades. Esa lista llega después de que el router bajó a la sección y empuja

@@ -24,7 +24,7 @@ export interface EditorStepItem extends StepSummary {
 }
 
 /**
- * La fila de cinco pasos del editor, según «Editor de técnica (página)» de `DESIGN.md`: una rejilla de
+ * La fila de cinco pasos del editor, según «Editor de técnica (página)» de `design/README.md`: una rejilla de
  * cinco columnas separadas por filete. Cada paso es un enlace (la URL dice cuál está abierto, así que
  * Atrás lo recuerda) con su marca de 22 px, su número en `tinta-3`, su nombre en 600 (650 el abierto) y
  * lo que falta en 14 px `tinta-3`; bajo el abierto se desliza la raya de 2 px en `tinta`. Cuando un paso

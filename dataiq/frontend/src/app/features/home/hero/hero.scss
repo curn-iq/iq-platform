@@ -1,6 +1,6 @@
 @use '../section' as s;
 
-// Portada: titular a la izquierda, la mesa a la derecha. Ver «Layout» en DESIGN.md.
+// Portada: titular a la izquierda, la mesa a la derecha. Ver «Composición» en design/README.md.
 
 :host {
   display: block;
@@ -30,7 +30,7 @@ app-hero-stage {
   grid-column: 6 / 13;
 }
 
-// «Headline» de DESIGN.md: el titular de portada, en tres líneas que suben al cargar
+// «Headline» de design/README.md: el titular de portada, en tres líneas que suben al cargar
 h1 {
   margin: 0;
   font-size: clamp(46px, 5.6vw, 100px);
@@ -86,7 +86,7 @@ h1 {
   animation: appear 0.9s var(--ease-enter) 0.4s backwards;
 }
 
-// La flecha del botón avanza 3 px al pasar el puntero («Buttons» en DESIGN.md)
+// La flecha del botón avanza 3 px al pasar el puntero («Botones» en design/README.md)
 a[app-button] svg {
   transition: transform 0.35s var(--ease-enter);
 }

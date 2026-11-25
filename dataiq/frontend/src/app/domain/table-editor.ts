@@ -15,7 +15,7 @@ export interface TableData {
   items: EditorItem[];
 }
 
-/** El tamaño con el que nace una mesa que se arma (el de «Nueva técnica» en `DESIGN.md`). */
+/** El tamaño con el que nace una mesa que se arma (el de «Nueva técnica» en `design/README.md`). */
 export const DEFAULT_ROWS = 4;
 export const DEFAULT_COLUMNS = 6;
 /** Lo mínimo y lo máximo de filas y de columnas que se pueden pedir. */

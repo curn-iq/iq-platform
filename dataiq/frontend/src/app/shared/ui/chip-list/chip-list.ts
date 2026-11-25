@@ -16,7 +16,7 @@ import {
 let nextId = 0;
 
 /**
- * Una lista de nombres editable, según «Editor de técnica (página)» de `DESIGN.md` (equipos y equipo
+ * Una lista de nombres editable, según «Editor de técnica (página)» de `design/README.md` (equipos y equipo
  * médico-quirúrgico): fichas de 36 px sobre `fondo` con su botón de quitar de 28 px y, al final,
  * «Agregar» con contorno punteado `filete-2`. «Agregar» abre una ficha para escribir: Enter o salir
  * del campo la fijan, y Escape la descarta. Sin nada escrito no se agrega nada. Solo avisa

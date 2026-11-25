@@ -1,13 +1,13 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-servidor-pc2-oscuro.svg">
-    <img src="../../diseno/marca/modulos/simiq3d-servidor-pc2.svg" alt="SIMIQ3D, Servidor PC2" width="288">
+    <source media="(prefers-color-scheme: dark)" srcset="../../design/brand/modules/simiq3d-server-pc2-dark.svg">
+    <img src="../../design/brand/modules/simiq3d-server-pc2.svg" alt="SIMIQ3D, Servidor PC2" width="288">
   </picture>
 </p>
 
 El PC de escritorio con GPU (AMD RX 6600 XT de 8 GB) donde corre el modelo de
 lenguaje del chat de SIMIQ3D. Por qué un PC propio y no un servicio en la nube:
-[`../README.md`](../README.md), «Chat».
+[`../docs/chat.md`](../docs/chat.md).
 
 ```
 Backend de SIMIQ3D (Vercel) ──HTTPS + clave──▶ Tailscale Funnel ──▶ filtro.py ──▶ Ollama
@@ -22,7 +22,7 @@ defecto 2): si llega otra, responde `429` al momento y el backend contesta con
 sus plantillas, en vez de que la pregunta haga fila en la GPU. Si el PC se apaga, solo deja de funcionar el chat: el visor y
 las técnicas siguen.
 
-## Montarlo
+## Correrlo
 
 1. **Ollama con la GPU**, como servicio (el instalador de
    [ollama.com](https://ollama.com) lo deja así), y el modelo:
@@ -110,7 +110,7 @@ unos 11 s la primera.
   trae el catálogo; por eso tarda más. Las siguientes ya los encuentran
   despiertos.
 
-## Pruebas del filtro
+## Pruebas
 
 ```sh
 uv run --script test_filtro.py
@@ -128,3 +128,9 @@ cambio en `filtro.py` se toma al reiniciarlo, con `main` al día:
 ```sh
 systemctl --user restart simiq3d-filtro
 ```
+
+## Más documentación
+
+- Qué es SIMIQ3D: [`../README.md`](../README.md).
+- Cómo usa el backend este servidor: [`../backend/README.md`](../backend/README.md#despliegue).
+- El chat y su porqué: [`../docs/chat.md`](../docs/chat.md).

@@ -1,5 +1,5 @@
 """De qué se habla en una pregunta del chat tutor, decidido por el código y no por
-el modelo de lenguaje (README de SIMIQ3D, «Chat»): las técnicas y los
+el modelo de lenguaje (simiq3d/docs/chat.md): las técnicas y los
 instrumentos que nombra, la técnica abierta en el visor y, en un seguimiento
 («¿y cuándo se usa?»), lo de las preguntas anteriores. Con esto se traen los
 datos de DataIQ (`app/domain/tutor.py`) y se decide qué hace el visor."""

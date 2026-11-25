@@ -31,7 +31,7 @@ export const DISCARDED = 'Borrador descartado.';
 
 /**
  * «Más acciones» del editor: tres puntos que abren un panel de 320 px como el de Mi cuenta (ver
- * «Mis borradores (página)» y «Detalle de técnica (página)» en `DESIGN.md`), con «Descartar
+ * «Mis borradores (página)» y «Detalle de técnica (página)» en `design/README.md`), con «Descartar
  * borrador» (Resuelto 25 de `dataiq/docs/checklist-frontend.md`). Descartar pide confirmación en el
  * mismo panel, como Archivar en el detalle: dice que no se puede recuperar y, si es la versión 1 de
  * una técnica que nunca se publicó, que también se borra la técnica. Solo se descarta un borrador:

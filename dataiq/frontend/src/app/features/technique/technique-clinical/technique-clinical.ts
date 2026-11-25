@@ -3,7 +3,7 @@ import type { TechniquePublic } from '../../../data/api/models';
 import { clinicalSheet } from '../../../domain/clinical-sheet';
 
 /**
- * La hoja de «Datos clínicos» (`tecnica.html`, «Detalle de técnica» en `DESIGN.md`): a
+ * La hoja de «Datos clínicos» (`tecnica.html`, «Detalle de técnica» en `design/README.md`): a
  * la izquierda «Para qué sirve» en una tarjeta y las fichas (anestesia, ropa, posición
  * del paciente, código CUPS); a la derecha las indicaciones, las complicaciones y la
  * técnica quirúrgica; abajo, de dónde salen los datos. Es pública: todo sale de

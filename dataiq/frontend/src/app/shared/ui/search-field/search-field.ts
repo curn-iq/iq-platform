@@ -11,7 +11,7 @@ import {
 let nextId = 0;
 
 /**
- * El buscador, según «Buscador del catálogo» en «Inputs / Fields» de `DESIGN.md`:
+ * El buscador, según «Buscador del catálogo» en «Campos» de `design/README.md`:
  * 60 px, `superficie`, 14 px de radio, filete `filete-2` y lupa de 20 px. Foco: filete
  * de 2 px en `marca`. Al escribir aparece a la derecha el botón de borrar, que deja
  * el campo vacío y le devuelve el foco. `value` es lo escrito: `[(value)]`.

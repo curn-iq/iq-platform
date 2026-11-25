@@ -12,7 +12,7 @@ import type { TechniqueSummary } from '../../data/api/models';
 
 /**
  * La cabeza del lienzo: el nombre de la técnica, la línea de su mesa y el
- * selector de técnica («Lienzo de SIMIQ3D» en `DESIGN.md`). En celular el nombre es el selector y abre la hoja inferior.
+ * selector de técnica («Lienzo de SIMIQ3D» en `design/README.md`). En celular el nombre es el selector y abre la hoja inferior.
  */
 @Component({
   selector: 'app-canvas-head',

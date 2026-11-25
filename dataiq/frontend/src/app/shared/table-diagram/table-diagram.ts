@@ -33,7 +33,7 @@ interface DrawnShape extends PlacedShape {
 /** `full` es la mesa entera, con números y leyenda; `preview`, el vistazo recortado de la puerta de cuenta. */
 export type TableDiagramVariant = 'full' | 'preview';
 
-/** Cuántas filas se ven en la vista previa: «dos filas y media» (ver «Puerta de cuenta» en `DESIGN.md`). */
+/** Cuántas filas se ven en la vista previa: «dos filas y media» (ver «Puerta de cuenta» en `design/README.md`). */
 const PREVIEW_ROWS = 2.5;
 
 /** Un objeto listo para dibujar: sus formas, sus celdas y su número, en unidades del dibujo. */
@@ -54,7 +54,7 @@ interface Piece {
 let nextGradient = 0;
 
 /**
- * El diagrama de mesa, según «Detalle de técnica» de `DESIGN.md`: un diagrama
+ * El diagrama de mesa, según «Detalle de técnica» de `design/README.md`: un diagrama
  * sereno en `superficie` con filete y una rejilla fina, sin paño. Dibuja la
  * grilla del tamaño de la mesa (`rows` × `columns`) y sus objetos: el
  * instrumental en acero, lo de tela o bandeja plano y lo que no tiene dibujo en

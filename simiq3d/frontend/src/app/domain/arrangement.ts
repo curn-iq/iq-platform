@@ -19,7 +19,7 @@ const MAX_ROUNDS = 100;
 
 /**
  * Dónde va cada pieza en la escena. Parte del centro de sus celdas (la regla de
- * `simiq3d/README.md`, «Cómo se arma la mesa en 3D») y solo se corre lo justo
+ * `simiq3d/docs/frontend.md`, «Cómo se arma la mesa en 3D») y solo se corre lo justo
  * para que quede dentro de la mesa y no tape a otra (decidido por Mauricio el
  * 2026-11-01): en una mesa real ninguna pieza cuelga del borde y, aunque estén
  * juntas, se distingue cuál es cuál.

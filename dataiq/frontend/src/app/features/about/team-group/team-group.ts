@@ -7,7 +7,7 @@ import { Portrait } from '../portrait/portrait';
  * Un grupo de «Conoce al equipo»: el rótulo (filete de 2 px, programa y lema) y los tres retratos. En
  * escritorio y tablet van en 3 columnas; en celular, en un carril horizontal con `scroll-snap`, con un
  * trazo de 3 px que marca por cuál retrato va el carril (decorativo). Ver «Nosotros (página)» en
- * `DESIGN.md`.
+ * `design/README.md`.
  */
 @Component({
   selector: 'app-team-group',

@@ -14,7 +14,7 @@ interface Row {
 }
 
 /**
- * «Dónde va» de un instrumento (`DESIGN.md`, «Catálogo de instrumental (página)»; Resuelto 19 de
+ * «Dónde va» de un instrumento (`design/README.md`, «Catálogo de instrumental (página)»; Resuelto 19 de
  * `dataiq/docs/checklist-frontend.md`): cada técnica publicada que lo lleva en una mesa, agrupada por
  * especialidad, con la mesa y el número y la mesa en miniatura con su celda encendida. Una mesa de más de
  * 10 columnas ocupa la fila entera; en tableta y celular va una columna. Cada fila lleva a la hoja de esa

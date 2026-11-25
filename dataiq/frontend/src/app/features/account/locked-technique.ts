@@ -10,7 +10,7 @@ const PROMISE = 'Con una cuenta gratuita se abre todo el detalle de esta técnic
  * su nombre, su especialidad y una vista bloqueada con las cuatro pestañas del detalle (el
  * mismo cuerpo de barras para todas, así que nunca revela si a la técnica le falta una mesa)
  * y un candado con lo que abre la cuenta. En celular la vista bloqueada se reemplaza por
- * una línea con el candado. Ver «Ingresar / Crear cuenta (página)» en `DESIGN.md`.
+ * una línea con el candado. Ver «Ingresar / Crear cuenta (página)» en `design/README.md`.
  *
  * Mientras llegan el nombre y la especialidad, `undefined`, se dibujan barras.
  */

@@ -1,7 +1,7 @@
 @use '../section' as s;
 
 // «Tres formas de recorrer una técnica»: las herramientas se recorren de lado a lado.
-// Ver «Carril» en DESIGN.md.
+// Ver «Carril» en design/README.md.
 
 :host {
   display: block;
@@ -120,7 +120,7 @@ h2 {
   min-height: 0;
 }
 
-// «Headline de producto» y «Lema» de DESIGN.md
+// «Headline de producto» y «Lema» de design/README.md
 h3 {
   margin: 0;
   font-size: clamp(40px, 3.6vw, 60px);

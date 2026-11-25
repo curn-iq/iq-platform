@@ -7,7 +7,7 @@ import { readPrivacyDocument } from './privacy-document';
 /**
  * El aviso de privacidad (`/politica-de-datos`). El texto es `docs/privacidad.md`,
  * que el build importa tal cual: no se copia en la plantilla, así que cambiar el
- * documento cambia la página. Ver «Aviso de privacidad (página)» en `DESIGN.md`.
+ * documento cambia la página. Ver «Aviso de privacidad (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-privacy',

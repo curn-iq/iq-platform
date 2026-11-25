@@ -1,15 +1,15 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../diseno/marca/modulos/simiq3d-backend-oscuro.svg">
-    <img src="../../diseno/marca/modulos/simiq3d-backend.svg" alt="SIMIQ3D, BackEnd" width="288">
+    <source media="(prefers-color-scheme: dark)" srcset="../../design/brand/modules/simiq3d-backend-dark.svg">
+    <img src="../../design/brand/modules/simiq3d-backend.svg" alt="SIMIQ3D, BackEnd" width="288">
   </picture>
 </p>
 
+
 La API del chat de SIMIQ3D: recibe la pregunta del estudiante, la responde con
 datos del catálogo de DataIQ y le dice al visor qué mostrar. También entrega
-qué modelo 3D dibuja cada instrumento. Qué es SIMIQ3D y por qué está hecho así
-(alcance, modelos 3D, chat, cómo se arma la mesa): [`../README.md`](../README.md).
-Avance: [`../docs/checklist-backend.md`](../docs/checklist-backend.md).
+qué modelo 3D dibuja cada instrumento. En producción:
+<https://simiq3d-backend.vercel.app>.
 
 ## Stack
 
@@ -20,10 +20,10 @@ Avance: [`../docs/checklist-backend.md`](../docs/checklist-backend.md).
 | Sesión | El JWT de DataIQ, validado con su clave pública (JWKS); SIMIQ3D no tiene usuarios |
 | Modelo de lenguaje | Ollama en el Servidor PC2 (por defecto, `qwen3-vl:8b-instruct`), por su API compatible con OpenAI |
 
-## Correr el backend
+## Correrlo
 
 Hace falta [uv](https://docs.astral.sh/uv/), Podman (o Docker) y el backend de
-DataIQ corriendo (ver [`../../dataiq/README.md`](../../dataiq/README.md)). Todo
+DataIQ corriendo (ver [`../../dataiq/backend/README.md`](../../dataiq/backend/README.md#correrlo)). Todo
 se corre desde `simiq3d/backend`.
 
 1. PostgreSQL 18 en un contenedor propio, aparte del de DataIQ:
@@ -62,7 +62,7 @@ se corre desde `simiq3d/backend`.
    Sin eso responde el motor de plantillas (`LANGUAGE_MODEL=fake`), que no
    necesita el modelo. Con el modelo responde el tutor.
 
-Pruebas y estilo:
+## Pruebas
 
 ```sh
 uv run pytest
@@ -129,92 +129,38 @@ línea) y `{"type": "end", …}` con la respuesta completa. Los errores antes de
 empezar (`401`, `429`, `503` de DataIQ) son los de `POST /chat`. Con las
 plantillas, los tres eventos llegan juntos.
 
-## Cómo responde el chat
+## Qué guarda
 
-El diseño y su porqué: [`../README.md`](../README.md), «Chat».
+El backend corre en Vercel (ver [`../docs/chat.md`](../docs/chat.md)) y
+tiene su propia base en Neon, en un proyecto aparte, como cada módulo:
 
-1. Con `LANGUAGE_MODEL=ollama` responde el **tutor**
-   (`adapters/outbound/language/tutor.py`). Un nombre mal escrito se corrige
-   antes de todo, sin preguntar (`suggest_spelling`, con los nombres de las
-   mesas del MVP).
-2. **De qué se habla** (`app/domain/focus.py`, `focus_of`): las técnicas y los
-   instrumentos que nombra la pregunta, la técnica abierta y, si la pregunta
-   no nombra nada o empieza como un seguimiento («¿y…?»), lo de la última
-   pregunta anterior que nombró algo. «El bisturí» en una mesa que lleva
-   varios trae a todos (`family_members`).
-3. **El visor y los datos** (`app/domain/tutor.py`): `scene_of` decide la
-   acción y las preguntas sugeridas; `data_of` arma lo que DataIQ tiene de eso,
-   en texto, con lo que no tiene dicho («DataIQ no lo tiene»). `messages` pone
-   el prompt `TUTOR`, las preguntas anteriores con su respuesta (recortada a
-   `MAX_PREVIOUS_REPLY` caracteres) y al final `<datos>`, `<visor>` (lo que
-   hace la escena), `<aviso>` (si se piden tiempos quirúrgicos, o si la
-   pregunta no nombra nada de DataIQ y puede no ser del tema) y la pregunta.
-4. **Una llamada al modelo**, con temperatura `LLM_TEMPERATURE` (0,3) y un tope
-   de `MAX_TOKENS` (350) o `MAX_TOKENS_LONG` (800, para comparar, abrir una
-   técnica, pedir su lista o «todo», o preguntar por la mesa), y de `LLM_DEADLINE` segundos
-   para la respuesta entera.
-   Con `POST /chat/stream` (`TutorAgent.stream`) la llamada lleva `"stream":
-   true` y cada parte pasa por la revisión al llegar (`Reviewer`, la misma de
-   `review` pero por partes); si el filtro respondiera sin streaming, el texto
-   llega entero.
-5. **La revisión** (`app/domain/review.py`, `review`): frase por frase (y cada
-   elemento de una lista), los límites duros: la mesa de Mayo contra DataIQ
-   (que el instrumento vaya en esa mesa, su número del diagrama y su zona dichos
-   justo después de nombrarlo, el número de una lista numerada, una zona con
-   sus números, lo que se dice de la pieza de la pregunta en cada mesa que se
-   nombra, un objeto con número que DataIQ no tiene, cuántos objetos), ordenar
-   o agrupar por tiempos quirúrgicos,
-   dosis y cuadrícula. La frase sale y entra el dato de DataIQ o la nota, una
-   vez cada uno. Solo en `POST /chat`: si sale más de la mitad, una segunda
-   llamada con lo que estuvo mal (`retry_messages`), si la primera tardó menos
-   de `RETRY_IF_UNDER` (12 s). El log dice cuántas frases cambió y de qué
-   límite, sin el texto.
-6. **Sin el modelo** (apagado, 429 del filtro o pasado `LLM_DEADLINE`):
-   `without_model` dice que no está disponible y muestra lo de DataIQ. Si deja
-   de responder a mitad del streaming, lo mostrado queda con la nota `CUT`.
-7. Con `LANGUAGE_MODEL=fake` responden las **reglas fijas**
-   (`adapters/outbound/language/fake.py`): una sola cosa por mensaje, con las
-   plantillas de `app/domain/chat.py`.
+| Qué | Dónde | Por qué |
+|---|---|---|
+| Mapeo de cada modelo 3D a su instrumento de DataIQ (`instruments.id`) | Base de SIMIQ3D | Ese mapeo es de SIMIQ3D, no de DataIQ, como las clases de YOLO en SIVRI. Los ids del catálogo cambian de una instalación a otra: el repo guarda el mapeo por nombre del instrumento (o un alias) y un comando lo traduce a ids en cada entorno con la API de DataIQ |
+| Registro de las conversaciones: pregunta, acción elegida por el modelo y fecha | Base de SIMIQ3D | Sin él no hay cómo demostrar con números que el chat funciona (ver abajo) |
+| Contador de preguntas por cuenta, con el id cifrado (HMAC), por unos minutos | Base de SIMIQ3D | Que nadie llene de consultas el Servidor PC2; no deja saber de quién es y se borra al día |
+| Archivos de los modelos (GLB) | Archivos estáticos del frontend, en Vercel | Se descargan una vez y quedan en caché; en Neon gastarían su medio GB |
+| Técnicas e instrumentos que el chat le ofrece al modelo | DataIQ, por `/catalog/full`, que el backend cachea por sesión | DataIQ es la única fuente de verdad |
+| La mesa que dibuja el visor y la descripción de cada instrumento | DataIQ, que el frontend lee directo (`GET /techniques/{id}/instruments`, `GET /instruments`) | No pasa por el backend de SIMIQ3D: sería un salto más sin aportar nada, y el visor sigue funcionando sin el chat |
 
-## Producción
+El registro de conversaciones:
 
-La API corre en Vercel (plan Hobby) como funciones de Python, en el proyecto
-`simiq3d-backend` (región `cle1`, junto a Neon). La base es Neon (proyecto
-`simiq3d`, PostgreSQL 18, Ohio), aparte de la de DataIQ. El modelo de lenguaje
-está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.md).
-
-- **Despliegue:** en GitHub Actions (`.github/workflows/simiq3d-backend.yml`),
-  cada PR corre el estilo y las pruebas; cada push a `main` despliega en Vercel
-  con el CLI y publica la imagen en `ghcr.io/curn-iq/simiq3d-backend`.
-- **Variables de entorno del proyecto en Vercel:**
-
-  | Variable | Valor |
-  |---|---|
-  | `DATABASE_URL` (secreta) | La cadena directa de Neon, con `postgresql+asyncpg://` y `?ssl=require` en vez de `?sslmode=require&channel_binding=require` |
-  | `DATABASE_POOL`, `SQL_ECHO` | `false` |
-  | `DATAIQ_URL` | `https://dataiq-backend.vercel.app` |
-  | `LANGUAGE_MODEL`, `LLM_MODEL`, `LLM_TIMEOUT` | `ollama`, `qwen3-vl:8b-instruct`, `60` |
-  | `LLM_URL` | La dirección de Tailscale Funnel del Servidor PC2 |
-  | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
-  | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
-  | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
-  | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `60`, `30`, `600` (los valores por defecto) |
-  | `LLM_TEMPERATURE` | `0.3` (el valor por defecto) |
-
-  Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
-  carpeta.
-
-- **Migraciones en Neon:** desde un computador, con `DATABASE_URL` apuntando a
-  Neon solo en esa terminal:
-
-  ```fish
-  read -s -x -P "Cadena de Neon: " DATABASE_URL
-  uv run alembic upgrade head
-  ```
-
-- **El frontend** llega al backend por el rewrite `/api/simiq3d/*` →
-  `https://simiq3d-backend.vercel.app/*` de su proyecto de Vercel, para que la
-  cookie de sesión sea del mismo origen.
+- **Sin datos de quién pregunta**: no guarda la cuenta ni nada que identifique
+  a la persona.
+- Está encendido mientras dura el proyecto: mide la exactitud con preguntas reales, no solo con las de las
+  sesiones de evaluación. En la prueba piloto, los participantes además dan su
+  consentimiento informado (Resolución 8430 de 1993).
+- Al cerrar la evaluación sumativa se exporta lo que necesita el informe, se
+  borra y se apaga (`CHAT_LOG_ENABLED=false`): los datos se guardan solo
+  mientras sirven a su finalidad (Decreto 1377 de 2013, art. 11). Se vuelve a
+  encender solo si la política declara una finalidad nueva.
+- La pregunta es texto libre y podría traer datos de un paciente, que son
+  datos sensibles (Ley 1581 de 2012, art. 5). Por eso el frontend avisa bajo el
+  campo del chat: «Tus preguntas se guardan sin tu nombre para medir el chat.
+  No escribas datos de pacientes».
+- El [aviso de privacidad](../../docs/privacidad.md) lo declara, con su
+  finalidad (Ley 1581 de 2012): es condición para abrir la plataforma a los
+  estudiantes.
 
 ## Comandos
 
@@ -243,7 +189,7 @@ nombre no existe, no carga nada y dice cuál.
 
 [`eval/banco.csv`](eval/banco.csv) tiene las preguntas con que se mide la
 exactitud del chat (evaluación formativa: ver
-[`../README.md`](../README.md), «Cómo se evalúa»). Cada fila trae la
+[`../docs/decisiones.md`](../docs/decisiones.md#cómo-se-evalúa)). Cada fila trae la
 pregunta, la técnica abierta en el visor si la hay (`tecnica_abierta`), el
 tipo de pregunta (`tipo`: directa, sinónimo, paráfrasis, error de escritura,
 seguimiento, ambigua, fuera de alcance, intento de desviarlo, varias cosas en
@@ -308,6 +254,46 @@ calificación compara nombres, números y palabras, no el sentido: una respuesta
 que la calificación da por buena puede tener una afirmación falsa, y por eso se
 revisa el detalle.
 
+## Despliegue
+
+La API corre en Vercel (plan Hobby) como funciones de Python, en el proyecto
+`simiq3d-backend` (región `cle1`, junto a Neon). La base es Neon (proyecto
+`simiq3d`, PostgreSQL 18, Ohio), aparte de la de DataIQ. El modelo de lenguaje
+está en el Servidor PC2: [`../servidor-pc2/README.md`](../servidor-pc2/README.md).
+
+- **Despliegue:** en GitHub Actions (`.github/workflows/simiq3d-backend.yml`),
+  cada PR corre el estilo y las pruebas; cada push a `main` despliega en Vercel
+  con el CLI y publica la imagen en `ghcr.io/curn-iq/simiq3d-backend`.
+- **Variables de entorno del proyecto en Vercel:**
+
+  | Variable | Valor |
+  |---|---|
+  | `DATABASE_URL` (secreta) | La cadena directa de Neon, con `postgresql+asyncpg://` y `?ssl=require` en vez de `?sslmode=require&channel_binding=require` |
+  | `DATABASE_POOL`, `SQL_ECHO` | `false` |
+  | `DATAIQ_URL` | `https://dataiq-backend.vercel.app` |
+  | `LANGUAGE_MODEL`, `LLM_MODEL`, `LLM_TIMEOUT` | `ollama`, `qwen3-vl:8b-instruct`, `60` |
+  | `LLM_URL` | La dirección de Tailscale Funnel del Servidor PC2 |
+  | `LLM_API_KEY` (secreta) | La clave del filtro del Servidor PC2 |
+  | `CHAT_LOG_ENABLED` | `true` (el valor por defecto) |
+  | `CHAT_QUOTA_SECRET` (secreta) | La clave del tope de preguntas por cuenta |
+  | `LLM_DEADLINE`, `CHAT_QUOTA_MAX`, `CHAT_QUOTA_WINDOW` | `60`, `30`, `600` (los valores por defecto) |
+  | `LLM_TEMPERATURE` | `0.3` (el valor por defecto) |
+
+  Se agregan con `npx vercel@64.0.2 env add <NOMBRE> production` desde esta
+  carpeta.
+
+- **Migraciones en Neon:** desde un computador, con `DATABASE_URL` apuntando a
+  Neon solo en esa terminal:
+
+  ```fish
+  read -s -x -P "Cadena de Neon: " DATABASE_URL
+  uv run alembic upgrade head
+  ```
+
+- **El frontend** llega al backend por el rewrite `/api/simiq3d/*` →
+  `https://simiq3d-backend.vercel.app/*` de su proyecto de Vercel, para que la
+  cookie de sesión sea del mismo origen.
+
 ## Estructura
 
 ```
@@ -323,3 +309,11 @@ eval/               banco de preguntas del chat
 migrations/         Alembic
 tests/              dominio, adaptadores y API
 ```
+
+## Más documentación
+
+- Qué es SIMIQ3D: [`../README.md`](../README.md).
+- El chat, sus límites y cómo responde: [`../docs/chat.md`](../docs/chat.md).
+- Esquema de la base: [`../docs/esquema.dbml`](../docs/esquema.dbml).
+- El servidor del modelo de lenguaje: [`../servidor-pc2/README.md`](../servidor-pc2/README.md).
+- Avance: [`../docs/checklist-backend.md`](../docs/checklist-backend.md).

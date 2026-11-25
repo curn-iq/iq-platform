@@ -54,7 +54,7 @@ function pathBetween(from: EditorCell, to: EditorCell): { d: string; length: num
  * la que salió cada pieza movida, modificada o quitada; en la propuesta, un anillo `marca` donde
  * está ahora la pieza movida, modificada o agregada, el fantasma punteado de su origen y un
  * trayecto con punta, que reposa tenue y se traza al señalar el cambio. Ver «Versiones por
- * revisar (página)» en `DESIGN.md`.
+ * revisar (página)» en `design/README.md`.
  */
 @Component({
   selector: 'app-table-marks',

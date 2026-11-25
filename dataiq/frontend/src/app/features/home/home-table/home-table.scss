@@ -1,5 +1,5 @@
 // La mesa de ejemplo del inicio: las piezas de acero, su número y las detecciones de
-// la cámara. Ver «Escenario de la mesa» en DESIGN.md. El paño verde (la funda) lo pone
+// la cámara. Ver «Escenario de la mesa» en design/README.md. El paño verde (la funda) lo pone
 // quien la usa.
 
 :host {
@@ -65,7 +65,7 @@ svg {
   stroke-dasharray: 7 6;
 }
 
-// «Pieza de acero» de DESIGN.md: doble sombra; al marcarla sube y se despega. En 3D las
+// «Pieza de acero» de design/README.md: doble sombra; al marcarla sube y se despega. En 3D las
 // piezas se agrandan para seguir legibles sobre la funda inclinada.
 .shape {
   filter: drop-shadow(0 2px 1.4px rgba(3, 20, 28, 0.6)) drop-shadow(0 6px 8px rgba(3, 20, 28, 0.22));
@@ -132,7 +132,7 @@ svg {
 }
 
 // ---------- Detecciones de la cámara ----------
-// La menta y el rojo viven solo aquí (ver «The Dos Acentos Cautivos Rule» en DESIGN.md).
+// La menta y el rojo viven solo aquí (ver «The Dos Acentos Cautivos Rule» en design/README.md).
 
 .detections {
   opacity: 0;

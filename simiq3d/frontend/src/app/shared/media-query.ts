@@ -18,7 +18,7 @@ export function mediaQuery(query: string): Signal<boolean> {
 }
 
 /**
- * Celular: el punto de corte de 820 px de SIMIQ3D («SIMIQ3D: explorar en 3D» en `DESIGN.md`).
+ * Celular: el punto de corte de 820 px de SIMIQ3D («SIMIQ3D: explorar en 3D» en `design/README.md`).
  * Un celular acostado (520 px de alto o menos) usa el diseño de escritorio, porque el panel
  * inferior le dejaría casi sin espacio a la mesa.
  */

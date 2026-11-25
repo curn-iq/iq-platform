@@ -22,7 +22,7 @@ export const CONFIRMATION_MS = 3200;
 /**
  * Los avisos en pantalla, abajo al centro. El error es neutro (nunca rojo) y
  * se queda hasta que se cierra; la confirmación es oscura y se va sola. Ver
- * «Avisos» en `DESIGN.md`. No sabe de dónde vienen: recibe la lista y avisa con
+ * «Avisos» en `design/README.md`. No sabe de dónde vienen: recibe la lista y avisa con
  * `dismissed` cuál quitar.
  */
 @Component({

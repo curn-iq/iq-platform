@@ -29,7 +29,7 @@ export function macroParts(item: TableItem | null): readonly Part[] {
  * (referencia), lo que se puede hacer con la escena (3D), o la pieza que la
  * cámara dice que hay que mover (cámara). No muestra el texto crudo de la
  * fuente: la web no habla de dónde salen los datos (ver «Escenario de la mesa»
- * en `DESIGN.md`).
+ * en `design/README.md`).
  */
 @Component({
   selector: 'app-stage-rail',
