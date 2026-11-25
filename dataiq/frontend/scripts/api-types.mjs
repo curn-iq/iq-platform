@@ -29,7 +29,7 @@ const env = {
 function run(command, args, options) {
   const result = spawnSync(command, args, { stdio: 'inherit', env, ...options });
   if (result.error?.code === 'ENOENT') {
-    console.error(`No se encontró «${command}». Hace falta instalarlo (ver dataiq/README.md).`);
+    console.error(`No se encontró «${command}». Hace falta instalarlo (ver dataiq/backend/README.md).`);
     process.exit(1);
   }
   if (result.status !== 0) process.exit(result.status ?? 1);

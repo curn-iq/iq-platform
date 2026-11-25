@@ -5,8 +5,9 @@ paths:
 
 # SIMIQ3D
 
-Qué es y por qué está hecho así: `simiq3d/README.md`. Backend:
-`simiq3d/backend/README.md`. Modelos 3D: `simiq3d/models/README.md`.
+Qué es: `simiq3d/README.md`. Por qué está hecho así: `simiq3d/docs/decisiones.md`
+y `simiq3d/docs/chat.md`. Backend: `simiq3d/backend/README.md`. Modelos 3D:
+`simiq3d/models/README.md`.
 
 - **Alcance del MVP:** la mesa de Mayo de las cinco técnicas de Cirugía
   General de DataIQ, sin tiempos quirúrgicos (DataIQ no los tiene: el chat no

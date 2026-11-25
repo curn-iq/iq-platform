@@ -1,6 +1,6 @@
 /**
  * Lo que se manda al backend: el cuadro completo del video (sin recortar), reducido, como
- * JPEG. Medido en el Servidor PC1 por Tailscale Funnel (`sivri/backend/README.md`, «Tamaño del
+ * JPEG. Medido en el Servidor PC1 por Tailscale Funnel (`sivri/docs/diagnosticos.md`, «Tamaño del
  * cuadro por Funnel»): a 640 px de lado mayor y calidad 0,75, un cuadro pesa unos 45 kB y la
  * respuesta tarda una mediana de 248 ms; a 960 px pesa el doble y tarda más.
  */

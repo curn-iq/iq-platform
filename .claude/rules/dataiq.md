@@ -6,7 +6,7 @@ paths:
 
 # DataIQ: backend, esquema y catálogo
 
-Cómo se corre y cómo lo usa el frontend: `dataiq/README.md`. Avance y reglas
+Cómo se corre y cómo lo usa el frontend: `dataiq/backend/README.md`; el catálogo, `dataiq/docs/catalogo.md`. Avance y reglas
 de cada ruta (quién puede qué): `dataiq/docs/checklist-backend.md`; la
 documentación interactiva de la API está en `/docs`.
 

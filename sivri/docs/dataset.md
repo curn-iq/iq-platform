@@ -10,8 +10,7 @@ Las imágenes no se guardan en el repo.
 
 Todas las imágenes son propias: fotos de las mesas de Mayo de Cirugía General
 tomadas por el programa de Instrumentación Quirúrgica con su instrumental, sobre
-su mesa real. El equipo de ING las etiqueta. Se prevé publicar el dataset en Kaggle
-(decidido por Mauricio el 2026-10-13), así el proyecto controla las imágenes,
+su mesa real. El equipo de ING las etiqueta. Se prevé publicar el dataset en Kaggle, así el proyecto controla las imágenes,
 sus etiquetas y su división, y otros pueden reutilizarlo.
 
 Por qué propio y no un dataset público: el MVP se limita a cinco mesas, con un
@@ -20,7 +19,7 @@ todos ni distingue los parecidos (ver «Fuentes públicas revisadas»).
 
 ### Sesiones y división de los datos
 
-Decidido por Mauricio el 2026-10-13: **tres sesiones de fotos**, y la
+**Tres sesiones de fotos**, y la
 división se hace por sesión, nunca foto por foto (las fotos de una misma sesión
 son casi iguales entre sí; repartidas, el modelo «ya vio» la prueba y las
 métricas salen infladas):
@@ -155,11 +154,10 @@ dos veces** (unas 240 fotos de grupos en vez de 120). Con eso:
 ### Instrumentos de las cinco mesas de Mayo
 
 Los arreglos se documentan en
-[DataIQ](../../dataiq/README.md#mesas-de-mayo-de-cirugía-general). La lista
+[DataIQ](../../dataiq/docs/catalogo.md#mesas-de-mayo-de-cirugía-general). La lista
 ordenada de las 16 clases y su correspondencia con el catálogo está en
 [`classes.csv`](../backend/classes.csv). El 2026-11-21 se corrigieron los
-mangos en las 125 fotos, se ampliaron 79 cajas y, por decisión de Mauricio
-Lugo, se etiquetó cada pinza de disección por separado. El dataset tiene
+mangos en las 125 fotos, se ampliaron 79 cajas y se etiquetó cada pinza de disección por separado. El dataset tiene
 1487 cajas, incluidas 125 de disección con garra y 125 sin garra.
 
 ## Resultados del detector YOLO26n
@@ -189,7 +187,7 @@ a `sivri-r2` en la Ronda 3: más precisión, menos exhaustividad y el mismo
 mAP@0.5. Por clase, mejoraron la Kocher (AP@0.5 de 0,752 a 0,881) y el Senn
 Miller, y empeoraron la Moynihan (0,917 a 0,755) y la Kelly (0,666 a 0,632);
 las etiquetas de la Kelly de la Ronda 3 no se revisaron, así que esa
-comparación no es pareja. Mauricio Lugo decidió el 2026-11-23 mantener
+comparación no es pareja. Se decidió mantener
 `sivri-r2`. La validación de la Ronda 2 también cambió de etiquetas, por lo
 que tampoco es pareja.
 

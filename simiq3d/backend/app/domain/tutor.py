@@ -1,5 +1,5 @@
 """El chat tutor: el modelo de lenguaje conversa con el estudiante, con los datos
-de DataIQ de lo que se habla (README de SIMIQ3D, «Chat»; decidido por Mauricio el
+de DataIQ de lo que se habla (simiq3d/docs/chat.md; decidido por Mauricio el
 2026-11-03).
 
 El código decide de qué se habla (`app/domain/focus.py`), trae solo esos datos

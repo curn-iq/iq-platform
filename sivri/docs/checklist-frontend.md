@@ -18,7 +18,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 
 Mockups: sección «SIVRI · Mockups», ronda 2, del Figma del proyecto (archivo
 `jHEduZTQNBs4CCJEWB8u5v`), y «SIVRI: celular y computador (mockups)» en
-[`DESIGN.md`](../../DESIGN.md), que manda sobre cualquier otra sección para SIVRI.
+[`design/README.md`](../../design/README.md), que manda sobre cualquier otra sección para SIVRI.
 
 #### Base
 
@@ -61,7 +61,7 @@ Cada una con su prueba y su revisión visual a 390 y 1310 px contra su nodo del 
 - [x] Accesibilidad y movimiento: foco visible, orden de tabulación, lector de pantalla (el resultado se anuncia con `aria-live` cortés y sin repetirse en cada cuadro), objetivos táctiles de 44 px y `prefers-reduced-motion`; revisado con `web-design-guidelines` (enlace para saltar la barra, áreas seguras abajo, el ancla fuera de la barra, cifras tabulares y porcentaje con `Intl`)
 - [x] Peso: `npm run build` contra los presupuestos. Medido el 2026-11-22: código inicial de 339,8 kB (90,7 kB comprimido), con la barra compartida (la entrada, 8,5 kB, y la cámara, 44,7 kB, se cargan aparte); ningún componente pasa los 4 kB de estilo. Pasa el error de 500 kB y **avisa** a los 300 kB: la barra compartida más el router y `HttpClient` de Angular suman unos 140 kB crudos, así que el aviso de 300 kB no se puede cumplir sin quitar la barra (SIMIQ3D subió el suyo a 340 kB por lo mismo). Por confirmar: subir el aviso a 350 kB
 - [x] Despliegue, como SIMIQ3D: `vercel.json` con la ruta `/sivri/:path*`, CSP con `connect-src 'self'` más las direcciones `https://` y `wss://` del backend, y `Permissions-Policy: camera=(self)`; `.github/workflows/sivri-frontend.yml` (build y pruebas en cada PR, despliegue en `main`, con `shared/shell/**` y `shared/design/**` en sus rutas). Los rewrites del shell quedan en «Dependencias de otros»
-- [x] `README.md` del frontend, `DESIGN.md` con lo nuevo que se decida y `CLAUDE.md` al día en la misma rama
+- [x] `README.md` del frontend, `design/README.md` con lo nuevo que se decida y `CLAUDE.md` al día en la misma rama
 
 ### Dependencias de otros
 
@@ -76,7 +76,7 @@ Lo que no es de esta fase pero la limita.
 ## Resuelto
 
 Decidido por Juan el 2026-11-22. Lo visual está también en
-[`DESIGN.md`](../../DESIGN.md), «SIVRI: celular y computador (mockups)».
+[`design/README.md`](../../design/README.md), «SIVRI: celular y computador (mockups)».
 
 | # | Qué faltaba | Cómo quedó |
 |---|---|---|

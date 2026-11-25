@@ -17,7 +17,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Servido bajo `/simiq3d/` (`baseHref`), puerto 4300 y `proxy.conf.json` hacia DataIQ (8000) y SIMIQ3D (8001)
 - [x] Presupuesto estricto: código inicial con aviso a los 300 KB y error a los 500 KB
 - [x] `index.html` en español
-- [x] `shared/design/` en la raíz del repo: tokens base de `DESIGN.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo creó el frontend de DataIQ
+- [x] `shared/design/` en la raíz del repo: tokens base de `design/README.md` (colores, tipografía, espaciado, movimiento) y estilos base, con `prefers-reduced-motion`. Lo creó el frontend de DataIQ
 - [x] `src/styles/theme.scss`: el tema de SIMIQ3D sobre esos tokens (el azul de quirófano en vez del verde de interfaz)
 - [x] Sin la página de ejemplo de la CLI de Angular
 - [x] Instalar `three` y sus tipos (0.187.0, versión fija); presupuesto aparte para el chunk del visor: cada archivo de código, aviso a los 750 KB y error a los 900 KB (Three.js con lo que usa el visor mide 675 KB, 169 KB comprimido; medido el 2026-11-01)
@@ -46,7 +46,7 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 - [x] Medir en un celular modesto: tiempo hasta ver la mesa y cuadros por segundo al girar (dado por bueno por Mauricio el 2026-11-13)
 
 - [x] Orientar la mesa en vertical según las fotos de IQ y comprobar que el
-  visor conserva los objetos de varias celdas (ver [diseño](../../DESIGN.md#escena-3d-de-simiq3d-material)).
+  visor conserva los objetos de varias celdas (ver [diseño](../../design/README.md#escena-3d-de-simiq3d-material)).
 
 - [x] Verificar que el sitio de producción sirve la compilación con la mesa
   de Mayo en vertical (2026-11-19,
@@ -54,13 +54,13 @@ y se ve bien a 390 px (celular, lo principal) y a 1310 px.
 
 ### Fase 3 — Mockups
 
-Con el método de [`.claude/rules/diseno.md`](../../.claude/rules/diseno.md);
-toda decisión visual nueva va a `DESIGN.md`.
+Con el método de diseño de entonces (mockups en HTML);
+toda decisión visual nueva va a `design/README.md`.
 
-El mockup es [`diseno/mockups/simiq3d.html`](../../diseno/mockups/simiq3d.html)
+El mockup era `simiq3d.html`, publicado en el [Artifact de los mockups](https://claude.ai/artifact/C6U12G8i7EMtfREt8YnTiK)
 (decidido por Mauricio el 2026-10-20), y su diseño, «SIMIQ3D: explorar en 3D»
-y sus componentes en `DESIGN.md`. El mockup es anterior al backend: donde no
-coinciden, manda `DESIGN.md`, que ya está al día (filas y columnas, acciones
+y sus componentes en `design/README.md`. El mockup es anterior al backend: donde no
+coinciden, manda `design/README.md`, que ya está al día (filas y columnas, acciones
 del chat, descripciones con fuente).
 
 - [x] Pantalla de exploración en celular (390 px): cómo conviven el chat y la escena
@@ -102,12 +102,12 @@ Contra `POST /chat` del backend de SIMIQ3D (README, «El chat»).
 ### Rediseño «Quirófano ligero»
 
 Decidido por Mauricio el 2026-11-05: se rediseña todo el frontend, directo en la
-app y sin mockup (`.claude/rules/diseno.md`; `DESIGN.md`, «SIMIQ3D: Quirófano
+app y sin mockup (`design/README.md`, «SIMIQ3D: Quirófano
 ligero»). Pasaron por lo hecho, una por una, las cinco skills del proyecto
 (`angular-developer`, `responsive-design`, `threejs`, `frontend-design` y
 `web-design-guidelines`, esta dos veces).
 
-- [x] La dirección documentada en `DESIGN.md` antes de programarla, y los tokens de SIMIQ3D (`--sim-*`) en `src/styles/theme.scss`, sin tocar los compartidos con DataIQ
+- [x] La dirección documentada en `design/README.md` antes de programarla, y los tokens de SIMIQ3D (`--sim-*`) en `src/styles/theme.scss`, sin tocar los compartidos con DataIQ
 - [x] La mesa a pantalla completa y el chat como dock de vidrio flotante, con ancho ajustable de 340 a 560 px; la mesa se encuadra en lo que dejan libre el dock, la cabeza, la leyenda y los controles
 - [x] Escritorio compacto (821 a 1199 px): dock de 340 px, leyenda plegada y sin pista de gestos
 - [x] Celular: el chat como panel inferior de tres alturas (asomado, medio y completo), con asa operable por toque, arrastre y teclado, la conversación asomada fuera de alcance (`inert`), `viewport-fit=cover` y áreas seguras
@@ -160,8 +160,8 @@ Nada por ahora.
 | 2 | El contrato del chat no existía: qué recibe y qué devuelve | `POST /chat` recibe la pregunta y la técnica abierta, y devuelve la acción, sus ids, el texto y las opciones; las ocho acciones y qué hace el visor con cada una, en el README («El chat»). Contrato decidido por Mauricio el 2026-10-20; desde el 2026-10-27 el chat es un agente que redacta el texto con lo que consulta en DataIQ, y desde el 2026-11-03 el modelo entiende la pregunta, DataIQ responde cada pedido y el modelo redacta solo con esos datos; el contrato suma `previous` (las preguntas anteriores) y `requests` (lo que se entendió) ([`../README.md`](../README.md), «Chat») |
 | 3 | Si el mapeo modelo → instrumento podía ser un archivo estático en vez de una ruta | Una ruta, `GET /models`, sobre la tabla `model_mappings` de la base de SIMIQ3D, que se carga desde `simiq3d/models/modelos.csv` (lo decidido) |
 | 4 | Conversación con contexto («¿y dónde va la Kelly?» después de abrir una técnica) | El frontend manda la técnica abierta (`technique_id`) junto con la pregunta |
-| 5 | El mockup tenía un selector de escala («a la celda», «escala real»), pero lo decidido es que los instrumentos van a escala real | Solo escala real, sin selector (decidido por Mauricio el 2026-11-01); `DESIGN.md` al día |
-| 6 | El mockup dejaba ver la cuadrícula sobre la mesa y pintaba la celda de la pieza señalada, una cuadrícula que la mesa real no tiene | Sin rejilla ni celda pintada: la pieza señalada se levanta y se tiñe, con su número (decidido por Mauricio el 2026-11-01); `DESIGN.md` y `shared/design/tokens.css` sin `rejilla-escena`, `celda-escena` ni `celda-quirofano` |
+| 5 | El mockup tenía un selector de escala («a la celda», «escala real»), pero lo decidido es que los instrumentos van a escala real | Solo escala real, sin selector (decidido por Mauricio el 2026-11-01); `design/README.md` al día |
+| 6 | El mockup dejaba ver la cuadrícula sobre la mesa y pintaba la celda de la pieza señalada, una cuadrícula que la mesa real no tiene | Sin rejilla ni celda pintada: la pieza señalada se levanta y se tiñe, con su número (decidido por Mauricio el 2026-11-01); `design/README.md` y `shared/design/tokens.css` sin `rejilla-escena`, `celda-escena` ni `celda-quirofano` |
 | 7 | El estado «Conectado» del chat: `GET /health` del backend no mira el Servidor PC2, así que solo se sabe si el chat responde al preguntar | Sin estado al entrar; «No disponible» después de un 503, hasta la siguiente respuesta (decidido por Mauricio el 2026-11-01) |
 
 ## Revisión de las mesas de Mayo de Cirugía General

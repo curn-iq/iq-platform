@@ -2,7 +2,7 @@ import { ComponentPlacement, itemCenter, MayoTable } from './mayo-table';
 
 /**
  * Cómo se arma cada objeto de la mesa en la escena: qué modelos 3D lleva y
- * dónde va su centro (`simiq3d/README.md`, «Cómo se arma la mesa en 3D»).
+ * dónde va su centro (`simiq3d/docs/frontend.md`, «Cómo se arma la mesa en 3D»).
  */
 
 /** Un modelo 3D de un objeto. */

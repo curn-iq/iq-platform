@@ -60,8 +60,8 @@ class Config(BaseSettings):
     chat_quota_window: int = 600
 
     # Registro anónimo de conversaciones: encendido mientras dura el proyecto; al
-    # cerrar la evaluación se exporta, se borra y se apaga (ver el README de
-    # SIMIQ3D, «Backend y base de datos»).
+    # cerrar la evaluación se exporta, se borra y se apaga (ver
+    # simiq3d/backend/README.md, «Qué guarda»).
     chat_log_enabled: bool = True
 
     @property

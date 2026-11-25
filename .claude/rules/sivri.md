@@ -5,8 +5,8 @@ paths:
 
 # SIVRI
 
-Qué es, qué valida y cómo: `sivri/README.md`. Dataset y protocolo de fotos:
-`sivri/docs/dataset.md`.
+Qué es: `sivri/README.md`. Qué valida y cómo: `sivri/docs/validacion.md`. Dataset
+y protocolo de fotos: `sivri/docs/dataset.md`. El servidor: `sivri/servidor-pc1/README.md`.
 
 - **Licencia AGPL-3.0** (depende de Ultralytics): el código de `sivri/` no va
   en las partes MIT del repo. Puede usar código MIT del repo.

@@ -1,6 +1,6 @@
 /**
  * La mesa de Mayo de una técnica y dónde va cada objeto sobre ella, en metros.
- * La regla está en `simiq3d/README.md`, «Cómo se arma la mesa en 3D»: la
+ * La regla está en `simiq3d/docs/frontend.md`, «Cómo se arma la mesa en 3D»: la
  * cuadrícula de DataIQ se reparte en partes iguales sobre la mesa y cada objeto
  * va con su centro en el centro de sus celdas. Es la misma regla de SIVRI.
  *
