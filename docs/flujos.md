@@ -38,7 +38,7 @@ flowchart LR
 | Crear y editar instrumental | | | | ✔ | ✔ |
 | Gestionar roles | | | | | ✔ |
 
-Decidido por Mauricio el 2026-10-04 (con los cambios del 2026-10-06). El
+El
 software sirve a cualquier persona: estudiantes de cualquier institución, o
 alguien sin institución. El riesgo que se controla no es la lectura sino la
 **publicación** de técnicas incorrectas:

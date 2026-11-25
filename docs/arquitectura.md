@@ -2,13 +2,13 @@
 
 Diagramas del ecosistema, con el [modelo C4](https://c4model.com/): cada uno
 es de un solo tipo y se entiende sin leer el texto. Son SVG en
-[`diagramas/`](diagramas/): se editan como texto, se actualizan en el mismo PR
+[`diagrams/`](diagrams/): se editan como texto, se actualizan en el mismo PR
 que cambia lo que muestran y se pueden pegar tal cual como figuras en el
 Formato 115.
 
 ## Contenedores
 
-![Diagrama de contenedores de IQ Platform](diagramas/contenedores.svg)
+![Diagrama de contenedores de IQ Platform](diagrams/contenedores.svg)
 
 Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 
@@ -32,7 +32,7 @@ Qué piezas tiene el sistema y cómo se comunican, sin importar dónde corren:
 
 ## Despliegue
 
-![Diagrama de despliegue de IQ Platform](diagramas/despliegue.svg)
+![Diagrama de despliegue de IQ Platform](diagrams/despliegue.svg)
 
 Dónde corre cada pieza en producción y cómo llega ahí:
 
@@ -50,7 +50,7 @@ Dónde corre cada pieza en producción y cómo llega ahí:
 - **El backend de SIVRI** corre en el **Servidor PC1**, el PC de Mauricio.
   Tailscale Funnel le da una dirección HTTPS y reenvía los cuadros; el
   servidor pide el catálogo a DataIQ. Las unidades y el entorno de la vista
-  previa se documentan en el [README de SIVRI](../sivri/backend/README.md#vista-previa-en-pc1).
+  previa se documentan en el [README del Servidor PC1](../sivri/servidor-pc1/README.md).
 - **El modelo de lenguaje de SIMIQ3D** corre con Ollama en el **Servidor
   PC2**, un PC de escritorio con GPU, detrás de Tailscale Funnel y de un
   filtro con clave. Si el Servidor PC2 se apaga, solo deja de funcionar el
@@ -63,7 +63,7 @@ Dónde corre cada pieza en producción y cómo llega ahí:
 
 ## Por qué así
 
-Decidido por Mauricio el 2026-10-14: solo servicios gratuitos que no exigen
+Solo servicios gratuitos que no exigen
 tarjeta de crédito, porque el equipo no dispone de recursos para prepagar un
 servicio en la nube. Límites verificados en la documentación oficial de cada
 proveedor en octubre de 2026.
@@ -71,9 +71,9 @@ proveedor en octubre de 2026.
 | Pieza | Servicio | Por qué y con qué límites |
 |---|---|---|
 | Backends de DataIQ y SIMIQ3D | Vercel Hobby, funciones de Python (región `cle1`, junto a Neon) | Cupo mensual de la cuenta: 4 horas de CPU activa (la espera por la base de datos no cuenta), 1 millón de invocaciones y 100 GB de transferencia. Escala a cero; el arranque en frío tarda segundos. Con `DATABASE_POOL=false`, cada función abre y cierra su conexión para no acumular conexiones en Neon. Hobby es solo para uso no comercial (un proyecto de grado cumple) y de una sola persona: los proyectos están en la cuenta de Mauricio, salvo el frontend de SIVRI |
-| Frontends | Vercel Hobby (100 GB de transferencia al mes, que comparten los rewrites hacia las APIs) | Hobby no conecta un proyecto a un repositorio de una organización de GitHub: se despliega con el CLI de Vercel desde GitHub Actions, con el secreto `VERCEL_TOKEN`. El frontend de SIVRI (`sivri-frontend`) está en la cuenta de Juan, con su propio secreto `VERCEL_TOKEN_SIVRI` (decidido por Juan el 2026-11-23): es un sitio estático, los cuadros van directo al Servidor PC1 y no pasan por Vercel, y así ningún token se comparte entre módulos |
+| Frontends | Vercel Hobby (100 GB de transferencia al mes, que comparten los rewrites hacia las APIs) | Hobby no conecta un proyecto a un repositorio de una organización de GitHub: se despliega con el CLI de Vercel desde GitHub Actions, con el secreto `VERCEL_TOKEN`. El frontend de SIVRI (`sivri-frontend`) está en la cuenta de Juan, con su propio secreto `VERCEL_TOKEN_SIVRI`: es un sitio estático, los cuadros van directo al Servidor PC1 y no pasan por Vercel, y así ningún token se comparte entre módulos |
 | Bases de datos | Neon Free, un proyecto por módulo (región `aws-us-east-2`, Ohio: no hay región en Sudamérica) | 0,5 GB de almacenamiento, 100 CU-hora y 5 GB de transferencia al mes por proyecto, con scale-to-zero. Al pasar el plan no se cobra: el cómputo se suspende hasta el ciclo siguiente, y por encima de 0,5 GB fallan las escrituras |
-| Backend de SIVRI | Servidor PC1: el PC de escritorio de Mauricio (decidido por Mauricio el 2026-11-18), con su PostgreSQL 18 en un contenedor local y, para llegar desde el celular, Tailscale Funnel (dirección HTTPS fija `*.ts.net`, plan gratuito) | SIVRI se usa en sesiones de laboratorio, y ningún servicio gratuito sin tarjeta ofrece CPU sostenida para YOLO. Detalle: [`sivri/docs/checklist.md`](../sivri/docs/checklist.md) |
+| Backend de SIVRI | Servidor PC1: el PC de escritorio de Mauricio, con su PostgreSQL 18 en un contenedor local y, para llegar desde el celular, Tailscale Funnel (dirección HTTPS fija `*.ts.net`, plan gratuito) | SIVRI se usa en sesiones de laboratorio, y ningún servicio gratuito sin tarjeta ofrece CPU sostenida para YOLO. Detalle: [`sivri/docs/checklist.md`](../sivri/docs/checklist.md) |
 | Modelo de lenguaje de SIMIQ3D | Servidor PC2: un PC de escritorio con GPU, con Ollama y Tailscale Funnel, detrás de un filtro con clave | Si el Servidor PC2 se apaga, solo deja de funcionar el chat. Detalle: [`simiq3d/servidor-pc2/README.md`](../simiq3d/servidor-pc2/README.md) |
 | Imagen del backend de DataIQ | GitHub Container Registry (ghcr.io), pública | Vercel no la usa; sirve para correr el backend fuera de Vercel |
 | CI/CD | GitHub Actions | En cada PR, estilo y pruebas; en cada push a `main`, despliegue a Vercel e imagen a ghcr.io. No hay rama `dev`: `main` es producción y nada entra sin PR y CI. Las previews por PR, con una rama `dev` de la base en Neon, se agregan cuando haya usuarios que proteger |
@@ -92,7 +92,7 @@ Se descartaron:
 
 ## Límite de intentos de autenticación
 
-Decidido por Mauricio Lugo el 2026-11-01, para cumplir el nivel 1 de
+Para cumplir el nivel 1 de
 [OWASP ASVS 5.0](https://github.com/OWASP/ASVS/blob/master/5.0/en/0x15-V6-Authentication.md)
 en autenticación: el requisito 6.1.1 pide documentar cómo se frena la prueba
 masiva de contraseñas y cómo eso evita bloquear la cuenta de otra persona, y

@@ -76,7 +76,7 @@ equipo, y a una cuenta se le quitan permisos bajándole el rol a `usuario`.
 
 ## SIVRI y SIMIQ3D con fuentes propias
 
-Decidido por Mauricio el 2026-10-30: el semestre siguiente al MVP (la fase
+El semestre siguiente al MVP (la fase
 preliminar, ver el [README](../README.md)), SIVRI y SIMIQ3D se rehacen con
 fuentes propias.
 
@@ -89,7 +89,7 @@ fuentes propias.
   todas las técnicas.
 - **El ángulo real de cada instrumento.** En el MVP, DataIQ guarda el giro
   medido en la foto «Bien armada» de cada técnica y el visor lo ajusta al eje
-  cardinal más cercano (decidido por Mauricio el 2026-11-21).
+  cardinal más cercano.
 
 ## SIVRI
 
@@ -106,8 +106,7 @@ fuentes propias.
   pertenece cada objeto ni en qué orden se usa. Hace falta el dato, con su
   fuente, en la base y la API de DataIQ; las consultas del chat y sus
   preguntas en el banco, y el frontend de SIMIQ3D. Queda fuera del MVP
-  (decidido por Mauricio el 2026-11-02, [`simiq3d/README.md`](../simiq3d/README.md),
-  «Alcance del MVP»).
+  ([`simiq3d/docs/decisiones.md`](../simiq3d/docs/decisiones.md#alcance-del-mvp)).
 - **Un modelo de lenguaje más grande** que Qwen3-VL 8B, el del MVP: necesita
   una GPU con más memoria que los 8 GB de la RX 6600 XT del Servidor PC2.
   Se elige con el mismo banco de preguntas, para comparar la exactitud y la
@@ -117,8 +116,7 @@ fuentes propias.
   mostrarla, como el que hoy mide el banco. Suma una llamada al modelo por
   respuesta; con un modelo mayor o un servicio de detección de contenido sin
   respaldo (los de Microsoft y Google son pagos), cabe en el tiempo de
-  espera (decidido por Mauricio el 2026-11-03, [`simiq3d/README.md`](../simiq3d/README.md),
-  «Chat»).
+  espera ([`simiq3d/docs/chat.md`](../simiq3d/docs/chat.md)).
 - **Un juez distinto del modelo del chat** para el banco de preguntas: el mismo
   modelo puede preferir lo que él escribe. Solo con un servicio gratis y sin
   tarjeta de crédito ([`docs/arquitectura.md`](arquitectura.md)).
@@ -128,10 +126,10 @@ fuentes propias.
 - **Usarlo sin conexión** (PWA con service worker): precargar la app y los
   modelos, e instalarla en el celular. En el MVP basta la caché HTTP, que
   guarda la app y los modelos después de la primera visita; el chat necesita
-  conexión de todas formas (decidido por Juan el 2026-10-15).
+  conexión de todas formas.
 
 Formas de evaluarlo que van más allá de lo que pide el MVP (revisadas el
-2026-10-15; lo del MVP está en [`simiq3d/README.md`](../simiq3d/README.md)):
+2026-10-15; lo del MVP está en [`simiq3d/docs/decisiones.md`](../simiq3d/docs/decisiones.md#cómo-se-evalúa)):
 
 - **Prueba de transferencia con SIVRI:** el estudiante explora en SIMIQ3D una
   mesa que nunca ha armado, la arma en la mesa real y SIVRI le da el puntaje.
@@ -140,7 +138,7 @@ Formas de evaluarlo que van más allá de lo que pide el MVP (revisadas el
 - **Juicio de expertos del cuestionario de pertinencia pedagógica**
   (anexo E.2 del Formato 115): docentes de IQ valoran cada ítem
   antes de aplicarlo. En el MVP el cuestionario se aplica como lo redactó el
-  equipo (decidido por Mauricio el 2026-11-23).
+  equipo.
 - **Índice de validez de contenido (I-CVI)** de los modelos 3D: de 3 a 5
   docentes califican de 1 a 4 la fidelidad de cada modelo; pasa con
   I-CVI ≥ 0,83 (Lynn, 1986; Polit y Beck, 2006).

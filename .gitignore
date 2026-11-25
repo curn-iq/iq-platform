@@ -16,11 +16,6 @@ __pycache__/
 .idea/
 .DS_Store
 
-# Impeccable: capturas y cachés de trabajo (se regeneran)
-.impeccable/review/
-.impeccable/questions/
-.impeccable/hook.cache.json
-.impeccable/mocks/decision/*.png
 
 # Vínculo local con el proyecto de Vercel (lo crea `vercel link`)
 .vercel/
