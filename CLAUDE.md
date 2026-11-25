@@ -139,11 +139,13 @@ Cada tipo de información tiene un solo lugar (decidido por Mauricio el
 | Producto y diseño visual | [`PRODUCT.md`](PRODUCT.md) y [`DESIGN.md`](DESIGN.md) |
 | Avance | Las checklists (ver «Convenciones») |
 | Qué cambió | Los [Releases](https://github.com/curn-iq/iq-platform/releases) de GitHub |
-| La tesis (Formato 115), entregas por corte y documentos fuente de IQ | Google Drive del proyecto, carpeta «Tesis ING-IQ - CURN» |
+| La tesis (Formato 115), entregas por corte, documentos fuente y fotos de IQ | Google Drive del proyecto, carpeta «Tesis ING/IQ - CURN»; su `README` dice qué hay en cada carpeta |
 
 El Drive no se modifica salvo pedido explícito de quien trabaja con el
-agente. Allí, `ENTREGABLES/` tiene las entregas por corte,
-`Modulo 2 - DataIQ/Documentos IQ/` los documentos fuente de las técnicas y
-`Modulo 2 - DataIQ/Recursos/Catalogo Instrumental/` el catálogo crudo y
-normalizado. El resto del Drive es histórico (como quedó al cerrar el Corte 2)
-y no se actualiza.
+agente. Sus carpetas (decidido por Mauricio el 2026-11-24): `01 - Entregables`
+(el Formato 115 de cada corte), `02 - Fuentes de IQ` (documentos de técnicas,
+fotos del laboratorio y listas de instrumental), `03 - Diseño` (planificación,
+stack y diagrama de la base de cada módulo), `04 - Datos y modelos` (catálogo,
+matriz de técnicas, banco de preguntas, dataset y pesos de SIVRI) y
+`05 - Marca y Web`. Lo de `03` y `04` son copias de lo del repositorio: si
+difieren, manda el repositorio.
