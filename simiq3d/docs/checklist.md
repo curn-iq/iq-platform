@@ -75,4 +75,4 @@ porqué están en el [README](../README.md).
 
 ## 6. Comunicación
 
-- [ ] Resultados de SIMIQ3D en el informe (Formato 115)
+- [x] Resultados de SIMIQ3D en el informe (Formato 115 del tercer corte)
