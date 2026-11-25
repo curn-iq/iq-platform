@@ -81,15 +81,15 @@ preliminar, ver el [README](../README.md)), SIVRI y SIMIQ3D se rehacen con
 fuentes propias.
 
 - **Fotos propias de todo el instrumental y de las técnicas**, con medidas
-  exactas. En el MVP, los modelos 3D salen de referencias de catálogo de
-  fabricantes y distribuidores.
+  exactas. En el MVP, los modelos 3D salen de las fotos de las mesas de Mayo
+  de Cirugía General tomadas en una sola visita al laboratorio (2026-11-18), y
+  su espesor se infiere.
 - **Medir la mesa de Mayo del laboratorio** (el área entre los marcadores
   ArUco). En el MVP, SIMIQ3D usa una mesa de tamaño provisional, la misma para
   todas las técnicas.
-- **Hacia dónde apunta cada instrumento**, según las fotos de las mesas bien
-  armadas: si todos siguen una misma regla, la regla vive en SIMIQ3D; si
-  cambia de un instrumento a otro, es parte del arreglo y va en DataIQ (cambio
-  de su esquema y de su editor). En el MVP, todos apuntan igual.
+- **El ángulo real de cada instrumento.** En el MVP, DataIQ guarda el giro
+  medido en la foto «Bien armada» de cada técnica y el visor lo ajusta al eje
+  cardinal más cercano (decidido por Mauricio el 2026-11-21).
 
 ## SIVRI
 

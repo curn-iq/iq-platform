@@ -118,8 +118,10 @@ filas sobre Z. Solo la mesa de Mayo (alcance del MVP).
   del nodo `blade_mount` del mango, sin moverla ni girarla
   ([`../models/README.md`](../models/README.md), «Mango y hoja»). Dos
   instrumentos independientes en la misma celda van uno al lado del otro.
-- **Todos apuntan igual**, a lo largo de X. Hacia dónde apunta cada uno es
-  para después del MVP.
+- **Posición y giro de DataIQ:** cada instrumento va con el centro y el giro
+  medidos en la foto que guarda DataIQ, con el giro ajustado al eje cardinal
+  más cercano (`domain/placement.ts`). El ángulo real de cada uno es para
+  después del MVP.
 - **Dentro de la mesa y sin taparse:** `domain/arrangement.ts` parte del
   centro de las celdas de cada objeto y lo corre lo justo para que quede
   entero sobre la mesa (a 1 cm del borde) y a 3 mm de cualquier otra pieza.

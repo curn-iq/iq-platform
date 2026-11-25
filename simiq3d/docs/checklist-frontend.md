@@ -138,7 +138,9 @@ backend de SIMIQ3D.
 Para el MVP, la mesa es de tamaño provisional y todos los instrumentos
 apuntan igual (decidido por Mauricio el 2026-10-30); medir la mesa y orientar
 cada instrumento es para después del MVP
-([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)).
+([`docs/despues-del-mvp.md`](../../docs/despues-del-mvp.md)). Desde el
+2026-11-21, cada instrumento va con la posición y el giro medidos que guarda
+DataIQ (decidido por Mauricio); la mesa sigue siendo provisional.
 
 - [x] La descripción de los 23 instrumentos en DataIQ (`instruments.description`, con su fuente en `description_source`)
 - [x] Los modelos 3D de las cinco mesas de Mayo de Cirugía General (`simiq3d/models/modelos.csv`), comprobado el 2026-11-02 contra DataIQ local: ningún instrumento sin modelo
