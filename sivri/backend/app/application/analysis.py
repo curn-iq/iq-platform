@@ -8,6 +8,7 @@ from uuid import UUID
 import cv2
 import numpy as np
 
+from app.application.image_header import image_size
 from app.domain.board import Board
 from app.domain.catalog import Catalog
 from app.domain.classes import ClassMap
@@ -51,17 +52,24 @@ class FrameAnalyzer:
         settings: ValidationSettings,
         max_side: int = 1280,
         board_padding: float = 0.10,
+        max_pixels: int = 25_000_000,
     ) -> None:
         self._detector = detector
         self._finder = finder
         self._settings = settings
         self._max_side = max_side
         self._board_padding = board_padding
+        self._max_pixels = max_pixels
 
     def decode(self, data: bytes) -> np.ndarray:
-        """Lee los bytes de una imagen (JPEG, PNG…) y la reduce si es muy grande."""
-        if not data:
+        """Lee los bytes de una imagen (JPEG o PNG) y la reduce si es muy grande.
+        El tamaño se lee del encabezado y se rechaza por píxeles antes de
+        decodificar: los bytes comprimidos no dicen cuánta memoria ocupará."""
+        size = image_size(data)
+        if size is None or 0 in size:
             raise InvalidImage("No se pudo leer la imagen")
+        if size[0] * size[1] > self._max_pixels:
+            raise InvalidImage("La imagen tiene demasiados píxeles")
         try:
             image = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
         except cv2.error as error:

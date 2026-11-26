@@ -138,7 +138,7 @@ async def validate_stream(
                 await _error(websocket, "too_large", number)
                 continue
             try:
-                image = analyzer.decode(data)
+                image = await asyncio.to_thread(analyzer.decode, data)
                 catalog = await catalogs.get(current.token)
                 classes = await class_maps.get()
                 analysis = await asyncio.to_thread(

@@ -107,7 +107,9 @@ avisan y la conexión sigue. Códigos de cierre: 4400 (falta el token), 4401
 1. **Token:** la página lo pide a DataIQ (`/api/dataiq/auth/module-token`, con la
    cookie y `X-IQ-Client: web`) y lo renueva antes de que venza.
 2. **Qué mandar:** el cuadro completo, en JPEG desde un `canvas`, uno por vez;
-   el servidor reduce el lado mayor a 1280 px (`MAX_IMAGE_SIDE`).
+   el servidor reduce el lado mayor a 1280 px (`MAX_IMAGE_SIDE`) y rechaza, antes
+   de decodificarla, la imagen de más de 25 millones de píxeles
+   (`MAX_IMAGE_PIXELS`).
 3. **Cómo dibujar:** todo viene en fracciones del cuadro mandado (0 a 1); con
    `frame_number` se dibuja sobre ese cuadro y no sobre el video de ahora.
 4. **Qué mostrar:** `message` tal cual. `move` (filas y columnas) es solo para
