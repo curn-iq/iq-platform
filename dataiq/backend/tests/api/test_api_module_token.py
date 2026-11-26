@@ -1,7 +1,7 @@
 import jwt
 import pytest
 
-from app.adapters.inbound.api.session import CSRF_HEADER
+from app.adapters.inbound.api.session import CSRF_HEADER, cookie_name
 from app.config import config
 from tests.conftest import auth_headers
 
@@ -61,3 +61,31 @@ async def test_a_bearer_token_alone_cannot_renew_itself(client, user):
     )
 
     assert response_.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_a_bearer_token_with_a_garbage_cookie_cannot_renew_itself(client, user):
+    client.cookies.set(cookie_name(), "basura")
+
+    response_ = await client.post(
+        "/auth/module-token", headers=WEB | auth_headers(user)
+    )
+
+    assert response_.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_the_identity_comes_from_the_cookie_not_from_the_bearer_token(
+    client, user
+):
+    await login(client)
+
+    response_ = await client.post(
+        "/auth/module-token", headers=WEB | auth_headers(user)
+    )
+
+    assert response_.status_code == 200
+    token = response_.json()["access_token"]
+    client.cookies.clear()
+    me = await client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert me.json()["email"] == ANA["email"]

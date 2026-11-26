@@ -27,10 +27,17 @@ from app.adapters.inbound.api.session import (
 )
 from app.config import config
 from app.domain.users import Account
-from app.ports.security import PasswordService
+from app.ports.security import InvalidToken, PasswordService
 from app.ports.users import UserRepository
 
 router = APIRouter(tags=["Cuenta"])
+
+
+def _session_required(detail: str) -> HTTPException:
+    return HTTPException(
+        status.HTTP_401_UNAUTHORIZED, detail, headers={"WWW-Authenticate": "Bearer"}
+    )
+
 
 # Si el correo no existe se verifica igual contra este hash, para que la
 # respuesta tarde lo mismo y no delate qué correos tienen cuenta.
@@ -122,21 +129,26 @@ async def logout(response: Response) -> None:
     dependencies=[Depends(require_csrf_header)],
 )
 async def issue_module_token(
-    request: Request, account: CurrentAccount, issuer: Issuer
+    request: Request, users: UserRepo, issuer: Issuer
 ) -> ModuleTokenOut:
     """Token corto para un módulo que corre en otro dominio (SIVRI): la cookie de
     sesión no viaja hasta allá, así que la página lo pide aquí con la cookie y
     lo manda en Authorization: Bearer. Dura pocos minutos y la página lo renueva
     antes de que venza. Es un JWT normal de DataIQ: el módulo lo valida con el
-    JWKS y lo reenvía a DataIQ para pedir el catálogo. Solo con la sesión del
-    navegador (cookie) y el encabezado X-IQ-Client: con un token no se puede
-    pedir otro, así que uno robado deja de servir en minutos."""
-    if session_token(request) is None:
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "Este token se pide con la sesión del navegador",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    JWKS y lo reenvía a DataIQ para pedir el catálogo. La cuenta sale solo de la
+    cookie de sesión (válida) y se exige el encabezado X-IQ-Client: un token en
+    Authorization se ignora aquí, así que uno robado no se puede renovar y deja
+    de servir en minutos."""
+    cookie = session_token(request)
+    if cookie is None:
+        raise _session_required("Este token se pide con la sesión del navegador")
+    try:
+        account_id = issuer.read_token(cookie)
+    except InvalidToken as error:
+        raise _session_required("La sesión del navegador no es válida") from error
+    account = await users.get(account_id)
+    if account is None:
+        raise _session_required("La cuenta ya no existe")
     lifetime = timedelta(minutes=config.module_token_minutes)
     return ModuleTokenOut(
         access_token=issuer.issue_token(account, lifetime),

@@ -449,9 +449,10 @@ export interface paths {
          *     sesión no viaja hasta allá, así que la página lo pide aquí con la cookie y
          *     lo manda en Authorization: Bearer. Dura pocos minutos y la página lo renueva
          *     antes de que venza. Es un JWT normal de DataIQ: el módulo lo valida con el
-         *     JWKS y lo reenvía a DataIQ para pedir el catálogo. Solo con la sesión del
-         *     navegador (cookie) y el encabezado X-IQ-Client: con un token no se puede
-         *     pedir otro, así que uno robado deja de servir en minutos.
+         *     JWKS y lo reenvía a DataIQ para pedir el catálogo. La cuenta sale solo de la
+         *     cookie de sesión (válida) y se exige el encabezado X-IQ-Client: un token en
+         *     Authorization se ignora aquí, así que uno robado no se puede renovar y deja
+         *     de servir en minutos.
          */
         post: operations["issue_module_token_auth_module_token_post"];
         delete?: never;
