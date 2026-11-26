@@ -87,10 +87,13 @@ class FakeDataIQ:
         self.requests: list[httpx.Request] = []
         self.status = 200
         self.etag = '"v1"'
+        self.denied: set[str] = set()
 
     def transport(self) -> httpx.MockTransport:
         def handle(request: httpx.Request) -> httpx.Response:
             self.requests.append(request)
+            if request.headers["authorization"].removeprefix("Bearer ") in self.denied:
+                return httpx.Response(401)
             if self.status != 200:
                 return httpx.Response(self.status)
             if request.headers.get("if-none-match") == self.etag:
@@ -152,7 +155,7 @@ async def test_within_the_max_age_it_does_not_ask_again(server):
     catalogs = source(server)
 
     await catalogs.get("a")
-    await catalogs.get("b")
+    await catalogs.get("a")
 
     assert len(server.requests) == 1
 
@@ -181,3 +184,47 @@ async def test_with_a_copy_it_keeps_answering_while_dataiq_is_down(server):
     server.status = 503
 
     assert await catalogs.get("a") is first
+
+
+@pytest.mark.anyio
+async def test_a_new_token_is_checked_with_dataiq_even_with_a_fresh_copy(server):
+    catalogs = source(server)
+
+    first = await catalogs.get("token-de-ana")
+    second = await catalogs.get("token-de-luis")
+
+    # La copia se comparte (no se vuelve a bajar), pero DataIQ ve el token nuevo.
+    assert second is first
+    assert len(server.requests) == 2
+    assert server.requests[1].headers["authorization"] == "Bearer token-de-luis"
+    assert server.requests[1].headers["if-none-match"] == '"v1"'
+
+
+@pytest.mark.anyio
+async def test_a_verified_token_is_not_asked_again_within_the_verify_ttl(server):
+    catalogs = source(server)
+
+    await catalogs.get("token-de-ana")
+    await catalogs.get("token-de-ana")
+
+    assert len(server.requests) == 1
+
+
+@pytest.mark.anyio
+async def test_a_token_is_checked_again_after_the_verify_ttl(server):
+    catalogs = source(server, verify_ttl=0)
+
+    await catalogs.get("token-de-ana")
+    await catalogs.get("token-de-ana")
+
+    assert len(server.requests) == 2
+
+
+@pytest.mark.anyio
+async def test_the_token_of_a_deleted_account_is_denied_with_a_fresh_copy(server):
+    catalogs = source(server, verify_ttl=0)
+    await catalogs.get("token-de-ana")
+    server.denied.add("token-de-ana")
+
+    with pytest.raises(CatalogDenied):
+        await catalogs.get("token-de-ana")
