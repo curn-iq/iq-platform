@@ -55,13 +55,23 @@ def write_csv(entries: list[ChatLogEntry], path: Path) -> None:
             writer.writerow({k: _cell(v) for k, v in row.items()})
 
 
+# Una hoja de cálculo toma como fórmula la celda que empieza por alguno de estos
+# caracteres (inyección de fórmulas en CSV, OWASP).
+_FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
 def _cell(value) -> str:
-    """Vacío si no hay dato; la fecha, en hora de Colombia."""
+    """Vacío si no hay dato; la fecha, en hora de Colombia. Un texto que una hoja
+    de cálculo leería como fórmula (la pregunta la escribe cualquier cuenta) se
+    deja como texto con una comilla simple al comienzo."""
     if value is None:
         return ""
     if isinstance(value, datetime):
         return value.astimezone(COLOMBIA).isoformat(timespec="seconds")
-    return str(value)
+    text = str(value)
+    if isinstance(value, str) and text.startswith(_FORMULA_START):
+        return "'" + text
+    return text
 
 
 async def main(argv: list[str] | None = None) -> int:
