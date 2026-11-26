@@ -168,7 +168,7 @@ módulos lo necesitan corriendo.
 
 ```sh
 # 1. Base de datos de DataIQ (PostgreSQL 18)
-podman run -d --name dataiq-db -p 5432:5432 \
+podman run -d --name dataiq-db -p 127.0.0.1:5432:5432 \
   -e POSTGRES_USER=dataiq -e POSTGRES_PASSWORD=<contraseña> -e POSTGRES_DB=dataiq \
   -v dataiq-db-datos:/var/lib/postgresql docker.io/library/postgres:18
 

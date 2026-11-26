@@ -29,7 +29,7 @@ se corre desde `simiq3d/backend`.
 1. PostgreSQL 18 en un contenedor propio, aparte del de DataIQ:
 
    ```sh
-   podman run -d --name simiq3d-db -p 5433:5432 \
+   podman run -d --name simiq3d-db -p 127.0.0.1:5433:5432 \
      -e POSTGRES_USER=simiq3d -e POSTGRES_PASSWORD=<contraseña> -e POSTGRES_DB=simiq3d \
      -v simiq3d-db-datos:/var/lib/postgresql docker.io/library/postgres:18
    ```

@@ -28,7 +28,7 @@ Todo se corre desde `sivri/backend`.
 1. PostgreSQL 18 en un contenedor propio (puerto 5434):
 
    ```sh
-   podman run -d --name sivri-db -p 5434:5432 \
+   podman run -d --name sivri-db -p 127.0.0.1:5434:5432 \
      -e POSTGRES_USER=sivri -e POSTGRES_PASSWORD=<contraseña> -e POSTGRES_DB=sivri \
      -v sivri-db-datos:/var/lib/postgresql docker.io/library/postgres:18
    ```
