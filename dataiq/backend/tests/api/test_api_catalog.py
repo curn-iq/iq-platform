@@ -1,5 +1,6 @@
 import pytest
 
+from tests.api.test_api_versions import action, content, create_technique, edit
 from tests.conftest import auth_headers
 
 
@@ -157,3 +158,74 @@ async def test_an_alias_belongs_to_a_single_instrument(client, reviewer, instrum
 
     assert response_.status_code == 409
     assert response_.json()["detail"] == "El alias «Pinza P» ya es de otro instrumento"
+
+
+async def full_catalog(client, account) -> dict:
+    response_ = await client.get("/catalog/full", headers=auth_headers(account))
+    assert response_.status_code == 200
+    return response_.json()
+
+
+def terms(body) -> dict:
+    return {
+        "sutures": {s["name"] for s in body["sutures"]},
+        "equipment": {e["name"] for e in body["equipment"]},
+        "devices": {d["name"] for d in body["devices"]},
+    }
+
+
+@pytest.mark.anyio
+async def test_terms_from_a_draft_reach_only_those_who_write_until_it_is_published(
+    client, user, contributor, reviewer, specialty, zone, instrument
+):
+    version = await create_technique(client, contributor, specialty)
+    await edit(client, contributor, version["id"], content(zone, instrument))
+    draft_terms = {
+        "sutures": {"Seda"},
+        "equipment": {"Electrobisturí"},
+        "devices": {"Sonda"},
+    }
+
+    # Con el borrador: quien redacta los ve para reutilizarlos; el usuario, no.
+    assert terms(await full_catalog(client, contributor)) == draft_terms
+    assert terms(await full_catalog(client, reviewer)) == draft_terms
+    assert terms(await full_catalog(client, user)) == {
+        "sutures": set(),
+        "equipment": set(),
+        "devices": set(),
+    }
+
+    await action(client, contributor, version["id"], "submit")
+    await action(client, reviewer, version["id"], "approve")
+
+    # Publicada: ya son de todos.
+    assert terms(await full_catalog(client, user)) == draft_terms
+
+
+@pytest.mark.anyio
+async def test_a_term_used_only_by_a_discarded_draft_never_reaches_a_user(
+    client, user, contributor, specialty, zone, instrument
+):
+    version = await create_technique(client, contributor, specialty)
+    await edit(client, contributor, version["id"], content(zone, instrument))
+    discarded = await client.delete(
+        f"/versions/{version['id']}", headers=auth_headers(contributor)
+    )
+    assert discarded.status_code == 204
+
+    assert terms(await full_catalog(client, user))["equipment"] == set()
+
+
+@pytest.mark.anyio
+async def test_the_filtered_lists_have_their_own_etag_per_audience(
+    client, user, contributor, specialty, zone, instrument
+):
+    version = await create_technique(client, contributor, specialty)
+    await edit(client, contributor, version["id"], content(zone, instrument))
+
+    for_user = await client.get("/catalog/full", headers=auth_headers(user))
+    for_contributor = await client.get(
+        "/catalog/full", headers=auth_headers(contributor)
+    )
+
+    assert for_user.headers["etag"] != for_contributor.headers["etag"]

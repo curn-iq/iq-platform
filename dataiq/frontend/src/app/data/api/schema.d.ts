@@ -290,6 +290,11 @@ export interface paths {
          *
          *     Es para que SIVRI y SIMIQ3D lo pidan una vez por sesión (con el token de quien
          *     usa el módulo) y lo guarden mientras dure. Pide cuenta.
+         *
+         *     Las suturas, los equipos y los dispositivos los crea quien redacta un borrador
+         *     al guardarlo, antes de que nadie lo revise: quien no colabora solo recibe los
+         *     que usa una versión publicada. Quien redacta (colaborador o más) recibe todos,
+         *     para reutilizarlos.
          */
         get: operations["get_full_catalog_catalog_full_get"];
         put?: never;
