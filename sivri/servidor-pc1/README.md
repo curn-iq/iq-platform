@@ -20,7 +20,8 @@ Celular ──HTTPS / WSS + token──▶ Tailscale Funnel ──▶ SIVRI (127
   contenedor de PostgreSQL 18, el backend de SIVRI y un DataIQ local.
 - Tailscale Funnel, en el servicio de sistema `tailscaled`, que reenvía el puerto
   8443 a SIVRI.
-- Los pesos del detector en `sivri/backend/models/sivri.pt`.
+- Los pesos del detector en `sivri/backend/models/sivri.pt`, con su huella en
+  `MODEL_SHA256` del `.env` (ver el README del backend).
 
 ## Correrlo
 
