@@ -59,7 +59,10 @@ Dónde corre cada pieza en producción y cómo llega ahí:
   despliega en Vercel. También publica la imagen del backend de DataIQ en
   ghcr.io, que producción no usa (Vercel construye desde el código): sirve
   para correrlo fuera de Vercel, por ejemplo en Cloud Run si la institución
-  lo financia ([`despues-del-mvp.md`](despues-del-mvp.md)).
+  lo financia ([`despues-del-mvp.md`](despues-del-mvp.md)). La imagen lleva una
+  etiqueta por commit (no hay `latest`), y las acciones de GitHub y las imágenes
+  base de los Dockerfile están fijadas por SHA o por digest: Dependabot propone
+  su actualización cada semana, en una sola PR por ecosistema.
 
 ## Por qué así
 

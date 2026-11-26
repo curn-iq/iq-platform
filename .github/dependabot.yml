@@ -1,0 +1,20 @@
+# Mantiene al día lo que está fijado por SHA o por digest (acciones de GitHub e
+# imágenes base de los Dockerfile): una sola PR por semana por ecosistema.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      acciones:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directories:
+      - /dataiq/backend
+      - /simiq3d/backend
+    schedule:
+      interval: weekly
+    groups:
+      imagenes:
+        patterns: ["*"]
