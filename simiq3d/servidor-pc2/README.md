@@ -42,7 +42,11 @@ las técnicas siguen.
    ```
 
 3. **El filtro como servicio**, que arranca solo y sigue aunque no haya sesión
-   abierta (revisar en `simiq3d-filtro.service` la ruta de `uv` y la del repo):
+   abierta (revisar en `simiq3d-filtro.service` la ruta de `uv` y la del repo).
+   El servicio usa `uv run --locked`: las dependencias salen de
+   `filtro.py.lock` (con hashes), no de la última versión publicada. Al cambiar
+   las dependencias de `filtro.py`, regenerarlo con
+   `uv lock --script filtro.py` y versionarlo:
 
    ```sh
    mkdir -p ~/.config/systemd/user
