@@ -48,6 +48,9 @@ class Config(BaseSettings):
     # el detector ven la misma imagen.
     max_image_side: int = 1280
     max_upload_bytes: int = 8_000_000
+    # Tope de ancho × alto, que se lee del encabezado antes de decodificar (los
+    # bytes comprimidos no limitan la memoria de la imagen ya decodificada).
+    max_image_pixels: int = 25_000_000
 
     # Puntos de partida de la validación (sivri/docs/validacion.md, «Puntos de
     # partida»); se ajustan con las fotos de la sesión de validación.

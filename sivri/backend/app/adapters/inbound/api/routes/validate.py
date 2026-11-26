@@ -37,7 +37,7 @@ async def validate(
             status.HTTP_413_CONTENT_TOO_LARGE, "La imagen es demasiado grande"
         )
     try:
-        frame = analyzer.decode(data)
+        frame = await asyncio.to_thread(analyzer.decode, data)
     except InvalidImage as error:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT, str(error)
