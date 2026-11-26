@@ -42,8 +42,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://dataiq:dataiq@localhost:5432/dataiq
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.12.18"
           python-version: "3.14"
@@ -63,22 +63,21 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/login-action@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-buildx-action@v4
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
       # Un tag por commit: Cloud Run guarda en caché las imágenes de ghcr.io
       # hasta una hora, así que desplegar siempre "latest" podría no actualizar.
-      - uses: docker/build-push-action@v7
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: dataiq/backend
           push: true
           tags: |
             ghcr.io/curn-iq/dataiq-backend:${{ github.sha }}
-            ghcr.io/curn-iq/dataiq-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -95,7 +94,7 @@ jobs:
       VERCEL_ORG_ID: team_kERz1HRzI8vWnJGvFNhEi5N1
       VERCEL_PROJECT_ID: prj_2WlkLXYrBnZVyoHV3gkriR5vhpYW
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # Vercel construye en sus servidores, igual que el despliegue a mano.
       # Las variables de entorno (DATABASE_URL, JWT_PRIVATE_KEY…) viven en el
       # proyecto de Vercel, no aquí. El plan Hobby no conecta repos de una

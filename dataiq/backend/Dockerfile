@@ -3,9 +3,9 @@
 # Dos etapas: la primera instala las dependencias con uv; la segunda solo
 # copia el entorno ya armado, sin uv ni cachés, y corre sin root.
 
-FROM python:3.14-slim AS build
+FROM python:3.14-slim@sha256:22eafb370920ad8b429e0aec3fff433e0669968519f5d60469d83729c138b28b AS build
 
-COPY --from=ghcr.io/astral-sh/uv:0.12.18 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.18@sha256:3adc3706091ce7c2fe595e669628caedd6d951551b92b258b7e7dbe06d9440bc /uv /bin/uv
 
 # Bytecode compilado (arranque en frío más rápido) y el Python de la imagen,
 # no uno descargado por uv.
@@ -26,7 +26,7 @@ COPY migrations ./migrations
 COPY app ./app
 
 
-FROM python:3.14-slim
+FROM python:3.14-slim@sha256:22eafb370920ad8b429e0aec3fff433e0669968519f5d60469d83729c138b28b
 
 RUN useradd --create-home --uid 1000 dataiq
 WORKDIR /app
