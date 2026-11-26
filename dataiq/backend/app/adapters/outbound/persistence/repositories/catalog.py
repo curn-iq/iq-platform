@@ -12,7 +12,16 @@ from app.adapters.outbound.persistence.models.catalog import (
     MedicalDevice,
     Suture,
 )
-from app.adapters.outbound.persistence.models.techniques import Specialty, Zone
+from app.adapters.outbound.persistence.models.techniques import (
+    ItemComponent,
+    Specialty,
+    TechniqueItem,
+    TechniqueVersion,
+    VersionDevice,
+    VersionEquipment,
+    VersionSuture,
+    Zone,
+)
 from app.domain.catalog import (
     CatalogInstrument,
     CatalogSuture,
@@ -20,7 +29,7 @@ from app.domain.catalog import (
     Reference,
 )
 from app.domain.errors import Conflict, NotFound
-from app.domain.techniques import Device, Equipment
+from app.domain.techniques import Device, Equipment, VersionState
 
 
 class SQLAlchemyCatalogRepository:
@@ -170,30 +179,66 @@ class SQLAlchemyCatalogRepository:
     async def list_categories(self) -> list[Reference]:
         return await self._references(InstrumentCategory)
 
-    async def list_sutures(self) -> list[CatalogSuture]:
-        rows = await self._session.execute(
-            select(Suture.id, Suture.name, Suture.gauge, Suture.needle_type).order_by(
-                Suture.name, Suture.gauge, Suture.needle_type, Suture.id
-            )
-        )
+    async def list_sutures(self, published_only: bool = False) -> list[CatalogSuture]:
+        query = select(
+            Suture.id, Suture.name, Suture.gauge, Suture.needle_type
+        ).order_by(Suture.name, Suture.gauge, Suture.needle_type, Suture.id)
+        if published_only:
+            query = query.where(Suture.id.in_(_published_sutures()))
+        rows = await self._session.execute(query)
         return [CatalogSuture(**f._mapping) for f in rows]
 
-    async def list_equipment(self) -> list[Equipment]:
-        rows = await self._session.execute(
-            select(
-                BiomedicalEquipment.id,
-                BiomedicalEquipment.name,
-                BiomedicalEquipment.description,
-            ).order_by(BiomedicalEquipment.name)
-        )
+    async def list_equipment(self, published_only: bool = False) -> list[Equipment]:
+        query = select(
+            BiomedicalEquipment.id,
+            BiomedicalEquipment.name,
+            BiomedicalEquipment.description,
+        ).order_by(BiomedicalEquipment.name)
+        if published_only:
+            query = query.where(
+                BiomedicalEquipment.id.in_(
+                    _in_published(VersionEquipment.equipment_id, VersionEquipment)
+                )
+            )
+        rows = await self._session.execute(query)
         return [Equipment(**f._mapping) for f in rows]
 
-    async def list_devices(self) -> list[Device]:
-        rows = await self._session.execute(
-            select(
-                MedicalDevice.id,
-                MedicalDevice.name,
-                MedicalDevice.description,
-            ).order_by(MedicalDevice.name)
-        )
+    async def list_devices(self, published_only: bool = False) -> list[Device]:
+        query = select(
+            MedicalDevice.id,
+            MedicalDevice.name,
+            MedicalDevice.description,
+        ).order_by(MedicalDevice.name)
+        if published_only:
+            query = query.where(
+                MedicalDevice.id.in_(
+                    _in_published(VersionDevice.device_id, VersionDevice)
+                )
+            )
+        rows = await self._session.execute(query)
         return [Device(**f._mapping) for f in rows]
+
+
+def _in_published(column, link):
+    """Los ids de `column` que usa alguna versión publicada."""
+    return (
+        select(column)
+        .join(TechniqueVersion, TechniqueVersion.id == link.version_id)
+        .where(TechniqueVersion.state == VersionState.published)
+    )
+
+
+def _published_sutures():
+    """Suturas de una versión publicada: las de la lista de la técnica y las de
+    los componentes de su mesa."""
+    from_list = _in_published(VersionSuture.suture_id, VersionSuture)
+    from_items = (
+        select(ItemComponent.suture_id)
+        .join(TechniqueItem, TechniqueItem.id == ItemComponent.item_id)
+        .join(TechniqueVersion, TechniqueVersion.id == TechniqueItem.version_id)
+        .where(
+            TechniqueVersion.state == VersionState.published,
+            ItemComponent.suture_id.is_not(None),
+        )
+    )
+    return from_list.union(from_items)

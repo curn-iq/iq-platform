@@ -17,7 +17,7 @@ from app.adapters.inbound.api.schemas import (
     ReferenceOut,
 )
 from app.domain.catalog import check_description
-from app.domain.users import Role, require_role
+from app.domain.users import Role, has_at_least, require_role
 
 router = APIRouter(tags=["Catálogo"])
 
@@ -47,16 +47,22 @@ async def get_full_catalog(
 
     Es para que SIVRI y SIMIQ3D lo pidan una vez por sesión (con el token de quien
     usa el módulo) y lo guarden mientras dure. Pide cuenta.
+
+    Las suturas, los equipos y los dispositivos los crea quien redacta un borrador
+    al guardarlo, antes de que nadie lo revise: quien no colabora solo recibe los
+    que usa una versión publicada. Quien redacta (colaborador o más) recibe todos,
+    para reutilizarlos.
     """
+    published_only = not has_at_least(account.role, Role.contributor)
     full_catalog = FullCatalogOut.model_validate(
         {
             "specialties": await catalog.list_specialties(),
             "zones": await catalog.list_zones(),
             "categories": await catalog.list_categories(),
             "instruments": await catalog.list_instruments(),
-            "sutures": await catalog.list_sutures(),
-            "equipment": await catalog.list_equipment(),
-            "devices": await catalog.list_devices(),
+            "sutures": await catalog.list_sutures(published_only),
+            "equipment": await catalog.list_equipment(published_only),
+            "devices": await catalog.list_devices(published_only),
             "techniques": await techniques.list_published_details(),
         },
         from_attributes=True,

@@ -182,6 +182,29 @@ async def test_repository_checks_the_state_with_the_row_locked(
 
 
 @pytest.mark.anyio
+async def test_repository_rechecks_versions_in_progress_when_archiving(
+    session, client, contributor, reviewer, specialty
+):
+    # La ruta comprobó que no había versión en curso y, antes del cambio de
+    # estado, otra persona creó un borrador desde la publicada: el repositorio
+    # lo vuelve a comprobar con la fila bloqueada.
+    v1 = await create_technique(client, reviewer, specialty)
+    await action(client, reviewer, v1["id"], "publish")
+    technique = v1["technique_id"]
+    await client.post(
+        f"/techniques/{technique}/versions", headers=auth_headers(contributor)
+    )
+    repository = SQLAlchemyVersionRepository(session)
+
+    with pytest.raises(Conflict):
+        await repository.change_state(
+            v1["id"], VersionState.published, VersionState.archived
+        )
+
+    assert str((await repository.get_published_of(technique)).id) == v1["id"]
+
+
+@pytest.mark.anyio
 async def test_reject_requires_reason(client, contributor, reviewer, specialty):
     version = await create_technique(client, contributor, specialty)
     await action(client, contributor, version["id"], "submit")
