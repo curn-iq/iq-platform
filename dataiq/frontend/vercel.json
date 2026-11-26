@@ -17,7 +17,7 @@
   ],
   "headers": [
     {
-      "source": "/((?!api/|simiq3d|sivri).*)",
+      "source": "/((?!api/|simiq3d(?:/|$)|sivri(?:/|$)).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
