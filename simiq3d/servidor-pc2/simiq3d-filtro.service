@@ -9,7 +9,7 @@ After=network-online.target
 EnvironmentFile=%h/.config/simiq3d/filtro.env
 WorkingDirectory=%h/Projects/iq-platform/simiq3d/servidor-pc2
 # Ruta de uv: la que da `which uv` (aquí, la de mise)
-ExecStart=%h/.local/share/mise/installs/uv/latest/.mise-bins/uv run --script filtro.py
+ExecStart=%h/.local/share/mise/installs/uv/latest/.mise-bins/uv run --locked --script filtro.py
 Restart=on-failure
 RestartSec=5
 
