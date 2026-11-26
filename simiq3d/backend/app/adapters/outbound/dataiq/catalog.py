@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import time
 from uuid import UUID
 
@@ -115,8 +116,12 @@ class DataIQCatalogSource:
     cuerpo. Es una copia de paso: la fuente de verdad sigue siendo DataIQ.
 
     El catálogo es igual para cualquier cuenta (solo lo publicado), así que la
-    copia se comparte entre quienes preguntan; el token de cada uno sirve para
-    que DataIQ compruebe que tiene cuenta.
+    copia se comparte entre quienes preguntan. El token de cada uno sirve para
+    que DataIQ compruebe que tiene cuenta, y esa comprobación no se salta con la
+    copia fresca: un token que DataIQ no ha visto en los últimos `verify_ttl`
+    segundos se le presenta de nuevo (con el ETag, así que responde 304 sin
+    cuerpo). Si la cuenta se borró, DataIQ responde 401 y el token deja de servir
+    aquí aunque no haya vencido.
     """
 
     def __init__(
@@ -124,11 +129,14 @@ class DataIQCatalogSource:
         base_url: str,
         max_age: float = 300,
         retry_after: float = 30,
+        verify_ttl: float = 60,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._url = f"{base_url.rstrip('/')}/catalog/full"
         self._max_age = max_age
         self._retry_after = retry_after
+        self._verify_ttl = verify_ttl
+        self._verified: dict[str, float] = {}
         self._transport = transport
         self._catalog: Catalog | None = None
         self._etag: str | None = None
@@ -137,10 +145,31 @@ class DataIQCatalogSource:
 
     async def get(self, token: str) -> Catalog:
         async with self._lock:
-            if self._catalog is None or self._stale():
+            if self._catalog is None or self._stale() or not self._is_verified(token):
                 await self._fetch(token)
             assert self._catalog is not None
             return self._catalog
+
+    def _is_verified(self, token: str) -> bool:
+        verified_at = self._verified.get(self._key(token))
+        return verified_at is not None and time.monotonic() - verified_at <= (
+            self._verify_ttl
+        )
+
+    def _mark_verified(self, token: str) -> None:
+        now = time.monotonic()
+        if len(self._verified) >= 256:
+            self._verified = {
+                key: at
+                for key, at in self._verified.items()
+                if now - at <= self._verify_ttl
+            }
+        self._verified[self._key(token)] = now
+
+    @staticmethod
+    def _key(token: str) -> str:
+        # Se guarda el resumen, no el token.
+        return hashlib.sha256(token.encode()).hexdigest()
 
     def _stale(self) -> bool:
         return (
@@ -161,9 +190,11 @@ class DataIQCatalogSource:
             self._fall_back_or_raise(error)
             return
         if response.status_code in (401, 403):
+            self._verified.pop(self._key(token), None)
             raise CatalogDenied(response.text)
         if response.status_code == 304 and self._catalog is not None:
             self._fetched_at = time.monotonic()
+            self._mark_verified(token)
             return
         try:
             response.raise_for_status()
@@ -174,6 +205,7 @@ class DataIQCatalogSource:
         self._catalog = catalog
         self._etag = response.headers.get("etag")
         self._fetched_at = time.monotonic()
+        self._mark_verified(token)
 
     def _fall_back_or_raise(self, error: Exception) -> None:
         if self._catalog is None:
