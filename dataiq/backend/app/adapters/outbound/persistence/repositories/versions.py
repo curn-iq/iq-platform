@@ -578,6 +578,13 @@ class SQLAlchemyVersionRepository:
             raise Conflict(
                 f"La versión ya no está en {from_state}: ahora está en {version.state}"
             )
+        if to_state == VersionState.archived and await self.has_version_in_progress(
+            version.technique_id
+        ):
+            # Se repite con la fila publicada ya bloqueada: crear una versión nueva
+            # bloquea esa misma fila, así que no puede colarse un borrador entre
+            # la comprobación de la ruta y este cambio.
+            raise Conflict("La técnica tiene una versión en curso")
         if to_state == VersionState.published:
             # Primero la publicada anterior pasa a reemplazada: el índice
             # one_published_per_technique no deja dos publicadas a la vez.
