@@ -12,6 +12,13 @@ WorkingDirectory=%h/Projects/iq-platform/simiq3d/servidor-pc2
 ExecStart=%h/.local/share/mise/installs/uv/latest/.mise-bins/uv run --locked --script filtro.py
 Restart=on-failure
 RestartSec=5
+# Es lo único que Tailscale Funnel publica: con límites, lo peor que pasa es que
+# se reinicie solo.
+MemoryHigh=512M
+MemoryMax=1G
+TasksMax=128
+NoNewPrivileges=yes
+PrivateTmp=yes
 
 [Install]
 WantedBy=default.target
