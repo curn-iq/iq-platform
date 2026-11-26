@@ -61,6 +61,30 @@ def test_the_export_is_a_csv_with_one_row_per_question(tmp_path):
     assert row["latency_ms"] == "840"
 
 
+@pytest.mark.parametrize(
+    "question", ["=1+1", "+cmd", "-2+3", "@SUMA(A1)", "\t=1", "\r=1"]
+)
+def test_a_question_that_a_spreadsheet_would_read_as_a_formula_stays_text(
+    tmp_path, question
+):
+    path = tmp_path / "registro.csv"
+
+    write_csv([entry(question)], path)
+
+    [row] = list(csv.DictReader(path.open(encoding="utf-8", newline="")))
+    assert row["question"] == "'" + question
+
+
+def test_the_other_questions_and_the_numbers_are_exported_unchanged(tmp_path):
+    path = tmp_path / "registro.csv"
+
+    write_csv([entry("¿Dónde va la Kelly? = aquí")], path)
+
+    [row] = list(csv.DictReader(path.open(encoding="utf-8", newline="")))
+    assert row["question"] == "¿Dónde va la Kelly? = aquí"
+    assert row["latency_ms"] == "840"
+
+
 @pytest.mark.anyio
 async def test_the_questions_of_one_session_are_exported_by_date(session):
     for question, hour in (("antes", 13), ("durante", 15), ("después", 18)):
