@@ -27,6 +27,9 @@ class Config(BaseSettings):
     # (los pesos entrenados en `model_path`).
     detector: Literal["fake", "yolo"] = "fake"
     model_path: str = "models/sivri.pt"
+    # Huella SHA-256 de los pesos (`sha256sum models/sivri.pt`). Con ella, SIVRI no
+    # carga unos pesos distintos; sin ella solo avisa.
+    model_sha256: str = ""
     # Archivo JSON con las detecciones que devuelve el detector de pruebas; sin
     # él no ve nada.
     fake_detections: str = ""

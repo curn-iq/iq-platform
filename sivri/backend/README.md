@@ -47,9 +47,12 @@ Todo se corre desde `sivri/backend`.
 
 4. Levantar la API: `uv run fastapi dev app/main.py --port 8002`
    (documentación interactiva en `/docs`).
-5. Con el modelo entrenado: `uv sync --extra yolo` (PyTorch solo para CPU), los
-   pesos en `models/sivri.pt` y `DETECTOR=yolo` en el `.env`. Sin eso corre el
-   detector de pruebas (`DETECTOR=fake`).
+5. Con el modelo entrenado: `uv sync --locked --extra yolo` (PyTorch solo para
+   CPU), los pesos en `models/sivri.pt` y `DETECTOR=yolo` en el `.env`. Conviene
+   fijar también su huella: `MODEL_SHA256=$(sha256sum models/sivri.pt)` (solo el
+   valor hexadecimal). Con ella, SIVRI no carga unos pesos distintos, porque
+   PyTorch los lee con `pickle`; sin ella solo avisa. Sin eso corre el detector
+   de pruebas (`DETECTOR=fake`).
 
 ## Pruebas
 
